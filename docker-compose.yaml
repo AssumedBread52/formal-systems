@@ -1,0 +1,13 @@
+services:
+
+  npm:
+    build:
+      args:
+        - GROUP_ID=1000
+        - USER_ID=1000
+      context: ./images
+      dockerfile: npm.dockerfile
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./source:/app:rw
