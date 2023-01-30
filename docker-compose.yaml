@@ -1,5 +1,19 @@
 services:
 
+  development-application:
+    build:
+      args:
+        - GROUP_ID=1000
+        - USER_ID=1000
+      context: ./images
+      dockerfile: development-application.dockerfile
+    env_file:
+      - ./env/development-application.env
+    ports:
+      - "3000:3000/tcp"
+    volumes:
+      - ./source:/app:rw
+
   npm:
     build:
       args:
