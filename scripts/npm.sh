@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker-compose run --rm npm $@
+GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm $@

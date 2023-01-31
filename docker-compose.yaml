@@ -1,27 +1,23 @@
 services:
 
   development-application:
-    build:
-      args:
-        - GROUP_ID=1000
-        - USER_ID=1000
-      context: ./images
-      dockerfile: development-application.dockerfile
+    command: npm run dev
     env_file:
       - ./env/development-application.env
+    image: node:18.12.1
     ports:
       - "3000:3000/tcp"
+    user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./source:/app:rw
+    working_dir: /app
 
   npm:
-    build:
-      args:
-        - GROUP_ID=1000
-        - USER_ID=1000
-      context: ./images
-      dockerfile: npm.dockerfile
+    entrypoint: npm
+    image: node:18.12.1
     stdin_open: true
     tty: true
+    user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./source:/app:rw
+    working_dir: /app
