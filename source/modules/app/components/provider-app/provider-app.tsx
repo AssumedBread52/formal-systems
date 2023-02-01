@@ -1,5 +1,6 @@
 import { AppProps } from 'next/app';
 import { Fragment, ReactElement } from 'react';
+import { GlobalStyle } from './global-style/global-style';
 
 export const ProviderApp = (props: AppProps): ReactElement => {
   const Component = props.Component;
@@ -7,6 +8,7 @@ export const ProviderApp = (props: AppProps): ReactElement => {
 
   return (
     <Fragment>
+      <GlobalStyle />
       <header />
       <main>
         <Component {...pageProps} />
