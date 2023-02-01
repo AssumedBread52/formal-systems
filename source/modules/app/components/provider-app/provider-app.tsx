@@ -1,5 +1,7 @@
 import { AppProps } from 'next/app';
 import { Fragment, ReactElement } from 'react';
+import { ThemeProvider } from 'styled-components';
+import { theme } from '@/app/constants';
 import { GlobalStyle } from './global-style/global-style';
 
 export const ProviderApp = (props: AppProps): ReactElement => {
@@ -9,11 +11,13 @@ export const ProviderApp = (props: AppProps): ReactElement => {
   return (
     <Fragment>
       <GlobalStyle />
-      <header />
-      <main>
-        <Component {...pageProps} />
-      </main>
-      <footer />
+      <ThemeProvider theme={theme}>
+        <header />
+        <main>
+          <Component {...pageProps} />
+        </main>
+        <footer />
+      </ThemeProvider>
     </Fragment>
   );
 };
