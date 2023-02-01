@@ -3,6 +3,7 @@ import { Fragment, ReactElement } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '@/app/constants';
 import { GlobalStyle } from './global-style/global-style';
+import { Header } from './header/header';
 
 export const ProviderApp = (props: AppProps): ReactElement => {
   const Component = props.Component;
@@ -12,7 +13,7 @@ export const ProviderApp = (props: AppProps): ReactElement => {
     <Fragment>
       <GlobalStyle />
       <ThemeProvider theme={theme}>
-        <header />
+        <Header />
         <main>
           <Component {...pageProps} />
         </main>
