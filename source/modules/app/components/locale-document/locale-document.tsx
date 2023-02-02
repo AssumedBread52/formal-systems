@@ -32,11 +32,12 @@ LocaleDocument.getInitialProps = async (ctx: DocumentContext): Promise<DocumentI
     };
 
     const initialProps = await Document.getInitialProps(ctx);
+    const { styles } = initialProps;
 
     return {
       ...initialProps,
       styles: [
-        initialProps.styles,
+        styles,
         serverStyleSheet.getStyleElement()
       ]
     };
