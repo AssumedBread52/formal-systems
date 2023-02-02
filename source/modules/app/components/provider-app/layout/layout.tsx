@@ -1,4 +1,5 @@
 import { Fragment, PropsWithChildren, ReactElement } from 'react';
+import { Footer } from './footer/footer';
 import { GlobalStyle } from './global-style/global-style';
 import { Header } from './header/header';
 
@@ -12,7 +13,7 @@ export const Layout = (props: PropsWithChildren<{}>): ReactElement => {
       <main style={{ height: '1000px' }}>
         {children}
       </main>
-      <footer />
+      <Footer />
     </Fragment>
   );
 };
