@@ -15,9 +15,9 @@ export const Header = (): ReactElement => {
           </h2>
           <Box mx='auto' />
           <a>Link to Info</a>
-          <Box mx='0.5rem' />
+          <Box mx='1' />
           <a>Link to Sign In/Sign Out</a>
-          <Box mx='0.5rem' />
+          <Box mx='1' />
           <a>Link to Sign Up/Edit Profile</a>
         </Flex>
       </header>
