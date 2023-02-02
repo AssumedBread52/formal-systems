@@ -1,6 +1,7 @@
 import { Flex } from '#/modules/common/components/flex/flex';
 import { useIsDocumentScrolled } from '@/app/hooks';
 import { Box } from '@/common/components/box/box';
+import Link from 'next/link';
 import { ReactElement } from 'react';
 
 export const Header = (): ReactElement => {
@@ -14,7 +15,9 @@ export const Header = (): ReactElement => {
             Formal Systems
           </h2>
           <Box mx='auto' />
-          <a>Link to Info</a>
+          <Link href='/info'>
+            Info
+          </Link>
           <Box mx='1' />
           <a>Link to Sign In/Sign Out</a>
           <Box mx='1' />
