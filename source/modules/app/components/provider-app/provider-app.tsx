@@ -1,15 +1,33 @@
 import { theme } from '@/app/constants';
 import { AppProps } from 'next/app';
+import Head from 'next/head';
 import { Fragment, ReactElement } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { Layout } from './layout/layout';
 
 export const ProviderApp = (props: AppProps): ReactElement => {
-  const Component = props.Component;
-  const pageProps = props.pageProps;
+  const { Component, pageProps } = props;
 
   return (
     <Fragment>
+      <Head>
+        <title>Formal Systems</title>
+        <meta charSet='utf-8' />
+        <meta name='application-name' content='Formal Systems' />
+        <meta name='description' content='This is a fun, interactive environment that allows users to learn about formal systems' />
+        <meta name='generator' content='Next JS' />
+        <meta name='keywords' content='Formal System, Proof, Theorem, Deduction, Logic' />
+        <meta name='referrer' content='strict-origin-when-cross-origin' />
+        <meta name='classification' content='Proofs, Theorems, Deductions, Formal Systems, Interactive Learning' />
+        <meta name='distribution' content='Global' />
+        <meta name='rating' content='General' />
+        <meta name='robots' content='index, nofollow' />
+        <meta name='revisit-after' content='1 day' />
+        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+        <meta name='author' content='Antonio Sanchez' />
+        <meta name='creator' content='Antonio Sanchez' />
+        <meta name='publisher' content='Anotnio Sanchez' />
+      </Head>
       <ThemeProvider theme={theme}>
         <Layout>
           <Component {...pageProps} />
