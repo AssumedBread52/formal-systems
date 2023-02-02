@@ -14,7 +14,7 @@ export const ProviderApp = (props: AppProps): ReactElement => {
       <GlobalStyle />
       <ThemeProvider theme={theme}>
         <Header />
-        <main>
+        <main style={{ height: '1000px' }}>
           <Component {...pageProps} />
         </main>
         <footer />
