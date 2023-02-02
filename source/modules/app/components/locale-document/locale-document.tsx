@@ -1,5 +1,8 @@
-import { Head, Html, Main, NextScript } from 'next/document';
-import { ReactElement } from 'react';
+import { AppType } from 'next/app';
+import { AppPropsType } from 'next/dist/shared/lib/utils';
+import Document, { DocumentContext, DocumentInitialProps, Head, Html, Main, NextScript } from 'next/document';
+import { Fragment, ReactElement } from 'react';
+import { ServerStyleSheet } from 'styled-components';
 
 export const LocaleDocument = (): ReactElement => {
   return (
@@ -11,4 +14,35 @@ export const LocaleDocument = (): ReactElement => {
       </body>
     </Html>
   );
+};
+
+LocaleDocument.getInitialProps = async (ctx: DocumentContext): Promise<DocumentInitialProps> => {
+  const serverStyleSheet = new ServerStyleSheet();
+  const { renderPage: originalRenderPage } = ctx;
+
+  try {
+    ctx.renderPage = (): DocumentInitialProps | Promise<DocumentInitialProps> => {
+      return originalRenderPage({
+        enhanceApp: (App: AppType): AppType => {
+          return (props: AppPropsType): ReactElement => {
+            return serverStyleSheet.collectStyles(<App {...props} />);
+          };
+        }
+      });
+    };
+
+    const initialProps = await Document.getInitialProps(ctx);
+
+    return {
+      ...initialProps,
+      styles: (
+        <Fragment>
+          {initialProps.styles}
+          {serverStyleSheet.getStyleElement()}
+        </Fragment>
+      )
+    };
+  } finally {
+    serverStyleSheet.seal();
+  }
 };
