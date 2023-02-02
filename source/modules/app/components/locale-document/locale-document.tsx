@@ -1,7 +1,7 @@
 import { AppType } from 'next/app';
 import { AppPropsType } from 'next/dist/shared/lib/utils';
 import Document, { DocumentContext, DocumentInitialProps, Head, Html, Main, NextScript } from 'next/document';
-import { Fragment, ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { ServerStyleSheet } from 'styled-components';
 
 export const LocaleDocument = (): ReactElement => {
@@ -35,12 +35,10 @@ LocaleDocument.getInitialProps = async (ctx: DocumentContext): Promise<DocumentI
 
     return {
       ...initialProps,
-      styles: (
-        <Fragment>
-          {initialProps.styles}
-          {serverStyleSheet.getStyleElement()}
-        </Fragment>
-      )
+      styles: [
+        initialProps.styles,
+        serverStyleSheet.getStyleElement()
+      ]
     };
   } finally {
     serverStyleSheet.seal();
