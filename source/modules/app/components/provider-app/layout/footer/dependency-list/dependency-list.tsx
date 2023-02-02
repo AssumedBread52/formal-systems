@@ -12,7 +12,7 @@ export const DependencyList = (props: DependencyListProps): ReactElement => {
       <Flex display='flex' alignItems='center' justifyContent='center'>
         {label}
       </Flex>
-      <Grid display='grid' gridGap='1rem' gridTemplateColumns='repeat(auto-fill, minmax(9rem, 1fr))'>
+      <Grid display='grid' gridGap='1rem' gridTemplateColumns='repeat(auto-fill, minmax(11rem, 1fr))'>
         {Object.keys(list).map((key: string): ReactElement => {
           return (
             <DependencyItem key={key} packageName={key} version={list[key]} />
