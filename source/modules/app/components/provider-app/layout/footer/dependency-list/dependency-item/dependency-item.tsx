@@ -51,32 +51,3 @@ export const DependencyItem = (props: DependencyItemProps): ReactElement => {
     </Box>
   );
 };
-// import { Box } from '@/common/components/box/box';
-// import { Flex } from '@/common/components/flex/flex';
-// import { Grid } from '@/common/components/grid/grid';
-// import { Space } from '@/common/components/space/space';
-// import { MouseEvent, ReactElement, useState } from 'react';
-
-// export const DependencyItem = (props: IDependencyItemProps): ReactElement => {
-
-//   return (
-//     <Box boxShadow={shadow} borderRadius='8px' cursor='pointer' p='0.5rem' onClick={clickHandler} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
-//       <Grid gridTemplateColumns='max-content' justifyContent='center'>
-//         <Box mx='auto'>
-//           <em>
-//             {packageName}
-//           </em>
-//         </Box>
-//         <Flex justifyContent='center' width='100%'>
-//           <span>
-//             version:
-//           </span>
-//           <Space m='0.25rem' />
-//           <em>
-//             {version.substring(1)}
-//           </em>
-//         </Flex>
-//       </Grid>
-//     </Box>
-//   );
-// };
