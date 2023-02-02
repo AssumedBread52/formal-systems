@@ -1,7 +1,1 @@
-export default function Info() {
-  return (
-    <h1>
-      Info page!
-    </h1>
-  );
-};
+export { Info as default } from '@/app/components/info/info';
