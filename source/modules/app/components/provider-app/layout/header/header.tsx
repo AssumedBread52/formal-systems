@@ -1,6 +1,6 @@
-import { Flex } from '#/modules/common/components/flex/flex';
 import { useIsDocumentScrolled } from '@/app/hooks';
 import { Box } from '@/common/components/box/box';
+import { Flex } from '@/common/components/flex/flex';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { MouseEvent, ReactElement } from 'react';
