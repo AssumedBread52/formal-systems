@@ -4,7 +4,7 @@ import { RenderMath } from './render-math/render-math';
 
 export const Info = (): ReactElement => {
   return (
-    <Box mb='5rem' mt='1.5rem' mx='15%'>
+    <Box mx='5' my='3'>
       <section>
         <h2>
           The Formal Description
