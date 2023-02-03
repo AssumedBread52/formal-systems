@@ -7,28 +7,31 @@ export const RenderMath = (props: PropsWithChildren<RenderMathProps>): ReactElem
   const { children, content, inline } = props;
 
   const linkedHandler = useCallback((node: HTMLSpanElement | null): void => {
-    if (node) {
-      if (typeof content === 'string') {
-        renderMath(node, content, inline);
-      } else if (typeof node.textContent === 'string') {
-        if (inline) {
-          const textBlocks = node.textContent.split('$$');
-          node.textContent = '';
+    if (!node) {
+      return;
+    }
 
-          textBlocks.forEach((textBlock: string, index: number): void => {
-            if (0 === index % 2) {
-              node.append(textBlock);
-            } else {
-              const span = document.createElement('span');
+    if (typeof content === 'string') {
+      renderMath(node, content, inline);
+    } else if (typeof node.textContent === 'string') {
+      if (inline) {
+        const textBlocks = node.textContent.split('$$');
 
-              renderMath(span, textBlock, inline, node);
+        node.textContent = '';
 
-              node.append(span);
-            }
-          });
-        } else {
-          renderMath(node, node.textContent, inline);
-        }
+        textBlocks.forEach((textBlock: string, index: number): void => {
+          if (0 === index % 2) {
+            node.append(textBlock);
+          } else {
+            const span = document.createElement('span');
+
+            renderMath(span, textBlock, inline, node);
+
+            node.append(span);
+          }
+        });
+      } else {
+        renderMath(node, node.textContent, inline);
       }
     }
   }, [content, inline]);
