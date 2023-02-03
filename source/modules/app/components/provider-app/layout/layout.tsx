@@ -10,7 +10,7 @@ export const Layout = (props: PropsWithChildren<{}>): ReactElement => {
     <Fragment>
       <GlobalStyle />
       <Header />
-      <main style={{ height: '1000px' }}>
+      <main>
         {children}
       </main>
       <Footer />
