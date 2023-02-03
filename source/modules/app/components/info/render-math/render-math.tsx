@@ -1,23 +1,7 @@
+import { renderMath } from '@/app/helpers';
 import { RenderMathProps } from '@/app/types';
-import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { PropsWithChildren, ReactElement, useCallback } from 'react';
-
-const renderMath = (node: HTMLSpanElement, content: string, inline?: boolean, nodeForError?: HTMLSpanElement): void => {
-  try {
-    katex.render(content, node, {
-      displayMode: !inline
-    });
-  } catch {
-    const errorMessage = document.createTextNode('Error rendering.');
-
-    if (nodeForError) {
-      nodeForError.append(errorMessage);
-    } else {
-      node.append(errorMessage);
-    }
-  }
-};
 
 export const RenderMath = (props: PropsWithChildren<RenderMathProps>): ReactElement => {
   const { children, content, inline } = props;
