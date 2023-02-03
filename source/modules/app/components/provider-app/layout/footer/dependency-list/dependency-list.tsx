@@ -16,7 +16,7 @@ export const DependencyList = (props: DependencyListProps): ReactElement => {
         {label}
       </Box>
       <Box mx='1' />
-      <Grid display='grid' gridGap='2' gridTemplateColumns='repeat(auto-fill, minmax(11rem, 1fr))' width='100%'>
+      <Grid display='grid' gridGap='2' gridTemplateColumns='repeat(auto-fill, minmax(12rem, 1fr))' width='100%'>
         {packageNames.map((packageName: string): ReactElement => {
           const version = list[packageName];
 
