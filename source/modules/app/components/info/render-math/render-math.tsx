@@ -1,11 +1,7 @@
+import { RenderMathProps } from '@/app/types';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { PropsWithChildren, ReactElement, useCallback } from 'react';
-
-interface IRenderMathProps {
-  inline?: boolean;
-  content?: string;
-}
 
 const renderMath = (node: HTMLSpanElement, content: string, inline?: boolean, nodeForError?: HTMLSpanElement): void => {
   try {
@@ -23,7 +19,7 @@ const renderMath = (node: HTMLSpanElement, content: string, inline?: boolean, no
   }
 };
 
-export const RenderMath = (props: PropsWithChildren<IRenderMathProps>): ReactElement => {
+export const RenderMath = (props: PropsWithChildren<RenderMathProps>): ReactElement => {
   const { children, content, inline } = props;
 
   const linkedHandler = useCallback((node: HTMLSpanElement | null): void => {
