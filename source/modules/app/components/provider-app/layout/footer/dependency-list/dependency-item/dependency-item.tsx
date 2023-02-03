@@ -1,7 +1,6 @@
-import { Flex } from '#/modules/common/components/flex/flex';
-import { Grid } from '#/modules/common/components/grid/grid';
 import { DependencyItemProps } from '@/app/types';
 import { Box } from '@/common/components/box/box';
+import { Flex } from '@/common/components/flex/flex';
 import { MouseEvent, ReactElement, useState } from 'react';
 
 export const DependencyItem = (props: DependencyItemProps): ReactElement => {
@@ -30,24 +29,16 @@ export const DependencyItem = (props: DependencyItemProps): ReactElement => {
     setEntered(false);
   };
 
+  const boxShadow = entered ? '0 0 0.325rem 0 rgb(128 128 128 / 50%)' : '0 0 0 0.075rem rgb(128 128 128 / 25%)';
+
   return (
-    <Box boxShadow={entered ? '0 0 0.325rem 0 rgb(128 128 128 / 50%)' : '0 0 0 0.075rem rgb(128 128 128 / 25%)'} borderRadius='8px' cursor='pointer' p='1' onClick={clickHandler} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
-      <Grid display='grid' gridTemplateColumns='max-content' justifyContent='center'>
-        <Box mx='auto'>
-          <em>
-            {packageName}
-          </em>
-        </Box>
-        <Flex display='flex' justifyContent='center' width='100%'>
-          <span>
-            version:
-          </span>
-          <Box m='0.25rem' />
-          <em>
-            {version.substring(1)}
-          </em>
-        </Flex>
-      </Grid>
+    <Box boxShadow={boxShadow} borderRadius='8px' cursor='pointer' p='1' onClick={clickHandler} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
+      <Flex display='flex' flexDirection='column' alignItems='center'>
+        <em>
+          {packageName}
+        </em>
+        version: {version.substring(1)}
+      </Flex>
     </Box>
   );
 };
