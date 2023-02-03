@@ -22,7 +22,7 @@ export const Header = (): ReactElement => {
   return (
     <Box backgroundColor='white' position='sticky' top='0' left='0' width='100%' boxShadow={boxShadow} zIndex={1}>
       <header>
-        <Flex alignItems='center' display='flex' px='2'>
+        <Flex alignItems='center' display='flex' px='3'>
           <Box cursor='pointer' onClick={clickHandler}>
             <h2>
               Formal Systems
