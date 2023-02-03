@@ -1,4 +1,5 @@
 import { DependencyListProps } from '@/app/types';
+import { Box } from '@/common/components/box/box';
 import { Flex } from '@/common/components/flex/flex';
 import { Grid } from '@/common/components/grid/grid';
 import { ReactElement } from 'react';
@@ -7,18 +8,23 @@ import { DependencyItem } from './dependency-item/dependency-item';
 export const DependencyList = (props: DependencyListProps): ReactElement => {
   const { label, list } = props;
 
+  const packageNames = Object.keys(list);
+
   return (
-    <Grid display='grid' gridGap='0.5rem' gridTemplateColumns='6rem auto' gridTemplateRows='auto' p='1rem'>
-      <Flex display='flex' alignItems='center' justifyContent='center'>
+    <Flex display='flex' p='2' alignItems='center'>
+      <Box width='8rem'>
         {label}
-      </Flex>
-      <Grid display='grid' gridGap='1rem' gridTemplateColumns='repeat(auto-fill, minmax(11rem, 1fr))'>
-        {Object.keys(list).map((key: string): ReactElement => {
+      </Box>
+      <Box mx='1' />
+      <Grid display='grid' gridGap='2' gridTemplateColumns='repeat(auto-fill, minmax(11rem, 1fr))' width='100%'>
+        {packageNames.map((packageName: string): ReactElement => {
+          const version = list[packageName];
+
           return (
-            <DependencyItem key={key} packageName={key} version={list[key]} />
+            <DependencyItem key={packageName} packageName={packageName} version={version} />
           );
         })}
       </Grid>
-    </Grid>
+    </Flex>
   );
 };
