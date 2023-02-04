@@ -3,8 +3,21 @@
 if [ "$1" == "--help" ]; then
   echo "Usage: add-bash-script-file.sh FILENAME"
   echo "  A missing FILENAME has no effect."
-elif ! [ -z "$1" ]; then
+
+  exit
+fi
+
+if ! [ -z "$1" ]; then
   MY_PATH=`dirname "$0"`
-  touch $MY_PATH/$1.sh
-  chmod 755 $MY_PATH/$1.sh
+  FILE=$MY_PATH/$1.sh
+
+  echo "#!/bin/bash" >> $FILE
+  echo "" >> $FILE
+  echo "if [ \"\$1\" == "--help" ]; then" >> $FILE
+  echo "  echo \"Usage: $1.sh\"" >> $FILE
+  echo "" >> $FILE
+  echo "  exit" >> $FILE
+  echo "fi" >> $FILE
+
+  chmod 755 $FILE
 fi
