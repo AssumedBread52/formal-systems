@@ -23,10 +23,8 @@ fi
 
 if [ ! -d "database-files" ]; then
   mkdir database-files
-  mkdir database-files/lib-postgresql-data
-  mkdir database-files/run-postgresql
-elif [ "$1" == "--clean" ]; then
-  rm database-files/lib-postgresql-data/* -r
+elif [ "$1" == "--clean" ] && [ "$(ls -A database-files)" ]; then
+  rm database-files/* -r
 fi
 
 if [ ! -d "source/node_modules" ]; then

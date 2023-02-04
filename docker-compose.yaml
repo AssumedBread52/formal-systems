@@ -6,6 +6,7 @@ services:
     env_file:
       - ./env/development-database.env
     environment:
+      - POSTGRES_DB=${USER_NAME}
       - POSTGRES_USER=${USER_NAME}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
@@ -18,8 +19,7 @@ services:
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - /etc/passwd:/etc/passwd:ro
-      - ./database-files/lib-postgresql-data:/var/lib/postgresql/data:rw
-      - ./database-files/run-postgresql:/var/run/postgresql:rw
+      - ./database-files:/var/lib/postgresql/data:rw
 
   development-application:
     command: npm run dev
