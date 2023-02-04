@@ -4,6 +4,12 @@ services:
     command: npm run dev
     env_file:
       - ./env/development-application.env
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:3000/api/health-check || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+      start_period: 5s
     image: node:18.12.1
     ports:
       - "3000:3000/tcp"
