@@ -11,8 +11,8 @@ if [ "$1" == "--help" ]; then
   exit
 fi
 
-GROUP_ID=$(id -g) USER_ID=$(id -u) USER_NAME=$(whoami) docker-compose down
+GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose down
 
 if [ "$1" == "--clean" ] && [ "$(ls -A database-files)" ]; then
-  rm database-files/* -r
+  rm database-files/..?* database-files/.[!.]* database-files/* -r
 fi

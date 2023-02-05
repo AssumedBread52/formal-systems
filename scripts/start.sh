@@ -16,19 +16,20 @@ fi
 
 if [ ! -d "env" ]; then
   mkdir env
-  touch env/development-application.env
   NEW_PASSWORD=$(openssl rand -base64 32)
-  echo "POSTGRES_PASSWORD=$NEW_PASSWORD" >> env/development-database.env
+  echo "NEXT_TELEMETRY_DISABLED=1" >> env/development-application.env
+  echo "MONGO_INITDB_ROOT_USERNAME=application" >> env/development-database.env
+  echo "MONGO_INITDB_ROOT_PASSWORD=$NEW_PASSWORD" >> env/development-database.env
 fi
 
 if [ ! -d "database-files" ]; then
   mkdir database-files
 elif [ "$1" == "--clean" ] && [ "$(ls -A database-files)" ]; then
-  rm database-files/* -r
+  rm database-files/..?* database-files/.[!.]* database-files/* -r
 fi
 
 if [ ! -d "source/node_modules" ]; then
-  GROUP_ID=$(id -g) USER_ID=$(id -u) USER_NAME=$(whoami) docker-compose run --rm npm install
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm install
 fi
 
-GROUP_ID=$(id -g) USER_ID=$(id -u) USER_NAME=$(whoami) docker-compose up --detach development-application
+GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach development-application
