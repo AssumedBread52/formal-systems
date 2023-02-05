@@ -1,3 +1,5 @@
 export enum StatusCodes {
-  EmptyResponseSuccess = 204
+  EmptyResponseSuccess = 204,
+
+  DatabaseError = 500
 };
