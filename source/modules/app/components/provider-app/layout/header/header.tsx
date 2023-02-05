@@ -22,6 +22,8 @@ export const Header = (): ReactElement => {
 
   const boxShadow = isDocumentScrolled ? '0px 4px 8px 0px rgb(128 128 128 / 25%)' : '0px 1px 2px 0px rgb(128 128 128 / 25%)';
 
+  const isAuthenticated = 'authenticated' === status;
+
   return (
     <Box backgroundColor='white' position='sticky' top='0' left='0' width='100%' boxShadow={boxShadow} zIndex={1}>
       <header>
@@ -36,7 +38,7 @@ export const Header = (): ReactElement => {
             Info
           </Link>
           <Box mx='1' />
-          {'authenticated' === status && (
+          {isAuthenticated && (
             <Link href='/sign-out'>
               Sign Out
             </Link>
@@ -46,7 +48,7 @@ export const Header = (): ReactElement => {
             </Link>
           )}
           <Box mx='1' />
-          {'authenticated' === status && (
+          {isAuthenticated && (
             <Link href='/sign-up'>
               Sign Up
             </Link>
