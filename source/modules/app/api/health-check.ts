@@ -4,7 +4,14 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 export const healthCheck = async (_: NextApiRequest, response: NextApiResponse<void>): Promise<void> => {
   try {
-    const client = await MongoClient.connect(`mongodb://${process.env.MONGO_USERNAME}:${encodeURIComponent(process.env.MONGO_PASSWORD ?? '')}@${process.env.MONGO_HOSTNAME}/formal-systems?authSource=admin`);
+    const username = process.env.MONGO_USERNAME;
+    const password = process.env.MONGO_PASSWORD;
+    const hostname = process.env.MONGO_HOSTNAME;
+    const encodedPassword = encodeURIComponent(password ?? '');
+    const credentials = `${username}:${encodedPassword}`;
+    const connectionString = `mongodb://${credentials}@${hostname}/formal-systems?authSource=admin`;
+
+    const client = await MongoClient.connect(connectionString);
 
     await client.close();
 
