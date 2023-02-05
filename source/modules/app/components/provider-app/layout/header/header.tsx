@@ -1,12 +1,15 @@
 import { useIsDocumentScrolled } from '@/app/hooks';
 import { Box } from '@/common/components/box/box';
 import { Flex } from '@/common/components/flex/flex';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { MouseEvent, ReactElement } from 'react';
 
 export const Header = (): ReactElement => {
   const router = useRouter();
+
+  const { status } = useSession();
 
   const isDocumentScrolled = useIsDocumentScrolled();
 
@@ -33,9 +36,25 @@ export const Header = (): ReactElement => {
             Info
           </Link>
           <Box mx='1' />
-          <a>Link to Sign In/Sign Out</a>
+          {'authenticated' === status && (
+            <Link href='/sign-out'>
+              Sign Out
+            </Link>
+          ) || (
+            <Link href='/sign-in'>
+              Sign In
+            </Link>
+          )}
           <Box mx='1' />
-          <a>Link to Sign Up/Edit Profile</a>
+          {'authenticated' === status && (
+            <Link href='/sign-up'>
+              Sign Up
+            </Link>
+          ) || (
+            <Link href='/edit-profile'>
+              Edit Profile
+            </Link>
+          )}
         </Flex>
       </header>
     </Box>
