@@ -1,4 +1,5 @@
 import { theme } from '@/app/constants';
+import { SessionProvider } from 'next-auth/react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { Fragment, ReactElement } from 'react';
@@ -7,6 +8,7 @@ import { Layout } from './layout/layout';
 
 export const ProviderApp = (props: AppProps): ReactElement => {
   const { Component, pageProps } = props;
+  const { session } = pageProps;
 
   return (
     <Fragment>
@@ -28,11 +30,13 @@ export const ProviderApp = (props: AppProps): ReactElement => {
         <meta name='creator' content='Antonio Sanchez' />
         <meta name='publisher' content='Anotnio Sanchez' />
       </Head>
-      <ThemeProvider theme={theme}>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </ThemeProvider>
+      <SessionProvider session={session}>
+        <ThemeProvider theme={theme}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </ThemeProvider>
+      </SessionProvider>
     </Fragment>
   );
 };
