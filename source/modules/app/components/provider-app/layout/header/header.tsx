@@ -49,12 +49,12 @@ export const Header = (): ReactElement => {
           )}
           <Box mx='1' />
           {isAuthenticated && (
-            <Link href='/sign-up'>
-              Sign Up
-            </Link>
-          ) || (
             <Link href='/edit-profile'>
               Edit Profile
+            </Link>
+          ) || (
+            <Link href='/sign-up'>
+              Sign Up
             </Link>
           )}
         </Flex>
