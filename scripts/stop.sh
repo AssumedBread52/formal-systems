@@ -14,5 +14,5 @@ fi
 GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose down
 
 if [ "$1" == "--clean" ] && [ "$(ls -A database-files)" ]; then
-  rm database-files/..?* database-files/.[!.]* database-files/* -r
+  rm database-files/.[!.]* database-files/* -r
 fi

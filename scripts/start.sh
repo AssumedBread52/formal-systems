@@ -18,6 +18,9 @@ if [ ! -d "env" ]; then
   mkdir env
   NEW_PASSWORD=$(openssl rand -base64 32)
   echo "NEXT_TELEMETRY_DISABLED=1" >> env/development-application.env
+  echo "MONGO_USERNAME=application" >> env/development-application.env
+  echo "MONGO_PASSWORD=$NEW_PASSWORD" >> env/development-application.env
+  echo "MONGO_HOSTNAME=development-database" >> env/development-application.env
   echo "MONGO_INITDB_ROOT_USERNAME=application" >> env/development-database.env
   echo "MONGO_INITDB_ROOT_PASSWORD=$NEW_PASSWORD" >> env/development-database.env
 fi
@@ -25,7 +28,7 @@ fi
 if [ ! -d "database-files" ]; then
   mkdir database-files
 elif [ "$1" == "--clean" ] && [ "$(ls -A database-files)" ]; then
-  rm database-files/..?* database-files/.[!.]* database-files/* -r
+  rm database-files/.[!.]* database-files/* -r
 fi
 
 if [ ! -d "source/node_modules" ]; then
