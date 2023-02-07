@@ -3,14 +3,17 @@ import { Flex } from '@/common/components/flex/flex';
 import { Input } from '@/common/components/input/input';
 import { Typography } from '@/common/components/typography/typography';
 import { hasText } from '@/common/helpers';
+import { isEmail } from '@/user/helpers';
 import { FocusEvent, FormEvent, ReactElement, useState } from 'react';
 
 export const signUpPage = (): ReactElement => {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
 
   const [firstNameTouched, setFirstNameTouched] = useState<boolean>(false);
   const [lastNameTouched, setLastNameTouched] = useState<boolean>(false);
+  const [emailTouched, setEmailTouched] = useState<boolean>(false);
 
   const firstNameBlurHandler = (event: FocusEvent<HTMLInputElement>): void => {
     event.preventDefault();
@@ -23,6 +26,12 @@ export const signUpPage = (): ReactElement => {
     event.stopPropagation();
 
     setLastNameTouched(true);
+  };
+  const emailBlurHandler = (event: FocusEvent<HTMLInputElement>): void => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setEmailTouched(true);
   };
 
   const firstNameInputHandler = (event: FormEvent<HTMLInputElement>): void => {
@@ -37,12 +46,20 @@ export const signUpPage = (): ReactElement => {
 
     setLastName(event.currentTarget.value);
   };
+  const emailInputHandler = (event: FormEvent<HTMLInputElement>): void => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setEmail(event.currentTarget.value);
+  };
 
   const firstNameHasError = !hasText(firstName);
   const lastNameHasError = !hasText(lastName);
+  const emailHasError = !isEmail(email);
 
   const firstNameShowError = firstNameTouched && firstNameHasError;
   const lastNameShowError = lastNameTouched && lastNameHasError;
+  const emailShowError = emailTouched && emailHasError;
 
   const submitHandler = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -85,6 +102,19 @@ export const signUpPage = (): ReactElement => {
             </Flex>
             <Typography as='p' color='red' fontSize='0.75rem' height='1rem' width='100%' m='0'>
               {lastNameShowError && 'Please enter your last name.'}
+            </Typography>
+          </Flex>
+          <Flex display='flex' flexWrap='wrap' justifyContent='space-between'>
+            <Flex flexBasis='25%'>
+              <label htmlFor='email-address'>
+                Email Address
+              </label>
+            </Flex>
+            <Flex flexBasis='65%'>
+              <Input id='email-address' type='text' width='100%' value={email} onBlur={emailBlurHandler} onInput={emailInputHandler} />
+            </Flex>
+            <Typography as='p' color='red' fontSize='0.75rem' height='1rem' width='100%' m='0'>
+              {emailShowError && 'Please enter your email address.'}
             </Typography>
           </Flex>
         </form>
