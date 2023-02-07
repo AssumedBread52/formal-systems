@@ -10,10 +10,12 @@ export const signUpPage = (): ReactElement => {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');  
 
   const [firstNameTouched, setFirstNameTouched] = useState<boolean>(false);
   const [lastNameTouched, setLastNameTouched] = useState<boolean>(false);
   const [emailTouched, setEmailTouched] = useState<boolean>(false);
+  const [passwordTouched, setPasswordTouched] = useState<boolean>(false);  
 
   const firstNameBlurHandler = (event: FocusEvent<HTMLInputElement>): void => {
     event.preventDefault();
@@ -32,6 +34,12 @@ export const signUpPage = (): ReactElement => {
     event.stopPropagation();
 
     setEmailTouched(true);
+  };
+  const passwordBlurHandler = (event: FocusEvent<HTMLInputElement>): void => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setPasswordTouched(true);
   };
 
   const firstNameInputHandler = (event: FormEvent<HTMLInputElement>): void => {
@@ -52,14 +60,22 @@ export const signUpPage = (): ReactElement => {
 
     setEmail(event.currentTarget.value);
   };
+  const passwordInputHandler = (event: FormEvent<HTMLInputElement>): void => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setPassword(event.currentTarget.value);
+  };
 
   const firstNameHasError = !hasText(firstName);
   const lastNameHasError = !hasText(lastName);
   const emailHasError = !isEmail(email);
+  const passwordHasError = !hasText(password);
 
   const firstNameShowError = firstNameTouched && firstNameHasError;
   const lastNameShowError = lastNameTouched && lastNameHasError;
   const emailShowError = emailTouched && emailHasError;
+  const passwordShowError = passwordTouched && passwordHasError;  
 
   const submitHandler = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -111,10 +127,23 @@ export const signUpPage = (): ReactElement => {
               </label>
             </Flex>
             <Flex flexBasis='65%'>
-              <Input id='email-address' type='text' width='100%' value={email} onBlur={emailBlurHandler} onInput={emailInputHandler} />
+              <Input id='email-address' type='email' width='100%' value={email} onBlur={emailBlurHandler} onInput={emailInputHandler} />
             </Flex>
             <Typography as='p' color='red' fontSize='0.75rem' height='1rem' width='100%' m='0'>
               {emailShowError && 'Please enter your email address.'}
+            </Typography>
+          </Flex>
+          <Flex display='flex' flexWrap='wrap' justifyContent='space-between'>
+            <Flex flexBasis='25%'>
+              <label htmlFor='password'>
+                Password
+              </label>
+            </Flex>
+            <Flex flexBasis='65%'>
+              <Input id='password' type='password' width='100%' value={password} onBlur={passwordBlurHandler} onInput={passwordInputHandler} />
+            </Flex>
+            <Typography as='p' color='red' fontSize='0.75rem' height='1rem' width='100%' m='0'>
+              {passwordShowError && 'Please enter a password.'}
             </Typography>
           </Flex>
         </form>
