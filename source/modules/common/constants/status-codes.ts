@@ -5,5 +5,6 @@ export enum StatusCodes {
   CollisionError = 422,
   ValidationFailed = 422,
 
-  DatabaseError = 500
+  DatabaseError = 500,
+  ServerError = 500
 };
