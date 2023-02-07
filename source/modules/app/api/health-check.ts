@@ -1,4 +1,4 @@
-import { StatusCodes } from '@/app/constants';
+import { StatusCodes } from '@/common/constants';
 import { buildMongoUrl } from '@/common/helpers';
 import { MongoClient } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
