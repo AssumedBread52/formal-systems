@@ -1,6 +1,4 @@
-import { MongoClient } from 'mongodb';
-
-export const getMongoClient = async (): Promise<MongoClient> => {
+export const buildMongoUrl = (): string => {
   const username = process.env.MONGO_USERNAME;
   const password = process.env.MONGO_PASSWORD;
   const hostname = process.env.MONGO_HOSTNAME;
@@ -9,7 +7,5 @@ export const getMongoClient = async (): Promise<MongoClient> => {
 
   const credentials = `${username}:${encodedPassword}`;
 
-  const connectionString = `mongodb://${credentials}@${hostname}/formal-systems?authSource=admin`;
-
-  return await MongoClient.connect(connectionString);
+  return `mongodb://${credentials}@${hostname}/formal-systems?authSource=admin`;
 };

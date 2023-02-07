@@ -1,1 +1,1 @@
-export { getMongoClient } from './get-mongo-client';
+export { buildMongoUrl } from './build-mongo-url';

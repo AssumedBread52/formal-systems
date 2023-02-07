@@ -1,7 +1,8 @@
 import { CredentialsInput, CredentialsPayload } from '@/auth/types';
-import { getMongoClient } from '@/common/helpers';
+import { buildMongoUrl } from '@/common/helpers';
 import { ServerUser } from '@/user/types';
 import { compare } from 'bcryptjs';
+import { MongoClient } from 'mongodb';
 import { Account, Profile, Session, User } from 'next-auth';
 import { AdapterUser } from 'next-auth/adapters';
 import { JWT } from 'next-auth/jwt';
@@ -58,7 +59,7 @@ export const authConfiguration = NextAuth({
 
           const { email, password } = credentials;
 
-          const client = await getMongoClient();
+          const client = await MongoClient.connect(buildMongoUrl());
 
           const usersCollection = client.db().collection<ServerUser>('users');
 
