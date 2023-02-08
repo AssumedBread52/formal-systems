@@ -106,7 +106,7 @@ export const SignUpPage = (): ReactElement => {
         password
       });
     }
-  }, [isSuccessSignUp, email, password]);
+  }, [isSuccessSignUp, email, password, signInUser]);
 
   useEffect((): void => {
     if (isSuccessSignIn) {
