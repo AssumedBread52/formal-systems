@@ -11,7 +11,7 @@ import { useSignUpUserMutation } from '@/user/hooks';
 import { useRouter } from 'next/router';
 import { FocusEvent, FormEvent, ReactElement, useEffect, useState } from 'react';
 
-export const signUpPage = (): ReactElement => {
+export const SignUpPage = (): ReactElement => {
   const router = useRouter();
 
   const [signInUser, { isError: isErrorSignIn, isSuccess: isSuccessSignIn }] = useSignInUserMutation();
