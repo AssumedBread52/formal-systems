@@ -5,15 +5,16 @@ import { Input } from '@/common/components/input/input';
 import { LoadingSpinner } from '@/common/components/loading-spinner/loading-spinner';
 import { Typography } from '@/common/components/typography/typography';
 import { hasText } from '@/common/helpers';
+import { useInputValue } from '@/common/hooks';
 import { isEmail } from '@/user/helpers';
 import { useSignUpUser } from '@/user/hooks';
 import { FocusEvent, FormEvent, ReactElement, useState } from 'react';
 
 export const SignUpPage = (): ReactElement => {
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');  
+  const [firstName, firstNameHasError, setFirstName] = useInputValue(hasText);
+  const [lastName, lastNameHasError, setLastName] = useInputValue(hasText);
+  const [email, emailHasError, setEmail] = useInputValue(isEmail);
+  const [password, passwordHasError, setPassword] = useInputValue(hasText);
 
   const { signUpUser, errorMessage, isLoading } = useSignUpUser(email, password);
 
@@ -71,11 +72,6 @@ export const SignUpPage = (): ReactElement => {
 
     setPassword(event.currentTarget.value);
   };
-
-  const firstNameHasError = !hasText(firstName);
-  const lastNameHasError = !hasText(lastName);
-  const emailHasError = !isEmail(email);
-  const passwordHasError = !hasText(password);
 
   const firstNameShowError = firstNameTouched && firstNameHasError;
   const lastNameShowError = lastNameTouched && lastNameHasError;
