@@ -1,12 +1,16 @@
 import { Box } from '@/common/components/box/box';
+import { Button } from '@/common/components/button/button';
 import { Flex } from '@/common/components/flex/flex';
 import { Input } from '@/common/components/input/input';
 import { Typography } from '@/common/components/typography/typography';
 import { hasText } from '@/common/helpers';
 import { isEmail } from '@/user/helpers';
+import { useSignUpUserMutation } from '@/user/hooks';
 import { FocusEvent, FormEvent, ReactElement, useState } from 'react';
 
 export const signUpPage = (): ReactElement => {
+  const [signUpUser, { isError }] = useSignUpUserMutation();
+
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -81,9 +85,11 @@ export const signUpPage = (): ReactElement => {
     event.preventDefault();
     event.stopPropagation();
 
-    console.log('sign-up-payload', {
+    signUpUser({
       firstName,
-      lastName
+      lastName,
+      email,
+      password
     });
   };
 
@@ -144,6 +150,14 @@ export const signUpPage = (): ReactElement => {
             </Flex>
             <Typography as='p' color='red' fontSize='0.75rem' height='1rem' width='100%' m='0'>
               {passwordShowError && 'Please enter a password.'}
+            </Typography>
+          </Flex>
+          <Flex display='flex' flexDirection='column' alignItems='center'>
+            <Button disabled={firstNameHasError || lastNameHasError || emailHasError || passwordHasError} fontSize='1rem' px='4rem' py='0.5rem' type='submit'>
+              Sign Up
+            </Button>
+            <Typography as='p' color='red' height='1rem'>
+              {isError && 'Signing up failed.'}
             </Typography>
           </Flex>
         </form>
