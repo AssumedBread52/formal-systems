@@ -9,7 +9,7 @@ export const Statements = (): ReactElement => {
       </h3>
       <p>
         <RenderMath inline>
-          We denote by $$DV$$ the set of distinct vairables, or all unordered pairs $$\{'{'}\alpha,\beta\{'}'}\subseteq VR$$
+          We denote by $$DV$$ the set of distinct variables, or all unordered pairs $$\{'{'}\alpha,\beta\{'}'}\subseteq VR$$
           such that $$\alpha\neq\beta$$.
         </RenderMath>
         <br />
