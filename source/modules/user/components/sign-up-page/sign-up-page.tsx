@@ -2,6 +2,7 @@ import { Box } from '@/common/components/box/box';
 import { Button } from '@/common/components/button/button';
 import { Flex } from '@/common/components/flex/flex';
 import { Input } from '@/common/components/input/input';
+import { LoadingSpinner } from '@/common/components/loading-spinner/loading-spinner';
 import { Typography } from '@/common/components/typography/typography';
 import { hasText } from '@/common/helpers';
 import { isEmail } from '@/user/helpers';
@@ -9,7 +10,7 @@ import { useSignUpUserMutation } from '@/user/hooks';
 import { FocusEvent, FormEvent, ReactElement, useState } from 'react';
 
 export const signUpPage = (): ReactElement => {
-  const [signUpUser, { isError }] = useSignUpUserMutation();
+  const [signUpUser, { isError, isLoading }] = useSignUpUserMutation();
 
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
@@ -161,6 +162,11 @@ export const signUpPage = (): ReactElement => {
             </Typography>
           </Flex>
         </form>
+        <Box height='4rem'>
+          {isLoading && (
+            <LoadingSpinner />
+          )}
+        </Box>
       </section>
     </Box>
   );
