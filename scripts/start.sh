@@ -16,13 +16,17 @@ fi
 
 if [ ! -d "env" ]; then
   mkdir env
-  NEW_PASSWORD=$(openssl rand -base64 32)
+  MONGO_USERNAME="application"
+  MONGO_PASSWORD=$(openssl rand -base64 32)
+  NEXTAUTH_SECRET=$(openssl rand -base64 32)
   echo "NEXT_TELEMETRY_DISABLED=1" >> env/development-application.env
-  echo "MONGO_USERNAME=application" >> env/development-application.env
-  echo "MONGO_PASSWORD=$NEW_PASSWORD" >> env/development-application.env
+  echo "NEXTAUTH_URL=localhost" >> env/development-application.env
+  echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> env/development-application.env
+  echo "MONGO_USERNAME=$MONGO_USERNAME" >> env/development-application.env
+  echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> env/development-application.env
   echo "MONGO_HOSTNAME=development-database" >> env/development-application.env
-  echo "MONGO_INITDB_ROOT_USERNAME=application" >> env/development-database.env
-  echo "MONGO_INITDB_ROOT_PASSWORD=$NEW_PASSWORD" >> env/development-database.env
+  echo "MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME" >> env/development-database.env
+  echo "MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD" >> env/development-database.env
 fi
 
 if [ ! -d "database-files" ]; then
