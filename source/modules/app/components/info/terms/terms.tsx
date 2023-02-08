@@ -24,8 +24,8 @@ export const Terms = (): ReactElement => {
         <RenderMath>
           EX=\bigcup_{'{'}n\in\omega{'}'}{'{'}^n{'}'}SM
         </RenderMath>
-        A constant-prefixed expression is an expression of non-zero length whose first term is a constant. We denote the set of
-        all constant-prefixed expressions by
+        A constant-prefixed expression is an expression of non-zero length whose first term is a constant symbol. We denote the
+        set of all constant-prefixed expressions by
         <RenderMath>
           EX_C=\{'{'}e\in EX:\vert e\vert\gt0\land e_0\in CN\{'}'}
         </RenderMath>
@@ -35,7 +35,7 @@ export const Terms = (): ReactElement => {
           EX_2=\{'{'}e\in EX_C:\vert e\vert=2\land e_1\in VR\{'}'}
         </RenderMath>
         <RenderMath inline>
-          We denote by $$\mathcal{'{'}V{'}'}(e)$$ the set of all variables in a given expression.
+          We denote by $$\mathcal{'{'}V{'}'}(e)$$ the set of all variable symbols in a given expression.
         </RenderMath>
         <RenderMath>
           \mathcal{'{'}V{'}'}(e)=\{'{'}\alpha\in VR:\exists n(\alpha=e_n)\{'}'}
