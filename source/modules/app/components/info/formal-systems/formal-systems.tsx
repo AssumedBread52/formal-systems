@@ -22,10 +22,10 @@ export const FormalSystems = (): ReactElement => {
         <RenderMath>
           \begin{'{'}split{'}'}
           1.&T\cup H\subseteq C;~\text{'{'}and{'}'}\\
-          2.&\text{'{'}If for some axiomatic statement{'}'}~\langle D_M',T_M',H',A'\rangle\in\Gamma~\text{'{'}and for some substitution{'}'}~\sigma~\text{'{'}we have{'}'}\\
-          &a.~\sigma(T_M'\cup H')\subseteq C;~\text{'{'}and{'}'}\\
-          &b.~\text{'{'}for all{'}'}~\{'{'}\alpha,\beta\{'}'}\in D_M',~\text{'{'}for all{'}'}~\gamma\in\mathcal{'{'}V{'}'}(\sigma(\langle\alpha\rangle)),~\text{'{'}and for all{'}'}~\delta\in\mathcal{'{'}V{'}'}(\sigma(\langle\beta\rangle)),~\text{'{'}we have{'}'}~\{'{'}\gamma,\delta\{'}'}\in D;\\
-          &\text{'{'}then{'}'}~\sigma(A')\in C.
+          {'2.&\\text{If for some axiomatic statement}~\\langle D_M\',T_M\',H\',A\'\\rangle\\in\\Gamma~\\text{and for some substitution}~\\sigma~\\text{we have}\\\\'}
+          {'&a.~\\sigma(T_M\'\\cup H\')\\subseteq C;~\\text{and}\\\\'}
+          {'&b.~\\text{for all}~\\{\\alpha,\\beta\\}\\in D_M\',~\\text{for all}~\\gamma\\in\\mathcal{V}(\\sigma(\\langle\\alpha\\rangle)),~\\text{and for all}~\\delta\\in\\mathcal{V}(\\sigma(\\langle\\beta\\rangle)),~\\text{we have}~\\{\\gamma,\\delta\\}\\in D;\\\\'}
+          {'&\\text{then}~\\sigma(A\')\\in C.'}
           \end{'{'}split{'}'}
         </RenderMath>
         <br />
