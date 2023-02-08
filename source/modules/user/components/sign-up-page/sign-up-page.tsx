@@ -1,3 +1,4 @@
+import { useSignInUserMutation } from '@/auth/hooks';
 import { Box } from '@/common/components/box/box';
 import { Button } from '@/common/components/button/button';
 import { Flex } from '@/common/components/flex/flex';
@@ -7,10 +8,14 @@ import { Typography } from '@/common/components/typography/typography';
 import { hasText } from '@/common/helpers';
 import { isEmail } from '@/user/helpers';
 import { useSignUpUserMutation } from '@/user/hooks';
-import { FocusEvent, FormEvent, ReactElement, useState } from 'react';
+import { useRouter } from 'next/router';
+import { FocusEvent, FormEvent, ReactElement, useEffect, useState } from 'react';
 
 export const signUpPage = (): ReactElement => {
-  const [signUpUser, { isError, isLoading }] = useSignUpUserMutation();
+  const router = useRouter();
+
+  const [signInUser, { isError: isErrorSignIn, isSuccess: isSuccessSignIn }] = useSignInUserMutation();
+  const [signUpUser, { isError: isErrorSignUp, isLoading: isLoadingSignUp, isSuccess: isSuccessSignUp }] = useSignUpUserMutation();
 
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
@@ -94,6 +99,21 @@ export const signUpPage = (): ReactElement => {
     });
   };
 
+  useEffect((): void => {
+    if (isSuccessSignUp) {
+      signInUser({
+        email,
+        password
+      });
+    }
+  }, [isSuccessSignUp, email, password]);
+
+  useEffect((): void => {
+    if (isSuccessSignIn) {
+      router.back();
+    }
+  }, [router, isSuccessSignIn]);
+
   return (
     <Box mx='auto' width='32rem'>
       <section>
@@ -158,12 +178,13 @@ export const signUpPage = (): ReactElement => {
               Sign Up
             </Button>
             <Typography as='p' color='red' height='1rem'>
-              {isError && 'Signing up failed.'}
+              {isErrorSignIn && 'Signing in failed.'}
+              {isErrorSignUp && 'Signing up failed.'}
             </Typography>
           </Flex>
         </form>
         <Box height='4rem'>
-          {isLoading && (
+          {(isLoadingSignUp || (isSuccessSignUp && !isErrorSignIn)) && (
             <LoadingSpinner />
           )}
         </Box>
