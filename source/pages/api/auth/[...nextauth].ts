@@ -1,1 +1,1 @@
-export { authConfiguration as default } from '@/auth/api';
+export { authHandlers as default } from '@/auth/api';

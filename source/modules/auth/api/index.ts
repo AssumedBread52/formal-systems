@@ -1,1 +1,1 @@
-export { authConfiguration } from './auth-configuration';
+export { authHandlers } from './auth-handlers';

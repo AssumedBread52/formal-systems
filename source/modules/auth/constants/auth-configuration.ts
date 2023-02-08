@@ -3,17 +3,16 @@ import { buildMongoUrl } from '@/common/helpers';
 import { ServerUser } from '@/user/types';
 import { compare } from 'bcryptjs';
 import { MongoClient } from 'mongodb';
-import { Account, Profile, Session, User } from 'next-auth';
+import { Account, Profile, Session, SessionStrategy, User } from 'next-auth';
 import { AdapterUser } from 'next-auth/adapters';
 import { JWT } from 'next-auth/jwt';
-import NextAuth from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
 
-export const authConfiguration = NextAuth({
+export const authConfiguration = {
   callbacks: {
     jwt: async (params: {
       token: JWT;
-      user?: User | AdapterUser;
+      user?: AdapterUser | User;
       account?: Account | null;
       profile?: Profile;
       isNewUser?: boolean;
@@ -28,7 +27,7 @@ export const authConfiguration = NextAuth({
     },
     session: async (params: {
       session: Session;
-      user: User | AdapterUser;
+      user: AdapterUser | User;
       token: JWT;
     }): Promise<Session> => {
       const { session, token } = params;
@@ -63,7 +62,9 @@ export const authConfiguration = NextAuth({
 
           const usersCollection = client.db().collection<ServerUser>('users');
 
-          const user = await usersCollection.findOne({ email });
+          const user = await usersCollection.findOne({
+            email
+          });
 
           await client.close();
 
@@ -79,15 +80,16 @@ export const authConfiguration = NextAuth({
             return null;
           }
 
-          return { id: _id.toString() };
+          return {
+            id: _id.toString()
+          };
         } catch {
           return null;
         }
       }
     })
   ],
-  secret: 'lVDxQVEuB70xx0G4KVktCoNVrjSMjD95FKNa3p+c/Fc=',
   session: {
-    strategy: 'jwt'
+    strategy: 'jwt' as SessionStrategy
   }
-});
+};
