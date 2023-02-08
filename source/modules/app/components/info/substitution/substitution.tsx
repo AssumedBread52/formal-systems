@@ -14,9 +14,9 @@ export const Substitution = (): ReactElement => {
         </RenderMath>
         <RenderMath>
           \begin{'{'}aligned{'}'}
-          \sigma(\langle\alpha\rangle)=&F(\alpha)&\text{'{'}for{'}'}~\alpha\in VR;\\
-          \sigma(\langle\alpha\rangle)=&\langle\alpha\rangle&\text{'{'}for{'}'}~\alpha\notin VR;\\
-          \sigma(g\frown h)=&\sigma(g)\frown\sigma(h)&\text{'{'}for{'}'}~g,h\in EX.
+          \sigma(\langle\alpha\rangle)=&F(\alpha)&\text{'{'}for{'}'}~\alpha\in VR\\
+          \sigma(\langle\alpha\rangle)=&\langle\alpha\rangle&\text{'{'}for{'}'}~\alpha\notin VR\\
+          \sigma(g\frown h)=&\sigma(g)\frown\sigma(h)&\text{'{'}for{'}'}~g,h\in EX
           \end{'{'}aligned{'}'}
         </RenderMath>
         <RenderMath inline>
