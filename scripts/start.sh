@@ -20,7 +20,7 @@ if [ ! -d "env" ]; then
   MONGO_PASSWORD=$(openssl rand -base64 32)
   NEXTAUTH_SECRET=$(openssl rand -base64 32)
   echo "NEXT_TELEMETRY_DISABLED=1" >> env/development-application.env
-  echo "NEXTAUTH_URL=localhost" >> env/development-application.env
+  echo "NEXTAUTH_URL=localhost:3000" >> env/development-application.env
   echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> env/development-application.env
   echo "MONGO_USERNAME=$MONGO_USERNAME" >> env/development-application.env
   echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> env/development-application.env
