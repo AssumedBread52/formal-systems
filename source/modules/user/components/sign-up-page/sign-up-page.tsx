@@ -21,7 +21,7 @@ export const SignUpPage = (): ReactElement => {
   const [firstNameTouched, setFirstNameTouched] = useState<boolean>(false);
   const [lastNameTouched, setLastNameTouched] = useState<boolean>(false);
   const [emailTouched, setEmailTouched] = useState<boolean>(false);
-  const [passwordTouched, setPasswordTouched] = useState<boolean>(false);  
+  const [passwordTouched, setPasswordTouched] = useState<boolean>(false);
 
   const firstNameBlurHandler = (event: FocusEvent<HTMLInputElement>): void => {
     event.preventDefault();
@@ -76,7 +76,7 @@ export const SignUpPage = (): ReactElement => {
   const firstNameShowError = firstNameTouched && firstNameHasError;
   const lastNameShowError = lastNameTouched && lastNameHasError;
   const emailShowError = emailTouched && emailHasError;
-  const passwordShowError = passwordTouched && passwordHasError;  
+  const passwordShowError = passwordTouched && passwordHasError;
 
   const submitHandler = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
