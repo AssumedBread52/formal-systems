@@ -1,3 +1,4 @@
+import { Flex } from '@/common/components/flex/flex';
 import { Fragment, PropsWithChildren, ReactElement } from 'react';
 import { Footer } from './footer/footer';
 import { GlobalStyle } from './global-style/global-style';
@@ -10,10 +11,12 @@ export const Layout = (props: PropsWithChildren<{}>): ReactElement => {
     <Fragment>
       <GlobalStyle />
       <Header />
-      <main>
-        {children}
-      </main>
-      <Footer />
+      <Flex display='flex' flexDirection='column' justifyContent='space-between' minHeight='calc(100vh - 4rem)'>
+        <main>
+          {children}
+        </main>
+        <Footer />
+      </Flex>
     </Fragment>
   );
 };

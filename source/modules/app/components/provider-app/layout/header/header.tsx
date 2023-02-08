@@ -1,6 +1,7 @@
 import { useIsDocumentScrolled } from '@/app/hooks';
 import { Box } from '@/common/components/box/box';
 import { Flex } from '@/common/components/flex/flex';
+import { Typography } from '@/common/components/typography/typography';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -27,11 +28,11 @@ export const Header = (): ReactElement => {
   return (
     <Box backgroundColor='white' position='sticky' top='0' left='0' width='100%' boxShadow={boxShadow} zIndex={1}>
       <header>
-        <Flex alignItems='center' display='flex' px='3'>
+        <Flex alignItems='center' display='flex' px='3' height='4rem'>
           <Box cursor='pointer' onClick={clickHandler}>
-            <h2>
+            <Typography as='h2' my='1rem'>
               Formal Systems
-            </h2>
+            </Typography>
           </Box>
           <Box mx='auto' />
           <Link href='/info'>
