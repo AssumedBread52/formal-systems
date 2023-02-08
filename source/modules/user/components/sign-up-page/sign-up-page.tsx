@@ -1,4 +1,3 @@
-import { useSignInUserMutation } from '@/auth/hooks';
 import { Box } from '@/common/components/box/box';
 import { Button } from '@/common/components/button/button';
 import { Flex } from '@/common/components/flex/flex';
@@ -7,20 +6,16 @@ import { LoadingSpinner } from '@/common/components/loading-spinner/loading-spin
 import { Typography } from '@/common/components/typography/typography';
 import { hasText } from '@/common/helpers';
 import { isEmail } from '@/user/helpers';
-import { useSignUpUserMutation } from '@/user/hooks';
-import { useRouter } from 'next/router';
-import { FocusEvent, FormEvent, ReactElement, useEffect, useState } from 'react';
+import { useSignUpUser } from '@/user/hooks';
+import { FocusEvent, FormEvent, ReactElement, useState } from 'react';
 
 export const SignUpPage = (): ReactElement => {
-  const router = useRouter();
-
-  const [signInUser, { isError: isErrorSignIn, isSuccess: isSuccessSignIn }] = useSignInUserMutation();
-  const [signUpUser, { isError: isErrorSignUp, isLoading: isLoadingSignUp, isSuccess: isSuccessSignUp }] = useSignUpUserMutation();
-
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');  
+
+  const { signUpUser, errorMessage, isLoading } = useSignUpUser(email, password);
 
   const [firstNameTouched, setFirstNameTouched] = useState<boolean>(false);
   const [lastNameTouched, setLastNameTouched] = useState<boolean>(false);
@@ -99,21 +94,6 @@ export const SignUpPage = (): ReactElement => {
     });
   };
 
-  useEffect((): void => {
-    if (isSuccessSignUp) {
-      signInUser({
-        email,
-        password
-      });
-    }
-  }, [isSuccessSignUp, email, password, signInUser]);
-
-  useEffect((): void => {
-    if (isSuccessSignIn) {
-      router.back();
-    }
-  }, [router, isSuccessSignIn]);
-
   return (
     <Box mx='auto' width='32rem'>
       <section>
@@ -178,13 +158,12 @@ export const SignUpPage = (): ReactElement => {
               Sign Up
             </Button>
             <Typography as='p' color='red' height='1rem'>
-              {isErrorSignIn && 'Signing in failed.'}
-              {isErrorSignUp && 'Signing up failed.'}
+              {errorMessage}
             </Typography>
           </Flex>
         </form>
         <Box height='4rem'>
-          {(isLoadingSignUp || (isSuccessSignUp && !isErrorSignIn)) && (
+          {isLoading && (
             <LoadingSpinner />
           )}
         </Box>
