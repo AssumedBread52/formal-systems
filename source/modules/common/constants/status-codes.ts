@@ -2,6 +2,7 @@ export enum StatusCodes {
   EmptyResponseSuccess = 204,
 
   Unauthorized = 403,
+  NotFound = 404,
   IncorrectMethodType = 405,
   CollisionError = 422,
   ValidationFailed = 422,
