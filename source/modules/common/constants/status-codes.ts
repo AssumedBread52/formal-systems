@@ -1,4 +1,5 @@
 export enum StatusCodes {
+  Success = 200,
   EmptyResponseSuccess = 204,
 
   Unauthorized = 403,
