@@ -1,25 +1,23 @@
 import { authConfiguration } from '@/auth/constants';
-import { StatusCodes } from '@/common/constants';
-import { buildMongoUrl, sendMethodTypeErrorResponse, sendNotFoundErrorResponse, sendServerErrorResponse, sendUnauthorizedErrorResponse } from '@/common/helpers';
-import { ErrorResponse } from '@/common/types';
-import { UserResourceTypes, UserServerTasks } from '@/user/constants';
+import { buildMongoUrl } from '@/common/helpers';
 import { ServerUser, SessionUser } from '@/user/types';
 import { MongoClient, ObjectId } from 'mongodb';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { getServerSession } from 'next-auth';
 
-export const readSessionUser = async (request: NextApiRequest, response: NextApiResponse<ErrorResponse | SessionUser>): Promise<void> => {
+export const readSessionUser = async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<SessionUser>> => {
   try {
-    const { method } = request;
+    const { req, res } = context;
 
-    if ('GET' !== method) {
-      return sendMethodTypeErrorResponse(response);
-    }
-
-    const session = await getServerSession(request, response, authConfiguration);
+    const session = await getServerSession(req, res, authConfiguration);
 
     if (!session) {
-      return sendUnauthorizedErrorResponse(response);
+      return {
+        redirect: {
+          destination: '/sign-up',
+          permanent: false
+        }
+      };
     }
 
     const { id } = session;
@@ -33,19 +31,31 @@ export const readSessionUser = async (request: NextApiRequest, response: NextApi
     });
 
     await client.close();
-    
+
     if (!sessionUser) {
-      return sendNotFoundErrorResponse(response, UserResourceTypes.SessionUser);
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false
+        }
+      };
     }
 
     const { firstName, lastName, email } = sessionUser;
 
-    return response.status(StatusCodes.Success).json({
-      firstName,
-      lastName,
-      email
-    });
+    return {
+      props: {
+        firstName,
+        lastName,
+        email
+      }
+    };
   } catch {
-    return sendServerErrorResponse(response, UserServerTasks.ReadSessionUser);
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    };
   }
 };
