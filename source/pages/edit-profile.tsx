@@ -1,5 +1,5 @@
-import { authConfiguration } from '#/modules/auth/constants';
-import { buildMongoUrl } from '#/modules/common/helpers';
+import { authConfiguration } from '@/auth/constants';
+import { buildMongoUrl } from '@/common/helpers';
 import { ServerUser, SessionUser } from '@/user/types';
 import { MongoClient, ObjectId } from 'mongodb';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
