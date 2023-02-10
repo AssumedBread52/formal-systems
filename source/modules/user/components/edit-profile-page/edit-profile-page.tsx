@@ -7,28 +7,19 @@ import { Typography } from '@/common/components/typography/typography';
 import { hasText } from '@/common/helpers';
 import { useInputValue } from '@/common/hooks';
 import { isEmail } from '@/user/helpers';
-import { useEditUserMutation } from '@/user/hooks';
+import { useEditUser } from '@/user/hooks';
 import { SessionUser } from '@/user/types';
-import { useRouter } from 'next/router';
-import { FormEvent, ReactElement, useEffect } from 'react';
+import { FormEvent, ReactElement } from 'react';
 
 export const EditProfilePage = (props: SessionUser): ReactElement => {
   const { firstName, lastName, email } = props;
-
-  const router = useRouter();
 
   const [newFirstName, firstNameHasError, setFirstName] = useInputValue(hasText, firstName);
   const [newLastName, lastNameHasError, setLastName] = useInputValue(hasText, lastName);
   const [newEmail, emailHasError, setEmail] = useInputValue(isEmail, email);
   const [newPassword, passwordHasError, setPassword] = useInputValue(hasText);
 
-  const [editUser, { isError, isLoading, isSuccess }] = useEditUserMutation();
-
-  useEffect((): void => {
-    if (isSuccess) {
-      router.back();
-    }
-  }, [isSuccess, router]);
+  const [editUser, isError, isLoading] = useEditUser();
 
   const submitHandler = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
