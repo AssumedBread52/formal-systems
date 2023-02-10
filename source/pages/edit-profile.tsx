@@ -1,1 +1,63 @@
+import { authConfiguration } from '#/modules/auth/constants';
+import { buildMongoUrl } from '#/modules/common/helpers';
+import { ServerUser, SessionUser } from '@/user/types';
+import { MongoClient, ObjectId } from 'mongodb';
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import { getServerSession } from 'next-auth';
+
 export { EditProfilePage as default } from '@/user/components/edit-profile-page/edit-profile-page';
+
+export const getServerSideProps = async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<SessionUser>> => {
+  try {
+    const { req, res } = context;
+
+    const session = await getServerSession(req, res, authConfiguration);
+
+    if (!session) {
+      return {
+        redirect: {
+          destination: '/sign-up',
+          permanent: false
+        }
+      };
+    }
+
+    const { id } = session;
+
+    const client = await MongoClient.connect(buildMongoUrl());
+
+    const userCollection = client.db().collection<ServerUser>('users');
+
+    const sessionUser = await userCollection.findOne({
+      _id: new ObjectId(id)
+    });
+
+    await client.close();
+
+    if (!sessionUser) {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false
+        }
+      };
+    }
+
+    const { firstName, lastName, email } = sessionUser;
+
+    return {
+      props: {
+        firstName,
+        lastName,
+        email
+      }
+    };
+  } catch {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    };
+  }
+};
