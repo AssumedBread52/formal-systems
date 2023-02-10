@@ -1,4 +1,4 @@
-import { useSignInUserMutation } from '@/auth/hooks';
+import { useSignInUser } from '@/auth/hooks';
 import { Box } from '@/common/components/box/box';
 import { Button } from '@/common/components/button/button';
 import { Flex } from '@/common/components/flex/flex';
@@ -7,22 +7,13 @@ import { LoadingSpinner } from '@/common/components/loading-spinner/loading-spin
 import { Typography } from '@/common/components/typography/typography';
 import { hasText } from '@/common/helpers';
 import { useInputValue } from '@/common/hooks';
-import { useRouter } from 'next/router';
-import { FormEvent, ReactElement, useEffect } from 'react';
+import { FormEvent, ReactElement } from 'react';
 
 export const SignInPage = (): ReactElement => {
-  const router = useRouter();
-
   const [email, emailHasError, setEmail] = useInputValue(hasText);
   const [password, passwordHasError, setPassword] = useInputValue(hasText);
 
-  const [signInUser, { isError, isLoading, isSuccess }] = useSignInUserMutation();
-
-  useEffect((): void => {
-    if (isSuccess) {
-      router.back();
-    }
-  }, [isSuccess, router]);
+  const [signInUser, isError, isLoading] = useSignInUser();
 
   const submitHandler = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
