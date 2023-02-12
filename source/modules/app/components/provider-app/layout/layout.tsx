@@ -1,6 +1,6 @@
-import { Flex } from '#/modules/common/components/flex/flex';
 import { useIsDocumentScrolled, useMainHeight } from '@/app/hooks';
 import { Box } from '@/common/components/box/box';
+import { Flex } from '@/common/components/flex/flex';
 import { Fragment, PropsWithChildren, ReactElement } from 'react';
 import { Footer } from './footer/footer';
 import { GlobalStyle } from './global-style/global-style';
