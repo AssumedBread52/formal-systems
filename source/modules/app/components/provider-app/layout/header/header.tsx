@@ -1,65 +1,64 @@
-import { useIsDocumentScrolled } from '@/app/hooks';
 import { Box } from '@/common/components/box/box';
 import { Flex } from '@/common/components/flex/flex';
+import { HyperLink } from '@/common/components/hyper-link/hyper-link';
 import { Typography } from '@/common/components/typography/typography';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { MouseEvent, ReactElement } from 'react';
 
 export const Header = (): ReactElement => {
-  const router = useRouter();
+  const { pathname, push } = useRouter();
 
   const { status } = useSession();
-
-  const isDocumentScrolled = useIsDocumentScrolled();
 
   const clickHandler = (event: MouseEvent<HTMLDivElement>): void => {
     event.preventDefault();
     event.stopPropagation();
 
-    router.push('/');
+    push('/');
   };
-
-  const boxShadow = isDocumentScrolled ? '0px 4px 8px 0px rgb(128 128 128 / 25%)' : '0px 1px 2px 0px rgb(128 128 128 / 25%)';
 
   const isAuthenticated = 'authenticated' === status;
 
   return (
-    <Box backgroundColor='white' position='sticky' top='0' left='0' width='100%' boxShadow={boxShadow} zIndex={1}>
-      <header>
-        <Flex alignItems='center' display='flex' px='3' height='4rem'>
-          <Box cursor='pointer' onClick={clickHandler}>
-            <Typography as='h2' my='1rem'>
+    <header>
+      <Flex alignItems='center' display='flex' px='2' height='4'>
+        <Box cursor='pointer' mx='2' onClick={clickHandler}>
+          <Typography as='h2' my='auto'>
+            <HyperLink color={pathname === '/' ? 'white' : 'inherit'} href='/'>
               Formal Systems
-            </Typography>
-          </Box>
-          <Box mx='auto' />
-          <Link href='/info'>
+            </HyperLink>
+          </Typography>
+        </Box>
+        <Box mx='auto' />
+        <Box mx='2'>
+          <HyperLink color={pathname === '/info' ? 'white' : 'inherit'} href='/info'>
             Info
-          </Link>
-          <Box mx='1' />
+          </HyperLink>
+        </Box>
+        <Box mx='2'>
           {isAuthenticated && (
-            <Link href='/sign-out'>
+            <HyperLink color={pathname === '/sign-out' ? 'white' : 'inherit'} href='/sign-out'>
               Sign Out
-            </Link>
+            </HyperLink>
           ) || (
-            <Link href='/sign-in'>
+            <HyperLink color={pathname === '/sign-in' ? 'white' : 'inherit'} href='/sign-in'>
               Sign In
-            </Link>
+            </HyperLink>
           )}
-          <Box mx='1' />
+        </Box>
+        <Box mx='2'>
           {isAuthenticated && (
-            <Link href='/edit-profile'>
+            <HyperLink color={pathname === '/edit-profile' ? 'white' : 'inherit'} href='/edit-profile'>
               Edit Profile
-            </Link>
+            </HyperLink>
           ) || (
-            <Link href='/sign-up'>
+            <HyperLink color={pathname === '/sign-up' ? 'white' : 'inherit'} href='/sign-up'>
               Sign Up
-            </Link>
+            </HyperLink>
           )}
-        </Flex>
-      </header>
-    </Box>
+        </Box>
+      </Flex>
+    </header>
   );
 };
