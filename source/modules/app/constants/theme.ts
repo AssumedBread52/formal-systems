@@ -10,7 +10,7 @@ export const theme = {
   sizes: ['0rem', '0.5rem', '1rem', '2rem', '4rem'],
   space: ['0rem', '0.5rem', '1rem', '2rem', '4rem', '8rem'],
   transitions: {
-    headerShadow: 'all 50ms ease-in-out',
+    headerShadow: 'all 100ms ease-in-out',
   },
   zIndices: {
     header: '1'
