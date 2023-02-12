@@ -1,5 +1,4 @@
 import { DependencyItemProps } from '@/app/types';
-import { Box } from '@/common/components/box/box';
 import { Flex } from '@/common/components/flex/flex';
 import { MouseEvent, ReactElement, useState } from 'react';
 
@@ -29,16 +28,14 @@ export const DependencyItem = (props: DependencyItemProps): ReactElement => {
     setEntered(false);
   };
 
-  const boxShadow = entered ? '0 0 0.325rem 0 rgb(128 128 128 / 50%)' : '0 0 0 0.075rem rgb(128 128 128 / 25%)';
+  const boxShadow = entered ? 'centeredHovered' : 'centeredUnhovered';
 
   return (
-    <Box boxShadow={boxShadow} borderRadius='8px' cursor='pointer' p='1' onClick={clickHandler} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
-      <Flex display='flex' flexDirection='column' alignItems='center'>
-        <em>
-          {packageName}
-        </em>
-        version: {version.substring(1)}
-      </Flex>
-    </Box>
+    <Flex display='flex' flexDirection='column' borderRadius='card' boxShadow={boxShadow} minHeight='4' alignItems='center' transition='headerShadow' justifyContent='space-around' m='1' cursor='pointer' onClick={clickHandler} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
+      <em>
+        {packageName}
+      </em>
+      version: {version.substring(1)}
+    </Flex>
   );
 };
