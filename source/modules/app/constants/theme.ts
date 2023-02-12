@@ -18,6 +18,6 @@ export const theme = {
     headerShadow: 'all 100ms ease-in-out',
   },
   zIndices: {
-    header: '1'
+    nonMain: '1'
   }
 };

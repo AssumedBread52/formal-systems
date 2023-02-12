@@ -18,7 +18,7 @@ export const Layout = (props: PropsWithChildren<{}>): ReactElement => {
   return (
     <Fragment>
       <GlobalStyle />
-      <Box ref={headerRef} backgroundColor='headerBackground' color='headerText' boxShadow={boxShadow} transition='headerShadow' position='sticky' top='0' zIndex='header'>
+      <Box ref={headerRef} backgroundColor='nonMainBackground' color='nonMainText' boxShadow={boxShadow} transition='headerShadow' position='sticky' top='0' zIndex='nonMain'>
         <Header />
       </Box>
       <Flex display='flex' justifyContent='center' minHeight={`calc(100vh - ${height}px)`}>
@@ -26,7 +26,7 @@ export const Layout = (props: PropsWithChildren<{}>): ReactElement => {
           {children}
         </main>
       </Flex>
-      <Box ref={footerRef}>
+      <Box ref={footerRef} position='relative' backgroundColor='nonMainBackground' color='nonMainText' zIndex='nonMain'>
         <Footer />
       </Box>
     </Fragment>
