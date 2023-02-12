@@ -11,12 +11,12 @@ export const DependencyList = (props: DependencyListProps): ReactElement => {
   const packageNames = Object.keys(list);
 
   return (
-    <Flex display='flex' p='2' alignItems='center'>
-      <Box width='8rem'>
+    <Flex display='flex' alignItems='center' p='1'>
+      <Box width='5'>
         {label}
       </Box>
-      <Box mx='1' />
-      <Grid display='grid' gridGap='2' gridTemplateColumns='repeat(auto-fill, minmax(12rem, 1fr))' width='100%'>
+      <Box m='1' />
+      <Grid display='grid' gridTemplateColumns='repeat(auto-fill, minmax(12rem, 1fr))' width='100%'>
         {packageNames.map((packageName: string): ReactElement => {
           const version = list[packageName];
 
