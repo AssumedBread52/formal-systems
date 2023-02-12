@@ -15,11 +15,13 @@ export const ProviderApp = (props: AppProps): ReactElement => {
   return (
     <Fragment>
       <Head>
-        <title>Formal Systems</title>
+        <title>
+          Formal Systems
+        </title>
         <meta charSet='utf-8' />
         <meta name='application-name' content='Formal Systems' />
-        <meta name='description' content='This is a fun, interactive environment that allows users to learn about formal systems' />
-        <meta name='generator' content='Next JS' />
+        <meta name='description' content='This is a fun, interactive environment that enables users to learn about formal systems.' />
+        <meta name='generator' content='Styled Components, Styled System, KaTeX, Next JS, RTK Query, NextAuth, BcryptJS, MongoDB' />
         <meta name='keywords' content='Formal System, Proof, Theorem, Deduction, Logic' />
         <meta name='referrer' content='strict-origin-when-cross-origin' />
         <meta name='classification' content='Proofs, Theorems, Deductions, Formal Systems, Interactive Learning' />
@@ -30,7 +32,7 @@ export const ProviderApp = (props: AppProps): ReactElement => {
         <meta name='viewport' content='width=device-width, initial-scale=1.0' />
         <meta name='author' content='Antonio Sanchez' />
         <meta name='creator' content='Antonio Sanchez' />
-        <meta name='publisher' content='Anotnio Sanchez' />
+        <meta name='publisher' content='Antonio Sanchez' />
       </Head>
       <Provider store={appStore}>
         <SessionProvider session={session}>
