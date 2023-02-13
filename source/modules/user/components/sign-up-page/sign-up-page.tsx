@@ -33,7 +33,7 @@ export const SignUpPage = (): ReactElement => {
   const disableSubmit = firstNameHasError || lastNameHasError || emailHasError || passwordHasError;
 
   return (
-    <Box mx='auto' my='4' width='32rem'>
+    <Box mx='auto' px='4' width='7'>
       <section>
         <Typography as='h1' textAlign='center' my='3'>
           Sign Up
@@ -43,20 +43,20 @@ export const SignUpPage = (): ReactElement => {
           <InputField label='Last Name' value={lastName} hasError={lastNameHasError} type='text' updateValue={setLastName} />
           <InputField label='Email Address' value={email} hasError={emailHasError} type='email' updateValue={setEmail} />
           <InputField label='Password' value={password} hasError={passwordHasError} type='password' updateValue={setPassword} />
-          <Flex display='flex' flexDirection='column' alignItems='center' my='3'>
-            <Button disabled={disableSubmit} fontSize='1rem' px='4rem' py='0.5rem' type='submit'>
+          <Flex display='flex' flexDirection='column' alignItems='center' position='relative' my='2'>
+            <Button disabled={disableSubmit} fontSize='formButton' height='3' width='5' type='submit'>
               Sign Up
             </Button>
-            <Typography as='p' color='red' height='1rem'>
+            {isLoading && (
+              <Box position='absolute' top='0' right='4'>
+                <LoadingSpinner size={2} />
+              </Box>
+            )}
+            <Typography as='p' color='red' height='2'>
               {errorMessage}
             </Typography>
           </Flex>
         </form>
-        <Box height='4rem'>
-          {isLoading && (
-            <LoadingSpinner />
-          )}
-        </Box>
       </section>
     </Box>
   );

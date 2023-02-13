@@ -1,4 +1,5 @@
 import { Box } from '@/common/components/box/box';
+import { Typography } from '@/common/components/typography/typography';
 import { ReactElement } from 'react';
 import { FormalSystems } from './formal-systems/formal-systems';
 import { Preliminaries } from './preliminaries/preliminaries';
@@ -8,11 +9,11 @@ import { Terms } from './terms/terms';
 
 export const Info = (): ReactElement => {
   return (
-    <Box mx='5' my='4'>
+    <Box mx='5'>
       <section>
-        <h1>
+        <Typography as='h1' textAlign='center'>
           The Formal Description
-        </h1>
+        </Typography>
         <Preliminaries />
         <Terms />
         <Substitution />

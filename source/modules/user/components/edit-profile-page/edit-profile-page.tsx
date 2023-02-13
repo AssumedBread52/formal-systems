@@ -36,7 +36,7 @@ export const EditProfilePage = (props: SessionUser): ReactElement => {
   const disableSubmit = ((firstNameHasError && lastNameHasError && emailHasError) || (newFirstName === firstName && newLastName === lastName && newEmail === email)) && passwordHasError;
 
   return (
-    <Box mx='auto' my='4' width='32rem'>
+    <Box mx='auto' px='4' width='7'>
       <section>
         <Typography as='h1' textAlign='center' my='3'>
           Edit Profile
@@ -44,22 +44,22 @@ export const EditProfilePage = (props: SessionUser): ReactElement => {
         <form onSubmit={submitHandler}>
           <InputField label='First Name' value={newFirstName} hasError={firstNameHasError} type='text' updateValue={setFirstName} />
           <InputField label='Last Name' value={newLastName} hasError={lastNameHasError} type='text' updateValue={setLastName} />
-          <InputField label='Email Address' value={newEmail} hasError={emailHasError} type='text' updateValue={setEmail} />
-          <InputField label='Password' value={newPassword} hasError={passwordHasError} type='text' updateValue={setPassword} />
-          <Flex display='flex' flexDirection='column' alignItems='center' my='3'>
-            <Button disabled={disableSubmit} fontSize='1rem' px='4rem' py='0.5rem' type='submit'>
+          <InputField label='Email Address' value={newEmail} hasError={emailHasError} type='email' updateValue={setEmail} />
+          <InputField label='Password' value={newPassword} hasError={passwordHasError} type='password' updateValue={setPassword} />
+          <Flex display='flex' flexDirection='column' alignItems='center' position='relative' my='2'>
+            <Button disabled={disableSubmit} fontSize='formButton' height='3' width='5' type='submit'>
               Save Changes
             </Button>
-            <Typography as='p' color='red' height='1rem'>
+            {isLoading && (
+              <Box position='absolute' top='0' right='4'>
+                <LoadingSpinner size={2} />
+              </Box>
+            )}
+            <Typography as='p' color='red' height='2'>
               {isError && 'Failed to update profile.'}
             </Typography>
           </Flex>
         </form>
-        <Box height='4rem'>
-          {isLoading && (
-            <LoadingSpinner />
-          )}
-        </Box>
       </section>
     </Box>
   );

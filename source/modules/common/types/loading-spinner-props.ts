@@ -1,3 +1,3 @@
 export type LoadingSpinnerProps = {
-  size?: number;
+  size: number;
 };

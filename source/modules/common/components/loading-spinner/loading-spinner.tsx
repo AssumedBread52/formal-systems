@@ -17,7 +17,7 @@ const RotatingBox = styled(Box)`
 `;
 
 export const LoadingSpinner = (props: LoadingSpinnerProps): ReactElement => {
-  const { size = 4 } = props;
+  const { size } = props;
 
   const sizeInUnits = `${size}rem`;
   const borderX = `${size}px black solid`;

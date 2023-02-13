@@ -33,28 +33,28 @@ export const SignOutPage = (): ReactElement => {
   };
 
   return (
-    <Box mx='auto' my='4' width='16rem'>
+    <Box mx='auto' px='4' width='6'>
       <section>
         <Typography as='h1' textAlign='center' my='3'>
           Sign Out
         </Typography>
-        <Flex display='flex' flexDirection='column' alignItems='center' my='3'>
-          <Button fontSize='1rem' py='0.5rem' width='100%' onClick={signOutClickHandler}>
+        <Flex display='flex' flexDirection='column' alignItems='center' position='relative' my='2'>
+          <Button fontSize='formButton' height='3' width='5' onClick={signOutClickHandler}>
             Sign Out
           </Button>
           <Box my='1' />
-          <Button fontSize='1rem' py='0.5rem' width='100%' onClick={cancelClickHandler}>
+          <Button fontSize='formButton' height='3' width='5' onClick={cancelClickHandler}>
             Cancel
           </Button>
-          <Typography as='p' color='red' height='1rem'>
+          {isLoading && (
+            <Box position='absolute' top='0' right='-4rem'>
+              <LoadingSpinner size={2} />
+            </Box>
+          )}
+          <Typography as='p' color='red' height='2'>
             {isError && 'Failed to sign out.'}
           </Typography>
         </Flex>
-        <Box>
-          {isLoading && (
-            <LoadingSpinner />
-          )}
-        </Box>
       </section>
     </Box>
   );
