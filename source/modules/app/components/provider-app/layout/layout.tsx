@@ -1,6 +1,6 @@
+import { theme } from '@/app/constants';
 import { useIsDocumentScrolled, useMainHeight } from '@/app/hooks';
 import { Box } from '@/common/components/box/box';
-import { Flex } from '@/common/components/flex/flex';
 import { Fragment, PropsWithChildren, ReactElement } from 'react';
 import { Footer } from './footer/footer';
 import { GlobalStyle } from './global-style/global-style';
@@ -14,19 +14,21 @@ export const Layout = (props: PropsWithChildren<{}>): ReactElement => {
   const isDocumentScrolled = useIsDocumentScrolled();
 
   const boxShadow = isDocumentScrolled ? 'headerScrolled' : 'headerUnscrolled';
+  
+  const marginIndex = 4;
 
   return (
     <Fragment>
       <GlobalStyle />
-      <Box ref={headerRef} backgroundColor='nonMainBackground' color='nonMainText' boxShadow={boxShadow} transition='headerShadow' position='sticky' top='0' zIndex='nonMain'>
+      <Box ref={headerRef} backgroundColor='nonMainBackground' color='nonMainText' boxShadow={boxShadow} transition='headerShadow' minWidth='7' position='sticky' top='0' zIndex='nonMain'>
         <Header />
       </Box>
-      <Flex display='flex' justifyContent='center' minHeight={`calc(100vh - ${height}px)`}>
+      <Box my={marginIndex} minHeight={`calc(100vh - ${height}px - ${theme.space[marginIndex]} - ${theme.space[marginIndex]})`}>
         <main>
           {children}
         </main>
-      </Flex>
-      <Box ref={footerRef} position='relative' backgroundColor='nonMainBackground' color='nonMainText' zIndex='nonMain'>
+      </Box>
+      <Box ref={footerRef} backgroundColor='nonMainBackground' color='nonMainText' minWidth='7' position='relative' zIndex='nonMain'>
         <Footer />
       </Box>
     </Fragment>
