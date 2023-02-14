@@ -1,7 +1,1 @@
-export default function IndexPage() {
-  return (
-    <h1>
-      Index page!
-    </h1>
-  );
-};
+export { FormalSystemsPage as default } from '@/formal-system/components/formal-systems-page/formal-systems-page';
