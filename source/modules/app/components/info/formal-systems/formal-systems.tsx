@@ -9,16 +9,16 @@ export const FormalSystems = (): ReactElement => {
       </h3>
       <p>
         A formal system is a triple of a constant symbols set, a variable symbols set, and axiomatic statements set. If the
-        symbol sets are understood the formal system can be identified only by its axiomatic statements.
+        symbol sets are understood, then the formal system can be identified only by its axiomatic statements.
         <RenderMath content='\langle CN,VR,\Gamma\rangle' />
         The closure of a pre-statement is constructed in the context of a given formal system. The closure of a pre-statement
         begins with its hypotheses.
         <RenderMath content='T\cup H\subseteq C' />
-        Expressions are added to the closure by first selecting an axiomatic statement and appropriate substitution map.
+        Expressions are added to the closure by first selecting an axiomatic statement and an appropriate substitution map.
         <RenderMath content='\langle D_M^\prime,T_M^\prime,H^\prime,A^\prime\rangle\in\Gamma' />
         <RenderMath content='F:\mathcal{V}(T_M^\prime)\to EX' />
-        There are two conditions which must be met: 1. the simultaneously substitution hypotheses of the axiomatic statement
-        must already be in the closure and 2. there cannot be any distinct variable restriction violations.
+        There are two conditions which must be met: 1. the simultaneously substituted hypotheses of the axiomatic statement must
+        already be in the closure and 2. there cannot be any distinct variable restriction violations.
         <RenderMath>
           \begin{'{'}aligned{'}'}
           1.~&\sigma_F(T_M^\prime\cup H^\prime)\subseteq C\\
