@@ -14,7 +14,7 @@ export const Layout = (props: PropsWithChildren<{}>): ReactElement => {
   const isDocumentScrolled = useIsDocumentScrolled();
 
   const boxShadow = isDocumentScrolled ? 'headerScrolled' : 'headerUnscrolled';
-  
+
   const marginIndex = 4;
 
   return (
