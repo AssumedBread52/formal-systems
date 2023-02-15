@@ -29,7 +29,7 @@ export const Statements = (): ReactElement => {
         The set of mandatory variable type hypotheses have a variable type hypothesis only for the variable symbols that appear
         in the logical hypotheses and the assertion.
         <RenderMath content='\mathcal{V}(T_M)=\mathcal{V}(H\cup\{A\})' />
-        Similary, the set of mandatory distinct variable restrictions only include restrictions where both variable symbols
+        Similarly, the set of mandatory distinct variable restrictions only include restrictions where both variable symbols
         appear in the set of mandatory variable type hypotheses.
         <RenderMath content='D_M=\{\{\alpha,\beta\}\in D::\{\alpha,\beta\}\subseteq\mathcal{V}(T_M)\}' />
         The set of mandatory hypotheses is the set of mandatory variable type hypotheses and the logical hypotheses.
