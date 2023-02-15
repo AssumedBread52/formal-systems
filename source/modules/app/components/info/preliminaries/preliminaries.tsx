@@ -18,7 +18,7 @@ export const Preliminaries = (): ReactElement => {
         length and codomain of any set which contains the symbols appearing in the sequence. Infinite sequences are similar
         except their domain is the set of natural numbers rather than any individual natural number. Each term in the sequence
         can be referenced by its zero-based index. Angle brackets wrap terms to show sequences.
-        <RenderMath content='\forall n\in\omega(f\in{^n}A\to(\vert f\vert=n\land f=\langle f_0,f_1,\dots,f_n\rangle\land))' />
+        <RenderMath content='\forall n\in\omega(f\in{^n}A\to(\vert f\vert=n\land f=\langle f_0,f_1,\dots,f_n\rangle))' />
         <RenderMath content='f\in{^\omega}A\to f=\langle f_0,f_1,\dots\rangle' />
         Two finite sequences can be concatenated into a single finite sequence.
         <RenderMath content='h=f\frown g' />
