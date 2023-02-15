@@ -8,27 +8,17 @@ export const Substitution = (): ReactElement => {
         Substitution
       </h3>
       <p>
-        <RenderMath inline>
-          Using a substitution map $$F:VR\to EX$$, we denote a simultaneous substitution function by $$\sigma_F$$ or just
-          $$\sigma$$ when $$F$$ is understood. $$\sigma_F:EX\to EX$$ is defined by
-        </RenderMath>
-        <RenderMath>
-          \begin{'{'}aligned{'}'}
-          \sigma(\langle\alpha\rangle)=&F(\alpha)&\text{'{'}for{'}'}~\alpha\in VR\\
-          \sigma(\langle\alpha\rangle)=&\langle\alpha\rangle&\text{'{'}for{'}'}~\alpha\notin VR\\
-          \sigma(g\frown h)=&\sigma(g)\frown\sigma(h)&\text{'{'}for{'}'}~g,h\in EX
-          \end{'{'}aligned{'}'}
-        </RenderMath>
-        <RenderMath inline>
-          We also define $$\sigma(\emptyset)=\emptyset$$.
-        </RenderMath>
-        <br />
-        <br />
-        <RenderMath inline>
-          We also denote (with abuse of notation) by $$\sigma(E)$$ a substitution on a collection of expressions
-          $$E\subseteq EX$$, i.e. the set $$\sigma(E)=\{'{'}\sigma(e):e\in E\{'}'}$$. The collection $$\sigma(E)$$ may of course
-          contain fewer expressions than $$E$$ because duplicate expressions could result from the substitution.
-        </RenderMath>
+        A substitution map is a function which maps from the set of variable symbols to the set of expressions.
+        <RenderMath content='F:VR\to EX' />
+        A simultaneous substitution is a function which maps expressions to expressions using a substitution map.
+        <RenderMath content='\sigma_F:EX\to EX' />
+        The simultaneous substitution for expressions of length one are performed using the substitution map.
+        <RenderMath content='\sigma_F(\langle\alpha\rangle)=\begin{cases}\langle F(\alpha)\rangle&\alpha\in VR\\\langle\alpha\rangle&\alpha\notin VR\end{cases}' />
+        Expressions longer than length one are recursively computed.
+        <RenderMath content='\sigma_F(g\frown h)=\sigma_F(g)\frown\sigma_F(h)' />
+        For the sake of brevity sometimes we will apply a simultaneous substitution to a set of expressions.
+        <RenderMath content='\sigma_F:\mathcal{P}(EX)\to\mathcal{P}(EX)' />
+        <RenderMath content='\sigma_F(E)=\{\sigma_F(e)::e\in E\}' />
       </p>
     </section>
   );
