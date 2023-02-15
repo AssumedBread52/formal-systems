@@ -1,7 +1,7 @@
+import { useWindowWidth } from '@/app/hooks';
 import { Box } from '@/common/components/box/box';
 import { Typography } from '@/common/components/typography/typography';
 import { ReactElement } from 'react';
-import { useWindowWidth } from '@/app/hooks';
 import { FormalSystems } from './formal-systems/formal-systems';
 import { Preliminaries } from './preliminaries/preliminaries';
 import { Statements } from './statements/statements';
