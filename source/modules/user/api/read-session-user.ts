@@ -35,7 +35,7 @@ export const readSessionUser = async (context: GetServerSidePropsContext): Promi
     if (!sessionUser) {
       return {
         redirect: {
-          destination: '/',
+          destination: '/404',
           permanent: false
         }
       };
@@ -53,7 +53,7 @@ export const readSessionUser = async (context: GetServerSidePropsContext): Promi
   } catch {
     return {
       redirect: {
-        destination: '/',
+        destination: '/404',
         permanent: false
       }
     };
