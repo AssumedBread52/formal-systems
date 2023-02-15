@@ -12,7 +12,7 @@ export const Info = (): ReactElement => {
   const windowWidth = useWindowWidth();
 
   return (
-    <Box px={windowWidth < 620 ? 3 : 5} minWidth='7'>
+    <Box px={windowWidth < 625 ? 3 : 5} minWidth='7'>
       <section>
         <Typography as='h1' textAlign='center'>
           The Formal Description
