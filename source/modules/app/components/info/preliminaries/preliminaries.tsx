@@ -8,28 +8,24 @@ export const Preliminaries = (): ReactElement => {
         Preliminaries
       </h3>
       <p>
-        <RenderMath inline>
-          By $$\omega$$ we denote the set of all natural numbers (non-negative integers). Each natural number $$n$$ is
-          identified with the set of all smaller numbers: $$n=\{'{'}m\vert m\lt n\{'}'}$$. The formula $$m\lt n$$ is thus
-          equivalent to the condition: $$m\in n\land m,n\in\omega$$. In particular, $$0$$ is the number zero and at the same
-          time the empty set $$\emptyset$$, $$1=\{'{'}0\{'}'}$$, $$2=\{'{'}0,1\{'}'}$$, etc. $$^BA$$ denotes the set of all
-          functions on $$B$$ to $$A$$ (i.e. with domain $$B$$ and range included in $$A$$). The members of $$^\omega A$$ are
-          what are called simple finite sequences, with all terms in $$A$$. In case $$n\in\omega$$, the members of $$^nA$$ are
-          referred to as finite n-termed sequences, again with terms in $$A$$. The consecutive terms (function values) of a
-          finite or infinite sequence $$f$$ are denoted by $$f_0$$, $$f_1$$, $$\dots$$, $$f_n$$, $$\dots$$. Every finite
-          sequence $$f\in\cup_{'{'}n\in\omega{'}'}{'{'}^n{'}'}A$$ uniquely determines the number $$n$$ such that
-          $$f\in{'{'}^n{'}'}A$$; $$n$$ is called the length of $$f$$ and is denoted by $$\vert f\vert$$.
-          $$\langle a\rangle$$ is the sequence $$f$$ with $$\vert f\vert=1$$ and $$f_0=a$$; $$\langle a,b\rangle$$ is the
-          sequence $$f$$ with $$\vert f\vert=2$$, $$f_0=a$$, $$f_1=b$$; etc. Given two finite sequences $$f$$ and $$g$$, we
-          denote by $$f\frown g$$ their concatenation, i.e., the finite sequence $$h$$ determined by the conditions:
-        </RenderMath>
-        <RenderMath>
-          \begin{'{'}aligned{'}'}
-          \vert h\vert=&\vert f\vert+\vert g\vert;&\\
-          h_n=&f_n&\text{'{'}for{'}'}~n\lt\vert f\vert;\\
-          h_{'{'}\vert f\vert+n{'}'}=&g_n&\text{'{'}for{'}'}~n\lt\vert g\vert.
-          \end{'{'}aligned{'}'}
-        </RenderMath>
+        The set of all natural numbers, or non-negative integers, are the positive whole numbers including zero.
+        <RenderMath content='\omega=\mathbb{N}=\mathbb{Z}^+=\{0,1,2,\dots\}' />
+        Each natural number can be defined as a set containing all natural numbers less than itself.
+        <RenderMath content='\forall n\in\omega(n=\{m\in\omega::m\lt n\})' />
+        We can group functions with the same domain that are surjective to a codomain into a set.
+        <RenderMath content='^BA=\{f::\exists C\subseteq A(f:B\to C)\}' />
+        Using natural numbers as sets, simple finite sequences can be thought of as surjective functions with a domain of their
+        length and codomain of any set which contains the symbols appearing in the sequence. Infinite sequences are similar
+        except their domain is the set of natural numbers rather than any individual natural number. Each term in the sequence
+        can be referenced by its zero-based index. Angle brackets wrap terms to show sequences.
+        <RenderMath content='\forall n\in\omega(f\in{^n}A\to(\vert f\vert=n\land f=\langle f_0,f_1,\dots,f_n\rangle\land))' />
+        <RenderMath content='f\in{^\omega}A\to f=\langle f_0,f_1,\dots\rangle' />
+        Two finite sequences can be concatenated into a single finite sequence.
+        <RenderMath content='h=f\frown g' />
+        The length of the concatenated sequence is the sum of the length of the operands.
+        <RenderMath content='\vert h\vert=\vert f\vert+\vert g\vert' />
+        The order of terms are determined by the order of the operands.
+        <RenderMath content='h_n=\begin{cases}f_n&0\le n\lt\vert f\vert\\g_{n-\vert f\vert}&\vert f\vert\le n\lt\vert f\vert+\vert g\vert\end{cases}' />
       </p>
     </section>
   );
