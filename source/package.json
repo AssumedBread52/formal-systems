@@ -38,7 +38,7 @@
     "@reduxjs/toolkit": "^1.9.2",
     "bcryptjs": "^2.4.3",
     "katex": "^0.16.4",
-    "mongodb": "^5.0.0",
+    "mongodb": "^5.0.1",
     "next": "^13.1.6",
     "next-auth": "^4.19.2",
     "react": "^18.2.0",
@@ -50,13 +50,13 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/katex": "^0.16.0",
-    "@types/node": "^18.11.18",
-    "@types/react": "^18.0.27",
-    "@types/react-dom": "^18.0.10",
+    "@types/node": "^18.13.0",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
     "@types/styled-components": "^5.1.26",
     "@types/styled-system": "^5.1.16",
-    "eslint": "8.33.0",
-    "eslint-config-next": "13.1.6",
-    "typescript": "^4.9.4"
+    "eslint": "^8.34.0",
+    "eslint-config-next": "^13.1.6",
+    "typescript": "^4.9.5"
   }
 }
