@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useEditUserMutation } from './use-edit-user-mutation';
 
-export const useEditUser = (): [MutationTrigger<MutationDefinition<Partial<SignUpPayload>, BaseQueryFn, 'session-user', IdResponse, 'api'>>, boolean, boolean] => {
+export const useEditUser = (): [MutationTrigger<MutationDefinition<Partial<SignUpPayload>, BaseQueryFn, '', IdResponse, 'api'>>, boolean, boolean] => {
   const router = useRouter();
 
   const [editUser, { isError, isLoading, isSuccess }] = useEditUserMutation();

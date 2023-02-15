@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { useSignUpUserMutation } from './use-sign-up-user-mutation';
 
 export const useSignUpUser = (email: string, password: string): {
-  signUpUser: MutationTrigger<MutationDefinition<SignUpPayload, BaseQueryFn, 'session-user', void, 'api'>>;
+  signUpUser: MutationTrigger<MutationDefinition<SignUpPayload, BaseQueryFn, '', void, 'api'>>;
   errorMessage: string;
   isLoading: boolean;
 } => {

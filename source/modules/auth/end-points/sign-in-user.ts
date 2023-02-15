@@ -4,7 +4,7 @@ import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import { EndpointBuilder, MutationDefinition } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { signIn } from 'next-auth/react';
 
-export const signInUser = (builder: EndpointBuilder<BaseQueryFn, 'session-user', 'api'>): MutationDefinition<CredentialsPayload, BaseQueryFn, 'session-user', boolean, 'api'> => {
+export const signInUser = (builder: EndpointBuilder<BaseQueryFn, '', 'api'>): MutationDefinition<CredentialsPayload, BaseQueryFn, '', boolean, 'api'> => {
   return builder.mutation<boolean, CredentialsPayload>({
     queryFn: async (arg: CredentialsPayload): Promise<QueryReturnValue<boolean>> => {
       try {
@@ -30,7 +30,6 @@ export const signInUser = (builder: EndpointBuilder<BaseQueryFn, 'session-user',
           error: 'Client-side catch.'
         };
       }
-    },
-    invalidatesTags: ['session-user']
+    }
   });
 };

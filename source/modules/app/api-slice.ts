@@ -15,5 +15,5 @@ export const apiSlice = createApi({
       signUpUser: signUpUser(builder)
     };
   },
-  tagTypes: ['session-user']
+  tagTypes: []
 });
