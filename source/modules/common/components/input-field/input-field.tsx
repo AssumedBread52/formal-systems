@@ -23,7 +23,9 @@ export const InputField = (props: InputFieldProps): ReactElement => {
     event.preventDefault();
     event.stopPropagation();
 
-    updateValue(event.currentTarget.value);
+    if (updateValue) {
+      updateValue(event.currentTarget.value);
+    }
   };
 
   const showError = hasError && touched;
@@ -35,8 +37,8 @@ export const InputField = (props: InputFieldProps): ReactElement => {
           {label}
         </label>
       </Flex>
-      <Flex flexBasis='65%'>
-        <Input id={id} type={type} width='100%' value={value} onBlur={blurHandler} onInput={inputHandler} />
+      <Flex flexBasis='70%'>
+        <Input id={id} type={type} disabled={!updateValue} width='100%' value={value} onBlur={blurHandler} onInput={inputHandler} />
       </Flex>
       <Typography as='p' color='red' fontSize='0.75rem' height='1rem' width='100%' m='0'>
         {showError && `Please enter a valid ${lowerCaseLabel}.`}
