@@ -1,5 +1,5 @@
 export type UpdateFormalSystemPayload = {
   id: string;
-  name?: string;
+  title?: string;
   description?: string;
 };
