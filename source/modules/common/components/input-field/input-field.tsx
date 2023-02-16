@@ -10,7 +10,7 @@ export const InputField = (props: InputFieldProps): ReactElement => {
   const [touched, setTouched] = useState<boolean>(false);
 
   const lowerCaseLabel = label.toLowerCase();
-  const id = lowerCaseLabel.split(' ').join('-');
+  const id = lowerCaseLabel.replaceAll(' ', '-');
 
   const blurHandler = (event: FocusEvent<HTMLInputElement>): void => {
     event.preventDefault();
