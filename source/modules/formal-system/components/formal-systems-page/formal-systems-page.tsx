@@ -11,7 +11,7 @@ export const FormalSystemsPage = (): ReactElement => {
   const [terms, setTerms] = useState<string>('');
   const [keywords, setKeywords] = useState<string[]>([]);
 
-  const {} = useReadFormalSystemsQuery({
+  const { data, isError, isSuccess } = useReadFormalSystemsQuery({
     page: 1,
     count: 10,
     keywords
@@ -63,9 +63,15 @@ export const FormalSystemsPage = (): ReactElement => {
         <div>
           Pagination Controls
         </div>
-        <div>
-          Results Area
-        </div>
+        {isError && (
+          'Failed to read formal systems.'
+        )}
+        {!(isError || isSuccess) && (
+          'Pulsating Skeletons'
+        )}
+        {isSuccess && (
+          data.total
+        )}
         <div>
           Pagination Controls
         </div>
