@@ -5,8 +5,15 @@ import { Input } from '@/common/components/input/input';
 import { Typography } from '@/common/components/typography/typography';
 import { useSession } from 'next-auth/react';
 import { ReactElement } from 'react';
+import { useReadFormalSystemsQuery } from '@/formal-system/hooks';
 
 export const FormalSystemsPage = (): ReactElement => {
+  const {} = useReadFormalSystemsQuery({
+    page: 1,
+    count: 10,
+    keywords: []
+  });
+
   const { status } = useSession();
 
   const isAuthenticated = 'authenticated' === status;
