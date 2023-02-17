@@ -1,8 +1,8 @@
-import { Button } from '#/modules/common/components/button/button';
-import { LoadingSpinner } from '#/modules/common/components/loading-spinner/loading-spinner';
 import { Box } from '@/common/components/box/box';
+import { Button } from '@/common/components/button/button';
 import { Flex } from '@/common/components/flex/flex';
 import { InputField } from '@/common/components/input-field/input-field';
+import { LoadingSpinner } from '@/common/components/loading-spinner/loading-spinner';
 import { TextareaField } from '@/common/components/textarea-field/textarea-field';
 import { Typography } from '@/common/components/typography/typography';
 import { buildUrlPath, hasText } from '@/common/helpers';

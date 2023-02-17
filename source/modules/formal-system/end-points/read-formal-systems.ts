@@ -1,8 +1,8 @@
-import { PaginatedParameters, PaginatedResults } from '#/modules/common/types';
+import { PaginatedParameters, PaginatedResults } from '@/common/types';
+import { ClientFormalSystem } from '@/formal-system/types';
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query';
 import { EndpointBuilder, QueryDefinition } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { stringify } from 'querystring';
-import { ClientFormalSystem } from '../types';
 
 export const readFormalSystems = (builder: EndpointBuilder<BaseQueryFn, '', 'api'>): QueryDefinition<PaginatedParameters, BaseQueryFn, '', PaginatedResults<ClientFormalSystem>, 'api'> => {
   return builder.query<PaginatedResults<ClientFormalSystem>, PaginatedParameters>({
