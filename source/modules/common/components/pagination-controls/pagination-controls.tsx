@@ -12,27 +12,27 @@ export const PaginationControls = (props: {
 }): ReactElement => {
   const { total, count, updatePage, updateCount, updateKeywords } = props;
 
-  const [terms, setTerms] = useState<string>('');
+  const [keywords, setKeywords] = useState<string>('');
 
   useEffect((): (() => void) => {
-    const termList = terms.trim().split(' ').filter((term: string): boolean => {
-      return 0 !== term.length;
+    const keywordList = keywords.trim().split(' ').filter((keyword: string): boolean => {
+      return 0 !== keyword.length;
     });
 
     const delayedUpdate = setTimeout((): void => {
-      updateKeywords(termList);
+      updateKeywords(keywordList);
     }, 300);
 
     return (): void => {
       clearTimeout(delayedUpdate);
     };
-  }, [terms]);
+  }, [keywords]);
 
   const inputHandler = (event: FormEvent<HTMLInputElement>): void => {
     event.preventDefault();
     event.stopPropagation();
 
-    setTerms(event.currentTarget.value);
+    setKeywords(event.currentTarget.value);
   };
 
   return (
@@ -41,7 +41,7 @@ export const PaginationControls = (props: {
         Search
       </label>
       <Box mx='1' />
-      <Input id='keywords' type='text' width='100%' value={terms} onInput={inputHandler} />
+      <Input id='keywords' type='text' width='100%' value={keywords} onInput={inputHandler} />
     </Flex>
   );
 };
