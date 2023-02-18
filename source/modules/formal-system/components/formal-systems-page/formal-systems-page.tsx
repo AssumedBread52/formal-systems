@@ -33,7 +33,7 @@ export const FormalSystemsPage = (): ReactElement => {
             </HyperLink>
           )}
         </Typography>
-        <PaginationControls setKeywords={setKeywords} />
+        <PaginationControls total={data?.total ?? 0} count={count} setPage={setPage} setCount={setCount} setKeywords={setKeywords} />
         {isError && (
           'Failed to read formal systems.'
         )}

@@ -4,6 +4,10 @@ import { Input } from '@/common/components/input/input';
 import { Dispatch, FormEvent, ReactElement, SetStateAction, useEffect, useState } from 'react';
 
 export const PaginationControls = (props: {
+  total: number;
+  count: number;
+  setPage: Dispatch<SetStateAction<number>>;
+  setCount: Dispatch<SetStateAction<number>>;
   setKeywords: Dispatch<SetStateAction<string[]>>;
 }): ReactElement => {
   const { setKeywords } = props;
