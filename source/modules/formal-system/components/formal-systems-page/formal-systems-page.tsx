@@ -1,45 +1,24 @@
 import { Box } from '@/common/components/box/box';
-import { Flex } from '@/common/components/flex/flex';
 import { HyperLink } from '@/common/components/hyper-link/hyper-link';
-import { Input } from '@/common/components/input/input';
+import { PaginationControls } from '@/common/components/pagination-controls/pagination-controls';
 import { Typography } from '@/common/components/typography/typography';
 import { useReadFormalSystemsQuery } from '@/formal-system/hooks';
 import { ClientFormalSystem } from '@/formal-system/types';
 import { useSession } from 'next-auth/react';
-import { FormEvent, ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useState } from 'react';
 
 export const FormalSystemsPage = (): ReactElement => {
-  const [terms, setTerms] = useState<string>('');
+  const [page, setPage] = useState<number>(1);
+  const [count, setCount] = useState<number>(10);
   const [keywords, setKeywords] = useState<string[]>([]);
 
   const { data, isError, isSuccess } = useReadFormalSystemsQuery({
-    page: 1,
-    count: 10,
+    page,
+    count,
     keywords
   });
 
-  useEffect((): (() => void) => {
-    const termList = terms.trim().split(' ').filter((term: string): boolean => {
-      return 0 !== term.length;
-    });
-
-    const delayedUpdate = setTimeout((): void => {
-      setKeywords(termList);
-    }, 300);
-
-    return (): void => {
-      clearTimeout(delayedUpdate);
-    };
-  }, [terms]);
-
   const { status } = useSession();
-
-  const inputHandler = (event: FormEvent<HTMLInputElement>): void => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    setTerms(event.currentTarget.value);
-  };
 
   const isAuthenticated = 'authenticated' === status;
 
@@ -54,16 +33,7 @@ export const FormalSystemsPage = (): ReactElement => {
             </HyperLink>
           )}
         </Typography>
-        <Flex display='flex' mx='auto' width='7'>
-          <label htmlFor='keywords'>
-            Search
-          </label>
-          <Box mx='1' />
-          <Input id='keywords' type='text' width='100%' value={terms} onInput={inputHandler} />
-        </Flex>
-        <div>
-          Pagination Controls
-        </div>
+        <PaginationControls setKeywords={setKeywords} />
         {isError && (
           'Failed to read formal systems.'
         )}
