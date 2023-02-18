@@ -6,11 +6,11 @@ import { Dispatch, FormEvent, ReactElement, SetStateAction, useEffect, useState 
 export const PaginationControls = (props: {
   total: number;
   count: number;
-  setPage: Dispatch<SetStateAction<number>>;
-  setCount: Dispatch<SetStateAction<number>>;
-  setKeywords: Dispatch<SetStateAction<string[]>>;
+  updatePage: Dispatch<SetStateAction<number>>;
+  updateCount: Dispatch<SetStateAction<number>>;
+  updateKeywords: Dispatch<SetStateAction<string[]>>;
 }): ReactElement => {
-  const { setKeywords } = props;
+  const { total, count, updatePage, updateCount, updateKeywords } = props;
 
   const [terms, setTerms] = useState<string>('');
 
@@ -20,7 +20,7 @@ export const PaginationControls = (props: {
     });
 
     const delayedUpdate = setTimeout((): void => {
-      setKeywords(termList);
+      updateKeywords(termList);
     }, 300);
 
     return (): void => {
