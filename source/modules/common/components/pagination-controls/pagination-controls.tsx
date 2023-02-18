@@ -1,6 +1,7 @@
 import { Box } from '@/common/components/box/box';
 import { Flex } from '@/common/components/flex/flex';
 import { Input } from '@/common/components/input/input';
+import { Select } from '@/common/components/select/select';
 import { Dispatch, FormEvent, ReactElement, SetStateAction, useEffect, useMemo, useState } from 'react';
 
 export const PaginationControls = (props: {
@@ -75,7 +76,7 @@ export const PaginationControls = (props: {
         Page
       </label>
       <Box mx='1' />
-      <select id='page' name='page' disabled={2 > pageOptions.length} onInput={pageInputHandler}>
+      <Select id='page' name='page' disabled={2 > pageOptions.length} minWidth='3' onInput={pageInputHandler}>
         {pageOptions.map((pageOption: number): ReactElement => {
           return (
             <option key={pageOption} value={pageOption}>
@@ -83,13 +84,13 @@ export const PaginationControls = (props: {
             </option>
           );
         })}
-      </select>
+      </Select>
       <Box mx='1' />
       <label htmlFor='count'>
         Count
       </label>
       <Box mx='1' />
-      <select id='count' name='count' disabled={2 > countOptions.length} onInput={countInputHandler}>
+      <Select id='count' name='count' disabled={2 > countOptions.length} minWidth='3' onInput={countInputHandler}>
         {countOptions.map((countOption: number): ReactElement => {
           return (
             <option key={countOption} value={countOption}>
@@ -97,7 +98,7 @@ export const PaginationControls = (props: {
             </option>
           );
         })}
-      </select>
+      </Select>
     </Flex>
   );
 };
