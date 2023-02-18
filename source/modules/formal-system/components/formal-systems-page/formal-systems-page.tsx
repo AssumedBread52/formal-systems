@@ -4,6 +4,7 @@ import { HyperLink } from '@/common/components/hyper-link/hyper-link';
 import { Input } from '@/common/components/input/input';
 import { Typography } from '@/common/components/typography/typography';
 import { useReadFormalSystemsQuery } from '@/formal-system/hooks';
+import { ClientFormalSystem } from '@/formal-system/types';
 import { useSession } from 'next-auth/react';
 import { FormEvent, ReactElement, useEffect, useState } from 'react';
 
@@ -68,6 +69,11 @@ export const FormalSystemsPage = (): ReactElement => {
         )}
         {!(isError || isSuccess) && (
           'Pulsating Skeletons'
+        )}
+        {isSuccess && (
+          data.results.map((result: ClientFormalSystem): string => {
+            return result.title;
+          })
         )}
         {isSuccess && (
           data.total
