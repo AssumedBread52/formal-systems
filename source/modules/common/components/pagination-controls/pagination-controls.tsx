@@ -31,7 +31,7 @@ export const PaginationControls = (props: {
 
   const pageOptions = useMemo((): number[] => {
     return Array.from({
-      length: total / count
+      length: Math.ceil(total / count)
     }, (_: unknown, index: number): number => {
       return index + 1;
     });
@@ -76,7 +76,7 @@ export const PaginationControls = (props: {
         Page
       </label>
       <Box mx='1' />
-      <Select id='page' name='page' disabled={2 > pageOptions.length} minWidth='3' onInput={pageInputHandler}>
+      <Select id='page' name='page' disabled={2 > pageOptions.length} minWidth='4' onInput={pageInputHandler}>
         {pageOptions.map((pageOption: number): ReactElement => {
           return (
             <option key={pageOption} value={pageOption}>
@@ -90,7 +90,7 @@ export const PaginationControls = (props: {
         Count
       </label>
       <Box mx='1' />
-      <Select id='count' name='count' disabled={2 > countOptions.length} minWidth='3' onInput={countInputHandler}>
+      <Select id='count' name='count' disabled={2 > countOptions.length} minWidth='4' onInput={countInputHandler}>
         {countOptions.map((countOption: number): ReactElement => {
           return (
             <option key={countOption} value={countOption}>
