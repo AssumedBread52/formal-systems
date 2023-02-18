@@ -72,9 +72,6 @@ export const FormalSystemsPage = (): ReactElement => {
         {isSuccess && (
           data.total
         )}
-        <div>
-          Pagination Controls
-        </div>
       </section>
     </Box>
   );
