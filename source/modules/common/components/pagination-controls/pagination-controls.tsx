@@ -42,7 +42,7 @@ export const PaginationControls = (props: {
     });
   }, [total]);
 
-  const inputHandler = (event: FormEvent<HTMLInputElement>): void => {
+  const keywordInputHandler = (event: FormEvent<HTMLInputElement>): void => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -50,12 +50,12 @@ export const PaginationControls = (props: {
   };
 
   return (
-    <Flex display='flex' mx='auto' width='7'>
+    <Flex display='flex' mx='auto' my='3' width='7'>
       <label htmlFor='keywords'>
         Search
       </label>
       <Box mx='1' />
-      <Input id='keywords' type='text' width='100%' value={keywords} onInput={inputHandler} />
+      <Input id='keywords' type='text' width='100%' value={keywords} onInput={keywordInputHandler} />
     </Flex>
   );
 };
