@@ -70,7 +70,7 @@ export const PaginationControls = (props: {
         Search
       </label>
       <Box mx='1' />
-      <Input id='keywords' type='text' width='100%' value={keywords} onInput={keywordInputHandler} />
+      <Input id='keywords' type='search' width='100%' value={keywords} onInput={keywordInputHandler} />
       <Box mx='2' />
       <label htmlFor='page'>
         Page
