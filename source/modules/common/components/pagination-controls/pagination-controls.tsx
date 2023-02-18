@@ -42,6 +42,20 @@ export const PaginationControls = (props: {
     });
   }, [total]);
 
+  const pageInputHandler = (event: FormEvent<HTMLSelectElement>): void => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    updatePage(parseInt(event.currentTarget.value));
+  };
+
+  const countInputHandler = (event: FormEvent<HTMLSelectElement>): void => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    updateCount(parseInt(event.currentTarget.value));
+  };
+
   const keywordInputHandler = (event: FormEvent<HTMLInputElement>): void => {
     event.preventDefault();
     event.stopPropagation();
@@ -56,6 +70,34 @@ export const PaginationControls = (props: {
       </label>
       <Box mx='1' />
       <Input id='keywords' type='text' width='100%' value={keywords} onInput={keywordInputHandler} />
+      <Box mx='2' />
+      <label htmlFor='page'>
+        Page
+      </label>
+      <Box mx='1' />
+      <select id='page' name='page' disabled={2 > pageOptions.length} onInput={pageInputHandler}>
+        {pageOptions.map((pageOption: number): ReactElement => {
+          return (
+            <option key={pageOption} value={pageOption}>
+              {pageOption}
+            </option>
+          );
+        })}
+      </select>
+      <Box mx='1' />
+      <label htmlFor='count'>
+        Count
+      </label>
+      <Box mx='1' />
+      <select id='count' name='count' disabled={2 > countOptions.length} onInput={countInputHandler}>
+        {countOptions.map((countOption: number): ReactElement => {
+          return (
+            <option key={countOption} value={countOption}>
+              {countOption}
+            </option>
+          );
+        })}
+      </select>
     </Flex>
   );
 };
