@@ -38,8 +38,10 @@ export const PaginationControls = (props: {
   }, [count, total]);
 
   const countOptions = useMemo((): number[] => {
-    return [1, 2, 5, 10, 20].filter((option: number): boolean => {
-      return (option / 2) < total || option <= total;
+    return Array.from({
+      length: Math.min(total, 100)
+    }, (_: unknown, index: number): number => {
+      return index + 1;
     });
   }, [total]);
 
