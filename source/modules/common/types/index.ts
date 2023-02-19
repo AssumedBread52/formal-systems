@@ -4,6 +4,7 @@ export type { IdResponse } from './id-response';
 export type { InputFieldProps } from './input-field-props';
 export type { KeywordsFieldProps } from './keywords-field-props';
 export type { LoadingSpinnerProps } from './loading-spinner-props';
+export type { NumericSelectFieldProps } from './numeric-select-field-props';
 export type { PaginatedParameters } from './paginated-parameters';
 export type { PaginatedQueryParameters } from './paginated-query-parameters';
 export type { PaginatedResults } from './paginated-results';
