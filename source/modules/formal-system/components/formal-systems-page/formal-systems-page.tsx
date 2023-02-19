@@ -1,4 +1,5 @@
 import { Box } from '@/common/components/box/box';
+import { Flex } from '@/common/components/flex/flex';
 import { HyperLink } from '@/common/components/hyper-link/hyper-link';
 import { PaginationControls } from '@/common/components/pagination-controls/pagination-controls';
 import { Typography } from '@/common/components/typography/typography';
@@ -35,7 +36,9 @@ export const FormalSystemsPage = (): ReactElement => {
         </Typography>
         <PaginationControls total={data?.total ?? 0} page={page} count={count} updatePage={setPage} updateCount={setCount} updateKeywords={setKeywords} />
         {isError && (
-          'Failed to read formal systems.'
+          <Flex display='flex' justifyContent='center'>
+            Failed to read formal systems.
+          </Flex>
         )}
         {!(isError || isSuccess) && (
           'Pulsating Skeletons'
