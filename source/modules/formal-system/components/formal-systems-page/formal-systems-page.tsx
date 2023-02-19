@@ -44,7 +44,7 @@ export const FormalSystemsPage = (): ReactElement => {
           </Flex>
         )}
         {isSuccess && (
-          <FormalSystemsList list={data.results} />
+          <FormalSystemsList formalSystems={data.results} />
         )}
       </section>
     </Box>

@@ -2,14 +2,14 @@ import { ClientFormalSystem } from '@/formal-system/types';
 import { Fragment, ReactElement } from 'react';
 
 export const FormalSystemsList = (props: {
-  list: ClientFormalSystem[];
+  formalSystems: ClientFormalSystem[];
 }): ReactElement => {
-  const { list } = props;
+  const { formalSystems } = props;
 
   return (
     <Fragment>
-      {list.map((item: ClientFormalSystem): string => {
-        const { title } = item;
+      {formalSystems.map((formalSystem: ClientFormalSystem): string => {
+        const { title } = formalSystem;
 
         return title;
       })}
