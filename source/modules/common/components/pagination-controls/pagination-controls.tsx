@@ -1,17 +1,11 @@
 import { Box } from '@/common/components/box/box';
 import { Flex } from '@/common/components/flex/flex';
-import { Dispatch, ReactElement, SetStateAction } from 'react';
+import { PaginationControlsProps } from '@/common/types';
+import { ReactElement } from 'react';
 import { KeywordsField } from './keywords-field/keywords-field';
 import { NumericSelectField } from './numeric-select-field/numeric-select-field';
 
-export const PaginationControls = (props: {
-  total: number;
-  page: number;
-  count: number;
-  updatePage: Dispatch<SetStateAction<number>>;
-  updateCount: Dispatch<SetStateAction<number>>;
-  updateKeywords: Dispatch<SetStateAction<string[]>>;
-}): ReactElement => {
+export const PaginationControls = (props: PaginationControlsProps): ReactElement => {
   const { total, page, count, updatePage, updateCount, updateKeywords } = props;
 
   const pageOptionCount = Math.ceil(Math.max(total, 1) / count);
