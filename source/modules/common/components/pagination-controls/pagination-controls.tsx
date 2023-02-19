@@ -6,12 +6,13 @@ import { Dispatch, FormEvent, ReactElement, SetStateAction, useEffect, useMemo, 
 
 export const PaginationControls = (props: {
   total: number;
+  page: number;
   count: number;
   updatePage: Dispatch<SetStateAction<number>>;
   updateCount: Dispatch<SetStateAction<number>>;
   updateKeywords: Dispatch<SetStateAction<string[]>>;
 }): ReactElement => {
-  const { total, count, updatePage, updateCount, updateKeywords } = props;
+  const { total, page, count, updatePage, updateCount, updateKeywords } = props;
 
   const [keywords, setKeywords] = useState<string>('');
 
@@ -30,19 +31,19 @@ export const PaginationControls = (props: {
   }, [keywords]);
 
   const pageOptions = useMemo((): number[] => {
-    return Array.from({
-      length: Math.ceil(total / count)
-    }, (_: unknown, index: number): number => {
-      return index + 1;
-    });
+    const options = Array.from(Array(Math.ceil(Math.max(total, 1) / count) + 1).keys());
+
+    options.shift();
+
+    return options;
   }, [count, total]);
 
   const countOptions = useMemo((): number[] => {
-    return Array.from({
-      length: Math.min(total, 100)
-    }, (_: unknown, index: number): number => {
-      return index + 1;
-    });
+    const options = Array.from(Array(Math.max(10, Math.min(total, 100)) + 1).keys());
+
+    options.shift();
+
+    return options;
   }, [total]);
 
   const pageInputHandler = (event: FormEvent<HTMLSelectElement>): void => {
@@ -78,7 +79,7 @@ export const PaginationControls = (props: {
         Page
       </label>
       <Box mx='1' />
-      <Select id='page' name='page' disabled={2 > pageOptions.length} minWidth='4' onInput={pageInputHandler}>
+      <Select id='page' name='page' disabled={2 > pageOptions.length} minWidth='4' value={page} onInput={pageInputHandler}>
         {pageOptions.map((pageOption: number): ReactElement => {
           return (
             <option key={pageOption} value={pageOption}>
@@ -92,7 +93,7 @@ export const PaginationControls = (props: {
         Count
       </label>
       <Box mx='1' />
-      <Select id='count' name='count' disabled={2 > countOptions.length} minWidth='4' onInput={countInputHandler}>
+      <Select id='count' name='count' disabled={2 > countOptions.length} minWidth='4' value={count} onInput={countInputHandler}>
         {countOptions.map((countOption: number): ReactElement => {
           return (
             <option key={countOption} value={countOption}>
