@@ -18,7 +18,7 @@ export const PaginationControls = (props: PaginationControlsProps): ReactElement
         <KeywordsField updateKeywords={updateKeywords} />
       </Flex>
       <Flex display='flex' mx='auto' my='2' width='7'>
-        Total: {total}
+        Results Found: {total}
         <Box mx='auto' />
         <NumericSelectField label='Page' total={total} interval={1} optionCount={pageOptionCount} value={page} setValue={updatePage} />
         <Box mx='2' />

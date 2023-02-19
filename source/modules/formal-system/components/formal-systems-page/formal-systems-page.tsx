@@ -45,9 +45,6 @@ export const FormalSystemsPage = (): ReactElement => {
             return result.title;
           })
         )}
-        {isSuccess && (
-          data.total
-        )}
       </section>
     </Box>
   );
