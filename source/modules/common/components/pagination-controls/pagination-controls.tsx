@@ -1,8 +1,8 @@
 import { Box } from '@/common/components/box/box';
 import { Flex } from '@/common/components/flex/flex';
-import { KeywordsField } from '@/common/components/keywords-field/keywords-field';
 import { Select } from '@/common/components/select/select';
 import { Dispatch, FormEvent, ReactElement, SetStateAction, useMemo } from 'react';
+import { KeywordsField } from './keywords-field/keywords-field';
 
 export const PaginationControls = (props: {
   total: number;
