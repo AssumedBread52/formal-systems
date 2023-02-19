@@ -35,13 +35,13 @@ export const FormalSystemsPage = (): ReactElement => {
           )}
         </Typography>
         <PaginationControls total={data?.total ?? 0} page={page} count={count} updatePage={setPage} updateCount={setCount} updateKeywords={setKeywords} />
+        {!(isError || isSuccess) && (
+          'Pulsating Skeletons'
+        )}
         {isError && (
           <Flex display='flex' justifyContent='center'>
             Failed to read formal systems.
           </Flex>
-        )}
-        {!(isError || isSuccess) && (
-          'Pulsating Skeletons'
         )}
         {isSuccess && (
           data.results.map((result: ClientFormalSystem): string => {
