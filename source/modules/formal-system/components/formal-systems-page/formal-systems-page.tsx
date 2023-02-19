@@ -4,9 +4,9 @@ import { HyperLink } from '@/common/components/hyper-link/hyper-link';
 import { PaginationControls } from '@/common/components/pagination-controls/pagination-controls';
 import { Typography } from '@/common/components/typography/typography';
 import { useReadFormalSystemsQuery } from '@/formal-system/hooks';
-import { ClientFormalSystem } from '@/formal-system/types';
 import { useSession } from 'next-auth/react';
 import { ReactElement, useState } from 'react';
+import { FormalSystemsList } from './formal-systems-list/formal-systems-list';
 
 export const FormalSystemsPage = (): ReactElement => {
   const [page, setPage] = useState<number>(1);
@@ -44,9 +44,7 @@ export const FormalSystemsPage = (): ReactElement => {
           </Flex>
         )}
         {isSuccess && (
-          data.results.map((result: ClientFormalSystem): string => {
-            return result.title;
-          })
+          <FormalSystemsList list={data.results} />
         )}
       </section>
     </Box>
