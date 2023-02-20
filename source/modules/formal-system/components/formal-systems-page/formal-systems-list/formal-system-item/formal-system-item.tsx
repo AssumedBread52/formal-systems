@@ -28,13 +28,13 @@ export const FormalSystemItem = (props: ClientFormalSystem): ReactElement => {
   const shadow = entered ? 'mainHovered' : 'mainUnhovered';
 
   return (
-    <Box boxShadow={shadow} borderRadius='card' cursor='pointer' my='2' px='3' py='2' position='relative' onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
+    <Box boxShadow={shadow} borderRadius='card' cursor='pointer' my='2' p='3' position='relative' onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
       {'authenticated' === status && (
-        <Box position='absolute' right='3'>
+        <Box position='absolute' top='3' right='3'>
           Delete
         </Box>
       )}
-      <Typography as='h4'>
+      <Typography as='h4' m='0'>
         {title}
       </Typography>
       <Typography as='p'>
