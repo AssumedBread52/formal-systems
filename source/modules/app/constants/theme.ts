@@ -12,6 +12,8 @@ export const theme = {
   shadows: {
     headerScrolled: '0px 4px 8px 0px rgb(128 128 128)',
     headerUnscrolled: '0px 2px 4px 0px rgb(128 128 128)',
+    mainHovered: '0px 0px 5.2px 0px rgb(128 128 128 / 50%)',
+    mainUnhovered: '0px 0px 0px 1.2px rgb(128 128 128 / 25%)',
     footerHovered: '0px 0px 8px 0px rgb(128 128 128)',
     footerUnhovered: '0px 0px 4px 0px rgb(128 128 128)'
   },
