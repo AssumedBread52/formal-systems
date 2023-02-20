@@ -28,7 +28,7 @@ export const DependencyItem = (props: DependencyItemProps): ReactElement => {
     setEntered(false);
   };
 
-  const boxShadow = entered ? 'centeredHovered' : 'centeredUnhovered';
+  const boxShadow = entered ? 'footerHovered' : 'footerUnhovered';
 
   return (
     <Flex display='flex' flexDirection='column' borderRadius='card' boxShadow={boxShadow} minHeight='4' alignItems='center' transition='headerShadow' justifyContent='space-around' m='1' cursor='pointer' onClick={clickHandler} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
