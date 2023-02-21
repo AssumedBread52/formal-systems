@@ -29,7 +29,7 @@ export const FormalSystemsPage = (): ReactElement => {
         <Typography as='h1' textAlign='center' position='relative' my='3'>
           Formal Systems
           {isAuthenticated && (
-            <HyperLink position='absolute' right='0' fontSize='formButton' href='/create-formal-system'>
+            <HyperLink title='New formal system form' position='absolute' right='0' fontSize='formButton' href='/create-formal-system'>
               Create New
             </HyperLink>
           )}
