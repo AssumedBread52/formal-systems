@@ -9,10 +9,13 @@ import { useInputValue } from '@/common/hooks';
 import { isEmail } from '@/user/helpers';
 import { useEditUser } from '@/user/hooks';
 import { SessionUser } from '@/user/types';
-import { FormEvent, ReactElement } from 'react';
+import { useRouter } from 'next/router';
+import { FormEvent, MouseEvent, ReactElement } from 'react';
 
 export const EditProfilePage = (props: SessionUser): ReactElement => {
   const { firstName, lastName, email } = props;
+
+  const router = useRouter();
 
   const [newFirstName, firstNameHasError, setFirstName] = useInputValue(hasText, firstName);
   const [newLastName, lastNameHasError, setLastName] = useInputValue(hasText, lastName);
@@ -33,6 +36,13 @@ export const EditProfilePage = (props: SessionUser): ReactElement => {
     });
   };
 
+  const clickHandler = (event: MouseEvent<HTMLButtonElement>): void => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    router.back();
+  };
+
   const disableSubmit = ((firstNameHasError && lastNameHasError && emailHasError) || (newFirstName === firstName && newLastName === lastName && newEmail === email)) && passwordHasError;
 
   return (
@@ -46,15 +56,19 @@ export const EditProfilePage = (props: SessionUser): ReactElement => {
           <InputField label='Last Name' value={newLastName} hasError={lastNameHasError} type='text' updateValue={setLastName} />
           <InputField label='Email Address' value={newEmail} hasError={emailHasError} type='email' updateValue={setEmail} />
           <InputField label='Password' value={newPassword} hasError={passwordHasError} type='password' updateValue={setPassword} />
-          <Flex display='flex' flexDirection='column' alignItems='center' position='relative' my='2'>
-            <Button disabled={disableSubmit} fontSize='formButton' height='3' width='5' type='submit'>
+          <Flex display='flex' flexDirection='column' alignItems='center' my='2'>
+            <Button disabled={disableSubmit} fontSize='formButton' height='3' width='5' position='relative' type='submit'>
               Save Changes
+              {isLoading && (
+                <Box position='absolute' top='0' left='5' mx='2'>
+                  <LoadingSpinner />
+                </Box>
+              )}
             </Button>
-            {isLoading && (
-              <Box position='absolute' top='0' right='4'>
-                <LoadingSpinner size={2} />
-              </Box>
-            )}
+            <Box my='1' />
+            <Button title='Go back' fontSize='formButton' height='3' width='5' onClick={clickHandler}>
+              Cancel
+            </Button>
             <Typography as='p' color='red' height='2'>
               {isError && 'Failed to update profile.'}
             </Typography>

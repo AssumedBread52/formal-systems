@@ -38,19 +38,19 @@ export const SignOutPage = (): ReactElement => {
         <Typography as='h1' textAlign='center' my='3'>
           Sign Out
         </Typography>
-        <Flex display='flex' flexDirection='column' alignItems='center' position='relative' my='2'>
-          <Button fontSize='formButton' height='3' width='5' onClick={signOutClickHandler}>
+        <Flex display='flex' flexDirection='column' alignItems='center' my='2'>
+          <Button fontSize='formButton' height='3' width='5' position='relative' onClick={signOutClickHandler}>
             Sign Out
+            {isLoading && (
+              <Box position='absolute' top='0' left='5' mx='2'>
+                <LoadingSpinner />
+              </Box>
+            )}
           </Button>
           <Box my='1' />
           <Button fontSize='formButton' height='3' width='5' onClick={cancelClickHandler}>
             Cancel
           </Button>
-          {isLoading && (
-            <Box position='absolute' top='0' right='-4rem'>
-              <LoadingSpinner size={2} />
-            </Box>
-          )}
           <Typography as='p' color='red' height='2'>
             {isError && 'Failed to sign out.'}
           </Typography>

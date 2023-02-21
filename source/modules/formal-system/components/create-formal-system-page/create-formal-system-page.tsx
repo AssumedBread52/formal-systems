@@ -8,9 +8,12 @@ import { Typography } from '@/common/components/typography/typography';
 import { buildUrlPath, hasText } from '@/common/helpers';
 import { useInputValue } from '@/common/hooks';
 import { useCreateFormalSystem } from '@/formal-system/hooks';
-import { FormEvent, ReactElement } from 'react';
+import { useRouter } from 'next/router';
+import { FormEvent, MouseEvent, ReactElement } from 'react';
 
 export const CreateFormalSystemPage = (): ReactElement => {
+  const router = useRouter();
+
   const [title, titleHasError, setTitle] = useInputValue(hasText);
   const [description, descriptionHasError, setDescription] = useInputValue(hasText);
 
@@ -26,6 +29,13 @@ export const CreateFormalSystemPage = (): ReactElement => {
     });
   };
 
+  const clickHandler = (event: MouseEvent<HTMLButtonElement>): void => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    router.back();
+  };
+
   const disableSubmit = titleHasError || descriptionHasError;
 
   return (
@@ -38,15 +48,19 @@ export const CreateFormalSystemPage = (): ReactElement => {
           <InputField label='Title' value={title} hasError={titleHasError} type='text' updateValue={setTitle} />
           <InputField label='URL Path' value={buildUrlPath(title)} type='text' />
           <TextareaField label='Description' value={description} hasError={descriptionHasError} updateValue={setDescription} />
-          <Flex display='flex' flexDirection='column' alignItems='center' position='relative' my='2'>
-            <Button disabled={disableSubmit} fontSize='formButton' height='3' width='5' type='submit'>
+          <Flex display='flex' flexDirection='column' alignItems='center' my='2'>
+            <Button disabled={disableSubmit} fontSize='formButton' height='3' width='5' position='relative' type='submit'>
               Save
+              {isLoading && (
+                <Box position='absolute' top='0' left='5' mx='2'>
+                  <LoadingSpinner />
+                </Box>
+              )}
             </Button>
-            {isLoading && (
-              <Box position='absolute' top='0' right='4'>
-                <LoadingSpinner size={2} />
-              </Box>
-            )}
+            <Box my='1' />
+            <Button title='Go back' fontSize='formButton' height='3' width='5' onClick={clickHandler}>
+              Cancel
+            </Button>
             <Typography as='p' color='red' height='2'>
               {isError && 'Failed to create formal system.'}
             </Typography>

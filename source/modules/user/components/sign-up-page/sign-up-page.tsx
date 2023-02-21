@@ -8,9 +8,12 @@ import { hasText } from '@/common/helpers';
 import { useInputValue } from '@/common/hooks';
 import { isEmail } from '@/user/helpers';
 import { useSignUpUser } from '@/user/hooks';
-import { FormEvent, ReactElement } from 'react';
+import { useRouter } from 'next/router';
+import { FormEvent, MouseEvent, ReactElement } from 'react';
 
 export const SignUpPage = (): ReactElement => {
+  const router = useRouter();
+
   const [firstName, firstNameHasError, setFirstName] = useInputValue(hasText);
   const [lastName, lastNameHasError, setLastName] = useInputValue(hasText);
   const [email, emailHasError, setEmail] = useInputValue(isEmail);
@@ -30,6 +33,13 @@ export const SignUpPage = (): ReactElement => {
     });
   };
 
+  const clickHandler = (event: MouseEvent<HTMLButtonElement>): void => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    router.back();
+  };
+
   const disableSubmit = firstNameHasError || lastNameHasError || emailHasError || passwordHasError;
 
   return (
@@ -43,15 +53,19 @@ export const SignUpPage = (): ReactElement => {
           <InputField label='Last Name' value={lastName} hasError={lastNameHasError} type='text' updateValue={setLastName} />
           <InputField label='Email Address' value={email} hasError={emailHasError} type='email' updateValue={setEmail} />
           <InputField label='Password' value={password} hasError={passwordHasError} type='password' updateValue={setPassword} />
-          <Flex display='flex' flexDirection='column' alignItems='center' position='relative' my='2'>
-            <Button disabled={disableSubmit} fontSize='formButton' height='3' width='5' type='submit'>
+          <Flex display='flex' flexDirection='column' alignItems='center' my='2'>
+            <Button disabled={disableSubmit} fontSize='formButton' height='3' width='5' position='relative' type='submit'>
               Sign Up
+              {isLoading && (
+                <Box position='absolute' top='0' left='5' mx='2'>
+                  <LoadingSpinner />
+                </Box>
+              )}
             </Button>
-            {isLoading && (
-              <Box position='absolute' top='0' right='4'>
-                <LoadingSpinner size={2} />
-              </Box>
-            )}
+            <Box my='1' />
+            <Button title='Go back' fontSize='formButton' height='3' width='5' onClick={clickHandler}>
+              Cancel
+            </Button>
             <Typography as='p' color='red' height='2'>
               {errorMessage}
             </Typography>
