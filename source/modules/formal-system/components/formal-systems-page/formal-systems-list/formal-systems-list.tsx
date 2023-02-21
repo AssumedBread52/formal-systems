@@ -1,12 +1,10 @@
 import { Box } from '@/common/components/box/box';
-import { ClientFormalSystem } from '@/formal-system/types';
+import { ClientFormalSystem, FormalSystemsListProps } from '@/formal-system/types';
 import { useSession } from 'next-auth/react';
 import { ReactElement } from 'react';
 import { FormalSystemItem } from './formal-system-item/formal-system-item';
 
-export const FormalSystemsList = (props: {
-  formalSystems: ClientFormalSystem[];
-}): ReactElement => {
+export const FormalSystemsList = (props: FormalSystemsListProps): ReactElement => {
   const { formalSystems } = props;
 
   const { status } = useSession();
