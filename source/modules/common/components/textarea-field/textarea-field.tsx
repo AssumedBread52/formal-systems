@@ -38,7 +38,7 @@ export const TextareaField = (props: TextareaFieldProps): ReactElement => {
       <Flex flexBasis='70%'>
         <Textarea id={id} rows={10} width='100%' value={value} onBlur={blurHandler} onInput={inputHandler} />
       </Flex>
-      <Typography as='p' color='red' fontSize='0.75rem' height='1rem' width='100%' m='0'>
+      <Typography as='p' color='red' fontSize='errorMessage' height='2' width='100%' m='0'>
         {showError && `Please enter a valid ${lowerCaseLabel}.`}
       </Typography>
     </Flex>
