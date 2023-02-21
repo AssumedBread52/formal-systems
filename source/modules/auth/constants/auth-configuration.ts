@@ -1,22 +1,15 @@
-import { CredentialsInput, CredentialsPayload } from '@/auth/types';
+import { CredentialsInput, CredentialsPayload, JwtCallbackParameters, SessionCallbackParameters } from '@/auth/types';
 import { buildMongoUrl } from '@/common/helpers';
 import { ServerUser } from '@/user/types';
 import { compare } from 'bcryptjs';
 import { MongoClient } from 'mongodb';
-import { Account, Profile, Session, SessionStrategy, User } from 'next-auth';
-import { AdapterUser } from 'next-auth/adapters';
+import { Session, SessionStrategy, User } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import Credentials from 'next-auth/providers/credentials';
 
 export const authConfiguration = {
   callbacks: {
-    jwt: async (params: {
-      token: JWT;
-      user?: AdapterUser | User;
-      account?: Account | null;
-      profile?: Profile;
-      isNewUser?: boolean;
-    }): Promise<JWT> => {
+    jwt: async (params: JwtCallbackParameters): Promise<JWT> => {
       const { token, user } = params;
 
       if (user) {
@@ -25,11 +18,7 @@ export const authConfiguration = {
 
       return token;
     },
-    session: async (params: {
-      session: Session;
-      user: AdapterUser | User;
-      token: JWT;
-    }): Promise<Session> => {
+    session: async (params: SessionCallbackParameters): Promise<Session> => {
       const { session, token } = params;
 
       session.id = token.id;
