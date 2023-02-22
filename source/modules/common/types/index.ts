@@ -1,5 +1,6 @@
 export type { DeleteByIdPayload } from './delete-by-id-payload';
 export type { ErrorResponse } from './error-response';
+export type { FormActionsProps } from './form-actions-props';
 export type { IdResponse } from './id-response';
 export type { InputFieldProps } from './input-field-props';
 export type { KeywordsFieldProps } from './keywords-field-props';
