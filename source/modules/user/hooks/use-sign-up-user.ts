@@ -1,8 +1,8 @@
 import { useSignInUserMutation } from '@/auth/hooks';
+import { useSuccessfulRoute } from '@/common/hooks';
 import { SignUpPayload } from '@/user/types';
 import { BaseQueryFn, MutationDefinition } from '@reduxjs/toolkit/dist/query';
 import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
-import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useSignUpUserMutation } from './use-sign-up-user-mutation';
 
@@ -11,8 +11,6 @@ export const useSignUpUser = (email: string, password: string): {
   errorMessage: string;
   isLoading: boolean;
 } => {
-  const { back } = useRouter();
-
   const [signUpUser, { isError: isErrorSignUp, isLoading: isLoadingSignUp, isSuccess: isSuccessSignUp }] = useSignUpUserMutation();
   const [signInUser, { isError: isErrorSignIn, isSuccess: isSuccessSignIn }] = useSignInUserMutation();
 
@@ -25,11 +23,7 @@ export const useSignUpUser = (email: string, password: string): {
     }
   }, [isSuccessSignUp, email, password, signInUser]);
 
-  useEffect((): void => {
-    if (isSuccessSignIn) {
-      back();
-    }
-  }, [isSuccessSignIn, back]);
+  useSuccessfulRoute(isSuccessSignIn);
 
   const errorMessage = isErrorSignIn ? 'Failed to sign in.' : (isErrorSignUp ? 'Failed to sign up.' : '');
 

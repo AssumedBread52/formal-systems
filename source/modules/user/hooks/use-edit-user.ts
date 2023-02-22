@@ -1,9 +1,8 @@
+import { useSuccessfulRoute } from '@/common/hooks';
 import { IdResponse } from '@/common/types';
 import { EditProfilePayload } from '@/user/types';
 import { BaseQueryFn, MutationDefinition } from '@reduxjs/toolkit/dist/query';
 import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 import { useEditUserMutation } from './use-edit-user-mutation';
 
 export const useEditUser = (): {
@@ -11,15 +10,9 @@ export const useEditUser = (): {
   errorMessage: string;
   isLoading: boolean;
 } => {
-  const { back } = useRouter();
-
   const [editUser, { isError, isLoading, isSuccess }] = useEditUserMutation();
 
-  useEffect((): void => {
-    if (isSuccess) {
-      back();
-    }
-  }, [isSuccess, back]);
+  useSuccessfulRoute(isSuccess);
 
   return {
     editUser,
