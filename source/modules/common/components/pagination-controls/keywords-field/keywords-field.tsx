@@ -20,7 +20,7 @@ export const KeywordsField = (props: KeywordsFieldProps): ReactElement => {
     return (): void => {
       clearTimeout(delayedUpdate);
     };
-  }, [keywords]);
+  }, [keywords, updateKeywords]);
 
   const inputHandler = (event: FormEvent<HTMLInputElement>): void => {
     event.preventDefault();
