@@ -1,19 +1,14 @@
 import { Box } from '@/common/components/box/box';
-import { Button } from '@/common/components/button/button';
-import { Flex } from '@/common/components/flex/flex';
+import { FormActions } from '@/common/components/form-actions/form-actions';
 import { InputField } from '@/common/components/input-field/input-field';
-import { LoadingSpinner } from '@/common/components/loading-spinner/loading-spinner';
 import { Typography } from '@/common/components/typography/typography';
 import { hasText } from '@/common/helpers';
 import { useInputValue } from '@/common/hooks';
 import { isEmail } from '@/user/helpers';
 import { useSignUpUser } from '@/user/hooks';
-import { useRouter } from 'next/router';
-import { FormEvent, MouseEvent, ReactElement } from 'react';
+import { FormEvent, ReactElement } from 'react';
 
 export const SignUpPage = (): ReactElement => {
-  const router = useRouter();
-
   const [firstName, firstNameHasError, setFirstName] = useInputValue(hasText);
   const [lastName, lastNameHasError, setLastName] = useInputValue(hasText);
   const [email, emailHasError, setEmail] = useInputValue(isEmail);
@@ -33,13 +28,6 @@ export const SignUpPage = (): ReactElement => {
     });
   };
 
-  const clickHandler = (event: MouseEvent<HTMLButtonElement>): void => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    router.back();
-  };
-
   const disableSubmit = firstNameHasError || lastNameHasError || emailHasError || passwordHasError;
 
   return (
@@ -53,23 +41,7 @@ export const SignUpPage = (): ReactElement => {
           <InputField label='Last Name' value={lastName} hasError={lastNameHasError} type='text' updateValue={setLastName} />
           <InputField label='Email Address' value={email} hasError={emailHasError} type='email' updateValue={setEmail} />
           <InputField label='Password' value={password} hasError={passwordHasError} type='password' updateValue={setPassword} />
-          <Flex display='flex' flexDirection='column' alignItems='center' my='2'>
-            <Button disabled={disableSubmit} fontSize='formButton' height='3' width='5' position='relative' type='submit'>
-              Sign Up
-              {isLoading && (
-                <Box position='absolute' top='0' left='5' mx='2'>
-                  <LoadingSpinner />
-                </Box>
-              )}
-            </Button>
-            <Box my='1' />
-            <Button title='Go back' fontSize='formButton' height='3' width='5' onClick={clickHandler}>
-              Cancel
-            </Button>
-            <Typography as='p' color='red' height='2'>
-              {errorMessage}
-            </Typography>
-          </Flex>
+          <FormActions disableSubmit={disableSubmit} submitTitle='Sign Up' isLoading={isLoading} errorMessage={errorMessage} />
         </form>
       </section>
     </Box>

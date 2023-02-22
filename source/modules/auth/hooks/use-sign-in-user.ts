@@ -5,16 +5,24 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useSignInUserMutation } from './use-sign-in-user-mutation';
 
-export const useSignInUser = (): [MutationTrigger<MutationDefinition<CredentialsPayload, BaseQueryFn, '', boolean, 'api'>>, boolean, boolean] => {
-  const router = useRouter();
+export const useSignInUser = (): {
+  signInUser: MutationTrigger<MutationDefinition<CredentialsPayload, BaseQueryFn, '', boolean, 'api'>>;
+  errorMessage: string;
+  isLoading: boolean;
+} => {
+  const { back } = useRouter();
 
   const [signInUser, { isError, isLoading, isSuccess }] = useSignInUserMutation();
 
   useEffect((): void => {
     if (isSuccess) {
-      router.back();
+      back();
     }
-  }, [isSuccess, router]);
+  }, [isSuccess, back]);
 
-  return [signInUser, isError, isLoading];
+  return {
+    signInUser,
+    errorMessage: isError ? 'Failed to sign in.' : '',
+    isLoading
+  };
 };

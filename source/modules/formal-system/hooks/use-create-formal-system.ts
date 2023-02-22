@@ -5,16 +5,24 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useCreateFormalSystemMutation } from './use-create-formal-system-mutation';
 
-export const useCreateFormalSystem = (): [MutationTrigger<MutationDefinition<NewFormalSystemPayload, BaseQueryFn, '', void, 'api'>>, boolean, boolean] => {
-  const router = useRouter();
+export const useCreateFormalSystem = (): {
+  createFormalSystem: MutationTrigger<MutationDefinition<NewFormalSystemPayload, BaseQueryFn, '', void, 'api'>>;
+  errorMessage: string;
+  isLoading: boolean;
+} => {
+  const { back } = useRouter();
 
   const [createFormalSystem, { isError, isLoading, isSuccess }] = useCreateFormalSystemMutation();
 
   useEffect((): void => {
     if (isSuccess) {
-      router.back();
+      back();
     }
-  }, [isSuccess, router]);
+  }, [isSuccess, back]);
 
-  return [createFormalSystem, isError, isLoading];
+  return {
+    createFormalSystem,
+    errorMessage: isError ? 'Failed to create formal system.' : '',
+    isLoading
+  };
 };

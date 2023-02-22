@@ -1,35 +1,20 @@
-import { useSignOutUserMutation } from '@/auth/hooks';
+import { useSignOutUser } from '@/auth/hooks';
 import { Box } from '@/common/components/box/box';
 import { Button } from '@/common/components/button/button';
+import { CancelButton } from '@/common/components/cancel-button/cancel-button';
 import { Flex } from '@/common/components/flex/flex';
 import { LoadingSpinner } from '@/common/components/loading-spinner/loading-spinner';
 import { Typography } from '@/common/components/typography/typography';
-import { useRouter } from 'next/router';
-import { MouseEvent, ReactElement, useEffect } from 'react';
+import { MouseEvent, ReactElement } from 'react';
 
 export const SignOutPage = (): ReactElement => {
-  const router = useRouter();
-
-  const [signOutUser, { isError, isLoading, isSuccess }] = useSignOutUserMutation();
-
-  useEffect((): void => {
-    if (isSuccess) {
-      router.push('/');
-    }
-  }, [isSuccess, router]);
+  const { signOutUser, errorMessage, isLoading } = useSignOutUser();
 
   const signOutClickHandler = (event: MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
     event.stopPropagation();
 
     signOutUser();
-  };
-
-  const cancelClickHandler = (event: MouseEvent<HTMLButtonElement>): void => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    router.back();
   };
 
   return (
@@ -48,11 +33,9 @@ export const SignOutPage = (): ReactElement => {
             )}
           </Button>
           <Box my='1' />
-          <Button fontSize='formButton' height='3' width='5' onClick={cancelClickHandler}>
-            Cancel
-          </Button>
+          <CancelButton />
           <Typography as='p' color='red' height='2'>
-            {isError && 'Failed to sign out.'}
+            {errorMessage}
           </Typography>
         </Flex>
       </section>

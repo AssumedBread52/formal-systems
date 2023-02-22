@@ -6,16 +6,24 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useEditUserMutation } from './use-edit-user-mutation';
 
-export const useEditUser = (): [MutationTrigger<MutationDefinition<EditProfilePayload, BaseQueryFn, '', IdResponse, 'api'>>, boolean, boolean] => {
-  const router = useRouter();
+export const useEditUser = (): {
+  editUser: MutationTrigger<MutationDefinition<EditProfilePayload, BaseQueryFn, '', IdResponse, 'api'>>;
+  errorMessage: string;
+  isLoading: boolean;
+} => {
+  const { back } = useRouter();
 
   const [editUser, { isError, isLoading, isSuccess }] = useEditUserMutation();
 
   useEffect((): void => {
     if (isSuccess) {
-      router.back();
+      back();
     }
-  }, [isSuccess, router]);
+  }, [isSuccess, back]);
 
-  return [editUser, isError, isLoading];
+  return {
+    editUser,
+    errorMessage: isError ? 'Failed to update profile.' : '',
+    isLoading
+  };
 };

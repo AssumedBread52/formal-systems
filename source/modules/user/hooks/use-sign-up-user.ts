@@ -11,7 +11,7 @@ export const useSignUpUser = (email: string, password: string): {
   errorMessage: string;
   isLoading: boolean;
 } => {
-  const router = useRouter();
+  const { back } = useRouter();
 
   const [signUpUser, { isError: isErrorSignUp, isLoading: isLoadingSignUp, isSuccess: isSuccessSignUp }] = useSignUpUserMutation();
   const [signInUser, { isError: isErrorSignIn, isSuccess: isSuccessSignIn }] = useSignInUserMutation();
@@ -27,9 +27,9 @@ export const useSignUpUser = (email: string, password: string): {
 
   useEffect((): void => {
     if (isSuccessSignIn) {
-      router.back();
+      back();
     }
-  }, [isSuccessSignIn, router]);
+  }, [isSuccessSignIn, back]);
 
   const errorMessage = isErrorSignIn ? 'Failed to sign in.' : (isErrorSignUp ? 'Failed to sign up.' : '');
 

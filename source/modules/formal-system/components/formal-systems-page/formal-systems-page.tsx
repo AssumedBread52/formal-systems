@@ -24,16 +24,19 @@ export const FormalSystemsPage = (): ReactElement => {
   const isAuthenticated = 'authenticated' === status;
 
   return (
-    <Box px='5'>
+    <Box px='5' minWidth='8'>
       <section>
-        <Typography as='h1' textAlign='center' position='relative' my='3'>
-          Formal Systems
+        <Flex display='flex' alignItems='center'>
+          <Typography as='h1' my='2'>
+            Formal Systems
+          </Typography>
+          <Box mx='auto' />
           {isAuthenticated && (
-            <HyperLink title='New formal system form' position='absolute' right='0' fontSize='formButton' href='/create-formal-system'>
+            <HyperLink title='New formal system form' fontSize='formButton' href='/create-formal-system'>
               Create New
             </HyperLink>
           )}
-        </Typography>
+        </Flex>
         <PaginationControls total={data?.total ?? 0} page={page} count={count} updatePage={setPage} updateCount={setCount} updateKeywords={setKeywords} />
         {!(isError || isSuccess) && (
           'Pulsating Skeletons'
