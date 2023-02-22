@@ -16,7 +16,7 @@ export const Header = (): ReactElement => {
   return (
     <header>
       <Flex alignItems='center' display='flex' px='2' height='4'>
-        <Typography as='h2' my='auto'>
+        <Typography as='h2' my='0'>
           <HyperLink title='Home-page' color={pathname === '/' ? 'white' : 'inherit'} href='/'>
             Formal Systems
           </HyperLink>
