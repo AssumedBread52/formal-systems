@@ -34,13 +34,13 @@ export const UpdateFormalSystemPage = (props: ClientFormalSystem): ReactElement 
     <Box mx='auto' px='4' width='7'>
       <section>
         <Typography as='h1' textAlign='center' my='3'>
-          Edit Formal System
+          Edit Formal System: {title}
         </Typography>
         <form onSubmit={submitHandler}>
           <InputField label='Title' value={newTitle} hasError={titleHasError} type='text' updateValue={setTitle} />
-          <InputField label='URL Path' value={buildUrlPath(title)} type='text' />
+          <InputField label='URL Path' value={buildUrlPath(newTitle)} type='text' />
           <TextareaField label='Description' value={newDescription} hasError={descriptionHasError} updateValue={setDescription} />
-          <FormActions disableSubmit={disableSubmit} submitTitle='Create' isLoading={isLoading} errorMessage={errorMessage} />
+          <FormActions disableSubmit={disableSubmit} submitTitle='Save Changes' isLoading={isLoading} errorMessage={errorMessage} />
         </form>
       </section>
     </Box>
