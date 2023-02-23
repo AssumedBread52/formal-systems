@@ -18,7 +18,7 @@ export const SignOutPage = (): ReactElement => {
   };
 
   return (
-    <Box mx='auto' px='4' width='6'>
+    <Box mx='auto' px='4' width='7'>
       <section>
         <Typography as='h1' textAlign='center' my='3'>
           Sign Out
