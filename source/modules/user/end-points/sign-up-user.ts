@@ -1,8 +1,9 @@
+import { TagTypes } from '@/app/types';
 import { SignUpPayload } from '@/user/types';
 import { BaseQueryFn, FetchArgs } from '@reduxjs/toolkit/dist/query';
 import { EndpointBuilder, MutationDefinition } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 
-export const signUpUser = (builder: EndpointBuilder<BaseQueryFn, '', 'api'>): MutationDefinition<SignUpPayload, BaseQueryFn, '', void, 'api'> => {
+export const signUpUser = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<SignUpPayload, BaseQueryFn, TagTypes, void, 'api'> => {
   return builder.mutation<void, SignUpPayload>({
     query: (userData: SignUpPayload): FetchArgs => {
       return {
