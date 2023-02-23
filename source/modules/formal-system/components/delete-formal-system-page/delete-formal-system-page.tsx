@@ -13,7 +13,7 @@ export const DeleteFormalSystemPage = (props: ClientFormalSystem): ReactElement 
 
   const { deleteFormalSystem, errorMessage, isLoading } = useDeleteFormalSystem();
 
-  const deleteFormalSystemHandler = (event: MouseEvent<HTMLButtonElement>): void => {
+  const deleteClickHandler = (event: MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -23,13 +23,13 @@ export const DeleteFormalSystemPage = (props: ClientFormalSystem): ReactElement 
   };
 
   return (
-    <Box mx='auto' px='4' width='6'>
+    <Box mx='auto' px='4' width='7'>
       <section>
         <Typography as='h1' textAlign='center' my='3'>
           Delete Formal System: {title}
         </Typography>
         <Flex display='flex' flexDirection='column' alignItems='center' my='2'>
-          <Button fontSize='formButton' height='3' width='5' position='relative' onClick={deleteFormalSystemHandler}>
+          <Button fontSize='formButton' height='3' width='5' position='relative' onClick={deleteClickHandler}>
             Delete
             {isLoading && (
               <Box position='absolute' top='0' left='5' mx='2'>
