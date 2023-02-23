@@ -1,10 +1,11 @@
+import { TagTypes } from '@/app/types';
 import { CredentialsPayload } from '@/auth/types';
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query';
 import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import { EndpointBuilder, MutationDefinition } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { signIn } from 'next-auth/react';
 
-export const signInUser = (builder: EndpointBuilder<BaseQueryFn, '', 'api'>): MutationDefinition<CredentialsPayload, BaseQueryFn, '', boolean, 'api'> => {
+export const signInUser = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<CredentialsPayload, BaseQueryFn, TagTypes, boolean, 'api'> => {
   return builder.mutation<boolean, CredentialsPayload>({
     queryFn: async (arg: CredentialsPayload): Promise<QueryReturnValue<boolean>> => {
       try {
