@@ -12,6 +12,16 @@ export const PaginationControls = (props: PaginationControlsProps): ReactElement
 
   const countOptionCount = Math.min(20, Math.max(2, Math.ceil(total / 5)));
 
+  const countChangeHandler = (newCount: number): void => {
+    const newMaxPage = Math.ceil(Math.max(total, 1) / newCount);
+
+    if (page > newMaxPage) {
+      updatePage(newMaxPage);
+    }
+
+    updateCount(count);
+  };
+
   return (
     <Fragment>
       <Flex display='flex' mx='auto' my='2' width='7'>
@@ -22,7 +32,7 @@ export const PaginationControls = (props: PaginationControlsProps): ReactElement
         <Box mx='auto' />
         <NumericSelectField label='Page' total={total} interval={1} optionCount={pageOptionCount} value={page} setValue={updatePage} />
         <Box mx='2' />
-        <NumericSelectField label='Count' total={total} interval={5} optionCount={countOptionCount} value={count} setValue={updateCount} />
+        <NumericSelectField label='Count' total={total} interval={5} optionCount={countOptionCount} value={count} setValue={countChangeHandler} />
       </Flex>
     </Fragment>
   );
