@@ -1,8 +1,9 @@
+import { TagTypes } from '@/app/types';
 import { NewFormalSystemPayload } from '@/formal-system/types';
 import { BaseQueryFn, FetchArgs } from '@reduxjs/toolkit/dist/query';
 import { EndpointBuilder, MutationDefinition } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 
-export const createFormalSystem = (builder: EndpointBuilder<BaseQueryFn, '', 'api'>): MutationDefinition<NewFormalSystemPayload, BaseQueryFn, '', void, 'api'> => {
+export const createFormalSystem = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<NewFormalSystemPayload, BaseQueryFn, TagTypes, void, 'api'> => {
   return builder.mutation<void, NewFormalSystemPayload>({
     query: (formalSystemData: NewFormalSystemPayload): FetchArgs => {
       return {
@@ -10,6 +11,7 @@ export const createFormalSystem = (builder: EndpointBuilder<BaseQueryFn, '', 'ap
         method: 'POST',
         body: formalSystemData
       };
-    }
+    },
+    invalidatesTags: ['formal-system']
   });
 };
