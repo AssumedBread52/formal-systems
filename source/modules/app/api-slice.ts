@@ -1,5 +1,5 @@
 import { signInUser, signOutUser } from '@/auth/end-points';
-import { createFormalSystem, readFormalSystems } from '@/formal-system/end-points';
+import { createFormalSystem, deleteFormalSystem, readFormalSystems, updateFormalSystem } from '@/formal-system/end-points';
 import { editUser, signUpUser } from '@/user/end-points';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
 
@@ -13,11 +13,13 @@ export const apiSlice = createApi({
       signOutUser: signOutUser(builder),
 
       createFormalSystem: createFormalSystem(builder),
+      deleteFormalSystem: deleteFormalSystem(builder),
       readFormalSystems: readFormalSystems(builder),
+      updateFormalSystem: updateFormalSystem(builder),
 
       editUser: editUser(builder),
       signUpUser: signUpUser(builder)
     };
   },
-  tagTypes: []
+  tagTypes: ['formal-system']
 });
