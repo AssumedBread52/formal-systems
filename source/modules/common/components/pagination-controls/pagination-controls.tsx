@@ -19,7 +19,7 @@ export const PaginationControls = (props: PaginationControlsProps): ReactElement
       updatePage(newMaxPage);
     }
 
-    updateCount(count);
+    updateCount(newCount);
   };
 
   return (
