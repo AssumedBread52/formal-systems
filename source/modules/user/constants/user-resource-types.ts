@@ -1,3 +1,4 @@
 export enum UserResourceTypes {
-  SessionUser = 'Session user'
+  SessionUser = 'Session user',
+  User = 'User'
 };
