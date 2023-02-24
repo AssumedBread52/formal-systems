@@ -1,3 +1,4 @@
+import { TagTypes } from '@/app/types';
 import { useSuccessfulRoute } from '@/common/hooks';
 import { IdResponse } from '@/common/types';
 import { EditProfilePayload } from '@/user/types';
@@ -6,7 +7,7 @@ import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
 import { useEditUserMutation } from './use-edit-user-mutation';
 
 export const useEditUser = (): {
-  editUser: MutationTrigger<MutationDefinition<EditProfilePayload, BaseQueryFn, '', IdResponse, 'api'>>;
+  editUser: MutationTrigger<MutationDefinition<EditProfilePayload, BaseQueryFn, TagTypes, IdResponse, 'api'>>;
   errorMessage: string;
   isLoading: boolean;
 } => {

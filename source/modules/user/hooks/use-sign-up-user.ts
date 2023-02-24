@@ -1,3 +1,4 @@
+import { TagTypes } from '@/app/types';
 import { useSignInUserMutation } from '@/auth/hooks';
 import { useSuccessfulRoute } from '@/common/hooks';
 import { SignUpPayload } from '@/user/types';
@@ -7,7 +8,7 @@ import { useEffect } from 'react';
 import { useSignUpUserMutation } from './use-sign-up-user-mutation';
 
 export const useSignUpUser = (email: string, password: string): {
-  signUpUser: MutationTrigger<MutationDefinition<SignUpPayload, BaseQueryFn, '', void, 'api'>>;
+  signUpUser: MutationTrigger<MutationDefinition<SignUpPayload, BaseQueryFn, TagTypes, void, 'api'>>;
   errorMessage: string;
   isLoading: boolean;
 } => {
