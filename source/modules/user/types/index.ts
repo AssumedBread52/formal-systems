@@ -1,3 +1,4 @@
+export type { ClientUser } from './client-user';
 export type { EditProfilePayload } from './edit-profile-payload';
 export type { ServerUser } from './server-user';
 export type { SessionUser } from './session-user';
