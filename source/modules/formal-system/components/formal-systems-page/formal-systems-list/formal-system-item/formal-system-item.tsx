@@ -3,6 +3,7 @@ import { Flex } from '@/common/components/flex/flex';
 import { HyperLink } from '@/common/components/hyper-link/hyper-link';
 import { Typography } from '@/common/components/typography/typography';
 import { ClientFormalSystem } from '@/formal-system/types';
+import { CreatedBySignature } from '@/user/components/created-by-signature/created-by-signature';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { Fragment, MouseEvent, ReactElement, useRef, useState } from 'react';
@@ -66,7 +67,7 @@ export const FormalSystemItem = (props: ClientFormalSystem): ReactElement => {
       <Typography as='p'>
         {description}
       </Typography>
-      Created By Signature: {createdByUserId}
+      <CreatedBySignature userId={createdByUserId} />
     </Box>
   );
 };
