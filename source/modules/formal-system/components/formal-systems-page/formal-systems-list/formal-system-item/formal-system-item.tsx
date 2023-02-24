@@ -12,7 +12,7 @@ export const FormalSystemItem = (props: ClientFormalSystem): ReactElement => {
 
   const { push } = useRouter();
 
-  const { status } = useSession();
+  const { data, status } = useSession();
 
   const [entered, setEntered] = useState<boolean>(false);
 
@@ -51,7 +51,7 @@ export const FormalSystemItem = (props: ClientFormalSystem): ReactElement => {
           {title}
         </Typography>
         <Box mx='auto' />
-        {'authenticated' === status && (
+        {'authenticated' === status && createdByUserId === data.id && (
           <Fragment>
             <HyperLink ref={editRef} title={`Edit ${title}`} href={`/${urlPath}/edit`}>
               Edit
