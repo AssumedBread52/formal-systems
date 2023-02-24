@@ -1,4 +1,5 @@
 export type { ClientUser } from './client-user';
+export type { CreatedBySignatureProps } from './created-by-signature-props';
 export type { EditProfilePayload } from './edit-profile-payload';
 export type { ServerUser } from './server-user';
 export type { SessionUser } from './session-user';
