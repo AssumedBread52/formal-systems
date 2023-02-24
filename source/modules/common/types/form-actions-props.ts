@@ -1,5 +1,5 @@
 export type FormActionsProps = {
-  disableSubmit: boolean;
+  disableSubmit?: boolean;
   submitTitle: string;
   isLoading: boolean;
   errorMessage: string;
