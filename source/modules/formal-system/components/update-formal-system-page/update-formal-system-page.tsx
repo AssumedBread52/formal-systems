@@ -1,4 +1,3 @@
-import { FormActions } from '@/common/components/form-actions/form-actions';
 import { InputField } from '@/common/components/input-field/input-field';
 import { MutationPage } from '@/common/components/mutation-page/mutation-page';
 import { TextareaField } from '@/common/components/textarea-field/textarea-field';
@@ -27,11 +26,10 @@ export const UpdateFormalSystemPage = (props: ClientFormalSystem): ReactElement 
   const disableSubmit = titleHasError && descriptionHasError;
 
   return (
-    <MutationPage title={`Edit Formal System: ${title}`} onSubmit={submitHandler}>
+    <MutationPage title={`Edit Formal System: ${title}`} disableSubmit={disableSubmit} submitTitle='Save Changes' isLoading={isLoading} errorMessage={errorMessage} onSubmit={submitHandler}>
       <InputField label='Title' value={newTitle} hasError={titleHasError} type='text' updateValue={setTitle} />
       <InputField label='URL Path' value={buildUrlPath(newTitle)} type='text' />
       <TextareaField label='Description' value={newDescription} hasError={descriptionHasError} updateValue={setDescription} />
-      <FormActions disableSubmit={disableSubmit} submitTitle='Save Changes' isLoading={isLoading} errorMessage={errorMessage} />
     </MutationPage>
   );
 };

@@ -1,4 +1,3 @@
-import { FormActions } from '@/common/components/form-actions/form-actions';
 import { InputField } from '@/common/components/input-field/input-field';
 import { MutationPage } from '@/common/components/mutation-page/mutation-page';
 import { TextareaField } from '@/common/components/textarea-field/textarea-field';
@@ -23,11 +22,10 @@ export const CreateFormalSystemPage = (): ReactElement => {
   const disableSubmit = titleHasError || descriptionHasError;
 
   return (
-    <MutationPage title='Create Formal System' onSubmit={submitHandler}>
+    <MutationPage title='Create Formal System' disableSubmit={disableSubmit} submitTitle='Create' isLoading={isLoading} errorMessage={errorMessage} onSubmit={submitHandler}>
       <InputField label='Title' value={title} hasError={titleHasError} type='text' updateValue={setTitle} />
       <InputField label='URL Path' value={buildUrlPath(title)} type='text' />
       <TextareaField label='Description' value={description} hasError={descriptionHasError} updateValue={setDescription} />
-      <FormActions disableSubmit={disableSubmit} submitTitle='Create' isLoading={isLoading} errorMessage={errorMessage} />
     </MutationPage>
   );
 };

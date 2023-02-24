@@ -1,10 +1,11 @@
 import { Box } from '@/common/components/box/box';
+import { FormActions } from '@/common/components/form-actions/form-actions';
 import { Typography } from '@/common/components/typography/typography';
 import { MutationPageProps } from '@/common/types';
 import { FormEvent, PropsWithChildren, ReactElement } from 'react';
 
 export const MutationPage = (props: PropsWithChildren<MutationPageProps>): ReactElement => {
-  const { title, onSubmit, children } = props;
+  const { title, disableSubmit, submitTitle, isLoading, errorMessage, onSubmit, children } = props;
 
   const submitHandler = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -21,6 +22,7 @@ export const MutationPage = (props: PropsWithChildren<MutationPageProps>): React
         </Typography>
         <form onSubmit={submitHandler}>
           {children}
+          <FormActions disableSubmit={disableSubmit} submitTitle={submitTitle} isLoading={isLoading} errorMessage={errorMessage} />
         </form>
       </section>
     </Box>

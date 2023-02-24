@@ -1,4 +1,3 @@
-import { FormActions } from '@/common/components/form-actions/form-actions';
 import { InputField } from '@/common/components/input-field/input-field';
 import { MutationPage } from '@/common/components/mutation-page/mutation-page';
 import { hasText } from '@/common/helpers';
@@ -30,12 +29,11 @@ export const EditProfilePage = (props: SessionUser): ReactElement => {
   const disableSubmit = ((firstNameHasError && lastNameHasError && emailHasError) || (newFirstName === firstName && newLastName === lastName && newEmail === email)) && passwordHasError;
 
   return (
-    <MutationPage title='Edit Profile' onSubmit={submitHandler}>
+    <MutationPage title='Edit Profile' disableSubmit={disableSubmit} submitTitle='Save Changes' isLoading={isLoading} errorMessage={errorMessage} onSubmit={submitHandler}>
       <InputField label='First Name' value={newFirstName} hasError={firstNameHasError} type='text' updateValue={setFirstName} />
       <InputField label='Last Name' value={newLastName} hasError={lastNameHasError} type='text' updateValue={setLastName} />
       <InputField label='Email Address' value={newEmail} hasError={emailHasError} type='email' updateValue={setEmail} />
       <InputField label='Password' value={newPassword} hasError={passwordHasError} type='password' updateValue={setPassword} />
-      <FormActions disableSubmit={disableSubmit} submitTitle='Save Changes' isLoading={isLoading} errorMessage={errorMessage} />
     </MutationPage>
   );
 };

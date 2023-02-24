@@ -1,4 +1,3 @@
-import { FormActions } from '@/common/components/form-actions/form-actions';
 import { InputField } from '@/common/components/input-field/input-field';
 import { MutationPage } from '@/common/components/mutation-page/mutation-page';
 import { hasText } from '@/common/helpers';
@@ -27,12 +26,11 @@ export const SignUpPage = (): ReactElement => {
   const disableSubmit = firstNameHasError || lastNameHasError || emailHasError || passwordHasError;
 
   return (
-    <MutationPage title='Sign Up' onSubmit={submitHandler}>
+    <MutationPage title='Sign Up' disableSubmit={disableSubmit} submitTitle='Sign Up' isLoading={isLoading} errorMessage={errorMessage} onSubmit={submitHandler}>
       <InputField label='First Name' value={firstName} hasError={firstNameHasError} type='text' updateValue={setFirstName} />
       <InputField label='Last Name' value={lastName} hasError={lastNameHasError} type='text' updateValue={setLastName} />
       <InputField label='Email Address' value={email} hasError={emailHasError} type='email' updateValue={setEmail} />
       <InputField label='Password' value={password} hasError={passwordHasError} type='password' updateValue={setPassword} />
-      <FormActions disableSubmit={disableSubmit} submitTitle='Sign Up' isLoading={isLoading} errorMessage={errorMessage} />
     </MutationPage>
   );
 };

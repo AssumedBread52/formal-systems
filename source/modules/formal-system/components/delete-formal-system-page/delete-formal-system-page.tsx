@@ -1,4 +1,3 @@
-import { FormActions } from '@/common/components/form-actions/form-actions';
 import { MutationPage } from '@/common/components/mutation-page/mutation-page';
 import { useDeleteFormalSystem } from '@/formal-system/hooks';
 import { ClientFormalSystem } from '@/formal-system/types';
@@ -16,8 +15,6 @@ export const DeleteFormalSystemPage = (props: ClientFormalSystem): ReactElement 
   };
 
   return (
-    <MutationPage title={`Delete Formal System: ${title}`} onSubmit={submitHandler}>
-      <FormActions submitTitle='Delete' isLoading={isLoading} errorMessage={errorMessage} />
-    </MutationPage>
+    <MutationPage title={`Delete Formal System: ${title}`} submitTitle='Delete' isLoading={isLoading} errorMessage={errorMessage} onSubmit={submitHandler} />
   );
 };
