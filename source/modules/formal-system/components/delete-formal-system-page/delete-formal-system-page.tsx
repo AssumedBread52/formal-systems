@@ -17,7 +17,7 @@ export const DeleteFormalSystemPage = (props: ClientFormalSystem): ReactElement 
 
   return (
     <MutationPage title={`Delete Formal System: ${title}`} onSubmit={submitHandler}>
-      <FormActions disableSubmit={false} submitTitle='Delete' isLoading={isLoading} errorMessage={errorMessage} />
+      <FormActions submitTitle='Delete' isLoading={isLoading} errorMessage={errorMessage} />
     </MutationPage>
   );
 };

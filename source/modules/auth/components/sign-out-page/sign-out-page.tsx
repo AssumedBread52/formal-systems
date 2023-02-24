@@ -12,7 +12,7 @@ export const SignOutPage = (): ReactElement => {
 
   return (
     <MutationPage title='Sign Out' onSubmit={submitHandler}>
-      <FormActions disableSubmit={false} submitTitle='Sign Out' isLoading={isLoading} errorMessage={errorMessage} />
+      <FormActions submitTitle='Sign Out' isLoading={isLoading} errorMessage={errorMessage} />
     </MutationPage>
   );
 };
