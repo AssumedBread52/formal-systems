@@ -1,1 +1,1 @@
-export { updateFormalSystem } from '@/formal-system/api';
+export { updateFormalSystem as default } from '@/formal-system/api';
