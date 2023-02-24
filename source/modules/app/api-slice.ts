@@ -1,6 +1,6 @@
 import { signInUser, signOutUser } from '@/auth/end-points';
 import { createFormalSystem, deleteFormalSystem, readFormalSystems, updateFormalSystem } from '@/formal-system/end-points';
-import { editUser, signUpUser } from '@/user/end-points';
+import { editUser, readUserById, signUpUser } from '@/user/end-points';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
 
 export const apiSlice = createApi({
@@ -18,8 +18,9 @@ export const apiSlice = createApi({
       updateFormalSystem: updateFormalSystem(builder),
 
       editUser: editUser(builder),
+      readUserById: readUserById(builder),
       signUpUser: signUpUser(builder)
     };
   },
-  tagTypes: ['formal-system']
+  tagTypes: ['formal-system', 'user']
 });
