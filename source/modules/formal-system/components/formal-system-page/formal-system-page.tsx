@@ -38,13 +38,13 @@ export const FormalSystemPage = (props: ClientFormalSystem): ReactElement => {
         <CreatedBySignature userId={createdByUserId} />
       </section>
       <section>
-        Symbols + Link to Symbols interface
+        Link to Symbols interface
       </section>
       <section>
         Axiomatic Statements + Link to Axiomatic Statements interface
       </section>
       <section>
-        Definition Statements + Link to Definition Statements interface
+        Link to Definition Statements interface
       </section>
     </Box>
   );
