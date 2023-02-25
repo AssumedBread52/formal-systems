@@ -38,7 +38,7 @@ export const readFormalSystemByUrlPath = async (context: GetServerSidePropsConte
     if (!formalSystem) {
       return {
         redirect: {
-          destination: `/${formalSystemUrlPath}`,
+          destination: '/',
           permanent: false
         }
       };
