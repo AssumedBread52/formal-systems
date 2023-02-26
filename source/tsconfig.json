@@ -20,6 +20,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "target": "ES5",
     "baseUrl": ".",
     "paths": {
       "@/*": [
