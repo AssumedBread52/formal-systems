@@ -6,9 +6,7 @@ import { Fragment, ReactElement } from 'react';
 export const CreatedBySignature = (props: CreatedBySignatureProps): ReactElement => {
   const { userId } = props;
 
-  const { data, isError, isSuccess } = useReadUserByIdQuery({
-    id: userId
-  });
+  const { data, isError, isSuccess } = useReadUserByIdQuery(userId);
 
   return (
     <Fragment>
