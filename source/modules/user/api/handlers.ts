@@ -2,7 +2,7 @@ import { buildMongoUrl } from '@/common/helpers';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { MongoClient, ObjectId } from 'mongodb';
 import type { NextApiRequest } from 'next';
-import { Get, HttpCode, NotFoundException, Param, Request, UnauthorizedException } from 'next-api-decorators';
+import { createParamDecorator, Get, HttpCode, NotFoundException, Param, UnauthorizedException } from 'next-api-decorators';
 import { getToken } from 'next-auth/jwt';
 
 class ServerUser {
@@ -34,22 +34,26 @@ class SessionUser {
   public email: string = '';
 }
 
+const AuthUserId = createParamDecorator<Promise<string | undefined>>(async (req: NextApiRequest): Promise<string | undefined> => {
+  const token = await getToken({ req });
+
+  if (!token) {
+    throw new UnauthorizedException('Must be authenticated.');
+  }
+
+  const { id } = token;
+
+  return id;
+});
+
 export class UserHandler {
   @Get('/session')
   @HttpCode(200)
-  async fetchSessionUser(@Request() req: NextApiRequest): Promise<SessionUser> {
-    const token = await getToken({ req });
-
-    if (!token) {
-      throw new UnauthorizedException('No session found.');
-    }
-
-    const { id } = token;
-
+  async fetchSessionUser(@AuthUserId() authUserId?: string): Promise<SessionUser> {
     const client = await MongoClient.connect(buildMongoUrl());
 
     const user = await client.db().collection<ServerUser>('users').findOne({
-      _id: new ObjectId(id)
+      _id: new ObjectId(authUserId)
     });
 
     await client.close();
