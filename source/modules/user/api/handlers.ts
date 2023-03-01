@@ -1,8 +1,9 @@
 import { buildMongoUrl } from '@/common/helpers';
+import { hash } from 'bcryptjs';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { MongoClient, ObjectId } from 'mongodb';
 import type { NextApiRequest } from 'next';
-import { createParamDecorator, Get, HttpCode, NotFoundException, Param, UnauthorizedException } from 'next-api-decorators';
+import { Body, ConflictException, createParamDecorator, Get, HttpCode, InternalServerErrorException, NotFoundException, Param, Patch, Post, UnauthorizedException, ValidationPipe } from 'next-api-decorators';
 import { getToken } from 'next-auth/jwt';
 
 class ServerUser {
@@ -34,7 +35,29 @@ class SessionUser {
   public email: string = '';
 }
 
-const AuthUserId = createParamDecorator<Promise<string | undefined>>(async (req: NextApiRequest): Promise<string | undefined> => {
+class SignUpPayload {
+  @IsNotEmpty()
+  public firstName: string = '';
+  @IsNotEmpty()
+  public lastName: string = '';
+  @IsEmail()
+  public email: string = '';
+  @IsNotEmpty()
+  public password: string = '';
+}
+
+class EditProfilePayload {
+  @IsNotEmpty()
+  public firstName: string = '';
+  @IsNotEmpty()
+  public lastName: string = '';
+  @IsEmail()
+  public email: string = '';
+  @IsNotEmpty()
+  public password: string = '';
+}
+
+const AuthUserId = createParamDecorator<Promise<string>>(async (req: NextApiRequest): Promise<string> => {
   const token = await getToken({ req });
 
   if (!token) {
@@ -47,9 +70,44 @@ const AuthUserId = createParamDecorator<Promise<string | undefined>>(async (req:
 });
 
 export class UserHandler {
+  @Post()
+  @HttpCode(204)
+  async createUser(@Body(ValidationPipe) body: SignUpPayload): Promise<void> {
+    const { firstName, lastName, email, password } = body;
+
+    const client = await MongoClient.connect(buildMongoUrl());
+
+    const userCollection = client.db().collection<ServerUser>('users');
+
+    const collision = await userCollection.findOne({
+      email
+    });
+
+    if (collision) {
+      await client.close();
+
+      throw new ConflictException('Email already in use.');
+    }
+
+    const hashedPassword = await hash(password, 12);
+
+    const result = await userCollection.insertOne({
+      firstName,
+      lastName,
+      email,
+      hashedPassword
+    });
+
+    await client.close();
+
+    if (!result.acknowledged || !result.insertedId) {
+      throw new InternalServerErrorException('Database failed to create new user.');
+    }
+  }
+
   @Get('/session')
   @HttpCode(200)
-  async fetchSessionUser(@AuthUserId() authUserId?: string): Promise<SessionUser> {
+  async readSessionUser(@AuthUserId() authUserId: string): Promise<SessionUser> {
     const client = await MongoClient.connect(buildMongoUrl());
 
     const user = await client.db().collection<ServerUser>('users').findOne({
@@ -73,7 +131,7 @@ export class UserHandler {
 
   @Get('/:userId')
   @HttpCode(200)
-  async fetchUserById(@Param('userId') id: string): Promise<ClientUser> {
+  async readUserById(@Param('userId') id: string): Promise<ClientUser> {
     const client = await MongoClient.connect(buildMongoUrl());
 
     const user = await client.db().collection<ServerUser>('users').findOne({
@@ -93,5 +151,49 @@ export class UserHandler {
       firstName,
       lastName
     };
+  }
+
+  @Patch()
+  @HttpCode(200)
+  async updateUser(@Body(ValidationPipe) body: EditProfilePayload, @AuthUserId() authUserId: string): Promise<string> {
+    const { firstName, lastName, email, password } = body;
+
+    const client = await MongoClient.connect(buildMongoUrl());
+
+    const userCollection = client.db().collection<ServerUser>('users');
+
+    const _id = new ObjectId(authUserId);
+
+    const collision = await userCollection.findOne({
+      email,
+      _id: { $ne: _id }
+    });
+
+    if (collision) {
+      await client.close();
+
+      throw new ConflictException('Email already in use.');
+    }
+
+    const hashedPassword = await hash(password, 12);
+
+    const result = await userCollection.updateOne({
+      _id
+    }, {
+      $set: {
+        firstName,
+        lastName,
+        email,
+        hashedPassword
+      }
+    });
+
+    await client.close();
+
+    if (!result.acknowledged || result.matchedCount !== 1 || result.modifiedCount !== 1 || result.upsertedCount !== 0) {
+      throw new InternalServerErrorException('Database failed to update user.');
+    }
+
+    return authUserId;
   }
 };
