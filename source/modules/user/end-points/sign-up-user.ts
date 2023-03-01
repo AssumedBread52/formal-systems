@@ -7,7 +7,7 @@ export const signUpUser = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'
   return builder.mutation<void, SignUpPayload>({
     query: (userData: SignUpPayload): FetchArgs => {
       return {
-        url: '/user/create',
+        url: '/user',
         method: 'POST',
         body: userData
       };
