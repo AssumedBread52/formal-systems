@@ -8,7 +8,7 @@ export const editUser = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>)
   return builder.mutation<IdResponse, EditProfilePayload>({
     query: (userData: EditProfilePayload): FetchArgs => {
       return {
-        url: '/user/update',
+        url: '/user',
         method: 'PATCH',
         body: userData
       };

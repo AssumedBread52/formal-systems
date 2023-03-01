@@ -1,4 +1,5 @@
 import { buildMongoUrl } from '@/common/helpers';
+import { IdResponse } from '@/common/types';
 import { hash } from 'bcryptjs';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { MongoClient, ObjectId } from 'mongodb';
@@ -53,8 +54,7 @@ class EditProfilePayload {
   public lastName: string = '';
   @IsEmail()
   public email: string = '';
-  @IsNotEmpty()
-  public password: string = '';
+  public password?: string;
 }
 
 const AuthUserId = createParamDecorator<Promise<string>>(async (req: NextApiRequest): Promise<string> => {
@@ -70,41 +70,6 @@ const AuthUserId = createParamDecorator<Promise<string>>(async (req: NextApiRequ
 });
 
 export class UserHandler {
-  @Post()
-  @HttpCode(204)
-  async createUser(@Body(ValidationPipe) body: SignUpPayload): Promise<void> {
-    const { firstName, lastName, email, password } = body;
-
-    const client = await MongoClient.connect(buildMongoUrl());
-
-    const userCollection = client.db().collection<ServerUser>('users');
-
-    const collision = await userCollection.findOne({
-      email
-    });
-
-    if (collision) {
-      await client.close();
-
-      throw new ConflictException('Email already in use.');
-    }
-
-    const hashedPassword = await hash(password, 12);
-
-    const result = await userCollection.insertOne({
-      firstName,
-      lastName,
-      email,
-      hashedPassword
-    });
-
-    await client.close();
-
-    if (!result.acknowledged || !result.insertedId) {
-      throw new InternalServerErrorException('Database failed to create new user.');
-    }
-  }
-
   @Get('/session')
   @HttpCode(200)
   async readSessionUser(@AuthUserId() authUserId: string): Promise<SessionUser> {
@@ -155,7 +120,7 @@ export class UserHandler {
 
   @Patch()
   @HttpCode(200)
-  async updateUser(@Body(ValidationPipe) body: EditProfilePayload, @AuthUserId() authUserId: string): Promise<string> {
+  async updateUser(@Body(ValidationPipe) body: EditProfilePayload, @AuthUserId() authUserId: string): Promise<IdResponse> {
     const { firstName, lastName, email, password } = body;
 
     const client = await MongoClient.connect(buildMongoUrl());
@@ -163,6 +128,21 @@ export class UserHandler {
     const userCollection = client.db().collection<ServerUser>('users');
 
     const _id = new ObjectId(authUserId);
+
+    const authUser = await userCollection.findOne({
+      _id
+    });
+
+    if (!authUser) {
+      throw new NotFoundException('Authenticated user not found.');
+    }
+
+    authUser.firstName = firstName;
+    authUser.lastName = lastName;
+    authUser.email = email;
+    if (password) {
+      authUser.hashedPassword = await hash(password, 12);
+    }
 
     const collision = await userCollection.findOne({
       email,
@@ -175,17 +155,10 @@ export class UserHandler {
       throw new ConflictException('Email already in use.');
     }
 
-    const hashedPassword = await hash(password, 12);
-
     const result = await userCollection.updateOne({
       _id
     }, {
-      $set: {
-        firstName,
-        lastName,
-        email,
-        hashedPassword
-      }
+      $set: authUser
     });
 
     await client.close();
@@ -194,6 +167,41 @@ export class UserHandler {
       throw new InternalServerErrorException('Database failed to update user.');
     }
 
-    return authUserId;
+    return { id: authUserId };
+  }
+
+  @Post()
+  @HttpCode(204)
+  async createUser(@Body(ValidationPipe) body: SignUpPayload): Promise<void> {
+    const { firstName, lastName, email, password } = body;
+
+    const client = await MongoClient.connect(buildMongoUrl());
+
+    const userCollection = client.db().collection<ServerUser>('users');
+
+    const collision = await userCollection.findOne({
+      email
+    });
+
+    if (collision) {
+      await client.close();
+
+      throw new ConflictException('Email already in use.');
+    }
+
+    const hashedPassword = await hash(password, 12);
+
+    const result = await userCollection.insertOne({
+      firstName,
+      lastName,
+      email,
+      hashedPassword
+    });
+
+    await client.close();
+
+    if (!result.acknowledged || !result.insertedId) {
+      throw new InternalServerErrorException('Database failed to create new user.');
+    }
   }
 };
