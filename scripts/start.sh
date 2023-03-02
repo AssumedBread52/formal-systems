@@ -16,6 +16,10 @@ fi
 
 ./scripts/stop.sh
 
+ENVIRONMENT_VARIABLES_CKSM_FILE=check-sums/environment-variables.cksm
+INITIALIZE_DATABASE_CKSM_FILE=check-sums/initialize-database.cksm
+NODE_MODULES_CKSM_FILE=check-sums/node-modules.cksm
+
 if [ ! -d "env" ]; then
   mkdir env
   MONGO_USERNAME="application"
