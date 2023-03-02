@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" == "--help" ]; then
+if [ "$1" = "--help" ]; then
   echo "Usage: stop.sh"
   echo "  Stops the development environment. Stopped containers are removed as well as"
   echo "  the constructed network."
