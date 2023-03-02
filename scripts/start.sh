@@ -19,6 +19,9 @@ fi
 ENVIRONMENT_VARIABLES_CKSM_FILE=check-sums/environment-variables.cksm
 INITIALIZE_DATABASE_CKSM_FILE=check-sums/initialize-database.cksm
 NODE_MODULES_CKSM_FILE=check-sums/node-modules.cksm
+CURRENT_ENVIRONMENT_VARIABLES_CKSM=$(cat scripts/generate-environment-variables.sh | sha1sum)
+CURRENT_INITIALIZE_DATABASE_CKSM=$(cat initialize-database/* | sha1sum)
+CURRENT_NODE_MODULES_CKSM=$(cat source/package-lock.json | sha1sum)
 
 if [ ! -d "env" ]; then
   mkdir env
