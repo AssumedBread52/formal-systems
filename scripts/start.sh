@@ -31,19 +31,20 @@ else
   OLD_NODE_MODULES_CKSM=$(cat $NODE_MODULES_CKSM_FILE)
 fi
 
-if [ ! -d "env" ]; then
+if [ ! -d env ]; then
   mkdir env
-  MONGO_USERNAME="application"
-  MONGO_PASSWORD=$(openssl rand -base64 32)
-  NEXTAUTH_SECRET=$(openssl rand -base64 32)
-  echo "NEXT_TELEMETRY_DISABLED=1" >> env/development-application.env
-  echo "NEXTAUTH_URL=http://localhost:3000" >> env/development-application.env
-  echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> env/development-application.env
-  echo "MONGO_USERNAME=$MONGO_USERNAME" >> env/development-application.env
-  echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> env/development-application.env
-  echo "MONGO_HOSTNAME=development-database" >> env/development-application.env
-  echo "MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME" >> env/development-database.env
-  echo "MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD" >> env/development-database.env
+
+  ./scripts/generate-environment-variables.sh
+
+  echo -n "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" > $ENVIRONMENT_VARIABLES_CKSM_FILE
+elif [ ! "$OLD_ENVIRONMENT_VARIABLES_CKSM" = "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" ]; then
+  if [ ! -z "$(la -A env)" ]; then
+    rm -rf env/..?* env/.[!.]* env/*
+  fi
+
+  ./scripts/generate-environment-variables.sh
+
+  echo -n "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" > $ENVIRONMENT_VARIABLES_CKSM_FILE
 fi
 
 if [ ! -d "database-files" ]; then
