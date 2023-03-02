@@ -8,12 +8,11 @@ if [ "$1" == "--help" ]; then
 fi
 
 if ! [ -z "$1" ]; then
-  MY_PATH=`dirname "$0"`
-  FILE=$MY_PATH/$1.sh
+  FILE=scripts/$1.sh
 
   echo "#!/bin/bash" >> $FILE
   echo "" >> $FILE
-  echo "if [ \"\$1\" == "--help" ]; then" >> $FILE
+  echo "if [ \"\$1\" == \"--help\" ]; then" >> $FILE
   echo "  echo \"Usage: $1.sh\"" >> $FILE
   echo "" >> $FILE
   echo "  exit" >> $FILE
