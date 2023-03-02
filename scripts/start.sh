@@ -38,7 +38,7 @@ if [ ! -d env ]; then
 
   echo -n "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" > $ENVIRONMENT_VARIABLES_CKSM_FILE
 elif [ ! "$OLD_ENVIRONMENT_VARIABLES_CKSM" = "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" ]; then
-  if [ ! -z "$(la -A env)" ]; then
+  if [ ! -z "$(ls -A env)" ]; then
     rm -rf env/..?* env/.[!.]* env/*
   fi
 
