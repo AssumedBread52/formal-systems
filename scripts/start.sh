@@ -59,8 +59,16 @@ elif [ "$1" = "--clean" ] && [ "$(ls -A database-files)" ]; then
   rm -rf database-files/..?* database-files/.[!.]* database-files/*
 fi
 
-if [ ! -d "source/node_modules" ]; then
+if [ ! -d source/node_modules ]; then
   GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm install
+
+  echo -n "$CURRENT_NODE_MODULES_CKSM" > $NODE_MODULES_CKSM_FILE
+elif [ ! "$OLD_NODE_MODULES_CKSM" = "$CURRENT_NODE_MODULES_CKSM" ]; then
+  rm -rf source/node_modules source/.next
+
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm install
+
+  echo -n "$CURRENT_NODE_MODULES_CKSM" > $NODE_MODULES_CKSM_FILE
 fi
 
 GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach development-application
