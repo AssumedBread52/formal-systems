@@ -2,10 +2,10 @@
 
 if [ "$1" == "--help" ]; then
   echo "Usage: start.sh"
-  echo "  Starts the development environment. There are missing files and directory"
+  echo "  Starts the development environment. There are missing files and directories"
   echo "  necessary for execution that are not committed for several reasons: (1) they"
   echo "  are empty directories, (2) it would pose a security risk, (3) there is enough"
-  echo "  data committed to easily generate them. This script will add those file and"
+  echo "  data committed to easily generate them. This script will add those files and"
   echo "  directories if they are missing."
   echo "  --clean = Will removed generated database files that are normally preserved"
   echo "            between sessions. WARNING: all data in the database will be lost so"
