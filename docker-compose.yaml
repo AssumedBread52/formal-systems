@@ -40,6 +40,8 @@ services:
 
   npm:
     entrypoint: npm
+    env_file:
+      - ./env/npm.env
     image: node:18.12.1
     stdin_open: true
     tty: true
