@@ -14,6 +14,8 @@ if [ "$1" == "--help" ]; then
   exit
 fi
 
+./scripts/stop.sh
+
 if [ ! -d "env" ]; then
   mkdir env
   MONGO_USERNAME="application"
