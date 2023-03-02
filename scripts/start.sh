@@ -47,10 +47,16 @@ elif [ ! "$OLD_ENVIRONMENT_VARIABLES_CKSM" = "$CURRENT_ENVIRONMENT_VARIABLES_CKS
   echo -n "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" > $ENVIRONMENT_VARIABLES_CKSM_FILE
 fi
 
-if [ ! -d "database-files" ]; then
+if [ ! -d database-files ]; then
   mkdir database-files
-elif [ "$1" == "--clean" ] && [ "$(ls -A database-files)" ]; then
-  rm database-files/.[!.]* database-files/* -r
+
+  echo -n "$CURRENT_INITIALIZE_DATABASE_CKSM" > $INITIALIZE_DATABASE_CKSM_FILE
+elif [ ! "$OLD_INITIALIZE_DATABASE_CKSM" = "$CURRENT_INITIALIZE_DATABASE_CKSM" ]; then
+  rm -rf database-files/..?* database-files/.[!.]* database-files/*
+
+  echo -n "$CURRENT_INITIALIZE_DATABASE_CKSM" > $INITIALIZE_DATABASE_CKSM_FILE
+elif [ "$1" = "--clean" ] && [ "$(ls -A database-files)" ]; then
+  rm -rf database-files/..?* database-files/.[!.]* database-files/*
 fi
 
 if [ ! -d "source/node_modules" ]; then
