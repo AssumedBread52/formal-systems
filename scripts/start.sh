@@ -23,6 +23,14 @@ CURRENT_ENVIRONMENT_VARIABLES_CKSM=$(cat scripts/generate-environment-variables.
 CURRENT_INITIALIZE_DATABASE_CKSM=$(cat initialize-database/* | sha1sum)
 CURRENT_NODE_MODULES_CKSM=$(cat source/package-lock.json | sha1sum)
 
+if [ ! -d check-sums ]; then
+  mkdir check-sums
+else
+  OLD_ENVIRONMENT_VARIABLES_CKSM=$(cat $ENVIRONMENT_VARIABLES_CKSM_FILE)
+  OLD_INITIALIZE_DATABASE_CKSM=$(cat $INITIALIZE_DATABASE_CKSM_FILE)
+  OLD_NODE_MODULES_CKSM=$(cat $NODE_MODULES_CKSM_FILE)
+fi
+
 if [ ! -d "env" ]; then
   mkdir env
   MONGO_USERNAME="application"
