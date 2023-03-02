@@ -1,2 +1,2 @@
-export { UserHandler } from './handlers';
 export { readSessionUser } from './read-session-user';
+export { UserHandler } from './user-handler';
