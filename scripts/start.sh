@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" == "--help" ]; then
+if [ "$1" = "--help" ]; then
   echo "Usage: start.sh"
   echo "  Starts the development environment. There are missing files and directories"
   echo "  necessary for execution that are not committed for several reasons: (1) they"

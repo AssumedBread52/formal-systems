@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" == "--help" ]; then
+if [ "$1" = "--help" ]; then
   echo "Usage: generate-environment-variables.sh"
   echo "  Generates the environment variables for the project in the env directory."
 
