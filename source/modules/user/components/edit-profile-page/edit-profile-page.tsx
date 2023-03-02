@@ -26,7 +26,7 @@ export const EditProfilePage = (props: SessionUser): ReactElement => {
     });
   };
 
-  const disableSubmit = ((firstNameHasError && lastNameHasError && emailHasError) || (newFirstName === firstName && newLastName === lastName && newEmail === email)) && passwordHasError;
+  const disableSubmit = firstNameHasError || lastNameHasError || emailHasError || (newFirstName === firstName && newLastName === lastName && newEmail === email && passwordHasError);
 
   return (
     <MutationPage title='Edit Profile' disableSubmit={disableSubmit} submitTitle='Save Changes' isLoading={isLoading} errorMessage={errorMessage} onSubmit={submitHandler}>
