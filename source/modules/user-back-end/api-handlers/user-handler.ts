@@ -99,7 +99,7 @@ export class UserHandler {
 
     await client.close();
 
-    if (!result.acknowledged || result.matchedCount !== 1 || result.modifiedCount !== 1 || result.upsertedCount !== 0) {
+    if (!result.acknowledged || result.matchedCount !== 1 || result.modifiedCount !== 1 || result.upsertedCount !== 0 || result.upsertedId !== null) {
       throw new InternalServerErrorException('Database failed to update user.');
     }
 
