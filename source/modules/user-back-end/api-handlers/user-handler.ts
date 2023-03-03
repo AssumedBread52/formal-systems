@@ -1,7 +1,7 @@
 import { AuthUserId } from '@/auth-backend/decorators';
 import { buildMongoUrl } from '@/common/helpers';
 import { IdResponse } from '@/common/types';
-import { ClientUser, EditProfilePayload, ServerUser, SessionUser, SignUpPayload } from '@/user-backend/types';
+import { ClientUser, EditProfilePayload, ServerUser, SessionUser, SignUpPayload } from '@/user-back-end/types';
 import { hash } from 'bcryptjs';
 import { MongoClient, ObjectId } from 'mongodb';
 import { Body, ConflictException, Get, HttpCode, InternalServerErrorException, NotFoundException, Param, Patch, Post, ValidationPipe } from 'next-api-decorators';
