@@ -1,61 +1,11 @@
 import { buildMongoUrl } from '@/common/helpers';
 import { IdResponse } from '@/common/types';
+import { ClientUser, EditProfilePayload, ServerUser, SessionUser, SignUpPayload } from '@/user-backend/types';
 import { hash } from 'bcryptjs';
-import { IsEmail, IsNotEmpty } from 'class-validator';
 import { MongoClient, ObjectId } from 'mongodb';
 import type { NextApiRequest } from 'next';
 import { Body, ConflictException, createParamDecorator, Get, HttpCode, InternalServerErrorException, NotFoundException, Param, Patch, Post, UnauthorizedException, ValidationPipe } from 'next-api-decorators';
 import { getToken } from 'next-auth/jwt';
-
-class ServerUser {
-  @IsNotEmpty()
-  public firstName: string = '';
-  @IsNotEmpty()
-  public lastName: string = '';
-  @IsEmail()
-  public email: string = '';
-  @IsNotEmpty()
-  public hashedPassword: string = '';
-}
-
-class ClientUser {
-  @IsNotEmpty()
-  public id: string = '';
-  @IsNotEmpty()
-  public firstName: string = '';
-  @IsNotEmpty()
-  public lastName: string = '';
-}
-
-class SessionUser {
-  @IsNotEmpty()
-  public firstName: string = '';
-  @IsNotEmpty()
-  public lastName: string = '';
-  @IsEmail()
-  public email: string = '';
-}
-
-class SignUpPayload {
-  @IsNotEmpty()
-  public firstName: string = '';
-  @IsNotEmpty()
-  public lastName: string = '';
-  @IsEmail()
-  public email: string = '';
-  @IsNotEmpty()
-  public password: string = '';
-}
-
-class EditProfilePayload {
-  @IsNotEmpty()
-  public firstName: string = '';
-  @IsNotEmpty()
-  public lastName: string = '';
-  @IsEmail()
-  public email: string = '';
-  public password?: string;
-}
 
 const AuthUserId = createParamDecorator<Promise<string>>(async (req: NextApiRequest): Promise<string> => {
   const token = await getToken({ req });
