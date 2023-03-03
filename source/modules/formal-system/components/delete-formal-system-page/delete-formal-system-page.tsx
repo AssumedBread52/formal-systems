@@ -9,9 +9,7 @@ export const DeleteFormalSystemPage = (props: ClientFormalSystem): ReactElement 
   const { deleteFormalSystem, errorMessage, isLoading } = useDeleteFormalSystem();
 
   const submitHandler = (): void => {
-    deleteFormalSystem({
-      id
-    });
+    deleteFormalSystem(id);
   };
 
   return (

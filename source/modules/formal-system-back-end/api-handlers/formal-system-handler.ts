@@ -4,9 +4,45 @@ import { IdResponse } from '@/common-back-end/types';
 import { buildUrlPath } from '@/formal-system-back-end/helpers';
 import { NewFormalSystemPayload, ServerFormalSystem, UpdateFormalSystemPayload } from '@/formal-system-back-end/types';
 import { MongoClient, ObjectId } from 'mongodb';
-import { Body, ConflictException, HttpCode, InternalServerErrorException, NotFoundException, Patch, Post, ValidationPipe } from 'next-api-decorators';
+import { Body, ConflictException, Delete, HttpCode, InternalServerErrorException, NotFoundException, Param, Patch, Post, UnauthorizedException, ValidationPipe } from 'next-api-decorators';
 
 export class FormalSystemHandler {
+  @Delete('/:id')
+  @HttpCode(200)
+  async deleteFormalSystem(@Param('id') id: string, @AuthUserId() createdByUserId: string): Promise<IdResponse> {
+    const client = await MongoClient.connect(buildMongoUrl());
+
+    const formalSystemCollection = client.db().collection<ServerFormalSystem>('formal-systems');
+
+    const _id = new ObjectId(id);
+
+    const target = await formalSystemCollection.findOne({
+      _id
+    });
+
+    if (target) {
+      if (target.createdByUserId !== createdByUserId) {
+        await client.close();
+
+        throw new UnauthorizedException('You cannot delete another user\'s data');
+      }
+
+      const result = await formalSystemCollection.deleteOne({
+        _id
+      });
+
+      await client.close();
+
+      if (!result.acknowledged || result.deletedCount !== 1) {
+        throw new InternalServerErrorException('Database failed to delete formal system.');
+      }
+    } else {
+      await client.close();
+    }
+
+    return { id };
+  }
+
   @Patch()
   @HttpCode(200)
   async updateFormalSystem(@Body(ValidationPipe) body: UpdateFormalSystemPayload, @AuthUserId() createdByUserId: string): Promise<IdResponse> {
