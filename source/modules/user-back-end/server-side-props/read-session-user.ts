@@ -1,4 +1,4 @@
-import { SessionUser } from '@/user/types';
+import { SessionUser } from '@/user-back-end/types';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 
 export const readSessionUser = async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<SessionUser>> => {
