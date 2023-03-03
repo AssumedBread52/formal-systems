@@ -7,10 +7,15 @@ import { EndpointBuilder, MutationDefinition } from '@reduxjs/toolkit/dist/query
 export const updateFormalSystem = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<UpdateFormalSystemPayload, BaseQueryFn, TagTypes, IdResponse, 'api'> => {
   return builder.mutation<IdResponse, UpdateFormalSystemPayload>({
     query: (formalSystemData: UpdateFormalSystemPayload): FetchArgs => {
+      const { id, title, description } = formalSystemData;
+
       return {
-        url: '/formal-system',
+        url: `/formal-system/${id}`,
         method: 'PATCH',
-        body: formalSystemData
+        body: {
+          title,
+          description
+        }
       };
     },
     invalidatesTags: ['formal-system']

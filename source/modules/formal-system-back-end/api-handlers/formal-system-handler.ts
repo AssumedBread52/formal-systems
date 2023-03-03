@@ -43,10 +43,10 @@ export class FormalSystemHandler {
     return { id };
   }
 
-  @Patch()
+  @Patch('/:id')
   @HttpCode(200)
-  async updateFormalSystem(@Body(ValidationPipe) body: UpdateFormalSystemPayload, @AuthUserId() createdByUserId: string): Promise<IdResponse> {
-    const { id, title, description } = body;
+  async updateFormalSystem(@Body(ValidationPipe) body: UpdateFormalSystemPayload, @Param('id') id: string, @AuthUserId() createdByUserId: string): Promise<IdResponse> {
+    const { title, description } = body;
 
     const client = await MongoClient.connect(buildMongoUrl());
 
