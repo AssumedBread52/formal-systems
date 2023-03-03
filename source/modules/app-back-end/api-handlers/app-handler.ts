@@ -8,6 +8,10 @@ export class AppHandler {
   async healthCheck(): Promise<void> {
     const client = await MongoClient.connect(buildMongoUrl());
 
+    const dbStats = await client.db().stats();
+
+    console.log(dbStats);
+
     await client.close();
   }
 };
