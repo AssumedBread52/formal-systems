@@ -1,6 +1,6 @@
-import { CredentialsInput, CredentialsPayload, JwtCallbackParameters, SessionCallbackParameters } from '@/auth/types';
-import { buildMongoUrl } from '@/common/helpers';
-import { ServerUser } from '@/user/types';
+import { CredentialsInput, CredentialsPayload, JwtCallbackParameters, SessionCallbackParameters } from '@/auth-back-end/types';
+import { buildMongoUrl } from '@/common-back-end/helpers';
+import { ServerUser } from '@/user-back-end/types';
 import { compare } from 'bcryptjs';
 import { MongoClient } from 'mongodb';
 import { Session, SessionStrategy, User } from 'next-auth';
@@ -13,15 +13,18 @@ export const authConfiguration = {
       const { token, user } = params;
 
       if (user) {
-        token.id = user.id;
+        const { id } = user;
+
+        token.id = id;
       }
 
       return token;
     },
     session: async (params: SessionCallbackParameters): Promise<Session> => {
       const { session, token } = params;
+      const { id } = token;
 
-      session.id = token.id;
+      session.id = id;
 
       return session;
     }
