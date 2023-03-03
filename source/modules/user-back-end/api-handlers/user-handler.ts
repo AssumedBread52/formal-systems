@@ -31,9 +31,9 @@ export class UserHandler {
     };
   }
 
-  @Get('/:userId')
+  @Get('/:id')
   @HttpCode(200)
-  async readUserById(@Param('userId') id: string): Promise<ClientUser> {
+  async readUserById(@Param('id') id: string): Promise<ClientUser> {
     const client = await MongoClient.connect(buildMongoUrl());
 
     const user = await client.db().collection<ServerUser>('users').findOne({
