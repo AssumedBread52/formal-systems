@@ -7,7 +7,7 @@ export const createFormalSystem = (builder: EndpointBuilder<BaseQueryFn, TagType
   return builder.mutation<void, NewFormalSystemPayload>({
     query: (formalSystemData: NewFormalSystemPayload): FetchArgs => {
       return {
-        url: '/formal-system/create',
+        url: '/formal-system',
         method: 'POST',
         body: formalSystemData
       };
