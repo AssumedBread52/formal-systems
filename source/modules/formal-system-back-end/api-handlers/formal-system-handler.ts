@@ -43,6 +43,35 @@ export class FormalSystemHandler {
     return { id };
   }
 
+  @Get('/:urlPath')
+  @HttpCode(200)
+  async readFormalSystemByUrlPath(@Param('urlPath') urlPath: string): Promise<ClientFormalSystem> {
+    console.log(urlPath);
+    const client = await MongoClient.connect(buildMongoUrl());
+
+    const formalSystemCollection = client.db().collection<ServerFormalSystem>('formal-systems');
+
+    const formalSystem = await formalSystemCollection.findOne({
+      urlPath
+    });
+
+    await client.close();
+
+    if (!formalSystem) {
+      throw new NotFoundException('Formal system not found.');
+    }
+
+    const { _id, title, description, createdByUserId } = formalSystem;
+
+    return {
+      id: _id.toString(),
+      title,
+      urlPath,
+      description,
+      createdByUserId
+    };
+  }
+
   @Get()
   @HttpCode(200)
   async readFormalSystems(@Query('page', ParseNumberPipe) page: number, @Query('count', ParseNumberPipe) count: number, @Query('keywords') keywords?: string[] | string): Promise<PaginatedResults<ClientFormalSystem>> {
