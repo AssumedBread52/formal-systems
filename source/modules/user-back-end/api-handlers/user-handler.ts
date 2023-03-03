@@ -1,4 +1,4 @@
-import { AuthUserId } from '@/auth-backend/decorators';
+import { AuthUserId } from '@/auth-back-end/decorators';
 import { buildMongoUrl } from '@/common/helpers';
 import { IdResponse } from '@/common/types';
 import { ClientUser, EditProfilePayload, ServerUser, SessionUser, SignUpPayload } from '@/user-back-end/types';
