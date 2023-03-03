@@ -8,7 +8,7 @@ export const updateFormalSystem = (builder: EndpointBuilder<BaseQueryFn, TagType
   return builder.mutation<IdResponse, UpdateFormalSystemPayload>({
     query: (formalSystemData: UpdateFormalSystemPayload): FetchArgs => {
       return {
-        url: '/formal-system/update',
+        url: '/formal-system',
         method: 'PATCH',
         body: formalSystemData
       };
