@@ -1,23 +1,14 @@
-import { buildMongoUrl, extractUrlPathValue } from '@/common/helpers';
-import { ClientFormalSystem, ServerFormalSystem } from '@/formal-system/types';
-import { MongoClient } from 'mongodb';
+import { extractUrlPathValue } from '@/common/helpers';
+import { ClientFormalSystem } from '@/formal-system/types';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 
 export const readFormalSystemByUrlPath = async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<ClientFormalSystem>> => {
   try {
-    const formalSystemUrlPath = extractUrlPathValue(context, 'formal-system-url-path');
+    const urlPath = extractUrlPathValue(context, 'formal-system-url-path');
 
-    const client = await MongoClient.connect(buildMongoUrl());
+    const response = await fetch(`http://localhost:3000/api/formal-system/${urlPath}`);
 
-    const formalSystemCollection = client.db().collection<ServerFormalSystem>('formal-systems');
-
-    const formalSystem = await formalSystemCollection.findOne({
-      urlPath: formalSystemUrlPath
-    });
-
-    await client.close();
-
-    if (!formalSystem) {
+    if (!response.ok) {
       return {
         redirect: {
           destination: '/',
@@ -26,16 +17,8 @@ export const readFormalSystemByUrlPath = async (context: GetServerSidePropsConte
       };
     }
 
-    const { _id, title, urlPath, description, createdByUserId } = formalSystem;
-
     return {
-      props: {
-        id: _id.toString(),
-        title,
-        urlPath,
-        description,
-        createdByUserId
-      }
+      props: await response.json()
     };
   } catch {
     return {
