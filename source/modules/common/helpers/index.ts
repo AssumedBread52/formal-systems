@@ -1,6 +1,5 @@
 export { buildMongoUrl } from './build-mongo-url';
 export { buildUrlPath } from './build-url-path';
-export { extractUrlPathValue } from './extract-url-path-value';
 export { hasText } from './has-text';
 export { sendCollisionErrorResponse } from './send-collision-error-response';
 export { sendDatabaseErrorResponse } from './send-database-error-response';

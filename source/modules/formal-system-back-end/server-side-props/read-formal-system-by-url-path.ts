@@ -1,5 +1,5 @@
-import { extractUrlPathValue } from '@/common/helpers';
-import { ClientFormalSystem } from '@/formal-system/types';
+import { extractUrlPathValue } from '@/formal-system-back-end/helpers';
+import { ClientFormalSystem } from '@/formal-system-back-end/types';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 
 export const readFormalSystemByUrlPath = async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<ClientFormalSystem>> => {
