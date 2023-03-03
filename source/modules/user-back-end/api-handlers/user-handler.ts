@@ -1,5 +1,5 @@
 import { AuthUserId } from '@/auth-back-end/decorators';
-import { buildMongoUrl } from '@/user-back-end/helpers';
+import { buildMongoUrl } from '@/common-back-end/helpers';
 import { ClientUser, EditProfilePayload, IdResponse, ServerUser, SessionUser, SignUpPayload } from '@/user-back-end/types';
 import { hash } from 'bcryptjs';
 import { MongoClient, ObjectId } from 'mongodb';

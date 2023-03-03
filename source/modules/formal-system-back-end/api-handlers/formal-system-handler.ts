@@ -1,7 +1,7 @@
 import { AuthUserId } from '@/auth-back-end/decorators';
+import { buildMongoUrl } from '@/common-back-end/helpers';
 import { buildUrlPath } from '@/formal-system-back-end/helpers';
 import { NewFormalSystemPayload, ServerFormalSystem, UpdateFormalSystemPayload } from '@/formal-system-back-end/types';
-import { buildMongoUrl } from '@/user-back-end/helpers';
 import { IdResponse } from '@/user-back-end/types';
 import { MongoClient, ObjectId } from 'mongodb';
 import { Body, ConflictException, HttpCode, InternalServerErrorException, NotFoundException, Patch, Post, ValidationPipe } from 'next-api-decorators';
