@@ -8,7 +8,7 @@ import { stringify } from 'querystring';
 export const readFormalSystems = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): QueryDefinition<PaginatedParameters, BaseQueryFn, TagTypes, PaginatedResults<ClientFormalSystem>, 'api'> => {
   return builder.query<PaginatedResults<ClientFormalSystem>, PaginatedParameters>({
     query: (paginatedParameters: PaginatedParameters): string => {
-      return `/formal-system/read-paginated?${stringify(paginatedParameters)}`;
+      return `/formal-system?${stringify(paginatedParameters)}`;
     },
     providesTags: ['formal-system']
   });
