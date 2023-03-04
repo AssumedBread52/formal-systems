@@ -33,7 +33,9 @@ export class MongoDatabase {
   };
 
   private async Cleanup(): Promise<void> {
-    await this.client.close();
+    if (this.client) {
+      await this.client.close();
+    }
 
     process.exit(0);
   }
