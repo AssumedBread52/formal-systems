@@ -13,6 +13,7 @@ NEXTAUTH_SECRET=$(openssl rand -base64 32)
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> env/npm.env
 
+echo "TINI_KILL_PROCESS_GROUP=1" >> env/development-application.env
 echo "NEXT_TELEMETRY_DISABLED=1" >> env/development-application.env
 echo "NEXTAUTH_URL=http://localhost:3000" >> env/development-application.env
 echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> env/development-application.env
