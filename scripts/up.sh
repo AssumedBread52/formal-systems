@@ -14,7 +14,7 @@ if [ "$1" = "--help" ]; then
   exit
 fi
 
-./scripts/stop.sh
+./scripts/down.sh
 
 ENVIRONMENT_VARIABLES_CKSM_FILE=check-sums/environment-variables.cksm
 INITIALIZE_DATABASE_CKSM_FILE=check-sums/initialize-database.cksm
