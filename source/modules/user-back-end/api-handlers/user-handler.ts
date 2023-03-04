@@ -1,5 +1,5 @@
 import { AuthUserId } from '@/auth-back-end/decorators';
-import { MongoDatabase } from '@/common-back-end/classes';
+import { MongoCollection } from '@/common-back-end/classes';
 import { IdResponse } from '@/common-back-end/types';
 import { ClientUser, EditProfilePayload, ServerUser, SessionUser, SignUpPayload } from '@/user-back-end/types';
 import { hash } from 'bcryptjs';
@@ -7,14 +7,14 @@ import { ObjectId } from 'mongodb';
 import { Body, ConflictException, Get, HttpCode, InternalServerErrorException, NotFoundException, Param, Patch, Post, ValidationPipe } from 'next-api-decorators';
 
 export class UserHandler {
-  private mongoDatabase: MongoDatabase = new MongoDatabase();
+  private userCollection: MongoCollection<ServerUser> = new MongoCollection<ServerUser>('users');
 
   @Get('/session')
   @HttpCode(200)
   async readSessionUser(@AuthUserId() authUserId: string): Promise<SessionUser> {
-    const db = await this.mongoDatabase.getDb();
+    const collection = await this.userCollection.getCollection();
 
-    const user = await db.collection<ServerUser>('users').findOne({
+    const user = await collection.findOne({
       _id: new ObjectId(authUserId)
     });
 
@@ -34,9 +34,9 @@ export class UserHandler {
   @Get('/:id')
   @HttpCode(200)
   async readUserById(@Param('id') id: string): Promise<ClientUser> {
-    const db = await this.mongoDatabase.getDb();
+    const collection = await this.userCollection.getCollection();
 
-    const user = await db.collection<ServerUser>('users').findOne({
+    const user = await collection.findOne({
       _id: new ObjectId(id)
     });
 
@@ -58,13 +58,11 @@ export class UserHandler {
   async updateUser(@Body(ValidationPipe) body: EditProfilePayload, @AuthUserId() authUserId: string): Promise<IdResponse> {
     const { firstName, lastName, email, password } = body;
 
-    const db = await this.mongoDatabase.getDb();
-
-    const userCollection = db.collection<ServerUser>('users');
+    const collection = await this.userCollection.getCollection();
 
     const _id = new ObjectId(authUserId);
 
-    const authUser = await userCollection.findOne({
+    const authUser = await collection.findOne({
       _id
     });
 
@@ -79,7 +77,7 @@ export class UserHandler {
       authUser.hashedPassword = await hash(password, 12);
     }
 
-    const collision = await userCollection.findOne({
+    const collision = await collection.findOne({
       email,
       _id: { $ne: _id }
     });
@@ -88,7 +86,7 @@ export class UserHandler {
       throw new ConflictException('Email already in use.');
     }
 
-    const result = await userCollection.updateOne({
+    const result = await collection.updateOne({
       _id
     }, {
       $set: authUser
@@ -106,11 +104,9 @@ export class UserHandler {
   async createUser(@Body(ValidationPipe) body: SignUpPayload): Promise<void> {
     const { firstName, lastName, email, password } = body;
 
-    const db = await this.mongoDatabase.getDb();
+    const collection = await this.userCollection.getCollection();
 
-    const userCollection = db.collection<ServerUser>('users');
-
-    const collision = await userCollection.findOne({
+    const collision = await collection.findOne({
       email
     });
 
@@ -120,7 +116,7 @@ export class UserHandler {
 
     const hashedPassword = await hash(password, 12);
 
-    const result = await userCollection.insertOne({
+    const result = await collection.insertOne({
       firstName,
       lastName,
       email,

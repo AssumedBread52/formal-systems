@@ -1,5 +1,5 @@
 import { AuthUserId } from '@/auth-back-end/decorators';
-import { MongoDatabase } from '@/common-back-end/classes';
+import { MongoCollection } from '@/common-back-end/classes';
 import { IdResponse } from '@/common-back-end/types';
 import { buildUrlPath } from '@/formal-system-back-end/helpers';
 import { ClientFormalSystem, NewFormalSystemPayload, PaginatedResults, ServerFormalSystem, UpdateFormalSystemPayload } from '@/formal-system-back-end/types';
@@ -7,14 +7,12 @@ import { ObjectId, WithId } from 'mongodb';
 import { Body, ConflictException, Delete, Get, HttpCode, InternalServerErrorException, NotFoundException, Param, ParseNumberPipe, Patch, Post, Query, UnauthorizedException, ValidationPipe } from 'next-api-decorators';
 
 export class FormalSystemHandler {
-  private mongoDatabase: MongoDatabase = new MongoDatabase();
+  private formalSystemCollection: MongoCollection<ServerFormalSystem> = new MongoCollection<ServerFormalSystem>('formal-systems');
 
   @Delete('/:id')
   @HttpCode(200)
   async deleteFormalSystem(@Param('id') id: string, @AuthUserId() createdByUserId: string): Promise<IdResponse> {
-    const db = await this.mongoDatabase.getDb();
-
-    const formalSystemCollection = db.collection<ServerFormalSystem>('formal-systems');
+    const formalSystemCollection = await this.formalSystemCollection.getCollection();
 
     const _id = new ObjectId(id);
 
@@ -42,9 +40,7 @@ export class FormalSystemHandler {
   @Get('/:urlPath')
   @HttpCode(200)
   async readFormalSystemByUrlPath(@Param('urlPath') urlPath: string): Promise<ClientFormalSystem> {
-    const db = await this.mongoDatabase.getDb();
-
-    const formalSystemCollection = db.collection<ServerFormalSystem>('formal-systems');
+    const formalSystemCollection = await this.formalSystemCollection.getCollection();
 
     const formalSystem = await formalSystemCollection.findOne({
       urlPath
@@ -68,9 +64,7 @@ export class FormalSystemHandler {
   @Get()
   @HttpCode(200)
   async readFormalSystems(@Query('page', ParseNumberPipe) page: number, @Query('count', ParseNumberPipe) count: number, @Query('keywords') keywords?: string[] | string): Promise<PaginatedResults<ClientFormalSystem>> {
-    const db = await this.mongoDatabase.getDb();
-
-    const formalSystemCollection = db.collection<ServerFormalSystem>('formal-systems');
+    const formalSystemCollection = await this.formalSystemCollection.getCollection();
 
     let formalSystemsCursor
     let total;
@@ -114,9 +108,7 @@ export class FormalSystemHandler {
   async updateFormalSystem(@Body(ValidationPipe) body: UpdateFormalSystemPayload, @Param('id') id: string, @AuthUserId() createdByUserId: string): Promise<IdResponse> {
     const { title, description } = body;
 
-    const db = await this.mongoDatabase.getDb();
-
-    const formalSystemCollection = db.collection<ServerFormalSystem>('formal-systems');
+    const formalSystemCollection = await this.formalSystemCollection.getCollection();
 
     const _id = new ObjectId(id);
 
@@ -164,9 +156,7 @@ export class FormalSystemHandler {
   async createFormalSystem(@Body(ValidationPipe) body: NewFormalSystemPayload, @AuthUserId() createdByUserId: string): Promise<void> {
     const { title, description } = body;
 
-    const db = await this.mongoDatabase.getDb();
-
-    const formalSystemCollection = db.collection<ServerFormalSystem>('formal-systems');
+    const formalSystemCollection = await this.formalSystemCollection.getCollection();
 
     const urlPath = buildUrlPath(title);
 
