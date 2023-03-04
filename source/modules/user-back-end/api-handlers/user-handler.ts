@@ -1,22 +1,22 @@
 import { AuthUserId } from '@/auth-back-end/decorators';
-import { buildMongoUrl } from '@/common-back-end/helpers';
+import { MongoDatabase } from '@/common-back-end/classes';
 import { IdResponse } from '@/common-back-end/types';
 import { ClientUser, EditProfilePayload, ServerUser, SessionUser, SignUpPayload } from '@/user-back-end/types';
 import { hash } from 'bcryptjs';
-import { MongoClient, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { Body, ConflictException, Get, HttpCode, InternalServerErrorException, NotFoundException, Param, Patch, Post, ValidationPipe } from 'next-api-decorators';
 
 export class UserHandler {
+  private mongoDatabase: MongoDatabase = new MongoDatabase();
+
   @Get('/session')
   @HttpCode(200)
   async readSessionUser(@AuthUserId() authUserId: string): Promise<SessionUser> {
-    const client = await MongoClient.connect(buildMongoUrl());
+    const db = await this.mongoDatabase.getDb();
 
-    const user = await client.db().collection<ServerUser>('users').findOne({
+    const user = await db.collection<ServerUser>('users').findOne({
       _id: new ObjectId(authUserId)
     });
-
-    await client.close();
 
     if (!user) {
       throw new NotFoundException('User not found.');
@@ -34,13 +34,11 @@ export class UserHandler {
   @Get('/:id')
   @HttpCode(200)
   async readUserById(@Param('id') id: string): Promise<ClientUser> {
-    const client = await MongoClient.connect(buildMongoUrl());
+    const db = await this.mongoDatabase.getDb();
 
-    const user = await client.db().collection<ServerUser>('users').findOne({
+    const user = await db.collection<ServerUser>('users').findOne({
       _id: new ObjectId(id)
     });
-
-    await client.close();
 
     if (!user) {
       throw new NotFoundException('User not found.');
@@ -60,9 +58,9 @@ export class UserHandler {
   async updateUser(@Body(ValidationPipe) body: EditProfilePayload, @AuthUserId() authUserId: string): Promise<IdResponse> {
     const { firstName, lastName, email, password } = body;
 
-    const client = await MongoClient.connect(buildMongoUrl());
+    const db = await this.mongoDatabase.getDb();
 
-    const userCollection = client.db().collection<ServerUser>('users');
+    const userCollection = db.collection<ServerUser>('users');
 
     const _id = new ObjectId(authUserId);
 
@@ -87,8 +85,6 @@ export class UserHandler {
     });
 
     if (collision) {
-      await client.close();
-
       throw new ConflictException('Email already in use.');
     }
 
@@ -97,8 +93,6 @@ export class UserHandler {
     }, {
       $set: authUser
     });
-
-    await client.close();
 
     if (!result.acknowledged || result.matchedCount !== 1 || result.modifiedCount !== 1 || result.upsertedCount !== 0 || result.upsertedId !== null) {
       throw new InternalServerErrorException('Database failed to update user.');
@@ -112,17 +106,15 @@ export class UserHandler {
   async createUser(@Body(ValidationPipe) body: SignUpPayload): Promise<void> {
     const { firstName, lastName, email, password } = body;
 
-    const client = await MongoClient.connect(buildMongoUrl());
+    const db = await this.mongoDatabase.getDb();
 
-    const userCollection = client.db().collection<ServerUser>('users');
+    const userCollection = db.collection<ServerUser>('users');
 
     const collision = await userCollection.findOne({
       email
     });
 
     if (collision) {
-      await client.close();
-
       throw new ConflictException('Email already in use.');
     }
 
@@ -134,8 +126,6 @@ export class UserHandler {
       email,
       hashedPassword
     });
-
-    await client.close();
 
     if (!result.acknowledged || !result.insertedId) {
       throw new InternalServerErrorException('Database failed to create new user.');

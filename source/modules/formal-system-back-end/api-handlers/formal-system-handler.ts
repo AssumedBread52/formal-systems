@@ -1,18 +1,20 @@
 import { AuthUserId } from '@/auth-back-end/decorators';
-import { buildMongoUrl } from '@/common-back-end/helpers';
+import { MongoDatabase } from '@/common-back-end/classes';
 import { IdResponse } from '@/common-back-end/types';
 import { buildUrlPath } from '@/formal-system-back-end/helpers';
 import { ClientFormalSystem, NewFormalSystemPayload, PaginatedResults, ServerFormalSystem, UpdateFormalSystemPayload } from '@/formal-system-back-end/types';
-import { MongoClient, ObjectId, WithId } from 'mongodb';
+import { ObjectId, WithId } from 'mongodb';
 import { Body, ConflictException, Delete, Get, HttpCode, InternalServerErrorException, NotFoundException, Param, ParseNumberPipe, Patch, Post, Query, UnauthorizedException, ValidationPipe } from 'next-api-decorators';
 
 export class FormalSystemHandler {
+  private mongoDatabase: MongoDatabase = new MongoDatabase();
+
   @Delete('/:id')
   @HttpCode(200)
   async deleteFormalSystem(@Param('id') id: string, @AuthUserId() createdByUserId: string): Promise<IdResponse> {
-    const client = await MongoClient.connect(buildMongoUrl());
+    const db = await this.mongoDatabase.getDb();
 
-    const formalSystemCollection = client.db().collection<ServerFormalSystem>('formal-systems');
+    const formalSystemCollection = db.collection<ServerFormalSystem>('formal-systems');
 
     const _id = new ObjectId(id);
 
@@ -22,8 +24,6 @@ export class FormalSystemHandler {
 
     if (target) {
       if (target.createdByUserId !== createdByUserId) {
-        await client.close();
-
         throw new UnauthorizedException('You cannot delete another user\'s data');
       }
 
@@ -31,13 +31,9 @@ export class FormalSystemHandler {
         _id
       });
 
-      await client.close();
-
       if (!result.acknowledged || result.deletedCount !== 1) {
         throw new InternalServerErrorException('Database failed to delete formal system.');
       }
-    } else {
-      await client.close();
     }
 
     return { id };
@@ -46,16 +42,13 @@ export class FormalSystemHandler {
   @Get('/:urlPath')
   @HttpCode(200)
   async readFormalSystemByUrlPath(@Param('urlPath') urlPath: string): Promise<ClientFormalSystem> {
-    console.log(urlPath);
-    const client = await MongoClient.connect(buildMongoUrl());
+    const db = await this.mongoDatabase.getDb();
 
-    const formalSystemCollection = client.db().collection<ServerFormalSystem>('formal-systems');
+    const formalSystemCollection = db.collection<ServerFormalSystem>('formal-systems');
 
     const formalSystem = await formalSystemCollection.findOne({
       urlPath
     });
-
-    await client.close();
 
     if (!formalSystem) {
       throw new NotFoundException('Formal system not found.');
@@ -75,9 +68,9 @@ export class FormalSystemHandler {
   @Get()
   @HttpCode(200)
   async readFormalSystems(@Query('page', ParseNumberPipe) page: number, @Query('count', ParseNumberPipe) count: number, @Query('keywords') keywords?: string[] | string): Promise<PaginatedResults<ClientFormalSystem>> {
-    const client = await MongoClient.connect(buildMongoUrl());
+    const db = await this.mongoDatabase.getDb();
 
-    const formalSystemCollection = client.db().collection<ServerFormalSystem>('formal-systems');
+    const formalSystemCollection = db.collection<ServerFormalSystem>('formal-systems');
 
     let formalSystemsCursor
     let total;
@@ -100,8 +93,6 @@ export class FormalSystemHandler {
 
     const formalSystems = await formalSystemsCursor.toArray();
 
-    await client.close();
-
     return {
       total,
       results: formalSystems.map((formalSystem: WithId<ServerFormalSystem>): ClientFormalSystem => {
@@ -123,9 +114,9 @@ export class FormalSystemHandler {
   async updateFormalSystem(@Body(ValidationPipe) body: UpdateFormalSystemPayload, @Param('id') id: string, @AuthUserId() createdByUserId: string): Promise<IdResponse> {
     const { title, description } = body;
 
-    const client = await MongoClient.connect(buildMongoUrl());
+    const db = await this.mongoDatabase.getDb();
 
-    const formalSystemCollection = client.db().collection<ServerFormalSystem>('formal-systems');
+    const formalSystemCollection = db.collection<ServerFormalSystem>('formal-systems');
 
     const _id = new ObjectId(id);
 
@@ -150,8 +141,6 @@ export class FormalSystemHandler {
     });
 
     if (collision) {
-      await client.close();
-
       throw new ConflictException('URL path already in use.');
     }
 
@@ -162,8 +151,6 @@ export class FormalSystemHandler {
     });
 
     console.log(result);
-
-    await client.close();
 
     if (!result.acknowledged || result.matchedCount !== 1 || result.modifiedCount !== 1 || result.upsertedCount !== 0 || result.upsertedId !== null) {
       throw new InternalServerErrorException('Database failed to update formal system.');
@@ -177,9 +164,9 @@ export class FormalSystemHandler {
   async createFormalSystem(@Body(ValidationPipe) body: NewFormalSystemPayload, @AuthUserId() createdByUserId: string): Promise<void> {
     const { title, description } = body;
 
-    const client = await MongoClient.connect(buildMongoUrl());
+    const db = await this.mongoDatabase.getDb();
 
-    const formalSystemCollection = client.db().collection<ServerFormalSystem>('formal-systems');
+    const formalSystemCollection = db.collection<ServerFormalSystem>('formal-systems');
 
     const urlPath = buildUrlPath(title);
 
@@ -188,8 +175,6 @@ export class FormalSystemHandler {
     });
 
     if (collision) {
-      await client.close();
-
       throw new ConflictException('URL path already in use.');
     }
 
@@ -199,8 +184,6 @@ export class FormalSystemHandler {
       description,
       createdByUserId
     });
-
-    await client.close();
 
     if (!result.acknowledged || !result.insertedId) {
       throw new InternalServerErrorException('Database failed to create new formal system.');

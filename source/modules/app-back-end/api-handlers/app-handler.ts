@@ -1,17 +1,16 @@
-import { buildMongoUrl } from '@/common-back-end/helpers';
-import { MongoClient } from 'mongodb';
+import { MongoDatabase } from '@/common-back-end/classes';
 import { Get, HttpCode } from 'next-api-decorators';
 
 export class AppHandler {
+  private mongoDatabase: MongoDatabase = new MongoDatabase();
+
   @Get()
   @HttpCode(204)
   async healthCheck(): Promise<void> {
-    const client = await MongoClient.connect(buildMongoUrl());
+    const db = await this.mongoDatabase.getDb();
 
-    const dbStats = await client.db().stats();
+    const dbStats = await db.stats();
 
     console.log(dbStats);
-
-    await client.close();
   }
 };
