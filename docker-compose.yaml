@@ -31,6 +31,7 @@ services:
       retries: 2
       start_period: 5s
     image: node:18.12.1
+    init: true
     ports:
       - "3000:3000/tcp"
     user: "${USER_ID}:${GROUP_ID}"
