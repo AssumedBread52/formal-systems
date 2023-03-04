@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$1" = "--help" ]; then
-  echo "Usage: stop.sh"
+  echo "Usage: down.sh"
   echo "  Stops the development environment. Stopped containers are removed as well as"
   echo "  the constructed network."
   echo "  --clean = Will removed generated database files that are normally preserved"
