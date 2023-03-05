@@ -10,7 +10,7 @@ export class MongoDatabase {
     this.exitSignals.forEach((exitSignal: NodeJS.Signals): void => {
       process.removeAllListeners(exitSignal);
 
-      process.on(exitSignal, this.Cleanup);
+      process.on(exitSignal, this.Cleanup.bind(this));
     });
   }
 
