@@ -1,4 +1,4 @@
-import { Document } from 'mongodb';
+import { Collection, Document } from 'mongodb';
 import { MongoDatabase } from './mongo-database';
 
 export class MongoCollection<T extends Document> {
@@ -7,7 +7,7 @@ export class MongoCollection<T extends Document> {
   constructor(private name: 'formal-systems' | 'users') {
   }
 
-  public async getCollection() {
+  public async getCollection(): Promise<Collection<T>> {
     const db = await this.mongoDatabase.getDb();
 
     return db.collection<T>(this.name);
