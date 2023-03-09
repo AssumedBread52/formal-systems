@@ -1,15 +1,5 @@
 services:
 
-  npm-back-end:
-    entrypoint: npm
-    image: node:18.12.1
-    stdin_open: true
-    tty: true
-    user: "${USER_ID}:${GROUP_ID}"
-    volumes:
-      - ./back-end:/app:rw
-    working_dir: /app
-
   development-database:
     image: mongo:6.0.4
     env_file:
@@ -47,6 +37,16 @@ services:
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./source:/app:rw
+    working_dir: /app
+
+  npm-back-end:
+    entrypoint: npm
+    image: node:18.12.1
+    stdin_open: true
+    tty: true
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./back-end:/app:rw
     working_dir: /app
 
   npm-front-end:
