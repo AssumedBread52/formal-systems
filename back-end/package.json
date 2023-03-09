@@ -1,0 +1,33 @@
+{
+  "name": "formal-systems-back-end",
+  "version": "1.0.0",
+  "description": "The back-end of a web application that enables users to learn about formal systems through interaction. \"Play is the Highest Form of Research\" - Albert Einstein",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Formal",
+    "System",
+    "Axiom",
+    "Statement",
+    "Prestatement",
+    "Distinct",
+    "Variable",
+    "Restriction",
+    "Type",
+    "Hypothesis",
+    "Logical",
+    "Assertion",
+    "Symbol",
+    "Deduction",
+    "Theorem",
+    "Proof",
+    "Expression",
+    "Constant",
+    "Pair",
+    "Prefixed"
+  ],
+  "author": "Antonio Sanchez",
+  "license": "ISC"
+}
