@@ -11,15 +11,15 @@ MONGO_USERNAME="application"
 MONGO_PASSWORD=$(openssl rand -base64 32)
 NEXTAUTH_SECRET=$(openssl rand -base64 32)
 
-echo "NEXT_TELEMETRY_DISABLED=1" >> env/npm.env
-
-echo "TINI_KILL_PROCESS_GROUP=1" >> env/development-application.env
-echo "NEXT_TELEMETRY_DISABLED=1" >> env/development-application.env
-echo "NEXTAUTH_URL=http://localhost:3000" >> env/development-application.env
-echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> env/development-application.env
-echo "MONGO_USERNAME=$MONGO_USERNAME" >> env/development-application.env
-echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> env/development-application.env
-echo "MONGO_HOSTNAME=development-database" >> env/development-application.env
-
 echo "MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME" >> env/development-database.env
 echo "MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD" >> env/development-database.env
+
+echo "TINI_KILL_PROCESS_GROUP=1" >> env/development-front-end.env
+echo "NEXT_TELEMETRY_DISABLED=1" >> env/development-front-end.env
+echo "NEXTAUTH_URL=http://localhost:3000" >> env/development-front-end.env
+echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> env/development-front-end.env
+echo "MONGO_USERNAME=$MONGO_USERNAME" >> env/development-front-end.env
+echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> env/development-front-end.env
+echo "MONGO_HOSTNAME=development-database" >> env/development-front-end.env
+
+echo "NEXT_TELEMETRY_DISABLED=1" >> env/npm-front-end.env

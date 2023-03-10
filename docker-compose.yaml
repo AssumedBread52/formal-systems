@@ -36,13 +36,13 @@ services:
       - ./back-end:/app:rw
     working_dir: /app
 
-  development-application:
+  development-front-end:
     command: npm run dev
     depends_on:
       development-back-end:
         condition: service_healthy
     env_file:
-      - ./env/development-application.env
+      - ./env/development-front-end.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:3000/api/app || exit 1"]
       interval: 10s
@@ -71,7 +71,7 @@ services:
   npm-front-end:
     entrypoint: npm
     env_file:
-      - ./env/npm.env
+      - ./env/npm-front-end.env
     image: node:18.12.1
     stdin_open: true
     tty: true
