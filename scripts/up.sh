@@ -18,17 +18,20 @@ fi
 
 ENVIRONMENT_VARIABLES_CKSM_FILE=check-sums/environment-variables.cksm
 INITIALIZE_DATABASE_CKSM_FILE=check-sums/initialize-database.cksm
-NODE_MODULES_CKSM_FILE=check-sums/node-modules.cksm
+BACK_END_NODE_MODULES_CKSM_FILE=check-sums/back-end-node-modules.cksm
+FRONT_END_NODE_MODULES_CKSM_FILE=check-sums/front-end-node-modules.cksm
 CURRENT_ENVIRONMENT_VARIABLES_CKSM=$(cat scripts/generate-environment-variables.sh | sha1sum)
 CURRENT_INITIALIZE_DATABASE_CKSM=$(cat initialize-database/* | sha1sum)
-CURRENT_NODE_MODULES_CKSM=$(cat source/package-lock.json | sha1sum)
+CURRENT_BACK_END_NODE_MODULES_CKSM=$(cat back-end/package-lock.json | sha1sum)
+CURRENT_FRONT_END_NODE_MODULES_CKSM=$(cat source/package-lock.json | sha1sum)
 
 if [ ! -d check-sums ]; then
   mkdir check-sums
 else
   OLD_ENVIRONMENT_VARIABLES_CKSM=$(cat $ENVIRONMENT_VARIABLES_CKSM_FILE)
   OLD_INITIALIZE_DATABASE_CKSM=$(cat $INITIALIZE_DATABASE_CKSM_FILE)
-  OLD_NODE_MODULES_CKSM=$(cat $NODE_MODULES_CKSM_FILE)
+  OLD_BACK_END_NODE_MODULES_CKSM=$(cat $BACK_END_NODE_MODULES_CKSM_FILE)
+  OLD_FRONT_END_NODE_MODULES_CKSM=$(cat $FRONT_END_NODE_MODULES_CKSM_FILE)
 fi
 
 if [ ! -d env ]; then
@@ -59,16 +62,28 @@ elif [ "$1" = "--clean" ] && [ "$(ls -A database-files)" ]; then
   rm -rf database-files/..?* database-files/.[!.]* database-files/*
 fi
 
+if [ ! -d back-end/node_modules ]; then
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-back-end install
+
+  echo -n "$CURRENT_BACK_END_NODE_MODULES_CKSM" > $BACK_END_NODE_MODULES_CKSM_FILE
+elif [ ! "$OLD_BACK_END_NODE_MODULES_CKSM" = "$CURRENT_BACK_END_NODE_MODULES_CKSM" ]; then
+  rm -rf back-end/node_modules back-end/.nest
+
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-back-end install
+
+  echo -n "$CURRENT_BACK_END_NODE_MODULES_CKSM" > $BACK_END_NODE_MODULES_CKSM_FILE
+fi
+
 if [ ! -d source/node_modules ]; then
   GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-front-end install
 
-  echo -n "$CURRENT_NODE_MODULES_CKSM" > $NODE_MODULES_CKSM_FILE
-elif [ ! "$OLD_NODE_MODULES_CKSM" = "$CURRENT_NODE_MODULES_CKSM" ]; then
+  echo -n "$CURRENT_FRONT_END_NODE_MODULES_CKSM" > $FRONT_END_NODE_MODULES_CKSM_FILE
+elif [ ! "$OLD_FRONT_END_NODE_MODULES_CKSM" = "$CURRENT_FRONT_END_NODE_MODULES_CKSM" ]; then
   rm -rf source/node_modules source/.next
 
   GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-front-end install
 
-  echo -n "$CURRENT_NODE_MODULES_CKSM" > $NODE_MODULES_CKSM_FILE
+  echo -n "$CURRENT_FRONT_END_NODE_MODULES_CKSM" > $FRONT_END_NODE_MODULES_CKSM_FILE
 fi
 
 GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach development-application
