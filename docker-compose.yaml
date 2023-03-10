@@ -39,7 +39,7 @@ services:
   development-application:
     command: npm run dev
     depends_on:
-      development-database:
+      development-back-end:
         condition: service_healthy
     env_file:
       - ./env/development-application.env
