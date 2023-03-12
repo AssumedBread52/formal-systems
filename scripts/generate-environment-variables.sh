@@ -14,6 +14,11 @@ NEXTAUTH_SECRET=$(openssl rand -base64 32)
 echo "MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME" >> env/development-database.env
 echo "MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD" >> env/development-database.env
 
+echo "MONGO_SCHEME=mongodb" >> env/development-back-end.env
+echo "MONGO_USERNAME=$MONGO_USERNAME" >> env/development-back-end.env
+echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> env/development-back-end.env
+echo "MONGO_HOSTNAME=development-database" >> env/development-back-end.env
+
 echo "TINI_KILL_PROCESS_GROUP=1" >> env/development-front-end.env
 echo "NEXT_TELEMETRY_DISABLED=1" >> env/development-front-end.env
 echo "NEXTAUTH_URL=http://localhost:3000" >> env/development-front-end.env
