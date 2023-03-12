@@ -9,7 +9,9 @@ export class User {
   fullName: string = '';
   @Prop()
   email: string = '';
-  @Prop()
+  @Prop({
+    select: false
+  })
   hashedPassword: string = '';
 };
 
