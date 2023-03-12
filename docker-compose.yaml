@@ -22,6 +22,8 @@ services:
     depends_on:
       development-database:
         condition: service_healthy
+    env_file:
+      - ./env/development-back-end.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:5000/app/health-check || exit 1"]
       interval: 10s
