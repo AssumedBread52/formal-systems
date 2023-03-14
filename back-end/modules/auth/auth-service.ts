@@ -25,4 +25,8 @@ export class AuthService {
 
     return user;
   }
+
+  async validateUserById(_id: string): Promise<UserDocument | null> {
+    return await this.userService.readById(_id);
+  }
 };
