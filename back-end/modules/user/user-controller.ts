@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { User } from './user-schema';
+import { UserDocument } from './user-schema';
 import { UserService } from './user-service';
 
 @Controller('user')
@@ -8,7 +8,7 @@ export class UserController {
   }
 
   @Get(':id')
-  async readById(@Param('id') id: string): Promise<User | null> {
+  async readById(@Param('id') id: string): Promise<UserDocument | null> {
     return this.userService.readById(id);
   }
 };
