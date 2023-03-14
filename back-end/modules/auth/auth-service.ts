@@ -1,0 +1,28 @@
+import { UserDocument } from '@/user/user-schema';
+import { UserService } from '@/user/user-service';
+import { Injectable } from '@nestjs/common';
+import { compare } from 'bcryptjs';
+
+@Injectable()
+export class AuthService {
+  constructor(private userService: UserService) {
+  }
+
+  async validateUser(email: string, password: string): Promise<UserDocument | null> {
+    const user = await this.userService.readByEmail(email);
+
+    if (!user) {
+      return null;
+    }
+
+    const { hashedPassword } = user;
+
+    const matched = await compare(password, hashedPassword);
+
+    if (!matched) {
+      return null;
+    }
+
+    return user;
+  }
+};
