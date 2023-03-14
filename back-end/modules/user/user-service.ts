@@ -8,7 +8,7 @@ export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {
   }
 
-  async readById(id: string): Promise<User | null> {
+  async readById(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(id).exec();
   }
 };
