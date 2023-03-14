@@ -11,4 +11,10 @@ export class UserService {
   async readById(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(id).exec();
   }
+
+  async readByEmail(email: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({
+      email
+    }).exec();
+  }
 };
