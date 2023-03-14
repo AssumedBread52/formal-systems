@@ -1,10 +1,18 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { JwtAuthGuard } from '@/auth/jwt-auth-guard';
+import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { UserDocument } from './user-schema';
 import { UserService } from './user-service';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('session')
+  getProfile(@Req() req: Request): UserDocument | undefined {
+    return req.user;
   }
 
   @Get(':id')
