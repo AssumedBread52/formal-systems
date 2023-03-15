@@ -4,8 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth-controller';
 import { AuthService } from './auth-service';
-import { JwtStrategy } from './jwt-strategy';
-import { LocalStrategy } from './local-strategy';
+import { JwtStrategy, LocalStrategy } from './strategies';
 
 const secret = process.env.JSON_WEB_TOKEN_SECRET;
 

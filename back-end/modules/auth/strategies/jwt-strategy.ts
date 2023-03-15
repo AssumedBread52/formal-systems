@@ -1,8 +1,8 @@
+import { AuthService } from '@/auth/auth-service';
 import { UserDocument } from '@/user/user-schema';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { AuthService } from './auth-service';
 
 const secret = process.env.JSON_WEB_TOKEN_SECRET;
 
