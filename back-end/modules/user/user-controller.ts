@@ -1,4 +1,4 @@
-import { JwtAuthGuard } from '@/auth/jwt-auth-guard';
+import { JwtAuthGuard } from '@/auth/guards';
 import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { UserDocument } from './user-schema';
