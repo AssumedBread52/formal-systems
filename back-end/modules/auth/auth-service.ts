@@ -9,7 +9,7 @@ export class AuthService {
   constructor(private userService: UserService, private jwtService: JwtService) {
   }
 
-  async validateUser(email: string, password: string): Promise<UserDocument | null> {
+  async validateUserCredentials(email: string, password: string): Promise<UserDocument | null> {
     const user = await this.userService.readByEmail(email);
 
     if (!user) {
@@ -27,8 +27,8 @@ export class AuthService {
     return user;
   }
 
-  async validateUserById(_id: string): Promise<UserDocument | null> {
-    return await this.userService.readById(_id);
+  async validateUserId(id: string): Promise<UserDocument | null> {
+    return await this.userService.readById(id);
   }
 
   login(user: UserDocument): string {
