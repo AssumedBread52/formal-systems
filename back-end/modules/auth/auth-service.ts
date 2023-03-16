@@ -28,7 +28,7 @@ export class AuthService {
   }
 
   async validateUserId(id: string): Promise<UserDocument | null> {
-    return await this.userService.readById(id);
+    return this.userService.readById(id);
   }
 
   login(user: UserDocument): string {
