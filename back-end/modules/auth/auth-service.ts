@@ -34,6 +34,6 @@ export class AuthService {
   login(user: UserDocument): string {
     const { _id } = user;
 
-    return this.jwtService.sign({ _id });
+    return this.jwtService.sign({ id: _id });
   }
 };
