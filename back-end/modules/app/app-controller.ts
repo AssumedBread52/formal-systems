@@ -4,6 +4,6 @@ import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 export class AppController {
   @Get('health-check')
   @HttpCode(HttpStatus.NO_CONTENT)
-  healthCheck(): void {
+  getHealthCheck(): void {
   }
 };
