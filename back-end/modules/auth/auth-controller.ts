@@ -1,6 +1,7 @@
-import { Controller, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
+import { UserDocument } from '@/user/user-schema';
+import { Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth-service';
+import { SessionUser } from './decorators';
 import { LocalAuthGuard } from './guards';
 
 @Controller('auth')
@@ -10,13 +11,9 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Req() req: Request): { accessToken: string; } {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
+  login(@SessionUser() sessionUser: UserDocument): { accessToken: string; } {
     return {
-      accessToken: this.authService.login(req.user)
+      accessToken: this.authService.login(sessionUser)
     };
   }
 };
