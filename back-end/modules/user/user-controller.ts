@@ -16,7 +16,7 @@ export class UserController {
   }
 
   @Get(':id')
-  async readById(@Param('id') id: string): Promise<UserDocument | null> {
+  async getById(@Param('id') id: string): Promise<UserDocument | null> {
     return this.userService.readById(id);
   }
 };
