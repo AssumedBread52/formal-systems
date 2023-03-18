@@ -1,9 +1,9 @@
 services:
 
-  development-database:
+  database:
     image: mongo:6.0.4
     env_file:
-      - ./env/development-database.env
+      - ./env/database.env
     healthcheck:
       test: ["CMD-SHELL", "mongosh localhost:27017/test --quiet --eval='db.runCommand(\"ping\").ok || failure()' || exit 1"]
       interval: 10s
@@ -20,7 +20,7 @@ services:
   development-back-end:
     command: npm run start:dev
     depends_on:
-      development-database:
+      database:
         condition: service_healthy
     env_file:
       - ./env/development-back-end.env
