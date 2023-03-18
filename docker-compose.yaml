@@ -60,6 +60,16 @@ services:
       - ./front-end:/app:rw
     working_dir: /app
 
+  npm-auth-micro-service:
+    entrypoint: npm
+    image: node:18.12.1
+    stdin_open: true
+    tty: true
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./auth-micro-service:/app:rw
+    working_dir: /app
+
   npm-back-end:
     entrypoint: npm
     image: node:18.12.1
