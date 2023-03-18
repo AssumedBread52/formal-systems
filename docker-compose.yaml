@@ -15,7 +15,7 @@ services:
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./database-files:/data/db:rw
-      - ./initialize-database:/docker-entrypoint-initdb.d:ro
+      - ./database-initialization-scripts:/docker-entrypoint-initdb.d:ro
 
   development-back-end:
     command: npm run start:dev

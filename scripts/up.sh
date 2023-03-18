@@ -17,11 +17,11 @@ fi
 ./scripts/down.sh
 
 ENVIRONMENT_VARIABLES_CKSM_FILE=check-sums/environment-variables.cksm
-INITIALIZE_DATABASE_CKSM_FILE=check-sums/initialize-database.cksm
+INITIALIZE_DATABASE_CKSM_FILE=check-sums/database-initialization-scripts.cksm
 BACK_END_NODE_MODULES_CKSM_FILE=check-sums/back-end-node-modules.cksm
 FRONT_END_NODE_MODULES_CKSM_FILE=check-sums/front-end-node-modules.cksm
 CURRENT_ENVIRONMENT_VARIABLES_CKSM=$(cat scripts/generate-environment-variables.sh | sha1sum)
-CURRENT_INITIALIZE_DATABASE_CKSM=$(cat initialize-database/* | sha1sum)
+CURRENT_INITIALIZE_DATABASE_CKSM=$(cat database-initialization-scripts/* | sha1sum)
 CURRENT_BACK_END_NODE_MODULES_CKSM=$(cat back-end/package-lock.json | sha1sum)
 CURRENT_FRONT_END_NODE_MODULES_CKSM=$(cat front-end/package-lock.json | sha1sum)
 
