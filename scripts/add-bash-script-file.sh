@@ -7,7 +7,7 @@ if [ "$1" = "--help" ]; then
   exit
 fi
 
-if ! [ -z "$1" ]; then
+if [ ! -z "$1" ]; then
   FILE=scripts/$1.sh
 
   echo "#!/bin/bash" >> $FILE
