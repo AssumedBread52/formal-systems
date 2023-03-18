@@ -3,7 +3,7 @@ services:
   database:
     image: mongo:6.0.4
     env_file:
-      - ./env/database.env
+      - ./environment-variables/database.env
     healthcheck:
       test: ["CMD-SHELL", "mongosh localhost:27017/test --quiet --eval='db.runCommand(\"ping\").ok || failure()' || exit 1"]
       interval: 10s
@@ -23,7 +23,7 @@ services:
       database:
         condition: service_healthy
     env_file:
-      - ./env/development-back-end.env
+      - ./environment-variables/development-back-end.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:5000/app/health-check || exit 1"]
       interval: 10s
@@ -44,7 +44,7 @@ services:
       development-back-end:
         condition: service_healthy
     env_file:
-      - ./env/development-front-end.env
+      - ./environment-variables/development-front-end.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:3000/api/app || exit 1"]
       interval: 10s
@@ -83,7 +83,7 @@ services:
   npm-front-end:
     entrypoint: npm
     env_file:
-      - ./env/npm-front-end.env
+      - ./environment-variables/npm-front-end.env
     image: node:18.12.1
     stdin_open: true
     tty: true

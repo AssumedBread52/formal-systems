@@ -34,15 +34,15 @@ else
   OLD_FRONT_END_NODE_MODULES_CKSM=$(cat $FRONT_END_NODE_MODULES_CKSM_FILE)
 fi
 
-if [ ! -d env ]; then
-  mkdir env
+if [ ! -d environment-variables ]; then
+  mkdir environment-variables
 
   ./scripts/generate-environment-variables.sh
 
   echo -n "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" > $ENVIRONMENT_VARIABLES_CKSM_FILE
 elif [ ! "$OLD_ENVIRONMENT_VARIABLES_CKSM" = "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" ]; then
-  if [ ! -z "$(ls -A env)" ]; then
-    rm -rf env/..?* env/.[!.]* env/*
+  if [ ! -z "$(ls -A environment-variables)" ]; then
+    rm -rf environment-variables/..?* environment-variables/.[!.]* environment-variables/*
   fi
 
   ./scripts/generate-environment-variables.sh

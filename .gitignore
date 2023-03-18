@@ -2,6 +2,6 @@ back-end/.nest/
 back-end/node_modules/
 check-sums/
 database-files/
-env/
+environment-variables/
 front-end/.next/
 front-end/node_modules/
