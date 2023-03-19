@@ -32,7 +32,7 @@ services:
       start_period: 5s
     image: node:18.12.1
     ports:
-      - "5000:5000/tcp"
+      - "7000:7000/tcp"
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./back-end:/app:rw
