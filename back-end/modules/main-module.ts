@@ -9,11 +9,13 @@ const username = process.env.MONGO_USERNAME;
 const password = process.env.MONGO_PASSWORD;
 const hostname = process.env.MONGO_HOSTNAME;
 
+const encodedPassword = encodeURIComponent(password ?? '');
+
 @Module({
   imports: [
     AppModule,
     AuthModule,
-    MongooseModule.forRoot(`${scheme}://${username}:${password}@${hostname}/formal-systems?authSource=admin`),
+    MongooseModule.forRoot(`${scheme}://${username}:${encodedPassword}@${hostname}/formal-systems?authSource=admin`),
     UserModule
   ]
 })
