@@ -67,7 +67,7 @@ services:
     tty: true
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
-      - ./auth-micro-service:/app:rw
+      - ./micro-services/auth:/app:rw
     working_dir: /app
 
   npm-back-end:
