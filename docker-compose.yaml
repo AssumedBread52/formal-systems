@@ -25,7 +25,7 @@ services:
     env_file:
       - ./environment-variables/development-back-end.env
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:5000/app/health-check || exit 1"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:7000/app/health-check || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 2
