@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "outDir": "./.nest",
+    "module": "CommonJS",
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "target": "ES2017",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./source/*"
+      ],
+      "#/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
