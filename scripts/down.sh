@@ -15,6 +15,6 @@ if [ ! -z "$(docker network ls | awk '/formal-systems/ {print $2}')" ]; then
   GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose down
 fi
 
-if [ "$1" = "--clean" ] && [ "$(ls -A database-files)" ]; then
-  rm database-files/.[!.]* database-files/* -r
+if [ "$1" = "--clean" ] && [ "$(ls -A database/data)" ]; then
+  rm database/data/.[!.]* database/data/* -r
 fi

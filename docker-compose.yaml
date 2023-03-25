@@ -14,7 +14,7 @@ services:
       - "27017:27017/tcp"
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
-      - ./database-files:/data/db:rw
+      - ./database/data:/data/db:rw
       - ./database-initialization-scripts:/docker-entrypoint-initdb.d:ro
 
   development-back-end:
