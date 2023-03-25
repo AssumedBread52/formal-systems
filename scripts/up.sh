@@ -17,11 +17,11 @@ fi
 ./scripts/down.sh
 
 ENVIRONMENT_VARIABLES_CKSM_FILE=check-sums/environment-variables.cksm
-INITIALIZE_DATABASE_CKSM_FILE=check-sums/database-initialization-scripts.cksm
+DATABASE_CKSM_FILE=check-sums/database.cksm
 BACK_END_NODE_MODULES_CKSM_FILE=check-sums/back-end-node-modules.cksm
 FRONT_END_NODE_MODULES_CKSM_FILE=check-sums/front-end-node-modules.cksm
 CURRENT_ENVIRONMENT_VARIABLES_CKSM=$(cat scripts/generate-environment-variables.sh | sha1sum)
-CURRENT_INITIALIZE_DATABASE_CKSM=$(cat database-initialization-scripts/* | sha1sum)
+CURRENT_DATABASE_CKSM=$(cat database/initialization-scripts/* | sha1sum)
 CURRENT_BACK_END_NODE_MODULES_CKSM=$(cat back-end/package-lock.json | sha1sum)
 CURRENT_FRONT_END_NODE_MODULES_CKSM=$(cat front-end/package-lock.json | sha1sum)
 
@@ -29,7 +29,7 @@ if [ ! -d check-sums ]; then
   mkdir check-sums
 else
   OLD_ENVIRONMENT_VARIABLES_CKSM=$(cat $ENVIRONMENT_VARIABLES_CKSM_FILE)
-  OLD_INITIALIZE_DATABASE_CKSM=$(cat $INITIALIZE_DATABASE_CKSM_FILE)
+  OLD_INITIALIZE_DATABASE_CKSM=$(cat $DATABASE_CKSM_FILE)
   OLD_BACK_END_NODE_MODULES_CKSM=$(cat $BACK_END_NODE_MODULES_CKSM_FILE)
   OLD_FRONT_END_NODE_MODULES_CKSM=$(cat $FRONT_END_NODE_MODULES_CKSM_FILE)
 fi
@@ -53,11 +53,11 @@ fi
 if [ ! -d database/data ]; then
   mkdir database/data
 
-  echo -n "$CURRENT_INITIALIZE_DATABASE_CKSM" > $INITIALIZE_DATABASE_CKSM_FILE
-elif [ ! "$OLD_INITIALIZE_DATABASE_CKSM" = "$CURRENT_INITIALIZE_DATABASE_CKSM" ] || [ ! "$OLD_ENVIRONMENT_VARIABLES_CKSM" = "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" ]; then
+  echo -n "$CURRENT_DATABASE_CKSM" > $DATABASE_CKSM_FILE
+elif [ ! "$OLD_INITIALIZE_DATABASE_CKSM" = "$CURRENT_DATABASE_CKSM" ] || [ ! "$OLD_ENVIRONMENT_VARIABLES_CKSM" = "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" ]; then
   rm -rf database/data/..?* database/data/.[!.]* database/data/*
 
-  echo -n "$CURRENT_INITIALIZE_DATABASE_CKSM" > $INITIALIZE_DATABASE_CKSM_FILE
+  echo -n "$CURRENT_DATABASE_CKSM" > $DATABASE_CKSM_FILE
 elif [ "$1" = "--clean" ] && [ "$(ls -A database/data)" ]; then
   rm -rf database/data/..?* database/data/.[!.]* database/data/*
 fi
