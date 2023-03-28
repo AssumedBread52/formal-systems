@@ -70,6 +70,16 @@ services:
       - ./micro-services/auth:/app:rw
     working_dir: /app
 
+  npm-user-micro-service:
+    entrypoint: npm
+    image: node:18.12.1
+    stdin_open: true
+    tty: true
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-services/user:/app:rw
+    working_dir: /app
+
   npm-back-end:
     entrypoint: npm
     image: node:18.12.1
