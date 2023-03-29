@@ -1,7 +1,6 @@
 services:
 
   database:
-    image: mongo:6.0.4
     env_file:
       - ./environment-variables/database.env
     healthcheck:
@@ -10,6 +9,7 @@ services:
       timeout: 5s
       retries: 2
       start_period: 5s
+    image: mongo:6.0.4
     ports:
       - "27017:27017/tcp"
     user: "${USER_ID}:${GROUP_ID}"
