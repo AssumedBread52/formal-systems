@@ -60,7 +60,7 @@ services:
       - ./front-end:/app:rw
     working_dir: /app
 
-  npm-auth-micro-service:
+  npm-micro-service-auth:
     entrypoint: npm
     image: node:18.12.1
     stdin_open: true
@@ -70,7 +70,7 @@ services:
       - ./micro-services/auth:/app:rw
     working_dir: /app
 
-  npm-user-micro-service:
+  npm-micro-service-user:
     entrypoint: npm
     image: node:18.12.1
     stdin_open: true
