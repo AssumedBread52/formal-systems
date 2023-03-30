@@ -1,5 +1,5 @@
 {
-  "name": "formal-systems-auth-micro-service",
+  "name": "formal-systems-micro-service-auth",
   "version": "1.0.0",
   "description": "The auth micro service of a web application that enables users to learn about formal systems through interaction. \"Play is the Highest Form of Research\" - Albert Einstein",
   "main": "index.js",
