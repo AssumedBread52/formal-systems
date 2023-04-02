@@ -17,10 +17,52 @@ services:
       - ./database/data:/data/db:rw
       - ./database/initialization-scripts:/docker-entrypoint-initdb.d:ro
 
-  development-back-end:
+  micro-service-auth:
+    command: npm run start:dev
+    depends_on:
+      micro-service-user:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:5001/app/health-check || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+      start_period: 5s
+    image: node:18.12.1
+    ports:
+      - "5001:5001/tcp"
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-services/auth:/app:rw
+    working_dir: /app
+
+  micro-service-user:
     command: npm run start:dev
     depends_on:
       database:
+        condition: service_healthy
+    env_file:
+      - ./environment-variables/micro-service-user.env
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:5002/app/health-check || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+      start_period: 5s
+    image: node:18.12.1
+    ports:
+      - "5002:5002/tcp"
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-services/user:/app:rw
+    working_dir: /app
+
+  development-back-end:
+    command: npm run start:dev
+    depends_on:
+      micro-service-auth:
+        condition: service_healthy
+      micro-service-user:
         condition: service_healthy
     env_file:
       - ./environment-variables/development-back-end.env
