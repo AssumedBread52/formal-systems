@@ -18,10 +18,14 @@ fi
 
 ENVIRONMENT_VARIABLES_CKSM_FILE=check-sums/environment-variables.cksm
 DATABASE_CKSM_FILE=check-sums/database.cksm
+MICRO_SERVICE_AUTH_NODE_MODULES_CKSM_FILE=check-sums/micro-service-auth.cksm
+MICRO_SERVICE_USER_NODE_MODULES_CKSM_FILE=check-sums/micro-service-user.cksm
 BACK_END_NODE_MODULES_CKSM_FILE=check-sums/back-end-node-modules.cksm
 FRONT_END_NODE_MODULES_CKSM_FILE=check-sums/front-end-node-modules.cksm
 CURRENT_ENVIRONMENT_VARIABLES_CKSM=$(cat scripts/generate-environment-variables.sh | sha1sum)
 CURRENT_DATABASE_CKSM=$(cat database/initialization-scripts/* | sha1sum)
+CURRENT_MICRO_SERVICE_AUTH_NODE_MODULES_CKSM=$(cat micro-services/auth/package-lock.json | sha1sum)
+CURRENT_MICRO_SERVICE_USER_NODE_MODULES_CKSM=$(cat micro-services/user/package-lock.json | sha1sum)
 CURRENT_BACK_END_NODE_MODULES_CKSM=$(cat back-end/package-lock.json | sha1sum)
 CURRENT_FRONT_END_NODE_MODULES_CKSM=$(cat front-end/package-lock.json | sha1sum)
 
@@ -30,6 +34,8 @@ if [ ! -d check-sums ]; then
 else
   OLD_ENVIRONMENT_VARIABLES_CKSM=$(cat $ENVIRONMENT_VARIABLES_CKSM_FILE)
   OLD_INITIALIZE_DATABASE_CKSM=$(cat $DATABASE_CKSM_FILE)
+  OLD_MICRO_SERVICE_AUTH_NODE_MODULES_CKSM=$(cat $MICRO_SERVICE_AUTH_NODE_MODULES_CKSM_FILE)
+  OLD_MICRO_SERVICE_USER_NODE_MODULES_CKSM=$(cat $MICRO_SERVICE_USER_NODE_MODULES_CKSM_FILE)
   OLD_BACK_END_NODE_MODULES_CKSM=$(cat $BACK_END_NODE_MODULES_CKSM_FILE)
   OLD_FRONT_END_NODE_MODULES_CKSM=$(cat $FRONT_END_NODE_MODULES_CKSM_FILE)
 fi
@@ -60,6 +66,30 @@ elif [ ! "$OLD_INITIALIZE_DATABASE_CKSM" = "$CURRENT_DATABASE_CKSM" ] || [ ! "$O
   echo -n "$CURRENT_DATABASE_CKSM" > $DATABASE_CKSM_FILE
 elif [ "$1" = "--clean" ] && [ "$(ls -A database/data)" ]; then
   rm -rf database/data/..?* database/data/.[!.]* database/data/*
+fi
+
+if [ ! -d micro-services/auth/node_modules ]; then
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-service-auth install
+
+  echo -n "$CURRENT_MICRO_SERVICE_AUTH_NODE_MODULES_CKSM" > $MICRO_SERVICE_AUTH_NODE_MODULES_CKSM_FILE
+elif [ ! "$OLD_MICRO_SERVICE_AUTH_NODE_MODULES_CKSM" = "$CURRENT_MICRO_SERVICE_AUTH_NODE_MODULES_CKSM" ]; then
+  rm -rf micro-services/auth/node_modules micro-services/auth/.nest
+
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-service-auth install
+
+  echo -n "$CURRENT_MICRO_SERVICE_AUTH_NODE_MODULES_CKSM" > $MICRO_SERVICE_AUTH_NODE_MODULES_CKSM_FILE
+fi
+
+if [ ! -d micro-services/user/node_modules ]; then
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-service-user install
+
+  echo -n "$CURRENT_MICRO_SERVICE_USER_NODE_MODULES_CKSM" > $MICRO_SERVICE_USER_NODE_MODULES_CKSM_FILE
+elif [ ! "$OLD_MICRO_SERVICE_USER_NODE_MODULES_CKSM" = "$CURRENT_MICRO_SERVICE_USER_NODE_MODULES_CKSM" ]; then
+  rm -rf micro-services/user/node_modules micro-services/user/.nest
+
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-service-user install
+
+  echo -n "$CURRENT_MICRO_SERVICE_USER_NODE_MODULES_CKSM" > $MICRO_SERVICE_USER_NODE_MODULES_CKSM_FILE
 fi
 
 if [ ! -d back-end/node_modules ]; then
