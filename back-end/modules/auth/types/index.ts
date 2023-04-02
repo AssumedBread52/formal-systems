@@ -1,1 +1,1 @@
-export { JwtPayload } from './jwt-payload';
+export type { JwtPayload } from './jwt-payload';
