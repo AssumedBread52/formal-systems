@@ -1,7 +1,7 @@
 import { AppModule } from '@/app/app.module';
+import { UserModule } from '@/user/user.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserModule } from './user/user.module';
 
 const scheme = process.env.MONGO_SCHEME;
 const username = process.env.MONGO_USERNAME;
