@@ -31,5 +31,15 @@
     "Prefixed"
   ],
   "author": "Antonio Sanchez",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@nestjs/common": "^9.3.12",
+    "@nestjs/core": "^9.3.12",
+    "@nestjs/mongoose": "^9.2.2",
+    "@nestjs/platform-express": "^9.3.12",
+    "mongoose": "^7.0.3"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^9.3.0"
+  }
 }
