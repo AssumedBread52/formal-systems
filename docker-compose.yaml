@@ -80,6 +80,50 @@ services:
       - ./back-end:/app:rw
     working_dir: /app
 
+  micro-front-end-auth:
+    command: npm run dev
+    depends_on:
+      micro-service-auth:
+        condition: service_healthy
+    env_file:
+      - ./environment-variables/micro-front-end-auth.env
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:3001/api/app || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+      start_period: 5s
+    image: node:18.12.1
+    init: true
+    ports:
+      - "3001:3001/tcp"
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-front-ends/auth:/app:rw
+    working_dir: /app
+
+  micro-front-end-user:
+    command: npm run dev
+    depends_on:
+      micro-service-user:
+        condition: service_healthy
+    env_file:
+      - ./environment-variables/micro-front-end-user.env
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:3002/api/app || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+      start_period: 5s
+    image: node:18.12.1
+    init: true
+    ports:
+      - "3002:3002/tcp"
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-front-ends/user:/app:rw
+    working_dir: /app
+
   development-front-end:
     command: npm run dev
     depends_on:
@@ -130,6 +174,30 @@ services:
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./back-end:/app:rw
+    working_dir: /app
+
+  npm-micro-front-end-auth:
+    entrypoint: npm
+    env_file:
+      - ./environment-variables/npm-micro-front-end-auth.env
+    image: node:18.12.1
+    stdin_open: true
+    tty: true
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-front-ends/auth:/app:rw
+    working_dir: /app
+
+  npm-micro-front-end-user:
+    entrypoint: npm
+    env_file:
+      - ./environment-variables/npm-micro-front-end-user.env
+    image: node:18.12.1
+    stdin_open: true
+    tty: true
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-front-ends/user:/app:rw
     working_dir: /app
 
   npm-front-end:
