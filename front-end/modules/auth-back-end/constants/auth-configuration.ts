@@ -1,5 +1,5 @@
 import { CredentialsInput, CredentialsPayload, JwtCallbackParameters, SessionCallbackParameters } from '@/auth-back-end/types';
-import { MongoDatabase } from '@/common-back-end/classes';
+import { MongoCollection } from '@/common-back-end/classes';
 import { ServerUser } from '@/user-back-end/types';
 import { compare } from 'bcryptjs';
 import { Session, SessionStrategy, User } from 'next-auth';
@@ -49,11 +49,7 @@ export const authConfiguration = {
 
           const { email, password } = credentials;
 
-          const mongoDatabase = new MongoDatabase();
-
-          const db = await mongoDatabase.getDb();
-
-          const usersCollection = db.collection<ServerUser>('users');
+          const usersCollection = new MongoCollection<ServerUser>('users');
 
           const user = await usersCollection.findOne({
             email
