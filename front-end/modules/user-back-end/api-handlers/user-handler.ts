@@ -4,7 +4,7 @@ import { IdResponse } from '@/common-back-end/types';
 import { ClientUser, EditProfilePayload, ServerUser, SessionUser, SignUpPayload } from '@/user-back-end/types';
 import { hash } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
-import { Body, ConflictException, Get, HttpCode, InternalServerErrorException, NotFoundException, Param, Patch, Post, ValidationPipe } from 'next-api-decorators';
+import { Body, ConflictException, Get, HttpCode, NotFoundException, Param, Patch, Post, ValidationPipe } from 'next-api-decorators';
 
 export class UserHandler {
   private userCollection: MongoCollection<ServerUser> = new MongoCollection<ServerUser>('users');
@@ -12,9 +12,7 @@ export class UserHandler {
   @Get('/session')
   @HttpCode(200)
   async readSessionUser(@AuthUserId() authUserId: string): Promise<SessionUser> {
-    const collection = await this.userCollection.getCollection();
-
-    const user = await collection.findOne({
+    const user = await this.userCollection.findOne({
       _id: new ObjectId(authUserId)
     });
 
@@ -34,9 +32,7 @@ export class UserHandler {
   @Get('/:id')
   @HttpCode(200)
   async readUserById(@Param('id') id: string): Promise<ClientUser> {
-    const collection = await this.userCollection.getCollection();
-
-    const user = await collection.findOne({
+    const user = await this.userCollection.findOne({
       _id: new ObjectId(id)
     });
 
@@ -58,11 +54,9 @@ export class UserHandler {
   async updateUser(@Body(ValidationPipe) body: EditProfilePayload, @AuthUserId() authUserId: string): Promise<IdResponse> {
     const { firstName, lastName, email, password } = body;
 
-    const collection = await this.userCollection.getCollection();
-
     const _id = new ObjectId(authUserId);
 
-    const authUser = await collection.findOne({
+    const authUser = await this.userCollection.findOne({
       _id
     });
 
@@ -77,7 +71,7 @@ export class UserHandler {
       authUser.hashedPassword = await hash(password, 12);
     }
 
-    const collision = await collection.findOne({
+    const collision = await this.userCollection.findOne({
       email,
       _id: { $ne: _id }
     });
@@ -86,15 +80,11 @@ export class UserHandler {
       throw new ConflictException('Email already in use.');
     }
 
-    const result = await collection.updateOne({
+    await this.userCollection.updateOne({
       _id
     }, {
       $set: authUser
     });
-
-    if (!result.acknowledged || result.matchedCount !== 1 || result.modifiedCount !== 1 || result.upsertedCount !== 0 || result.upsertedId !== null) {
-      throw new InternalServerErrorException('Database failed to update user.');
-    }
 
     return { id: authUserId };
   }
@@ -104,9 +94,7 @@ export class UserHandler {
   async createUser(@Body(ValidationPipe) body: SignUpPayload): Promise<void> {
     const { firstName, lastName, email, password } = body;
 
-    const collection = await this.userCollection.getCollection();
-
-    const collision = await collection.findOne({
+    const collision = await this.userCollection.findOne({
       email
     });
 
@@ -116,15 +104,11 @@ export class UserHandler {
 
     const hashedPassword = await hash(password, 12);
 
-    const result = await collection.insertOne({
+    await this.userCollection.insertOne({
       firstName,
       lastName,
       email,
       hashedPassword
     });
-
-    if (!result.acknowledged || !result.insertedId) {
-      throw new InternalServerErrorException('Database failed to create new user.');
-    }
   }
 };
