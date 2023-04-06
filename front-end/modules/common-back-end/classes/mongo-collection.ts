@@ -66,7 +66,7 @@ export class MongoCollection<T extends Document> {
     }
   }
 
-  public async getCollection(): Promise<Collection<T>> {
+  private async getCollection(): Promise<Collection<T>> {
     const db = await this.mongoDatabase.getDb();
 
     return db.collection<T>(this.name);
