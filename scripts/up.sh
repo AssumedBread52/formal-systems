@@ -29,6 +29,8 @@ CURRENT_DATABASE_CKSM=$(cat database/initialization-scripts/* | sha1sum)
 CURRENT_MICRO_SERVICE_AUTH_NODE_MODULES_CKSM=$(cat micro-services/auth/package-lock.json | sha1sum)
 CURRENT_MICRO_SERVICE_USER_NODE_MODULES_CKSM=$(cat micro-services/user/package-lock.json | sha1sum)
 CURRENT_BACK_END_NODE_MODULES_CKSM=$(cat back-end/package-lock.json | sha1sum)
+CURRENT_MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM=$(cat micro-front-ends/auth/package-lock.json | sha1sum)
+CURRENT_MICRO_FRONT_END_USER_NODE_MODULES_CKSM=$(cat micro-front-ends/user/package-lock.json | sha1sum)
 CURRENT_FRONT_END_NODE_MODULES_CKSM=$(cat front-end/package-lock.json | sha1sum)
 
 if [ ! -d check-sums ]; then
