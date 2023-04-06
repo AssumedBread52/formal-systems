@@ -35,6 +35,7 @@
   "author": "Antonio Sanchez",
   "license": "ISC",
   "dependencies": {
+    "@module-federation/nextjs-mf": "^6.2.2",
     "@reduxjs/toolkit": "^1.9.3",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
