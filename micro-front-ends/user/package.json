@@ -8,5 +8,12 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@module-federation/nextjs-mf": "^6.2.2",
+    "next": "^13.2.4",
+    "next-api-decorators": "^2.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
 }
