@@ -20,7 +20,7 @@ services:
   micro-service-auth:
     command: npm run start:dev
     depends_on:
-      micro-service-user:
+      database:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:5001/app/health-check || exit 1"]
@@ -60,9 +60,7 @@ services:
   development-back-end:
     command: npm run start:dev
     depends_on:
-      micro-service-auth:
-        condition: service_healthy
-      micro-service-user:
+      database:
         condition: service_healthy
     env_file:
       - ./environment-variables/development-back-end.env
