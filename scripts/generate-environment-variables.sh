@@ -27,8 +27,10 @@ echo "MONGO_HOSTNAME=database" >> environment-variables/development-back-end.env
 echo "JSON_WEB_TOKEN_SECRET=$JSON_WEB_TOKEN_SECRET" >> environment-variables/development-back-end.env
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-auth.env
+echo "PORT=3001" >> environment-variables/micro-front-end-auth.env
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-user.env
+echo "PORT=3002" >> environment-variables/micro-front-end-user.env
 
 echo "TINI_KILL_PROCESS_GROUP=1" >> environment-variables/development-front-end.env
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/development-front-end.env
