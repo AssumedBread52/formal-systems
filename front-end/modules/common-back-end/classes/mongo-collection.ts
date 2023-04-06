@@ -1,4 +1,4 @@
-import { Collection, Document, Filter, FindCursor, UpdateFilter, WithId } from 'mongodb';
+import { Collection, Document, Filter, FindCursor, OptionalUnlessRequiredId, UpdateFilter, WithId } from 'mongodb';
 import { MongoDatabase } from './mongo-database';
 import { InternalServerErrorException } from 'next-api-decorators';
 
@@ -40,6 +40,18 @@ export class MongoCollection<T extends Document> {
     const collection = await this.getCollection();
 
     return collection.findOne(filter);
+  }
+
+  public async insertOne(doc: OptionalUnlessRequiredId<T>): Promise<void> {
+    const collection = await this.getCollection();
+
+    const result = await collection.insertOne(doc);
+
+    const { acknowledged, insertedId } = result;
+
+    if (!acknowledged || !insertedId) {
+      throw new InternalServerErrorException(`Inserting document into ${this.name} collection failed.`);
+    }
   }
 
   public async updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>): Promise<void> {
