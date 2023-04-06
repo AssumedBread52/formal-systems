@@ -1,4 +1,4 @@
-import { Collection, Document, Filter, WithId } from 'mongodb';
+import { Collection, Document, Filter, FindCursor, WithId } from 'mongodb';
 import { MongoDatabase } from './mongo-database';
 import { InternalServerErrorException } from 'next-api-decorators';
 
@@ -6,6 +6,12 @@ export class MongoCollection<T extends Document> {
   private mongoDatabase: MongoDatabase = new MongoDatabase();
 
   constructor(private name: 'formal-systems' | 'users') {
+  }
+
+  public async countDocuments(filter?: Filter<T>): Promise<number> {
+    const collection = await this.getCollection();
+
+    return await collection.countDocuments(filter);
   }
 
   public async deleteOne(filter: Filter<T>): Promise<void> {
@@ -17,6 +23,16 @@ export class MongoCollection<T extends Document> {
 
     if (!acknowledged || deletedCount !== 1) {
       throw new InternalServerErrorException(`Deleting document from ${this.name} collection failed.`);
+    }
+  }
+
+  public async find(filter?: Filter<T>): Promise<FindCursor<WithId<T>>> {
+    const collection = await this.getCollection();
+
+    if (filter) {
+      return collection.find(filter);
+    } else {
+      return collection.find();
     }
   }
 

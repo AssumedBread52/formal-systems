@@ -56,13 +56,11 @@ export class FormalSystemHandler {
   @Get()
   @HttpCode(200)
   async readFormalSystems(@Query('page', ParseNumberPipe) page: number, @Query('count', ParseNumberPipe) count: number, @Query('keywords') keywords?: string[] | string): Promise<PaginatedResults<ClientFormalSystem>> {
-    const formalSystemCollection = await this.formalSystemCollection.getCollection();
-
-    let formalSystemsCursor
+    let formalSystemsCursor;
     let total;
     if (!keywords || 0 === keywords.length) {
-      formalSystemsCursor = formalSystemCollection.find();
-      total = await formalSystemCollection.countDocuments();
+      formalSystemsCursor = await this.formalSystemCollection.find();
+      total = await this.formalSystemCollection.countDocuments();
     } else {
       const filter = {
         $text: {
@@ -71,8 +69,8 @@ export class FormalSystemHandler {
         }
       };
 
-      formalSystemsCursor = formalSystemCollection.find(filter);
-      total = await formalSystemCollection.countDocuments(filter);
+      formalSystemsCursor = await this.formalSystemCollection.find(filter);
+      total = await this.formalSystemCollection.countDocuments(filter);
     }
 
     formalSystemsCursor.skip((page - 1) * count).limit(count);
