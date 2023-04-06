@@ -34,9 +34,7 @@ export class FormalSystemHandler {
   @Get('/:urlPath')
   @HttpCode(200)
   async readFormalSystemByUrlPath(@Param('urlPath') urlPath: string): Promise<ClientFormalSystem> {
-    const formalSystemCollection = await this.formalSystemCollection.getCollection();
-
-    const formalSystem = await formalSystemCollection.findOne({
+    const formalSystem = await this.formalSystemCollection.findOne({
       urlPath
     });
 
