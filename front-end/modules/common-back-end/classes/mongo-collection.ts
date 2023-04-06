@@ -1,4 +1,4 @@
-import { Collection, Document, Filter, FindCursor, WithId } from 'mongodb';
+import { Collection, Document, Filter, FindCursor, UpdateFilter, WithId } from 'mongodb';
 import { MongoDatabase } from './mongo-database';
 import { InternalServerErrorException } from 'next-api-decorators';
 
@@ -40,6 +40,18 @@ export class MongoCollection<T extends Document> {
     const collection = await this.getCollection();
 
     return collection.findOne(filter);
+  }
+
+  public async updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>): Promise<void> {
+    const collection = await this.getCollection();
+
+    const updateResult = await collection.updateOne(filter, update);
+
+    const { acknowledged, matchedCount, modifiedCount, upsertedCount, upsertedId } = updateResult;
+
+    if (!acknowledged || matchedCount !== 1 || modifiedCount !== 1 || upsertedCount !== 0 || upsertedId !== null) {
+      throw new InternalServerErrorException(`Updating document in ${this.name} collection failed.`);
+    }
   }
 
   public async getCollection(): Promise<Collection<T>> {

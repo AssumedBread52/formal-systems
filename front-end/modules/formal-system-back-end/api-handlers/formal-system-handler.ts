@@ -98,11 +98,9 @@ export class FormalSystemHandler {
   async updateFormalSystem(@Body(ValidationPipe) body: UpdateFormalSystemPayload, @Param('id') id: string, @AuthUserId() createdByUserId: string): Promise<IdResponse> {
     const { title, description } = body;
 
-    const formalSystemCollection = await this.formalSystemCollection.getCollection();
-
     const _id = new ObjectId(id);
 
-    const formalSystem = await formalSystemCollection.findOne({
+    const formalSystem = await this.formalSystemCollection.findOne({
       _id,
       createdByUserId
     });
@@ -117,7 +115,7 @@ export class FormalSystemHandler {
     formalSystem.urlPath = urlPath;
     formalSystem.description = description;
 
-    const collision = await formalSystemCollection.findOne({
+    const collision = await this.formalSystemCollection.findOne({
       urlPath,
       _id: { $ne: _id }
     });
@@ -126,17 +124,11 @@ export class FormalSystemHandler {
       throw new ConflictException('URL path already in use.');
     }
 
-    const result = await formalSystemCollection.updateOne({
+    await this.formalSystemCollection.updateOne({
       _id
     }, {
       $set: formalSystem
     });
-
-    console.log(result);
-
-    if (!result.acknowledged || result.matchedCount !== 1 || result.modifiedCount !== 1 || result.upsertedCount !== 0 || result.upsertedId !== null) {
-      throw new InternalServerErrorException('Database failed to update formal system.');
-    }
 
     return { id };
   }
