@@ -9,8 +9,6 @@ export class AppHandler {
   async healthCheck(): Promise<void> {
     const db = await this.mongoDatabase.getDb();
 
-    const dbStats = await db.stats();
-
-    console.log(dbStats);
+    await db.stats();
   }
 };
