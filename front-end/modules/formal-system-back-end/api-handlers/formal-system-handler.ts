@@ -12,11 +12,9 @@ export class FormalSystemHandler {
   @Delete('/:id')
   @HttpCode(200)
   async deleteFormalSystem(@Param('id') id: string, @AuthUserId() createdByUserId: string): Promise<IdResponse> {
-    const formalSystemCollection = await this.formalSystemCollection.getCollection();
-
     const _id = new ObjectId(id);
 
-    const target = await formalSystemCollection.findOne({
+    const target = await this.formalSystemCollection.findOne({
       _id
     });
 
@@ -25,13 +23,9 @@ export class FormalSystemHandler {
         throw new UnauthorizedException('You cannot delete another user\'s data');
       }
 
-      const result = await formalSystemCollection.deleteOne({
+      await this.formalSystemCollection.deleteOne({
         _id
       });
-
-      if (!result.acknowledged || result.deletedCount !== 1) {
-        throw new InternalServerErrorException('Database failed to delete formal system.');
-      }
     }
 
     return { id };
