@@ -21,6 +21,8 @@ DATABASE_CKSM_FILE=check-sums/database.cksm
 MICRO_SERVICE_AUTH_NODE_MODULES_CKSM_FILE=check-sums/micro-service-auth.cksm
 MICRO_SERVICE_USER_NODE_MODULES_CKSM_FILE=check-sums/micro-service-user.cksm
 BACK_END_NODE_MODULES_CKSM_FILE=check-sums/back-end-node-modules.cksm
+MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM_FILE=check-sums/micro-front-end-auth.cksm
+MICRO_FRONT_END_USER_NODE_MODULES_CKSM_FILE=check-sums/micro-front-end-user.cksm
 FRONT_END_NODE_MODULES_CKSM_FILE=check-sums/front-end-node-modules.cksm
 CURRENT_ENVIRONMENT_VARIABLES_CKSM=$(cat scripts/generate-environment-variables.sh | sha1sum)
 CURRENT_DATABASE_CKSM=$(cat database/initialization-scripts/* | sha1sum)
@@ -37,6 +39,8 @@ else
   OLD_MICRO_SERVICE_AUTH_NODE_MODULES_CKSM=$(cat $MICRO_SERVICE_AUTH_NODE_MODULES_CKSM_FILE)
   OLD_MICRO_SERVICE_USER_NODE_MODULES_CKSM=$(cat $MICRO_SERVICE_USER_NODE_MODULES_CKSM_FILE)
   OLD_BACK_END_NODE_MODULES_CKSM=$(cat $BACK_END_NODE_MODULES_CKSM_FILE)
+  OLD_MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM=$(cat $MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM_FILE)
+  OLD_MICRO_FRONT_END_USER_NODE_MODULES_CKSM=$(cat $MICRO_FRONT_END_USER_NODE_MODULES_CKSM_FILE)
   OLD_FRONT_END_NODE_MODULES_CKSM=$(cat $FRONT_END_NODE_MODULES_CKSM_FILE)
 fi
 
@@ -102,6 +106,30 @@ elif [ ! "$OLD_BACK_END_NODE_MODULES_CKSM" = "$CURRENT_BACK_END_NODE_MODULES_CKS
   GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-back-end install
 
   echo -n "$CURRENT_BACK_END_NODE_MODULES_CKSM" > $BACK_END_NODE_MODULES_CKSM_FILE
+fi
+
+if [ ! -d micro-front-ends/auth/node_modules ]; then
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-front-end-auth install
+
+  echo -n "$CURRENT_MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM" > $MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM_FILE
+elif [ ! "$OLD_MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM" = "$CURRENT_MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM" ]; then
+  rm -rf micro-front-ends/auth/node_modules micro-front-ends/auth/.next
+
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-front-end-auth install
+
+  echo -n "$CURRENT_MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM" > $MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM_FILE
+fi
+
+if [ ! -d micro-front-ends/user/node_modules ]; then
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-front-end-user install
+
+  echo -n "$CURRENT_MICRO_FRONT_END_USER_NODE_MODULES_CKSM" > $MICRO_FRONT_END_USER_NODE_MODULES_CKSM_FILE
+elif [ ! "$OLD_MICRO_FRONT_END_USER_NODE_MODULES_CKSM" = "$CURRENT_MICRO_FRONT_END_USER_NODE_MODULES_CKSM" ]; then
+  rm -rf micro-front-ends/user/node_modules micro-front-ends/user/.next
+
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-front-end-user install
+
+  echo -n "$CURRENT_MICRO_FRONT_END_USER_NODE_MODULES_CKSM" > $MICRO_FRONT_END_USER_NODE_MODULES_CKSM_FILE
 fi
 
 if [ ! -d front-end/node_modules ]; then
