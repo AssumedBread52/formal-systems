@@ -26,9 +26,9 @@ echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> environment-variables/development-back-
 echo "MONGO_HOSTNAME=database" >> environment-variables/development-back-end.env
 echo "JSON_WEB_TOKEN_SECRET=$JSON_WEB_TOKEN_SECRET" >> environment-variables/development-back-end.env
 
-echo "NEXT_TELEMETRY_DISABLED=1" >> micro-front-end-auth.env
+echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-auth.env
 
-echo "NEXT_TELEMETRY_DISABLED=1" >> micro-front-end-user.env
+echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-user.env
 
 echo "TINI_KILL_PROCESS_GROUP=1" >> environment-variables/development-front-end.env
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/development-front-end.env
@@ -38,8 +38,8 @@ echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/development-front
 echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> environment-variables/development-front-end.env
 echo "MONGO_HOSTNAME=database" >> environment-variables/development-front-end.env
 
-echo "NEXT_TELEMETRY_DISABLED=1" >> npm-micro-front-end-auth.env
+echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-auth.env
 
-echo "NEXT_TELEMETRY_DISABLED=1" >> npm-micro-front-end-user.env
+echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-user.env
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-front-end.env
