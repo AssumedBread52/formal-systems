@@ -5,6 +5,7 @@ database/data/
 environment-variables/
 front-end/.next/
 front-end/node_modules/
+micro-front-ends/*/.next/
 micro-front-ends/*/node_modules/
 micro-services/*/.nest/
 micro-services/*/node_modules/
