@@ -1,7 +1,7 @@
-import { NextFederationPlugin } from '@module-federation/nextjs-mf';
+const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+module.exports = {
   compiler: {
     styledComponents: true
   },
@@ -27,5 +27,3 @@ const nextConfig = {
     return config;
   }
 };
-
-export default nextConfig;
