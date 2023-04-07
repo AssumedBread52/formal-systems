@@ -1,6 +1,6 @@
 import { Collection, Document, Filter, FindCursor, OptionalUnlessRequiredId, UpdateFilter, WithId } from 'mongodb';
-import { MongoDatabase } from './mongo-database';
 import { InternalServerErrorException } from 'next-api-decorators';
+import { MongoDatabase } from './mongo-database';
 
 export class MongoCollection<T extends Document> {
   private mongoDatabase: MongoDatabase = new MongoDatabase();
