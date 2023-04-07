@@ -146,4 +146,4 @@ elif [ ! "$OLD_FRONT_END_NODE_MODULES_CKSM" = "$CURRENT_FRONT_END_NODE_MODULES_C
   echo -n "$CURRENT_FRONT_END_NODE_MODULES_CKSM" > $FRONT_END_NODE_MODULES_CKSM_FILE
 fi
 
-GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach development-front-end
+GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach application

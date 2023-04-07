@@ -120,7 +120,7 @@ services:
       - ./micro-front-ends/user:/app:rw
     working_dir: /app
 
-  development-front-end:
+  application:
     command: npm run dev
     depends_on:
       development-back-end:
@@ -130,7 +130,7 @@ services:
       micro-front-end-user:
         condition: service_healthy
     env_file:
-      - ./environment-variables/development-front-end.env
+      - ./environment-variables/application.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:3000/api/app || exit 1"]
       interval: 10s
