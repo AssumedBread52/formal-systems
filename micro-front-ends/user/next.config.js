@@ -13,7 +13,7 @@ module.exports = {
 
     config.plugins.push(new NextFederationPlugin({
       exposes: {
-        './created-by': './pages/created-by'
+        './user-signature': './pages/user-signature'
       },
       filename: 'static/chunks/remoteEntry.js',
       name: 'user'

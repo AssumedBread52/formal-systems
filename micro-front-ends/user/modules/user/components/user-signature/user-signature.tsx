@@ -1,9 +1,9 @@
 import { ReactElement } from 'react';
 
-export const CreatedBy = (): ReactElement => {
+export const UserSignature = (): ReactElement => {
   return (
     <div>
-      Created By Element!
+      User Signature!
     </div>
   );
 };
