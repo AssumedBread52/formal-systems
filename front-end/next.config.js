@@ -20,7 +20,7 @@ module.exports = {
       filename: 'static/chunks/remoteEntry.js',
       name: 'application',
       remotes: {
-        user: `user@http://localhost:3002/_next/static/${isServer ? 'ssr' : 'chunks'}/remoteEntry.js`
+        user: isServer ? 'user@http://micro-front-end-user:3002/_next/static/ssr/remoteEntry.js' : 'user@http://localhost:3002/_next/static/chunks/remoteEntry.js'
       }
     }));
 
