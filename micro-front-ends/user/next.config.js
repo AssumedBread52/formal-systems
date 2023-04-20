@@ -1,4 +1,5 @@
 const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
+const { FederatedTypesPlugin } = require('@module-federation/typescript');
 
 /** @type {import('next').NextConfig} */
 module.exports = {
@@ -6,7 +7,9 @@ module.exports = {
     dirs: ['pages', 'modules']
   },
   reactStrictMode: true,
-  webpack: (config) => {
+  webpack: (config, options) => {
+    const { isServer } = options;
+
     Object.assign(config.experiments, {
       topLevelAwait: true
     });
@@ -17,6 +20,24 @@ module.exports = {
       },
       filename: 'static/chunks/remoteEntry.js',
       name: 'user'
+    }));
+    config.plugins.push(new FederatedTypesPlugin({
+      federationConfig: {
+        exposes: {
+          './user-signature': './pages/user-signature'
+        },
+        filename: 'static/ssr/remoteEntry.js',
+        name: 'user'
+      }
+    }));
+    config.plugins.push(new FederatedTypesPlugin({
+      federationConfig: {
+        exposes: {
+          './user-signature': './pages/user-signature'
+        },
+        filename: 'static/chunks/remoteEntry.js',
+        name: 'user'
+      }
     }));
 
     return config;
