@@ -1,15 +1,13 @@
 import { UserSignatureProps } from '@/user/types';
-import { Typography } from 'antd';
+import { Card } from 'antd';
 import { ReactElement } from 'react';
 
-const { Text } = Typography;
+const { Meta } = Card;
 
 export const UserSignature = (props: UserSignatureProps): ReactElement => {
-  const { label } = props;
+  const { label = 'Test Label', userId = 'Test User ID' } = props;
 
   return (
-    <Text>
-      {label}
-    </Text>
+    <Meta title={label} description={userId} />
   );
 };
