@@ -7,9 +7,7 @@ module.exports = {
     dirs: ['pages', 'modules']
   },
   reactStrictMode: true,
-  webpack: (config, options) => {
-    const { isServer } = options;
-
+  webpack: (config) => {
     Object.assign(config.experiments, {
       topLevelAwait: true
     });
