@@ -17,6 +17,7 @@ module.exports = {
     });
 
     config.plugins.push(new NextFederationPlugin({
+      exposes: {},
       filename: 'static/chunks/remoteEntry.js',
       name: 'application',
       remotes: {
