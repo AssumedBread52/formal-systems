@@ -14,7 +14,7 @@ module.exports = {
 
     config.plugins.push(new NextFederationPlugin({
       exposes: {
-        './user-signature': './pages/user-signature'
+        './user-signature': './modules/user/components/user-signature/user-signature'
       },
       filename: 'static/chunks/remoteEntry.js',
       name: 'user'
@@ -22,7 +22,7 @@ module.exports = {
     config.plugins.push(new FederatedTypesPlugin({
       federationConfig: {
         exposes: {
-          './user-signature': './pages/user-signature'
+          './user-signature': './modules/user/components/user-signature/user-signature'
         },
         filename: 'static/ssr/remoteEntry.js',
         name: 'user'
@@ -31,7 +31,7 @@ module.exports = {
     config.plugins.push(new FederatedTypesPlugin({
       federationConfig: {
         exposes: {
-          './user-signature': './pages/user-signature'
+          './user-signature': './modules/user/components/user-signature/user-signature'
         },
         filename: 'static/chunks/remoteEntry.js',
         name: 'user'
