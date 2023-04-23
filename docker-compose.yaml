@@ -7,7 +7,7 @@ services:
       test: ["CMD-SHELL", "mongosh localhost:27017/test --quiet --eval='db.runCommand(\"ping\").ok || failure()' || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 2
+      retries: 3
       start_period: 5s
     image: mongo:6.0.4
     ports:
@@ -26,7 +26,7 @@ services:
       test: ["CMD-SHELL", "curl --fail http://localhost:5001/app/health-check || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 2
+      retries: 3
       start_period: 5s
     image: node:18.12.1
     ports:
@@ -47,7 +47,7 @@ services:
       test: ["CMD-SHELL", "curl --fail http://localhost:5002/app/health-check || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 2
+      retries: 3
       start_period: 5s
     image: node:18.12.1
     ports:
@@ -68,7 +68,7 @@ services:
       test: ["CMD-SHELL", "curl --fail http://localhost:7000/app/health-check || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 2
+      retries: 3
       start_period: 5s
     image: node:18.12.1
     ports:
@@ -89,7 +89,7 @@ services:
       test: ["CMD-SHELL", "curl --fail http://localhost:3001/api/app || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 2
+      retries: 3
       start_period: 5s
     image: node:18.12.1
     ports:
@@ -110,7 +110,7 @@ services:
       test: ["CMD-SHELL", "curl --fail http://localhost:3002/api/app || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 2
+      retries: 3
       start_period: 5s
     image: node:18.12.1
     ports:
@@ -135,7 +135,7 @@ services:
       test: ["CMD-SHELL", "curl --fail http://localhost:3000/api/app || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 2
+      retries: 3
       start_period: 5s
     image: node:18.12.1
     init: true
