@@ -1,0 +1,1 @@
+export declare const useReadUserByIdQuery: import("@reduxjs/toolkit/dist/query/react/buildHooks").UseQuery<import("@reduxjs/toolkit/dist/query").QueryDefinition<string, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "user", import("../types").ClientUser, "user">>;
