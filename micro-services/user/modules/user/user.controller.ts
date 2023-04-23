@@ -1,5 +1,5 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
-import { UserDocument } from './user.schema';
+import { ClientUser } from './data-transfer-objects';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -8,13 +8,13 @@ export class UserController {
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<UserDocument> {
+  async getById(@Param('id') id: string): Promise<ClientUser> {
     const user = await this.userService.readById(id);
 
     if (!user) {
       throw new NotFoundException();
     }
 
-    return user;
+    return new ClientUser(user);
   }
 };
