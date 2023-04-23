@@ -143,7 +143,7 @@ services:
       - "3000:3000/tcp"
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
-      - ./front-end:/app:rw
+      - ./application:/app:rw
     working_dir: /app
 
   npm-micro-service-auth:
@@ -200,14 +200,14 @@ services:
       - ./micro-front-ends/user:/app:rw
     working_dir: /app
 
-  npm-front-end:
+  npm-application:
     entrypoint: npm
     env_file:
-      - ./environment-variables/npm-front-end.env
+      - ./environment-variables/npm-application.env
     image: node:18.12.1
     stdin_open: true
     tty: true
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
-      - ./front-end:/app:rw
+      - ./application:/app:rw
     working_dir: /app
