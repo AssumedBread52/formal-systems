@@ -23,7 +23,7 @@ MICRO_SERVICE_USER_NODE_MODULES_CKSM_FILE=check-sums/micro-service-user.cksm
 BACK_END_NODE_MODULES_CKSM_FILE=check-sums/back-end-node-modules.cksm
 MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM_FILE=check-sums/micro-front-end-auth.cksm
 MICRO_FRONT_END_USER_NODE_MODULES_CKSM_FILE=check-sums/micro-front-end-user.cksm
-FRONT_END_NODE_MODULES_CKSM_FILE=check-sums/front-end-node-modules.cksm
+APPLICATION_NODE_MODULES_CKSM_FILE=check-sums/application-node-modules.cksm
 CURRENT_ENVIRONMENT_VARIABLES_CKSM=$(cat scripts/generate-environment-variables.sh | sha1sum)
 CURRENT_DATABASE_CKSM=$(cat database/initialization-scripts/* | sha1sum)
 CURRENT_MICRO_SERVICE_AUTH_NODE_MODULES_CKSM=$(cat micro-services/auth/package-lock.json | sha1sum)
@@ -31,7 +31,7 @@ CURRENT_MICRO_SERVICE_USER_NODE_MODULES_CKSM=$(cat micro-services/user/package-l
 CURRENT_BACK_END_NODE_MODULES_CKSM=$(cat back-end/package-lock.json | sha1sum)
 CURRENT_MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM=$(cat micro-front-ends/auth/package-lock.json | sha1sum)
 CURRENT_MICRO_FRONT_END_USER_NODE_MODULES_CKSM=$(cat micro-front-ends/user/package-lock.json | sha1sum)
-CURRENT_FRONT_END_NODE_MODULES_CKSM=$(cat front-end/package-lock.json | sha1sum)
+CURRENT_APPLICATION_NODE_MODULES_CKSM=$(cat application/package-lock.json | sha1sum)
 
 if [ ! -d check-sums ]; then
   mkdir check-sums
@@ -43,7 +43,7 @@ else
   OLD_BACK_END_NODE_MODULES_CKSM=$(cat $BACK_END_NODE_MODULES_CKSM_FILE)
   OLD_MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM=$(cat $MICRO_FRONT_END_AUTH_NODE_MODULES_CKSM_FILE)
   OLD_MICRO_FRONT_END_USER_NODE_MODULES_CKSM=$(cat $MICRO_FRONT_END_USER_NODE_MODULES_CKSM_FILE)
-  OLD_FRONT_END_NODE_MODULES_CKSM=$(cat $FRONT_END_NODE_MODULES_CKSM_FILE)
+  OLD_APPLICATION_NODE_MODULES_CKSM=$(cat $APPLICATION_NODE_MODULES_CKSM_FILE)
 fi
 
 if [ ! -d environment-variables ]; then
@@ -134,16 +134,16 @@ elif [ ! "$OLD_MICRO_FRONT_END_USER_NODE_MODULES_CKSM" = "$CURRENT_MICRO_FRONT_E
   echo -n "$CURRENT_MICRO_FRONT_END_USER_NODE_MODULES_CKSM" > $MICRO_FRONT_END_USER_NODE_MODULES_CKSM_FILE
 fi
 
-if [ ! -d front-end/node_modules ]; then
-  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-front-end install
+if [ ! -d application/node_modules ]; then
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-application install
 
-  echo -n "$CURRENT_FRONT_END_NODE_MODULES_CKSM" > $FRONT_END_NODE_MODULES_CKSM_FILE
-elif [ ! "$OLD_FRONT_END_NODE_MODULES_CKSM" = "$CURRENT_FRONT_END_NODE_MODULES_CKSM" ]; then
-  rm -rf front-end/node_modules front-end/.next
+  echo -n "$CURRENT_APPLICATION_NODE_MODULES_CKSM" > $APPLICATION_NODE_MODULES_CKSM_FILE
+elif [ ! "$OLD_APPLICATION_NODE_MODULES_CKSM" = "$CURRENT_APPLICATION_NODE_MODULES_CKSM" ]; then
+  rm -rf application/node_modules application/.next
 
-  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-front-end install
+  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-application install
 
-  echo -n "$CURRENT_FRONT_END_NODE_MODULES_CKSM" > $FRONT_END_NODE_MODULES_CKSM_FILE
+  echo -n "$CURRENT_APPLICATION_NODE_MODULES_CKSM" > $APPLICATION_NODE_MODULES_CKSM_FILE
 fi
 
 GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach application

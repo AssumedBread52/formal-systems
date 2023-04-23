@@ -44,4 +44,4 @@ echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-au
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-user.env
 
-echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-front-end.env
+echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-application.env
