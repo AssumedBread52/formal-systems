@@ -3,9 +3,9 @@ back-end/node_modules/
 check-sums/
 database/data/
 environment-variables/
-front-end/.next/
-front-end/node_modules/
-front-end/next-env.d.ts
+application/.next/
+application/node_modules/
+application/next-env.d.ts
 micro-front-ends/*/.next/
 micro-front-ends/*/node_modules/
 micro-front-ends/*/next-env.d.ts
