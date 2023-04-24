@@ -1,10 +1,10 @@
 import { AuthUserId } from '@/auth-back-end/decorators';
 import { MongoCollection } from '@/common-back-end/classes';
 import { IdResponse } from '@/common-back-end/types';
-import { ClientUser, EditProfilePayload, ServerUser, SessionUser, SignUpPayload } from '@/user-back-end/types';
+import { EditProfilePayload, ServerUser, SessionUser, SignUpPayload } from '@/user-back-end/types';
 import { hash } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
-import { Body, ConflictException, Get, HttpCode, NotFoundException, Param, Patch, Post, ValidationPipe } from 'next-api-decorators';
+import { Body, ConflictException, Get, HttpCode, NotFoundException, Patch, Post, ValidationPipe } from 'next-api-decorators';
 
 export class UserHandler {
   private userCollection: MongoCollection<ServerUser> = new MongoCollection<ServerUser>('users');
@@ -26,26 +26,6 @@ export class UserHandler {
       firstName,
       lastName,
       email
-    };
-  }
-
-  @Get('/:id')
-  @HttpCode(200)
-  async readUserById(@Param('id') id: string): Promise<ClientUser> {
-    const user = await this.userCollection.findOne({
-      _id: new ObjectId(id)
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found.');
-    }
-
-    const { firstName, lastName } = user;
-
-    return {
-      id,
-      firstName,
-      lastName
     };
   }
 
