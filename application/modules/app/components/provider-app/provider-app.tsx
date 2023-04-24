@@ -1,19 +1,13 @@
 import { theme } from '@/app/constants';
 import { appStore } from '@/app/store';
+import { UserProvider } from '@/user/components';
 import { SessionProvider } from 'next-auth/react';
 import { AppProps } from 'next/app';
-import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { Fragment, ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import { Layout } from './layout/layout';
-
-const UserProvider = dynamic(async () => {
-  const { UserProvider } = await import('user/user-provider');
-
-  return UserProvider;
-});
 
 export const ProviderApp = (props: AppProps): ReactElement => {
   const { Component, pageProps } = props;
