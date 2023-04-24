@@ -3,7 +3,7 @@ import { Flex } from '@/common/components/flex/flex';
 import { HyperLink } from '@/common/components/hyper-link/hyper-link';
 import { Typography } from '@/common/components/typography/typography';
 import { ClientFormalSystem } from '@/formal-system/types';
-import { CreatedBySignature } from '@/user/components/created-by-signature/created-by-signature';
+import { UserSignature } from '@/user/components';
 import { useSession } from 'next-auth/react';
 import { Fragment, ReactElement } from 'react';
 
@@ -35,7 +35,7 @@ export const FormalSystemPage = (props: ClientFormalSystem): ReactElement => {
         <Typography as='p'>
           {description}
         </Typography>
-        <CreatedBySignature userId={createdByUserId} />
+        <UserSignature label='Created by' userId={createdByUserId} />
       </section>
       <section>
         Link to Symbols interface

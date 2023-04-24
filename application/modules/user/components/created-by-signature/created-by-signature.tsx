@@ -1,14 +1,7 @@
 import { Typography } from '@/common/components/typography/typography';
 import { useReadUserByIdQuery } from '@/user/hooks';
 import { CreatedBySignatureProps } from '@/user/types';
-import dynamic from 'next/dynamic';
 import { Fragment, ReactElement } from 'react';
-
-const UserSignature = dynamic(async () => {
-  const { UserSignature } = await import('user/user-signature');
-
-  return UserSignature;
-});
 
 export const CreatedBySignature = (props: CreatedBySignatureProps): ReactElement => {
   const { userId } = props;
@@ -17,7 +10,6 @@ export const CreatedBySignature = (props: CreatedBySignatureProps): ReactElement
 
   return (
     <Fragment>
-      <UserSignature label='Created by:' userId={userId} />
       <Typography as='p' mb='0' textAlign='right'>
         {isSuccess ? 'Created by': ''}
       </Typography>
