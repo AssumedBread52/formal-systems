@@ -20,14 +20,14 @@ export const UserSignature = (props: UserSignatureProps): ReactElement => {
     description = `${firstName} ${lastName}`;
   } else if (isError) {
     title = 'Error';
-    description = 'Failed to pull user data.';
+    description = 'Failed to load user data.';
   }
 
   return (
     <Meta
       title={title}
       description={
-        <Text>
+        <Text italic>
           {description}
         </Text>
       }
