@@ -8,6 +8,6 @@ export const appStore = configureStore({
     [reducerPath]: reducer
   },
   middleware: (getDefaultMiddleware) => {
-    return getDefaultMiddleware().concat(middleware)
+    return getDefaultMiddleware().concat(middleware);
   }
 });
