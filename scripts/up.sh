@@ -19,12 +19,10 @@ fi
 ENVIRONMENT_VARIABLES_CKSM_FILE=check-sums/environment-variables.cksm
 DATABASE_CKSM_FILE=check-sums/database.cksm
 BACK_END_NODE_MODULES_CKSM_FILE=check-sums/back-end-node-modules.cksm
-MICRO_FRONT_END_USER_NODE_MODULES_CKSM_FILE=check-sums/micro-front-end-user.cksm
 APPLICATION_NODE_MODULES_CKSM_FILE=check-sums/application-node-modules.cksm
 CURRENT_ENVIRONMENT_VARIABLES_CKSM=$(cat scripts/generate-environment-variables.sh | sha1sum)
 CURRENT_DATABASE_CKSM=$(cat database/initialization-scripts/* | sha1sum)
 CURRENT_BACK_END_NODE_MODULES_CKSM=$(cat back-end/package-lock.json | sha1sum)
-CURRENT_MICRO_FRONT_END_USER_NODE_MODULES_CKSM=$(cat micro-front-ends/user/package-lock.json | sha1sum)
 CURRENT_APPLICATION_NODE_MODULES_CKSM=$(cat application/package-lock.json | sha1sum)
 
 if [ ! -d check-sums ]; then
@@ -33,7 +31,6 @@ else
   OLD_ENVIRONMENT_VARIABLES_CKSM=$(cat $ENVIRONMENT_VARIABLES_CKSM_FILE)
   OLD_INITIALIZE_DATABASE_CKSM=$(cat $DATABASE_CKSM_FILE)
   OLD_BACK_END_NODE_MODULES_CKSM=$(cat $BACK_END_NODE_MODULES_CKSM_FILE)
-  OLD_MICRO_FRONT_END_USER_NODE_MODULES_CKSM=$(cat $MICRO_FRONT_END_USER_NODE_MODULES_CKSM_FILE)
   OLD_APPLICATION_NODE_MODULES_CKSM=$(cat $APPLICATION_NODE_MODULES_CKSM_FILE)
 fi
 
@@ -91,6 +88,7 @@ function resolve_node_dependencies() {
 resolve_node_dependencies service auth .nest
 resolve_node_dependencies service user .nest
 resolve_node_dependencies front-end auth .next
+resolve_node_dependencies front-end user .next
 
 if [ ! -d back-end/node_modules ]; then
   GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-back-end install
@@ -102,18 +100,6 @@ elif [ ! "$OLD_BACK_END_NODE_MODULES_CKSM" = "$CURRENT_BACK_END_NODE_MODULES_CKS
   GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-back-end install
 
   echo -n "$CURRENT_BACK_END_NODE_MODULES_CKSM" > $BACK_END_NODE_MODULES_CKSM_FILE
-fi
-
-if [ ! -d micro-front-ends/user/node_modules ]; then
-  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-front-end-user install
-
-  echo -n "$CURRENT_MICRO_FRONT_END_USER_NODE_MODULES_CKSM" > $MICRO_FRONT_END_USER_NODE_MODULES_CKSM_FILE
-elif [ ! "$OLD_MICRO_FRONT_END_USER_NODE_MODULES_CKSM" = "$CURRENT_MICRO_FRONT_END_USER_NODE_MODULES_CKSM" ]; then
-  rm -rf micro-front-ends/user/node_modules micro-front-ends/user/.next
-
-  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-front-end-user install
-
-  echo -n "$CURRENT_MICRO_FRONT_END_USER_NODE_MODULES_CKSM" > $MICRO_FRONT_END_USER_NODE_MODULES_CKSM_FILE
 fi
 
 if [ ! -d application/node_modules ]; then
