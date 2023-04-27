@@ -26,11 +26,13 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "./modules/*",
-        "./@mf-types/user/_types/modules/*"
+        "./modules/*"
       ],
       "#/*": [
         "./*"
+      ],
+      "auth/*": [
+        "./@mf-types/auth/*"
       ],
       "user/*": [
         "./@mf-types/user/*"
