@@ -8,6 +8,7 @@ import { Fragment, ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import { Layout } from './layout/layout';
+import { AuthProvider } from '@/auth/components';
 
 export const ProviderApp = (props: AppProps): ReactElement => {
   const { Component, pageProps } = props;
@@ -38,11 +39,13 @@ export const ProviderApp = (props: AppProps): ReactElement => {
       <Provider store={appStore}>
         <SessionProvider session={session}>
           <ThemeProvider theme={theme}>
-            <UserProvider>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </UserProvider>
+            <AuthProvider>
+              <UserProvider>
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </UserProvider>
+            </AuthProvider>
           </ThemeProvider>
         </SessionProvider>
       </Provider>
