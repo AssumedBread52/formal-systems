@@ -27,7 +27,7 @@ module.exports = {
           './sign-in-form': './modules/user/components/sign-in-form/sign-in-form'
         },
         filename: 'static/ssr/remoteEntry.js',
-        name: 'user'
+        name: 'auth'
       }
     }));
     config.plugins.push(new FederatedTypesPlugin({
@@ -37,7 +37,7 @@ module.exports = {
           './sign-in-form': './modules/user/components/sign-in-form/sign-in-form'
         },
         filename: 'static/chunks/remoteEntry.js',
-        name: 'user'
+        name: 'auth'
       }
     }));
 
