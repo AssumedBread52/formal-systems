@@ -17,6 +17,7 @@
     "@module-federation/nextjs-mf": "^6.2.2",
     "@module-federation/typescript": "^2.3.0",
     "@reduxjs/toolkit": "^1.9.5",
+    "antd": "^5.4.6",
     "next": "^13.2.4",
     "next-api-decorators": "^2.0.2",
     "react": "^18.2.0",
