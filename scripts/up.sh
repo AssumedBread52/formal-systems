@@ -75,13 +75,13 @@ function resolve_node_dependencies() {
   if [ ! -d micro-$1s/$2/node_modules ]; then
     GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-$1-$2 install
 
-    echo -n "$CURRENT_CHECK_SUM" > $CURRENT_CHECK_SUM
+    echo -n "$CURRENT_CHECK_SUM" > $CHECK_SUM_FILE
   elif [ ! "$OLD_CHECK_SUM" = "$CURRENT_CHECK_SUM" ]; then
     rm -rf micro-$1s/$2/node_modules micro-$1s/$2/$3
 
     GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-micro-$1-$2 install
 
-    echo -n "$CURRENT_CHECK_SUM" > $CURRENT_CHECK_SUM
+    echo -n "$CURRENT_CHECK_SUM" > $CHECK_SUM_FILE
   fi
 }
 
