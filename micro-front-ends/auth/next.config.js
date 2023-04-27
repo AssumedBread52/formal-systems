@@ -1,4 +1,5 @@
 const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
+const { FederatedTypesPlugin } = require('@module-federation/typescript');
 
 /** @type {import('next').NextConfig} */
 module.exports = {
@@ -13,10 +14,31 @@ module.exports = {
 
     config.plugins.push(new NextFederationPlugin({
       exposes: {
-        './sign-in-form': './pages/sign-in-form'
+        './auth-provider': './modules/auth/components/auth-provider/auth-provider',
+        './sign-in-form': './modules/user/components/sign-in-form/sign-in-form'
       },
       filename: 'static/chunks/remoteEntry.js',
       name: 'auth'
+    }));
+    config.plugins.push(new FederatedTypesPlugin({
+      federationConfig: {
+        exposes: {
+          './auth-provider': './modules/auth/components/auth-provider/auth-provider',
+          './sign-in-form': './modules/user/components/sign-in-form/sign-in-form'
+        },
+        filename: 'static/ssr/remoteEntry.js',
+        name: 'user'
+      }
+    }));
+    config.plugins.push(new FederatedTypesPlugin({
+      federationConfig: {
+        exposes: {
+          './auth-provider': './modules/auth/components/auth-provider/auth-provider',
+          './sign-in-form': './modules/user/components/sign-in-form/sign-in-form'
+        },
+        filename: 'static/chunks/remoteEntry.js',
+        name: 'user'
+      }
     }));
 
     return config;
