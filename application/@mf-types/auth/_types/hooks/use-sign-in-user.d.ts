@@ -1,5 +1,8 @@
+import { SignInPayload, TokenPayload } from '@/auth/types';
+import { BaseQueryFn, MutationDefinition } from '@reduxjs/toolkit/dist/query';
+import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
 export declare const useSignInUser: () => {
-    signInUser: import("@reduxjs/toolkit/dist/query/react/buildHooks").MutationTrigger<import("@reduxjs/toolkit/dist/query").MutationDefinition<import("../types").SignInPayload, import("@reduxjs/toolkit/dist/query").BaseQueryFn, never, boolean, "auth">>;
+    signInUser: MutationTrigger<MutationDefinition<SignInPayload, BaseQueryFn, 'auth', TokenPayload, 'auth'>>;
     errorMessage: string;
     isLoading: boolean;
 };
