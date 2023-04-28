@@ -3,13 +3,13 @@ import { UserDocument } from '../user.schema';
 
 export class ClientUser {
   @IsNotEmpty()
-  id: string = '';
+  id: string;
   @IsNotEmpty()
-  firstName: string = '';
+  firstName: string;
   @IsNotEmpty()
-  lastName: string = '';
+  lastName: string;
   @IsEmail()
-  email: string = '';
+  email: string;
 
   constructor(userDocument: UserDocument) {
     const { _id, firstName, lastName, email } = userDocument;
