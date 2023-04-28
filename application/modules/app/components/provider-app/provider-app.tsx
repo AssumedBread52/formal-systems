@@ -1,5 +1,6 @@
 import { theme } from '@/app/constants';
 import { appStore } from '@/app/store';
+import { AuthProvider } from '@/auth/components';
 import { UserProvider } from '@/user/components';
 import { SessionProvider } from 'next-auth/react';
 import { AppProps } from 'next/app';
@@ -8,7 +9,6 @@ import { Fragment, ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import { Layout } from './layout/layout';
-import { AuthProvider } from '@/auth/components';
 
 export const ProviderApp = (props: AppProps): ReactElement => {
   const { Component, pageProps } = props;
