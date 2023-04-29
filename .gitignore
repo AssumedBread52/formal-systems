@@ -1,11 +1,11 @@
+application/.next/
+application/node_modules/
+application/next-env.d.ts
 back-end/.nest/
 back-end/node_modules/
 check-sums/
 database/data/
 environment-variables/
-application/.next/
-application/node_modules/
-application/next-env.d.ts
 micro-front-ends/*/.next/
 micro-front-ends/*/node_modules/
 micro-front-ends/*/next-env.d.ts
