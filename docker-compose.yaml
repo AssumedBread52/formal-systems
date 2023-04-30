@@ -17,10 +17,26 @@ services:
       - ./database/data:/data/db:rw
       - ./database/initialization-scripts:/docker-entrypoint-initdb.d:ro
 
+  messaging-service:
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
+    env_file:
+      - ./environment-variables/messaging-service.env
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    image: redis:7.0.11
+    ports:
+      - "6379:6379/tcp"
+
   micro-service-auth:
     command: npm run start:dev
     depends_on:
       database:
+        condition: service_healthy
+      messaging-service:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:5001/app/health-check || exit 1"]
@@ -40,6 +56,8 @@ services:
     command: npm run start:dev
     depends_on:
       database:
+        condition: service_healthy
+      messaging-service:
         condition: service_healthy
     env_file:
       - ./environment-variables/micro-service-user.env

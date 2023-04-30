@@ -9,16 +9,25 @@ fi
 
 MONGO_USERNAME="application"
 MONGO_PASSWORD=$(openssl rand -base64 32)
+REDIS_PASSWORD=$(openssl rand -base64 32)
 NEXTAUTH_SECRET=$(openssl rand -base64 32)
 JSON_WEB_TOKEN_SECRET=$(openssl rand -base64 32)
 
 echo "MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME" >> environment-variables/database.env
 echo "MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD" >> environment-variables/database.env
 
+echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> environment-variables/messaging-service.env
+echo "REDISCLI_AUTH=$REDIS_PASSWORD" >> environment-variables/messaging-service.env
+
+echo "REDIS_HOSTNAME=messaging-service" >> environment-variables/micro-service-user.env
+echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> environment-variables/micro-service-auth.env
+
 echo "MONGO_SCHEME=mongodb" >> environment-variables/micro-service-user.env
 echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/micro-service-user.env
 echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> environment-variables/micro-service-user.env
 echo "MONGO_HOSTNAME=database" >> environment-variables/micro-service-user.env
+echo "REDIS_HOSTNAME=messaging-service" >> environment-variables/micro-service-user.env
+echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> environment-variables/micro-service-user.env
 
 echo "MONGO_SCHEME=mongodb" >> environment-variables/development-back-end.env
 echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/development-back-end.env
