@@ -35,6 +35,7 @@
   "dependencies": {
     "@nestjs/common": "^9.3.12",
     "@nestjs/core": "^9.3.12",
+    "@nestjs/microservices": "^9.4.0",
     "@nestjs/mongoose": "^9.2.2",
     "@nestjs/platform-express": "^9.3.12",
     "class-validator": "^0.14.0",
