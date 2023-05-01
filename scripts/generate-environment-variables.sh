@@ -19,7 +19,7 @@ echo "MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD" >> environment-variables/datab
 echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> environment-variables/messaging-service.env
 echo "REDISCLI_AUTH=$REDIS_PASSWORD" >> environment-variables/messaging-service.env
 
-echo "REDIS_HOSTNAME=messaging-service" >> environment-variables/micro-service-user.env
+echo "REDIS_HOSTNAME=messaging-service" >> environment-variables/micro-service-auth.env
 echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> environment-variables/micro-service-auth.env
 
 echo "MONGO_SCHEME=mongodb" >> environment-variables/micro-service-user.env
