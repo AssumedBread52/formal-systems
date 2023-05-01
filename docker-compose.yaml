@@ -34,6 +34,8 @@ services:
         condition: service_healthy
       messaging-service:
         condition: service_healthy
+    env_file:
+      - ./environment-variables/micro-service-auth.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:5001/app/health-check || exit 1"]
       interval: 10s
