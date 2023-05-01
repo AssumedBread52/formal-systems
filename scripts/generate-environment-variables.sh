@@ -21,6 +21,7 @@ echo "REDISCLI_AUTH=$REDIS_PASSWORD" >> environment-variables/messaging-service.
 
 echo "REDIS_HOSTNAME=messaging-service" >> environment-variables/micro-service-auth.env
 echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> environment-variables/micro-service-auth.env
+echo "JSON_WEB_TOKEN_SECRET=$JSON_WEB_TOKEN_SECRET" >> environment-variables/micro-service-auth.env
 
 echo "MONGO_SCHEME=mongodb" >> environment-variables/micro-service-user.env
 echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/micro-service-user.env
