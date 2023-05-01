@@ -10,8 +10,6 @@ services:
       retries: 3
       start_period: 5s
     image: mongo:6.0.4
-    ports:
-      - "27017:27017/tcp"
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./database/data:/data/db:rw
@@ -28,8 +26,6 @@ services:
       retries: 3
       start_period: 5s
     image: redis:7.0.11
-    ports:
-      - "6379:6379/tcp"
 
   micro-service-auth:
     command: npm run start:dev
