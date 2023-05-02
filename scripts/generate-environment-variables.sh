@@ -31,12 +31,6 @@ echo "REDIS_HOSTNAME=messaging-service" >> environment-variables/micro-service-u
 echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> environment-variables/micro-service-user.env
 echo "JSON_WEB_TOKEN_SECRET=$JSON_WEB_TOKEN_SECRET" >> environment-variables/micro-service-user.env
 
-echo "MONGO_SCHEME=mongodb" >> environment-variables/development-back-end.env
-echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/development-back-end.env
-echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> environment-variables/development-back-end.env
-echo "MONGO_HOSTNAME=database" >> environment-variables/development-back-end.env
-echo "JSON_WEB_TOKEN_SECRET=$JSON_WEB_TOKEN_SECRET" >> environment-variables/development-back-end.env
-
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-auth.env
 echo "PORT=3001" >> environment-variables/micro-front-end-auth.env
 

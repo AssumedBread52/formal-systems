@@ -73,27 +73,6 @@ services:
       - ./micro-services/user:/app:rw
     working_dir: /app
 
-  development-back-end:
-    command: npm run start:dev
-    depends_on:
-      database:
-        condition: service_healthy
-    env_file:
-      - ./environment-variables/development-back-end.env
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:7000/app/health-check || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-    image: node:18.12.1
-    ports:
-      - "7000:7000/tcp"
-    user: "${USER_ID}:${GROUP_ID}"
-    volumes:
-      - ./back-end:/app:rw
-    working_dir: /app
-
   micro-front-end-auth:
     command: npm run dev
     depends_on:
@@ -139,8 +118,6 @@ services:
   application:
     command: npm run dev
     depends_on:
-      development-back-end:
-        condition: service_healthy
       micro-front-end-auth:
         condition: service_healthy
       micro-front-end-user:
@@ -180,16 +157,6 @@ services:
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./micro-services/user:/app:rw
-    working_dir: /app
-
-  npm-back-end:
-    entrypoint: npm
-    image: node:18.12.1
-    stdin_open: true
-    tty: true
-    user: "${USER_ID}:${GROUP_ID}"
-    volumes:
-      - ./back-end:/app:rw
     working_dir: /app
 
   npm-micro-front-end-auth:
