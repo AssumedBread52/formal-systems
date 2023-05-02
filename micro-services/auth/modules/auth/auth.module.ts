@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { LocalStrategy } from './strategies';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { AuthService } from './auth.service';
     AuthController
   ],
   providers: [
-    AuthService
+    AuthService,
+    LocalStrategy
   ]
 })
 export class AuthModule {
