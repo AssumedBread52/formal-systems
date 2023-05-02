@@ -10,10 +10,10 @@ export class AuthService {
   constructor(@Inject('MESSAGING_SERVICE') private client: ClientProxy, private jwtService: JwtService) {
   }
 
-  async signIn(email: string, password: string): Promise<JwtPayload> {
+  async validateUserByCredentials(email: string, password: string): Promise<ServerUser> {
     const user = await lastValueFrom(this.client.send<ServerUser, string>('READ_USER_BY_EMAIL', email).pipe(timeout(3000)));
 
-    const { _id, hashedPassword } = user;
+    const { hashedPassword } = user;
 
     const matched = await compare(password, hashedPassword);
 
@@ -21,10 +21,18 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
+    return user;
+  }
+
+  async signIn(user: ServerUser): Promise<JwtPayload> {
+    const { _id } = user;
+
     const token = await this.jwtService.signAsync({
       id: _id
     });
 
-    return { token };
+    return {
+      token
+    };
   }
 };

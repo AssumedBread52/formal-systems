@@ -1,6 +1,7 @@
-import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtPayload, SignInPayload } from './data-transfer-objects';
+import { JwtPayload, ServerUser } from './data-transfer-objects';
+import { SessionUser } from './decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -8,9 +9,7 @@ export class AuthController {
   }
 
   @Post('sign-in')
-  signIn(@Body(new ValidationPipe()) signInPayload: SignInPayload): Promise<JwtPayload> {
-    const { email, password } = signInPayload;
-
-    return this.authService.signIn(email, password);
+  signIn(@SessionUser() sessionUser: ServerUser): Promise<JwtPayload> {
+    return this.authService.signIn(sessionUser);
   }
 };
