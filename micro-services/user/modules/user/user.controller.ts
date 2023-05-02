@@ -1,12 +1,20 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, UseGuards } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ClientUser } from './data-transfer-objects';
+import { SessionUser } from './decorators';
+import { JwtGuard } from './guards';
 import { UserDocument } from './user.schema';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('session-user')
+  getSessionUser(@SessionUser() sessionUser: UserDocument): ClientUser {
+    return new ClientUser(sessionUser);
   }
 
   @Get(':id')
