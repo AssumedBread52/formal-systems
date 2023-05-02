@@ -7,7 +7,7 @@ export class AuthController {
   constructor(private authService: AuthService) {
   }
 
-  @Post('signIn')
+  @Post('sign-in')
   signIn(@Body(new ValidationPipe()) signInPayload: SignInPayload): Promise<JwtPayload> {
     const { email, password } = signInPayload;
 
