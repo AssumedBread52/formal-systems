@@ -6,7 +6,7 @@ export const signInUser = (builder: EndpointBuilder<BaseQueryFn, 'auth', 'auth'>
   return builder.mutation<TokenPayload, SignInPayload>({
     query: (signInPayload: SignInPayload): FetchArgs => {
       return {
-        url: '/login',
+        url: '/sign-in',
         method: 'POST',
         body: signInPayload
       };
