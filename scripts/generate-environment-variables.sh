@@ -29,6 +29,7 @@ echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> environment-variables/micro-service-use
 echo "MONGO_HOSTNAME=database" >> environment-variables/micro-service-user.env
 echo "REDIS_HOSTNAME=messaging-service" >> environment-variables/micro-service-user.env
 echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> environment-variables/micro-service-user.env
+echo "JSON_WEB_TOKEN_SECRET=$JSON_WEB_TOKEN_SECRET" >> environment-variables/micro-service-user.env
 
 echo "MONGO_SCHEME=mongodb" >> environment-variables/development-back-end.env
 echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/development-back-end.env
