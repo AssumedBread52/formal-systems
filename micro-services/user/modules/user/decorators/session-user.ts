@@ -1,5 +1,5 @@
-import { ExecutionContext, UnauthorizedException, createParamDecorator } from '@nestjs/common';
 import { UserDocument } from '@/user/user.schema';
+import { ExecutionContext, UnauthorizedException, createParamDecorator } from '@nestjs/common';
 import { Request } from 'express';
 
 export const SessionUser = createParamDecorator((_: unknown, context: ExecutionContext): UserDocument => {
