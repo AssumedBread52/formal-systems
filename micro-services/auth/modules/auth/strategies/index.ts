@@ -1,2 +1,2 @@
-export { BaseStrategy } from './/base.strategy';
+export { BaseStrategy } from './base.strategy';
 export { LocalStrategy } from './local.strategy';
