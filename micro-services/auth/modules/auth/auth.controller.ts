@@ -1,6 +1,6 @@
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtPayload, ServerUser } from './data-transfer-objects';
+import { JwtPayload, ServerUser, SignUpPayload } from './data-transfer-objects';
 import { SessionUser } from './decorators';
 import { LocalGuard } from './guards';
 
@@ -13,5 +13,12 @@ export class AuthController {
   @Post('sign-in')
   signIn(@SessionUser() sessionUser: ServerUser): Promise<JwtPayload> {
     return this.authService.signIn(sessionUser);
+  }
+
+  @Post('sign-up')
+  async signUp(@Body(new ValidationPipe()) signUpPayload: SignUpPayload): Promise<JwtPayload> {
+    const user = await this.authService.createUser(signUpPayload);
+
+    return this.authService.signIn(user);
   }
 };

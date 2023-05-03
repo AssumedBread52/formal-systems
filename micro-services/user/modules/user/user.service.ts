@@ -8,6 +8,12 @@ export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {
   }
 
+  create(user: User): Promise<UserDocument> {
+    const newUser = new this.userModel(user);
+
+    return newUser.save();
+  }
+
   readByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({
       email

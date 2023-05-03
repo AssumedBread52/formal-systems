@@ -1,9 +1,9 @@
-import { Controller, Get, NotFoundException, Param, UseGuards } from '@nestjs/common';
+import { ConflictException, Controller, Get, NotFoundException, Param, UseGuards } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ClientUser } from './data-transfer-objects';
 import { SessionUser } from './decorators';
 import { JwtGuard } from './guards';
-import { UserDocument } from './user.schema';
+import { User, UserDocument } from './user.schema';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -28,8 +28,21 @@ export class UserController {
     return new ClientUser(user);
   }
 
+  @MessagePattern('CREATE_USER')
+  async remoteCreateUser(@Payload() user: User) {
+    const { email } = user;
+
+    const collision = await this.userService.readByEmail(email);
+
+    if (collision) {
+      throw new ConflictException();
+    }
+
+    return this.userService.create(user);
+  }
+
   @MessagePattern('READ_USER_BY_EMAIL')
-  async getByEmail(@Payload() email: string): Promise<UserDocument> {
+  async remoteReadByEmail(@Payload() email: string): Promise<UserDocument> {
     const user = await this.userService.readByEmail(email);
 
     if (!user) {

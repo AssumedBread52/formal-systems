@@ -1,13 +1,26 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClientProxy } from '@nestjs/microservices';
-import { compare } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs';
 import { lastValueFrom, timeout } from 'rxjs';
-import { JwtPayload, ServerUser } from './data-transfer-objects';
+import { CreateUserPayload, JwtPayload, ServerUser, SignUpPayload } from './data-transfer-objects';
 
 @Injectable()
 export class AuthService {
   constructor(@Inject('MESSAGING_SERVICE') private client: ClientProxy, private jwtService: JwtService) {
+  }
+
+  async createUser(signUpPayload: SignUpPayload): Promise<ServerUser> {
+    const { firstName, lastName, email, password } = signUpPayload;
+
+    const hashedPassword = await hash(password, 12);
+
+    return lastValueFrom(this.client.send<ServerUser, CreateUserPayload>('CREATE_USER', {
+      firstName,
+      lastName,
+      email,
+      hashedPassword
+    }).pipe(timeout(3000)));
   }
 
   async validateUserByCredentials(email: string, password: string): Promise<ServerUser> {
