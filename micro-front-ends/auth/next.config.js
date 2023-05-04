@@ -15,7 +15,8 @@ module.exports = {
     config.plugins.push(new NextFederationPlugin({
       exposes: {
         './auth-provider': './modules/auth/components/auth-provider/auth-provider',
-        './sign-in-form': './modules/auth/components/sign-in-form/sign-in-form'
+        './sign-in-form': './modules/auth/components/sign-in-form/sign-in-form',
+        './sign-up-form': './modules/auth/components/sign-up-form/sign-up-form'
       },
       filename: 'static/chunks/remoteEntry.js',
       name: 'auth'
@@ -24,7 +25,8 @@ module.exports = {
       federationConfig: {
         exposes: {
           './auth-provider': './modules/auth/components/auth-provider/auth-provider',
-          './sign-in-form': './modules/auth/components/sign-in-form/sign-in-form'
+          './sign-in-form': './modules/auth/components/sign-in-form/sign-in-form',
+          './sign-up-form': './modules/auth/components/sign-up-form/sign-up-form'
         },
         filename: 'static/ssr/remoteEntry.js',
         name: 'auth'
@@ -34,7 +36,8 @@ module.exports = {
       federationConfig: {
         exposes: {
           './auth-provider': './modules/auth/components/auth-provider/auth-provider',
-          './sign-in-form': './modules/auth/components/sign-in-form/sign-in-form'
+          './sign-in-form': './modules/auth/components/sign-in-form/sign-in-form',
+          './sign-up-form': './modules/auth/components/sign-up-form/sign-up-form'
         },
         filename: 'static/chunks/remoteEntry.js',
         name: 'auth'
