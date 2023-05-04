@@ -29,7 +29,7 @@ export class UserController {
   }
 
   @MessagePattern('CREATE_USER')
-  async remoteCreateUser(@Payload() user: User) {
+  async remoteCreateUser(@Payload() user: User): Promise<UserDocument> {
     const { email } = user;
 
     const collision = await this.userService.readByEmail(email);
@@ -42,7 +42,7 @@ export class UserController {
   }
 
   @MessagePattern('READ_USER_BY_EMAIL')
-  async remoteReadByEmail(@Payload() email: string): Promise<UserDocument> {
+  async remoteReadUserByEmail(@Payload() email: string): Promise<UserDocument> {
     const user = await this.userService.readByEmail(email);
 
     if (!user) {
