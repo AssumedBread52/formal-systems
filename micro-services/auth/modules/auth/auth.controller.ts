@@ -1,8 +1,8 @@
-import { Body, Controller, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtPayload, ServerUser, SignUpPayload } from './data-transfer-objects';
 import { SessionUser } from './decorators';
-import { LocalGuard } from './guards';
+import { JwtGuard, LocalGuard } from './guards';
 
 @Controller('auth')
 export class AuthController {
@@ -13,6 +13,12 @@ export class AuthController {
   @Post('sign-in')
   signIn(@SessionUser() sessionUser: ServerUser): Promise<JwtPayload> {
     return this.authService.signIn(sessionUser);
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('sign-out')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  signOut(): void {
   }
 
   @Post('sign-up')
