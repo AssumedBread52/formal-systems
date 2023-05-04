@@ -30,7 +30,7 @@ export const SignUpForm = (): ReactElement => {
             <Input />
           </Item>
           <Item label='Password' name='password' rules={[
-            { required: true, message: 'Please enter your password.' }
+            { required: true, message: 'Please enter a password.' }
           ]}>
             <Password />
           </Item>
