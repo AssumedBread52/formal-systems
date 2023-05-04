@@ -15,7 +15,7 @@ export const useSignUpUser = (): {
 
   return {
     signUpUser,
-    errorMessage: isError ? 'Failed to sign in.' : '',
+    errorMessage: isError ? 'Failed to sign up.' : '',
     isLoading
   };
 };
