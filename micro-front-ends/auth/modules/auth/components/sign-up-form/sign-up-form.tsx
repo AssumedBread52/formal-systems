@@ -21,7 +21,7 @@ export const SignUpForm = (): ReactElement => {
 
   return (
     <Spin spinning={isLoading} size='large' indicator={<LoadingOutlined spin />}>
-      <Card title='Sign Up' style={{ maxWidth: '600px', width: '50vw', marginLeft: 'auto', marginRight: 'auto' }}>
+      <Card title='Sign Up' headStyle={{ textAlign: 'center' }} style={{ maxWidth: '600px', width: '50vw', marginLeft: 'auto', marginRight: 'auto' }}>
         <TypedForm labelCol={{ span: 8 }} onFinish={finishHandler}>
           <Item label='First Name' name='firstName' rules={[
             { required: true, message: 'Please enter your first name.' }
