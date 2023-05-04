@@ -3,7 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { LocalStrategy } from './strategies';
+import { JwtStrategy, LocalStrategy } from './strategies';
 
 @Module({
   imports: [
@@ -31,6 +31,7 @@ import { LocalStrategy } from './strategies';
   ],
   providers: [
     AuthService,
+    JwtStrategy,
     LocalStrategy
   ]
 })
