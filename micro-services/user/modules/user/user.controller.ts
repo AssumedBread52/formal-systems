@@ -51,4 +51,15 @@ export class UserController {
 
     return user;
   }
+
+  @MessagePattern('READ_USER_BY_ID')
+  async remoteReadUserById(@Payload() id: string): Promise<UserDocument> {
+    const user = await this.userService.readById(id);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return user;
+  }
 };
