@@ -14,7 +14,7 @@ export const useSignOutUser = (): {
 
   return {
     signOutUser,
-    errorMessage: isError ? 'Failed to sign up.' : '',
+    errorMessage: isError ? 'Failed to sign out.' : '',
     isLoading
   };
 };
