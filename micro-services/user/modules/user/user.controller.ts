@@ -1,6 +1,6 @@
-import { ConflictException, Controller, Get, NotFoundException, Param, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, NotFoundException, Param, Patch, UseGuards, ValidationPipe } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { ClientUser } from './data-transfer-objects';
+import { ClientUser, EditProfilePayload, IdPayload } from './data-transfer-objects';
 import { SessionUser } from './decorators';
 import { JwtGuard } from './guards';
 import { User, UserDocument } from './user.schema';
@@ -26,6 +26,26 @@ export class UserController {
     }
 
     return new ClientUser(user);
+  }
+
+  @Patch('session-user')
+  async patchSessionUser(@SessionUser() sessionUser: UserDocument, @Body(new ValidationPipe()) editProfilePayload: EditProfilePayload): Promise<IdPayload> {
+    const { email } = sessionUser;
+    const { email: newEmail } = editProfilePayload;
+
+    if (email !== newEmail) {
+      const collision = await this.userService.readByEmail(newEmail);
+
+      if (collision) {
+        throw new ConflictException();
+      }
+    }
+
+    const { _id } = await this.userService.update(sessionUser, editProfilePayload);
+
+    return {
+      id: _id.toString()
+    };
   }
 
   @MessagePattern('CREATE_USER')
