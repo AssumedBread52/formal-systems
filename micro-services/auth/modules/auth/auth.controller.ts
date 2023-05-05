@@ -9,6 +9,12 @@ export class AuthController {
   constructor(private authService: AuthService) {
   }
 
+  @UseGuards(JwtGuard)
+  @Post('refresh-token')
+  refreshToken(@SessionUser() sessionUser: ServerUser): Promise<JwtPayload> {
+    return this.authService.generateJwtPayload(sessionUser);
+  }
+
   @UseGuards(LocalGuard)
   @Post('sign-in')
   signIn(@SessionUser() sessionUser: ServerUser): Promise<JwtPayload> {
