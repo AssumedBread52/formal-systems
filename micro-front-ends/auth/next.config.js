@@ -16,6 +16,7 @@ module.exports = {
       exposes: {
         './auth-provider': './modules/auth/components/auth-provider/auth-provider',
         './sign-in-form': './modules/auth/components/sign-in-form/sign-in-form',
+        './sign-out-form': './modules/auth/components/sign-out-form/sign-out-form',
         './sign-up-form': './modules/auth/components/sign-up-form/sign-up-form'
       },
       filename: 'static/chunks/remoteEntry.js',
@@ -26,6 +27,7 @@ module.exports = {
         exposes: {
           './auth-provider': './modules/auth/components/auth-provider/auth-provider',
           './sign-in-form': './modules/auth/components/sign-in-form/sign-in-form',
+          './sign-out-form': './modules/auth/components/sign-out-form/sign-out-form',
           './sign-up-form': './modules/auth/components/sign-up-form/sign-up-form'
         },
         filename: 'static/ssr/remoteEntry.js',
@@ -37,6 +39,7 @@ module.exports = {
         exposes: {
           './auth-provider': './modules/auth/components/auth-provider/auth-provider',
           './sign-in-form': './modules/auth/components/sign-in-form/sign-in-form',
+          './sign-out-form': './modules/auth/components/sign-out-form/sign-out-form',
           './sign-up-form': './modules/auth/components/sign-up-form/sign-up-form'
         },
         filename: 'static/chunks/remoteEntry.js',
