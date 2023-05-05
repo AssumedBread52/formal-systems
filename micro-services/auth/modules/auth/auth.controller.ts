@@ -12,7 +12,7 @@ export class AuthController {
   @UseGuards(LocalGuard)
   @Post('sign-in')
   signIn(@SessionUser() sessionUser: ServerUser): Promise<JwtPayload> {
-    return this.authService.signIn(sessionUser);
+    return this.authService.generateJwtPayload(sessionUser);
   }
 
   @UseGuards(JwtGuard)
@@ -25,6 +25,6 @@ export class AuthController {
   async signUp(@Body(new ValidationPipe()) signUpPayload: SignUpPayload): Promise<JwtPayload> {
     const user = await this.authService.createUser(signUpPayload);
 
-    return this.authService.signIn(user);
+    return this.authService.generateJwtPayload(user);
   }
 };

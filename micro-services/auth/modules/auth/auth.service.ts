@@ -41,7 +41,7 @@ export class AuthService {
     return lastValueFrom(this.client.send<ServerUser, string>('READ_USER_BY_ID', id).pipe(timeout(3000)));
   }
 
-  async signIn(user: ServerUser): Promise<JwtPayload> {
+  async generateJwtPayload(user: ServerUser): Promise<JwtPayload> {
     const { _id } = user;
 
     const token = await this.jwtService.signAsync({
