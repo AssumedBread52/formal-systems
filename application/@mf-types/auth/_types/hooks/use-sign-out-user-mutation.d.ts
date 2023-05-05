@@ -1,0 +1,1 @@
+export declare const useSignOutUserMutation: import("@reduxjs/toolkit/dist/query/react/buildHooks").UseMutation<import("@reduxjs/toolkit/dist/query").MutationDefinition<void, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "auth", void, "auth">>;
