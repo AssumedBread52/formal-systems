@@ -27,13 +27,13 @@ export class UserService {
   }
 
   async update(sessionUser: UserDocument, editProfilePayload: EditProfilePayload): Promise<UserDocument> {
-    const { firstName, lastName, email, password } = editProfilePayload;
+    const { newFirstName, newLastName, newEmail, newPassword } = editProfilePayload;
 
-    sessionUser.firstName = firstName;
-    sessionUser.lastName = lastName;
-    sessionUser.email = email;
-    if (password) {
-      sessionUser.hashedPassword = await hash(password, 12);
+    sessionUser.firstName = newFirstName;
+    sessionUser.lastName = newLastName;
+    sessionUser.email = newEmail;
+    if (newPassword) {
+      sessionUser.hashedPassword = await hash(newPassword, 12);
     }
 
     return sessionUser.save();

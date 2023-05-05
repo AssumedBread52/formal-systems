@@ -31,7 +31,7 @@ export class UserController {
   @Patch('session-user')
   async patchSessionUser(@SessionUser() sessionUser: UserDocument, @Body(new ValidationPipe()) editProfilePayload: EditProfilePayload): Promise<IdPayload> {
     const { email } = sessionUser;
-    const { email: newEmail } = editProfilePayload;
+    const { newEmail } = editProfilePayload;
 
     if (email !== newEmail) {
       const collision = await this.userService.readByEmail(newEmail);
