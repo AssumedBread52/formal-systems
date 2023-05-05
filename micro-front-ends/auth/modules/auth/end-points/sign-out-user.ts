@@ -5,7 +5,7 @@ export const signOutUser = (builder: EndpointBuilder<BaseQueryFn, 'auth', 'auth'
   return builder.mutation<void, void>({
     query: (): FetchArgs => {
       return {
-        url: '/sign-in',
+        url: '/sign-out',
         method: 'POST'
       };
     }
