@@ -1,4 +1,4 @@
-import { useReadUserByIdQuery } from '@/user/hooks';
+import { useReadUserById } from '@/user/hooks';
 import { UserSignatureProps } from '@/user/types';
 import { Card, Typography } from 'antd';
 import { ReactElement } from 'react';
@@ -9,16 +9,16 @@ const { Text } = Typography;
 export const UserSignature = (props: UserSignatureProps): ReactElement => {
   const { label = 'Test Label', userId = 'Test User ID' } = props;
 
-  const { data, isError, isSuccess } = useReadUserByIdQuery(userId);
+  const { data, loading } = useReadUserById(userId);
 
   let title = '';
   let description = 'Loading...';
-  if (isSuccess) {
+  if (data) {
     const { firstName, lastName } = data;
 
     title = label;
     description = `${firstName} ${lastName}`;
-  } else if (isError) {
+  } else if (!loading) {
     title = 'Error';
     description = 'Failed to load user data.';
   }
