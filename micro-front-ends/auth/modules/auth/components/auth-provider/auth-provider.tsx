@@ -1,13 +1,13 @@
-import { authApi } from '@/auth/auth-api';
-import { ApiProvider } from '@reduxjs/toolkit/dist/query/react';
+import { authStore } from '@/auth/auth-store';
 import { PropsWithChildren, ReactElement } from 'react';
+import { Provider } from 'react-redux';
 
 export const AuthProvider = (props: PropsWithChildren): ReactElement => {
   const { children } = props;
 
   return (
-    <ApiProvider api={authApi}>
+    <Provider store={authStore}>
       {children}
-    </ApiProvider>
+    </Provider>
   );
 };
