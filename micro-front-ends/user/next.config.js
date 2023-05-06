@@ -14,6 +14,7 @@ module.exports = {
 
     config.plugins.push(new NextFederationPlugin({
       exposes: {
+        './edit-profile-form': './modules/user/components/edit-profile-form/edit-profile-form',
         './user-provider': './modules/user/components/user-provider/user-provider',
         './user-signature': './modules/user/components/user-signature/user-signature'
       },
@@ -23,6 +24,7 @@ module.exports = {
     config.plugins.push(new FederatedTypesPlugin({
       federationConfig: {
         exposes: {
+          './edit-profile-form': './modules/user/components/edit-profile-form/edit-profile-form',
           './user-provider': './modules/user/components/user-provider/user-provider',
           './user-signature': './modules/user/components/user-signature/user-signature'
         },
@@ -33,6 +35,7 @@ module.exports = {
     config.plugins.push(new FederatedTypesPlugin({
       federationConfig: {
         exposes: {
+          './edit-profile-form': './modules/user/components/edit-profile-form/edit-profile-form',
           './user-provider': './modules/user/components/user-provider/user-provider',
           './user-signature': './modules/user/components/user-signature/user-signature'
         },
