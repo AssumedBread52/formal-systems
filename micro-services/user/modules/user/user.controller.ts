@@ -28,6 +28,7 @@ export class UserController {
     return new ClientUser(user);
   }
 
+  @UseGuards(JwtGuard)
   @Patch('session-user')
   async patchSessionUser(@SessionUser() sessionUser: UserDocument, @Body(new ValidationPipe()) editProfilePayload: EditProfilePayload): Promise<IdPayload> {
     const { email } = sessionUser;
