@@ -1,3 +1,5 @@
 export declare const userApi: import("@reduxjs/toolkit/query/react").Api<import("@reduxjs/toolkit/query/react").BaseQueryFn<string | import("@reduxjs/toolkit/query/react").FetchArgs, unknown, import("@reduxjs/toolkit/query/react").FetchBaseQueryError, {}, import("@reduxjs/toolkit/query/react").FetchBaseQueryMeta>, {
+    editProfile: import("@reduxjs/toolkit/query/react").MutationDefinition<import("./types").EditProfilePayload, import("@reduxjs/toolkit/query/react").BaseQueryFn, "user", import("./types").IdPayload, "user">;
+    readSessionUser: import("@reduxjs/toolkit/query/react").QueryDefinition<void, import("@reduxjs/toolkit/query/react").BaseQueryFn, "user", import("./types").ClientUser, "user">;
     readUserById: import("@reduxjs/toolkit/query/react").QueryDefinition<string, import("@reduxjs/toolkit/query/react").BaseQueryFn, "user", import("./types").ClientUser, "user">;
 }, "user", "user", typeof import("@reduxjs/toolkit/dist/query/core/module").coreModuleName | typeof import("@reduxjs/toolkit/dist/query/react/module").reactHooksModuleName>;

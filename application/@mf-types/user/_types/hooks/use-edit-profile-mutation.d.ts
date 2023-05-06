@@ -1,0 +1,1 @@
+export declare const useEditProfileMutation: import("@reduxjs/toolkit/dist/query/react/buildHooks").UseMutation<import("@reduxjs/toolkit/dist/query").MutationDefinition<import("../types").EditProfilePayload, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "user", import("../types").IdPayload, "user">>;
