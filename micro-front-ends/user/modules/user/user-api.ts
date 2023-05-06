@@ -1,4 +1,4 @@
-import { readSessionUser, readUserById } from '@/user/end-points';
+import { editProfile, readSessionUser, readUserById } from '@/user/end-points';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const userApi = createApi({
@@ -7,6 +7,7 @@ export const userApi = createApi({
   }),
   endpoints: (builder) => {
     return {
+      editProfile: editProfile(builder),
       readSessionUser: readSessionUser(builder),
       readUserById: readUserById(builder)
     };
