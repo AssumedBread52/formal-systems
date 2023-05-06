@@ -1,4 +1,5 @@
 export declare const authApi: import("@reduxjs/toolkit/query/react").Api<import("@reduxjs/toolkit/query/react").BaseQueryFn<string | import("@reduxjs/toolkit/query/react").FetchArgs, unknown, import("@reduxjs/toolkit/query/react").FetchBaseQueryError, {}, import("@reduxjs/toolkit/query/react").FetchBaseQueryMeta>, {
+    refreshToken: import("@reduxjs/toolkit/query/react").MutationDefinition<void, import("@reduxjs/toolkit/query/react").BaseQueryFn, "auth", import("./types").TokenPayload, "auth">;
     signInUser: import("@reduxjs/toolkit/query/react").MutationDefinition<import("./types").SignInPayload, import("@reduxjs/toolkit/query/react").BaseQueryFn, "auth", import("./types").TokenPayload, "auth">;
     signOutUser: import("@reduxjs/toolkit/query/react").MutationDefinition<void, import("@reduxjs/toolkit/query/react").BaseQueryFn, "auth", void, "auth">;
     signUpUser: import("@reduxjs/toolkit/query/react").MutationDefinition<import("./types").SignUpPayload, import("@reduxjs/toolkit/query/react").BaseQueryFn, "auth", import("./types").TokenPayload, "auth">;
