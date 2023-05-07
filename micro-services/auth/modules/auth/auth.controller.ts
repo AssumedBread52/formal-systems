@@ -1,12 +1,22 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtPayload, ServerUser, SignUpPayload } from './data-transfer-objects';
+import { IdPayload, JwtPayload, ServerUser, SignUpPayload } from './data-transfer-objects';
 import { SessionUser } from './decorators';
 import { JwtGuard, LocalGuard } from './guards';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('session-user-id')
+  getSessionUserId(@SessionUser() sessionUser: ServerUser): IdPayload {
+    const { _id } = sessionUser;
+
+    return {
+      id: _id
+    };
   }
 
   @UseGuards(JwtGuard)
