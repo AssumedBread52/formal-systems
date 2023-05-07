@@ -60,7 +60,7 @@ services:
     env_file:
       - ./environment-variables/micro-service-user.env
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:5002/app/health-check || exit 1"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:5003/app/health-check || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
