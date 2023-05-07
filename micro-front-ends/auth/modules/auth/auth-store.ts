@@ -14,7 +14,6 @@ const saveToken = (token: string): void => {
 };
 
 const refreshTokenMiddleware = createListenerMiddleware();
-const signInMiddleware = createListenerMiddleware();
 
 refreshTokenMiddleware.startListening({
   matcher: authApi.endpoints.refreshToken.matchFulfilled,
@@ -26,22 +25,21 @@ refreshTokenMiddleware.startListening({
   }
 });
 
-signInMiddleware.startListening({
-  matcher: authApi.endpoints.signInUser.matchFulfilled,
-  effect: (action) => {
-    const { payload } = action;
-    const { token } = payload;
-
-    saveToken(token);
-  }
-});
-
 export const authStore = configureStore({
   middleware: (getDefaultMiddleware) => {
-    return getDefaultMiddleware().concat(authApi.middleware).concat(signInMiddleware.middleware).concat(refreshTokenMiddleware.middleware).concat((_) => {
+    return getDefaultMiddleware().concat(authApi.middleware).concat(refreshTokenMiddleware.middleware).concat((_) => {
       return (next) => {
         return (action) => {
-          if (authApi.endpoints.refreshToken.matchRejected(action) || authApi.endpoints.signOutUser.matchFulfilled(action)) {
+          if (authApi.endpoints.signInUser.matchFulfilled(action)) {
+            const { payload } = action;
+            const { token } = payload;
+
+            localStorage.setItem('token', token);
+
+            refreshTimeout = setTimeout(() => {
+              authStore.dispatch(authApi.endpoints.refreshToken.initiate());
+            }, 45000);
+          } else if (authApi.endpoints.refreshToken.matchRejected(action) || authApi.endpoints.signOutUser.matchFulfilled(action)) {
             localStorage.removeItem('token');
 
             if (refreshTimeout) {
