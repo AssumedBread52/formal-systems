@@ -3,14 +3,14 @@ import { EditProfilePayload } from '@/user/types';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Button, Card, Form, FormInstance, Input, Space, Spin } from 'antd';
 import { useRouter } from 'next/router';
-import { useRef } from 'react';
+import { ReactElement, useRef } from 'react';
 
 const { Item } = Form;
 const { Password } = Input;
 
 const TypedForm = Form<EditProfilePayload>;
 
-export const EditProfileForm = () => {
+export const EditProfileForm = (): ReactElement => {
   const formRef = useRef<FormInstance<EditProfilePayload>>(null);
 
   const { back } = useRouter();

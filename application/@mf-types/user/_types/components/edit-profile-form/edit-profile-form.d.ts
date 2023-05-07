@@ -1,2 +1,2 @@
-/// <reference types="react" />
-export declare const EditProfileForm: () => JSX.Element;
+import { ReactElement } from 'react';
+export declare const EditProfileForm: () => ReactElement;
