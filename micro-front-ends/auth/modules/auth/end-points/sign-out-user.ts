@@ -8,6 +8,7 @@ export const signOutUser = (builder: EndpointBuilder<BaseQueryFn, 'auth', 'auth'
         url: '/sign-out',
         method: 'POST'
       };
-    }
+    },
+    invalidatesTags: ['auth']
   });
 };
