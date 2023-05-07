@@ -4,4 +4,4 @@ export declare const authApi: import("@reduxjs/toolkit/query/react").Api<import(
     signInUser: import("@reduxjs/toolkit/query/react").MutationDefinition<import("./types").SignInPayload, import("@reduxjs/toolkit/query/react").BaseQueryFn, "auth", import("./types").TokenPayload, "auth">;
     signOutUser: import("@reduxjs/toolkit/query/react").MutationDefinition<void, import("@reduxjs/toolkit/query/react").BaseQueryFn, "auth", void, "auth">;
     signUpUser: import("@reduxjs/toolkit/query/react").MutationDefinition<import("./types").SignUpPayload, import("@reduxjs/toolkit/query/react").BaseQueryFn, "auth", import("./types").TokenPayload, "auth">;
-}, "auth", never, typeof import("@reduxjs/toolkit/dist/query/core/module").coreModuleName | typeof import("@reduxjs/toolkit/dist/query/react/module").reactHooksModuleName>;
+}, "auth", "auth", typeof import("@reduxjs/toolkit/dist/query/core/module").coreModuleName | typeof import("@reduxjs/toolkit/dist/query/react/module").reactHooksModuleName>;

@@ -5,7 +5,7 @@ export declare const authStore: import("@reduxjs/toolkit/dist/configureStore").T
         signInUser: import("@reduxjs/toolkit/dist/query").MutationDefinition<import("./types").SignInPayload, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "auth", import("./types").TokenPayload, "auth">;
         signOutUser: import("@reduxjs/toolkit/dist/query").MutationDefinition<void, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "auth", void, "auth">;
         signUpUser: import("@reduxjs/toolkit/dist/query").MutationDefinition<import("./types").SignUpPayload, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "auth", import("./types").TokenPayload, "auth">;
-    }, never, "auth">;
+    }, "auth", "auth">;
 }, import("redux").AnyAction, import("@reduxjs/toolkit").MiddlewareArray<[import("@reduxjs/toolkit").ThunkMiddleware<{
     auth: import("@reduxjs/toolkit/dist/query/core/apiState").CombinedState<{
         readSessionUserId: import("@reduxjs/toolkit/dist/query").QueryDefinition<void, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "auth", import("./types").IdPayload, "auth">;
@@ -13,7 +13,7 @@ export declare const authStore: import("@reduxjs/toolkit/dist/configureStore").T
         signInUser: import("@reduxjs/toolkit/dist/query").MutationDefinition<import("./types").SignInPayload, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "auth", import("./types").TokenPayload, "auth">;
         signOutUser: import("@reduxjs/toolkit/dist/query").MutationDefinition<void, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "auth", void, "auth">;
         signUpUser: import("@reduxjs/toolkit/dist/query").MutationDefinition<import("./types").SignUpPayload, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "auth", import("./types").TokenPayload, "auth">;
-    }, never, "auth">;
+    }, "auth", "auth">;
 }, import("redux").AnyAction>, import("redux").Middleware<{}, import("@reduxjs/toolkit/dist/query/core/apiState").RootState<{
     readSessionUserId: import("@reduxjs/toolkit/dist/query").QueryDefinition<void, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "auth", import("./types").IdPayload, "auth">;
     refreshToken: import("@reduxjs/toolkit/dist/query").MutationDefinition<void, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "auth", import("./types").TokenPayload, "auth">;
