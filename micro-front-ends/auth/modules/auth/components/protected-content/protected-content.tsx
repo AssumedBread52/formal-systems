@@ -7,9 +7,11 @@ export const ProtectedContent = (props: PropsWithChildren<ProtectedContentProps>
 
   const authorized = useReadSessionUserId(userId);
 
+  const show = (authorized && !invert) || (!authorized && invert);
+
   return (
     <Fragment>
-      {authorized && !invert && children}
+      {show && children}
     </Fragment>
   );
 };
