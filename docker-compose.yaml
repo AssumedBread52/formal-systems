@@ -30,8 +30,6 @@ services:
   micro-service-auth:
     command: npm run start:dev
     depends_on:
-      database:
-        condition: service_healthy
       messaging-service:
         condition: service_healthy
     env_file:
