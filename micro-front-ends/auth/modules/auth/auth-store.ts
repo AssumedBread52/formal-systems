@@ -15,7 +15,6 @@ const saveToken = (token: string): void => {
 
 const refreshTokenMiddleware = createListenerMiddleware();
 const signInMiddleware = createListenerMiddleware();
-const signOutMiddleware = createListenerMiddleware();
 const expireMiddleware = createListenerMiddleware();
 
 refreshTokenMiddleware.startListening({
@@ -38,17 +37,6 @@ signInMiddleware.startListening({
   }
 });
 
-signOutMiddleware.startListening({
-  matcher: authApi.endpoints.signOutUser.matchFulfilled,
-  effect: () => {
-    localStorage.removeItem('token');
-
-    if (refreshTimeout) {
-      clearTimeout(refreshTimeout);
-    }
-  }
-});
-
 expireMiddleware.startListening({
   matcher: authApi.endpoints.refreshToken.matchRejected,
   effect: () => {
@@ -62,9 +50,17 @@ expireMiddleware.startListening({
 
 export const authStore = configureStore({
   middleware: (getDefaultMiddleware) => {
-    return getDefaultMiddleware().concat(authApi.middleware).concat(signInMiddleware.middleware).concat(signOutMiddleware.middleware).concat(refreshTokenMiddleware.middleware).concat(expireMiddleware.middleware).concat((_) => {
+    return getDefaultMiddleware().concat(authApi.middleware).concat(signInMiddleware.middleware).concat(refreshTokenMiddleware.middleware).concat(expireMiddleware.middleware).concat((_) => {
       return (next) => {
         return (action) => {
+          if (authApi.endpoints.signOutUser.matchFulfilled(action)) {
+            localStorage.removeItem('token');
+
+            if (refreshTimeout) {
+              clearTimeout(refreshTimeout);
+            }
+          }
+
           return next(action);
         };
       };
