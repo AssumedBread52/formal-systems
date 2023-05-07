@@ -29,10 +29,21 @@ export const EditProfileForm = (): ReactElement => {
     }
   };
 
+  let initialValues = {};
+  if (data) {
+    const { firstName, lastName, email } = data;
+
+    initialValues = {
+      newFirstName: firstName,
+      newLastName: lastName,
+      newEmail: email
+    };
+  }
+
   return (
     <Spin spinning={isLoading} size='large' indicator={<LoadingOutlined spin />}>
       <Card title='Edit Profile' loading={loading} headStyle={{ textAlign: 'center' }} style={{ maxWidth: '600px', width: '50vw', marginLeft: 'auto', marginRight: 'auto' }}>
-        <TypedForm ref={formRef} labelCol={{ span: 8 }} initialValues={data} onFinish={finishHandler}>
+        <TypedForm ref={formRef} labelCol={{ span: 8 }} initialValues={initialValues} onFinish={finishHandler}>
           <Item label='First Name' name='newFirstName'>
             <Input />
           </Item>
