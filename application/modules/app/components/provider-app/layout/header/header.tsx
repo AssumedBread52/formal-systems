@@ -1,17 +1,13 @@
+import { ProtectedContent } from '@/auth/components';
 import { Box } from '@/common/components/box/box';
 import { Flex } from '@/common/components/flex/flex';
 import { HyperLink } from '@/common/components/hyper-link/hyper-link';
 import { Typography } from '@/common/components/typography/typography';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 
 export const Header = (): ReactElement => {
   const { pathname } = useRouter();
-
-  const { status } = useSession();
-
-  const isAuthenticated = 'authenticated' === status;
 
   return (
     <header>
@@ -28,26 +24,28 @@ export const Header = (): ReactElement => {
           </HyperLink>
         </Box>
         <Box mx='2'>
-          {isAuthenticated && (
+          <ProtectedContent>
             <HyperLink title='Confirm sign out' color={pathname === '/sign-out' ? 'white' : 'inherit'} href='/sign-out'>
               Sign Out
             </HyperLink>
-          ) || (
+          </ProtectedContent>
+          <ProtectedContent invert>
             <HyperLink title='Sign in form' color={pathname === '/sign-in' ? 'white' : 'inherit'} href='/sign-in'>
               Sign In
             </HyperLink>
-          )}
+          </ProtectedContent>
         </Box>
         <Box mx='2'>
-          {isAuthenticated && (
+          <ProtectedContent>
             <HyperLink title='Edit profile form' color={pathname === '/edit-profile' ? 'white' : 'inherit'} href='/edit-profile'>
               Edit Profile
             </HyperLink>
-          ) || (
+          </ProtectedContent>
+          <ProtectedContent invert>
             <HyperLink title='Sign up form' color={pathname === '/sign-up' ? 'white' : 'inherit'} href='/sign-up'>
               Sign Up
             </HyperLink>
-          )}
+          </ProtectedContent>
         </Box>
       </Flex>
     </header>

@@ -1,1 +1,1 @@
-export { SignUpPage as default } from '@/user/components/sign-up-page/sign-up-page';
+export { SignUpForm as default } from '@/auth/components';

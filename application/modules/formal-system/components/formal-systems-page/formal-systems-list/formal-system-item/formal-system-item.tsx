@@ -1,19 +1,17 @@
+import { ProtectedContent } from '@/auth/components';
 import { Box } from '@/common/components/box/box';
 import { Flex } from '@/common/components/flex/flex';
 import { HyperLink } from '@/common/components/hyper-link/hyper-link';
 import { Typography } from '@/common/components/typography/typography';
 import { ClientFormalSystem } from '@/formal-system/types';
 import { UserSignature } from '@/user/components';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { Fragment, MouseEvent, ReactElement, useRef, useState } from 'react';
+import { MouseEvent, ReactElement, useRef, useState } from 'react';
 
 export const FormalSystemItem = (props: ClientFormalSystem): ReactElement => {
   const { title, urlPath, description, createdByUserId } = props;
 
   const { push } = useRouter();
-
-  const { data, status } = useSession();
 
   const [entered, setEntered] = useState<boolean>(false);
 
@@ -52,17 +50,15 @@ export const FormalSystemItem = (props: ClientFormalSystem): ReactElement => {
           {title}
         </Typography>
         <Box mx='auto' />
-        {'authenticated' === status && createdByUserId === data.id && (
-          <Fragment>
-            <HyperLink ref={editRef} title={`Edit ${title}`} href={`/${urlPath}/edit`}>
-              Edit
-            </HyperLink>
-            <Box mx='1' />
-            <HyperLink ref={deleteRef} title={`Delete ${title}`} href={`/${urlPath}/delete`}>
-              Delete
-            </HyperLink>
-          </Fragment>
-        )}
+        <ProtectedContent userId={createdByUserId}>
+          <HyperLink ref={editRef} title={`Edit ${title}`} href={`/${urlPath}/edit`}>
+            Edit
+          </HyperLink>
+          <Box mx='1' />
+          <HyperLink ref={deleteRef} title={`Delete ${title}`} href={`/${urlPath}/delete`}>
+            Delete
+          </HyperLink>
+        </ProtectedContent>
       </Flex>
       <Typography as='p'>
         {description}

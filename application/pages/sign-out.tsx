@@ -1,1 +1,1 @@
-export { SignOutPage as default } from '@/auth/components/sign-out-page/sign-out-page';
+export { SignOutForm as default } from '@/auth/components';

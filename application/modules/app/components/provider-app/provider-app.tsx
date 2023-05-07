@@ -2,7 +2,6 @@ import { theme } from '@/app/constants';
 import { appStore } from '@/app/store';
 import { AuthProvider } from '@/auth/components';
 import { UserProvider } from '@/user/components';
-import { SessionProvider } from 'next-auth/react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { Fragment, ReactElement } from 'react';
@@ -12,7 +11,6 @@ import { Layout } from './layout/layout';
 
 export const ProviderApp = (props: AppProps): ReactElement => {
   const { Component, pageProps } = props;
-  const { session } = pageProps;
 
   return (
     <Fragment>
@@ -37,17 +35,15 @@ export const ProviderApp = (props: AppProps): ReactElement => {
         <meta name='publisher' content='Antonio Sanchez' />
       </Head>
       <Provider store={appStore}>
-        <SessionProvider session={session}>
-          <ThemeProvider theme={theme}>
-            <AuthProvider>
-              <UserProvider>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-              </UserProvider>
-            </AuthProvider>
-          </ThemeProvider>
-        </SessionProvider>
+        <ThemeProvider theme={theme}>
+          <AuthProvider>
+            <UserProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </UserProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </Provider>
     </Fragment>
   );
