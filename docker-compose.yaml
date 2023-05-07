@@ -147,6 +147,16 @@ services:
       - ./micro-services/auth:/app:rw
     working_dir: /app
 
+  npm-micro-service-formal-system:
+    entrypoint: npm
+    image: node:18.12.1
+    stdin_open: true
+    tty: true
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-services/formal-system:/app:rw
+    working_dir: /app
+
   npm-micro-service-user:
     entrypoint: npm
     image: node:18.12.1
