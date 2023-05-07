@@ -21,5 +21,6 @@ export const authApi = createApi({
       signUpUser: signUpUser(builder)
     };
   },
-  reducerPath: 'auth'
+  reducerPath: 'auth',
+  tagTypes: ['auth']
 });
