@@ -10,6 +10,7 @@ export const signInUser = (builder: EndpointBuilder<BaseQueryFn, 'auth', 'auth'>
         method: 'POST',
         body: signInPayload
       };
-    }
+    },
+    invalidatesTags: ['auth']
   });
 };
