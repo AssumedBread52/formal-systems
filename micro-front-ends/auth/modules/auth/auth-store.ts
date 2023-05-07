@@ -62,7 +62,13 @@ expireMiddleware.startListening({
 
 export const authStore = configureStore({
   middleware: (getDefaultMiddleware) => {
-    return getDefaultMiddleware().concat(authApi.middleware).concat(signInMiddleware.middleware).concat(signOutMiddleware.middleware).concat(refreshTokenMiddleware.middleware).concat(expireMiddleware.middleware);
+    return getDefaultMiddleware().concat(authApi.middleware).concat(signInMiddleware.middleware).concat(signOutMiddleware.middleware).concat(refreshTokenMiddleware.middleware).concat(expireMiddleware.middleware).concat((_) => {
+      return (next) => {
+        return (action) => {
+          return next(action);
+        };
+      };
+    });
   },
   reducer: {
     [reducerPath]: reducer
