@@ -1,4 +1,4 @@
-import { refreshToken, signInUser, signOutUser, signUpUser } from '@/auth/end-points';
+import { readSessionUserId, refreshToken, signInUser, signOutUser, signUpUser } from '@/auth/end-points';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const authApi = createApi({
@@ -14,6 +14,7 @@ export const authApi = createApi({
   }),
   endpoints: (builder) => {
     return {
+      readSessionUserId: readSessionUserId(builder),
       refreshToken: refreshToken(builder),
       signInUser: signInUser(builder),
       signOutUser: signOutUser(builder),
