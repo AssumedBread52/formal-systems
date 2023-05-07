@@ -19,7 +19,7 @@ async function bootstrap(): Promise<void> {
   app.enableCors();
 
   await app.startAllMicroservices();
-  await app.listen(5002);
+  await app.listen(parseInt(process.env.PORT ?? ''));
 };
 
 bootstrap();

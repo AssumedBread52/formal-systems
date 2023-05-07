@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const userApi = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5002/user',
+    baseUrl: `http://localhost:${process.env.SERVICE_PORT}/user`,
     prepareHeaders: (headers: Headers): void => {
       const token = localStorage.getItem('token');
 
