@@ -1,4 +1,5 @@
 import { AppModule } from '@/app/app.module';
+import { FormalSystemModule } from '@/formal-system/formal-system.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -12,7 +13,8 @@ const encodedPassword = encodeURIComponent(password ?? '');
 @Module({
   imports: [
     AppModule,
-    MongooseModule.forRoot(`${scheme}://${username}:${encodedPassword}@${hostname}/formal-systems?authSource=admin`)
+    MongooseModule.forRoot(`${scheme}://${username}:${encodedPassword}@${hostname}/formal-systems?authSource=admin`),
+    FormalSystemModule
   ]
 })
 export class MainModule {
