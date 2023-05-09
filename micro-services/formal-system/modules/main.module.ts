@@ -13,8 +13,8 @@ const encodedPassword = encodeURIComponent(password ?? '');
 @Module({
   imports: [
     AppModule,
-    MongooseModule.forRoot(`${scheme}://${username}:${encodedPassword}@${hostname}/formal-systems?authSource=admin`),
-    FormalSystemModule
+    FormalSystemModule,
+    MongooseModule.forRoot(`${scheme}://${username}:${encodedPassword}@${hostname}/formal-systems?authSource=admin`)
   ]
 })
 export class MainModule {
