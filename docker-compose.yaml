@@ -60,7 +60,7 @@ services:
       start_period: 5s
     image: node:18.12.1
     ports:
-      - "5002:3002/tcp"
+      - "5002:5002/tcp"
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./micro-services/formal-system:/app:rw
