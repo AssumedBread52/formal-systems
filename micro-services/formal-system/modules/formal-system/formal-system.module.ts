@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { FormalSystemController } from './formal-system.controller';
 import { FormalSystem, FormalSystemSchema } from './formal-system.schema';
 import { FormalSystemService } from './formal-system.service';
+import { JwtStrategy } from './strategies';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { FormalSystemService } from './formal-system.service';
     FormalSystemController
   ],
   providers: [
-    FormalSystemService
+    FormalSystemService,
+    JwtStrategy
   ]
 })
 export class FormalSystemModule {
