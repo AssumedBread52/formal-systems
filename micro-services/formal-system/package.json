@@ -39,10 +39,12 @@
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.4.0",
     "class-validator": "^0.14.0",
-    "mongoose": "^7.1.0"
+    "mongoose": "^7.1.0",
+    "passport-jwt": "^4.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.4.2",
-    "@types/node": "^20.1.0"
+    "@types/node": "^20.1.0",
+    "@types/passport-jwt": "^3.0.8"
   }
 }
