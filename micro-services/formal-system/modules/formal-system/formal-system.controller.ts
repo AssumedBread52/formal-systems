@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { NewFormalSystemPayload } from './data-transfer-objects';
 import { SessionUserId } from './decorators';
 import { FormalSystemService } from './formal-system.service';
@@ -11,7 +11,8 @@ export class FormalSystemController {
 
   @UseGuards(JwtGuard)
   @Post()
-  createFormalSystem(@SessionUserId() sessionUserId: string, @Body(new ValidationPipe()) newFormalSystemPayload: NewFormalSystemPayload) {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  createFormalSystem(@SessionUserId() sessionUserId: string, @Body(new ValidationPipe()) newFormalSystemPayload: NewFormalSystemPayload): void {
     const { title, description } = newFormalSystemPayload;
 
     this.formalSystemService.create({
