@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { hash } from 'bcryptjs';
 import { Model } from 'mongoose';
@@ -10,7 +10,19 @@ export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {
   }
 
-  create(user: User): Promise<UserDocument> {
+  async checkForConflict(email: string): Promise<void> {
+    const collision = await this.readByEmail(email);
+
+    if (collision) {
+      throw new ConflictException();
+    }
+  }
+
+  async create(user: User): Promise<UserDocument> {
+    const { email } = user;
+
+    await this.checkForConflict(email);
+
     const newUser = new this.userModel(user);
 
     return newUser.save();
@@ -27,7 +39,12 @@ export class UserService {
   }
 
   async update(sessionUser: UserDocument, editProfilePayload: EditProfilePayload): Promise<UserDocument> {
+    const { email } = sessionUser;
     const { newFirstName, newLastName, newEmail, newPassword } = editProfilePayload;
+
+    if (email !== newEmail) {
+      await this.checkForConflict(newEmail);
+    }
 
     sessionUser.firstName = newFirstName;
     sessionUser.lastName = newLastName;
