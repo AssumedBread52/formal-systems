@@ -8,10 +8,6 @@ export class FormalSystemService {
   constructor(@InjectModel(FormalSystem.name) private formalSystemModel: Model<FormalSystemDocument>) {
   }
 
-  buildUrlPath(title: string) {
-    return title.split(' ').join('-').toLowerCase();
-  }
-
   create(formalSystem: FormalSystem): Promise<FormalSystemDocument> {
     const newFormalSystem = new this.formalSystemModel(formalSystem);
 

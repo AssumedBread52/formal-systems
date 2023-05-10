@@ -17,7 +17,7 @@ export class FormalSystemController {
 
     this.formalSystemService.create({
       title,
-      urlPath: this.formalSystemService.buildUrlPath(title),
+      urlPath: encodeURIComponent(title),
       description,
       createdByUserId: sessionUserId
     });
