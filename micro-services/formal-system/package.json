@@ -37,7 +37,8 @@
     "@nestjs/core": "^9.4.0",
     "@nestjs/mongoose": "^9.2.2",
     "@nestjs/platform-express": "^9.4.0",
-    "class-validator": "^0.14.0"
+    "class-validator": "^0.14.0",
+    "mongoose": "^7.1.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.4.2",
