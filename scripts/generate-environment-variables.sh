@@ -13,7 +13,8 @@ REDIS_PASSWORD=$(openssl rand -base64 32)
 NEXTAUTH_SECRET=$(openssl rand -base64 32)
 JSON_WEB_TOKEN_SECRET=$(openssl rand -base64 32)
 MICRO_FRONT_END_PORT_AUTH=3001
-MICRO_FRONT_END_PORT_USER=3002
+MICRO_FRONT_END_PORT_SYSTEM=3002
+MICRO_FRONT_END_PORT_USER=3003
 MICRO_SERVICE_PORT_AUTH=5001
 MICRO_SERVICE_PORT_SYSTEM=5002
 MICRO_SERVICE_PORT_USER=5003
@@ -51,6 +52,10 @@ echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-auth.e
 echo "PORT=$MICRO_FRONT_END_PORT_AUTH" >> environment-variables/micro-front-end-auth.env
 echo "SERVICE_PORT=$MICRO_SERVICE_PORT_AUTH" >> environment-variables/micro-front-end-auth.env
 
+echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-system.env
+echo "PORT=$MICRO_FRONT_END_PORT_SYSTEM" >> environment-variables/micro-front-end-system.env
+echo "SERVICE_PORT=$MICRO_SERVICE_PORT_SYSTEM" >> environment-variables/micro-front-end-system.env
+
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-user.env
 echo "PORT=$MICRO_FRONT_END_PORT_USER" >> environment-variables/micro-front-end-user.env
 echo "SERVICE_PORT=$MICRO_SERVICE_PORT_USER" >> environment-variables/micro-front-end-user.env
@@ -64,6 +69,8 @@ echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> environment-variables/application.env
 echo "MONGO_HOSTNAME=database" >> environment-variables/application.env
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-auth.env
+
+echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-system.env
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-user.env
 

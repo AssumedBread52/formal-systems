@@ -23,7 +23,7 @@ module.exports = {
       name: 'application',
       remotes: {
         auth: isServer ? 'auth@http://micro-front-end-auth:3001/_next/static/ssr/remoteEntry.js' : 'auth@http://localhost:3001/_next/static/chunks/remoteEntry.js',
-        user: isServer ? 'user@http://micro-front-end-user:3002/_next/static/ssr/remoteEntry.js' : 'user@http://localhost:3002/_next/static/chunks/remoteEntry.js'
+        user: isServer ? 'user@http://micro-front-end-user:3003/_next/static/ssr/remoteEntry.js' : 'user@http://localhost:3003/_next/static/chunks/remoteEntry.js'
       }
     }));
     config.plugins.push(new FederatedTypesPlugin({
@@ -33,7 +33,7 @@ module.exports = {
         name: 'application',
         remotes: {
           auth: isServer ? 'auth@http://micro-front-end-auth:3001/_next/static/ssr/remoteEntry.js' : 'auth@http://micro-front-end-auth:3001/_next/static/chunks/remoteEntry.js',
-          user: isServer ? 'user@http://micro-front-end-user:3002/_next/static/ssr/remoteEntry.js' : 'user@http://micro-front-end-user:3002/_next/static/chunks/remoteEntry.js'
+          user: isServer ? 'user@http://micro-front-end-user:3003/_next/static/ssr/remoteEntry.js' : 'user@http://micro-front-end-user:3003/_next/static/chunks/remoteEntry.js'
         }
       }
     }));

@@ -118,14 +118,14 @@ services:
     env_file:
       - ./environment-variables/micro-front-end-user.env
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:3002/api/app || exit 1"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:3003/api/app || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 5s
     image: node:18.12.1
     ports:
-      - "3002:3002/tcp"
+      - "3003:3003/tcp"
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./micro-front-ends/user:/app:rw
