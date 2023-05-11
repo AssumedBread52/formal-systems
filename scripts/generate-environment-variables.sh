@@ -50,15 +50,15 @@ echo "PORT=$MICRO_SERVICE_PORT_USER" >> environment-variables/micro-service-user
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-auth.env
 echo "PORT=$MICRO_FRONT_END_PORT_AUTH" >> environment-variables/micro-front-end-auth.env
-echo "SERVICE_PORT=$MICRO_SERVICE_PORT_AUTH" >> environment-variables/micro-front-end-auth.env
+echo "MICRO_SERVICE_PORT_AUTH=$MICRO_SERVICE_PORT_AUTH" >> environment-variables/micro-front-end-auth.env
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-system.env
 echo "PORT=$MICRO_FRONT_END_PORT_SYSTEM" >> environment-variables/micro-front-end-system.env
-echo "SERVICE_PORT=$MICRO_SERVICE_PORT_SYSTEM" >> environment-variables/micro-front-end-system.env
+echo "MICRO_SERVICE_PORT_SYSTEM=$MICRO_SERVICE_PORT_SYSTEM" >> environment-variables/micro-front-end-system.env
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-user.env
 echo "PORT=$MICRO_FRONT_END_PORT_USER" >> environment-variables/micro-front-end-user.env
-echo "SERVICE_PORT=$MICRO_SERVICE_PORT_USER" >> environment-variables/micro-front-end-user.env
+echo "MICRO_SERVICE_PORT_USER=$MICRO_SERVICE_PORT_USER" >> environment-variables/micro-front-end-user.env
 
 echo "TINI_KILL_PROCESS_GROUP=1" >> environment-variables/application.env
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/application.env
@@ -67,6 +67,9 @@ echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> environment-variables/application.env
 echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/application.env
 echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> environment-variables/application.env
 echo "MONGO_HOSTNAME=database" >> environment-variables/application.env
+echo "MICRO_SERVICE_PORT_AUTH=$MICRO_SERVICE_PORT_AUTH" >> environment-variables/application.env
+echo "MICRO_SERVICE_PORT_SYSTEM=$MICRO_SERVICE_PORT_SYSTEM" >> environment-variables/application.env
+echo "MICRO_SERVICE_PORT_USER=$MICRO_SERVICE_PORT_USER" >> environment-variables/application.env
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-auth.env
 
