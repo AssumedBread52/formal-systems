@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose';
 @Schema({
   versionKey: false
 })
-export class FormalSystem {
+export class System {
   @Prop()
   title: string = '';
   @Prop()
@@ -15,6 +15,6 @@ export class FormalSystem {
   createdByUserId: string = '';
 };
 
-export const FormalSystemSchema = SchemaFactory.createForClass(FormalSystem);
+export const SystemSchema = SchemaFactory.createForClass(System);
 
-export type FormalSystemDocument = HydratedDocument<FormalSystem>;
+export type SystemDocument = HydratedDocument<System>;

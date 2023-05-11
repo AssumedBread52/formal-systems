@@ -1,4 +1,4 @@
-import { IdPayload } from '@/formal-system/data-transfer-objects';
+import { IdPayload } from '@/system/data-transfer-objects';
 
 declare global {
   namespace Express {

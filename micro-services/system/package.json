@@ -1,5 +1,5 @@
 {
-  "name": "formal-systems-micro-service-formal-system",
+  "name": "formal-systems-micro-service-system",
   "version": "1.0.0",
   "description": "The formal system micro service of a web application that enables users to learn about formal systems through interaction. \"Play is the Highest Form of Research\" - Albert Einstein",
   "main": "index.js",

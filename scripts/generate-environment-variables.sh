@@ -29,14 +29,14 @@ echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> environment-variables/micro-service-aut
 echo "JSON_WEB_TOKEN_SECRET=$JSON_WEB_TOKEN_SECRET" >> environment-variables/micro-service-auth.env
 echo "PORT=$MICRO_SERVICE_PORT_AUTH" >> environment-variables/micro-service-auth.env
 
-echo "JSON_WEB_TOKEN_SECRET=$JSON_WEB_TOKEN_SECRET" >> environment-variables/micro-service-formal-system.env
-echo "MONGO_SCHEME=mongodb" >> environment-variables/micro-service-formal-system.env
-echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/micro-service-formal-system.env
-echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> environment-variables/micro-service-formal-system.env
-echo "MONGO_HOSTNAME=database" >> environment-variables/micro-service-formal-system.env
-echo "REDIS_HOSTNAME=messaging-service" >> environment-variables/micro-service-formal-system.env
-echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> environment-variables/micro-service-formal-system.env
-echo "PORT=$MICRO_SERVICE_PORT_FORMAL_SYSTEM" >> environment-variables/micro-service-formal-system.env
+echo "JSON_WEB_TOKEN_SECRET=$JSON_WEB_TOKEN_SECRET" >> environment-variables/micro-service-system.env
+echo "MONGO_SCHEME=mongodb" >> environment-variables/micro-service-system.env
+echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/micro-service-system.env
+echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> environment-variables/micro-service-system.env
+echo "MONGO_HOSTNAME=database" >> environment-variables/micro-service-system.env
+echo "REDIS_HOSTNAME=messaging-service" >> environment-variables/micro-service-system.env
+echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> environment-variables/micro-service-system.env
+echo "PORT=$MICRO_SERVICE_PORT_FORMAL_SYSTEM" >> environment-variables/micro-service-system.env
 
 echo "MONGO_SCHEME=mongodb" >> environment-variables/micro-service-user.env
 echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/micro-service-user.env

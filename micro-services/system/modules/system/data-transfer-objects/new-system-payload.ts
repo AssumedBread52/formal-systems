@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class NewFormalSystemPayload {
+export class NewSystemPayload {
   @IsNotEmpty()
   title: string = '';
   @IsNotEmpty()

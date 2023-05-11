@@ -48,10 +48,10 @@ services:
       - ./micro-services/auth:/app:rw
     working_dir: /app
 
-  micro-service-formal-system:
+  micro-service-system:
     command: npm run start:dev
     env_file:
-      - ./environment-variables/micro-service-formal-system.env
+      - ./environment-variables/micro-service-system.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:5002/app/health-check || exit 1"]
       interval: 10s
@@ -63,7 +63,7 @@ services:
       - "5002:5002/tcp"
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
-      - ./micro-services/formal-system:/app:rw
+      - ./micro-services/system:/app:rw
     working_dir: /app
 
   micro-service-user:
@@ -134,7 +134,7 @@ services:
   application:
     command: npm run dev
     depends_on:
-      micro-service-formal-system:
+      micro-service-system:
         condition: service_healthy
       micro-front-end-auth:
         condition: service_healthy
@@ -167,14 +167,14 @@ services:
       - ./micro-services/auth:/app:rw
     working_dir: /app
 
-  npm-micro-service-formal-system:
+  npm-micro-service-system:
     entrypoint: npm
     image: node:18.12.1
     stdin_open: true
     tty: true
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
-      - ./micro-services/formal-system:/app:rw
+      - ./micro-services/system:/app:rw
     working_dir: /app
 
   npm-micro-service-user:

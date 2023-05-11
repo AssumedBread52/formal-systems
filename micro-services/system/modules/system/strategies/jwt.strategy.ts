@@ -1,4 +1,4 @@
-import { IdPayload } from '@/formal-system/data-transfer-objects';
+import { IdPayload } from '@/system/data-transfer-objects';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
