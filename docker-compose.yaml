@@ -110,6 +110,27 @@ services:
       - ./micro-front-ends/auth:/app:rw
     working_dir: /app
 
+  micro-front-end-system:
+    command: npm run dev
+    depends_on:
+      micro-service-system:
+        condition: service_healthy
+    env_file:
+      - ./environment-variables/micro-front-end-system.env
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:3002/api/app || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    image: node:18.12.1
+    ports:
+      - "3002:3002/tcp"
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-front-ends/system:/app:rw
+    working_dir: /app
+
   micro-front-end-user:
     command: npm run dev
     depends_on:
@@ -134,9 +155,9 @@ services:
   application:
     command: npm run dev
     depends_on:
-      micro-service-system:
-        condition: service_healthy
       micro-front-end-auth:
+        condition: service_healthy
+      micro-front-end-system:
         condition: service_healthy
       micro-front-end-user:
         condition: service_healthy
@@ -197,6 +218,18 @@ services:
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./micro-front-ends/auth:/app:rw
+    working_dir: /app
+
+  npm-micro-front-end-system:
+    entrypoint: npm
+    env_file:
+      - ./environment-variables/npm-micro-front-end-system.env
+    image: node:18.12.1
+    stdin_open: true
+    tty: true
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-front-ends/system:/app:rw
     working_dir: /app
 
   npm-micro-front-end-user:
