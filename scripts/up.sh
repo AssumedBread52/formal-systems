@@ -86,6 +86,7 @@ resolve_node_dependencies service auth .nest
 resolve_node_dependencies service system .nest
 resolve_node_dependencies service user .nest
 resolve_node_dependencies front-end auth .next
+resolve_node_dependencies front-end system .next
 resolve_node_dependencies front-end user .next
 
 if [ ! -d application/node_modules ]; then
