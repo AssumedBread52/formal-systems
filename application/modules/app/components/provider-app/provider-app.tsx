@@ -1,6 +1,7 @@
 import { theme } from '@/app/constants';
 import { appStore } from '@/app/store';
 import { AuthProvider } from '@/auth/components';
+import { SystemProvider } from '@/system/components';
 import { UserProvider } from '@/user/components';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
@@ -37,11 +38,13 @@ export const ProviderApp = (props: AppProps): ReactElement => {
       <Provider store={appStore}>
         <ThemeProvider theme={theme}>
           <AuthProvider>
-            <UserProvider>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </UserProvider>
+            <SystemProvider>
+              <UserProvider>
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </UserProvider>
+            </SystemProvider>
           </AuthProvider>
         </ThemeProvider>
       </Provider>
