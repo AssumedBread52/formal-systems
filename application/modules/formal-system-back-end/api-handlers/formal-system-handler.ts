@@ -7,7 +7,7 @@ import { ObjectId, WithId } from 'mongodb';
 import { Body, ConflictException, Delete, Get, HttpCode, NotFoundException, Param, ParseNumberPipe, Patch, Post, Query, UnauthorizedException, ValidationPipe } from 'next-api-decorators';
 
 export class FormalSystemHandler {
-  private formalSystemCollection: MongoCollection<ServerFormalSystem> = new MongoCollection<ServerFormalSystem>('formal-systems');
+  private formalSystemCollection: MongoCollection<ServerFormalSystem> = new MongoCollection<ServerFormalSystem>('systems');
 
   @Delete('/:id')
   @HttpCode(200)

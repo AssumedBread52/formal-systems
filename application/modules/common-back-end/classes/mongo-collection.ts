@@ -5,7 +5,7 @@ import { MongoDatabase } from './mongo-database';
 export class MongoCollection<T extends Document> {
   private mongoDatabase: MongoDatabase = new MongoDatabase();
 
-  constructor(private name: 'formal-systems' | 'users') {
+  constructor(private name: 'systems') {
   }
 
   public async countDocuments(filter?: Filter<T>): Promise<number> {
