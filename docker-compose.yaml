@@ -32,6 +32,8 @@ services:
     depends_on:
       messaging-service:
         condition: service_healthy
+      micro-service-user:
+        condition: service_healthy
     env_file:
       - ./environment-variables/micro-service-auth.env
     healthcheck:
@@ -50,6 +52,9 @@ services:
 
   micro-service-system:
     command: npm run start:dev
+    depends_on:
+      database:
+        condition: service_healthy
     env_file:
       - ./environment-variables/micro-service-system.env
     healthcheck:
@@ -113,6 +118,10 @@ services:
   micro-front-end-system:
     command: npm run dev
     depends_on:
+      micro-front-end-auth:
+        condition: service_healthy
+      micro-front-end-user:
+        condition: service_healthy
       micro-service-system:
         condition: service_healthy
     env_file:
