@@ -1,0 +1,1 @@
+export declare const useSignInUserMutation: import("@reduxjs/toolkit/dist/query/react/buildHooks").UseMutation<import("@reduxjs/toolkit/dist/query").MutationDefinition<import("../types").SignInPayload, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "auth", import("../types").TokenPayload, "auth">>;

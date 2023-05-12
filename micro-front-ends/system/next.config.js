@@ -7,7 +7,9 @@ module.exports = {
     dirs: ['pages', 'modules']
   },
   reactStrictMode: true,
-  webpack: (config) => {
+  webpack: (config, options) => {
+    const { isServer } = options;
+
     Object.assign(config.experiments, {
       topLevelAwait: true
     });
@@ -18,7 +20,11 @@ module.exports = {
         './system-provider': './modules/system/components/system-provider/system-provider'
       },
       filename: 'static/chunks/remoteEntry.js',
-      name: 'system'
+      name: 'system',
+      remotes: {
+        auth: isServer ? 'auth@http://micro-front-end-auth:3001/_next/static/ssr/remoteEntry.js' : 'auth@http://localhost:3001/_next/static/chunks/remoteEntry.js',
+        user: isServer ? 'user@http://micro-front-end-user:3003/_next/static/ssr/remoteEntry.js' : 'user@http://localhost:3003/_next/static/chunks/remoteEntry.js'
+      }
     }));
     config.plugins.push(new FederatedTypesPlugin({
       federationConfig: {
@@ -27,7 +33,11 @@ module.exports = {
           './system-provider': './modules/system/components/system-provider/system-provider'
         },
         filename: 'static/ssr/remoteEntry.js',
-        name: 'system'
+        name: 'system',
+        remotes: {
+          auth: isServer ? 'auth@http://micro-front-end-auth:3001/_next/static/ssr/remoteEntry.js' : 'auth@http://micro-front-end-auth:3001/_next/static/chunks/remoteEntry.js',
+          user: isServer ? 'user@http://micro-front-end-user:3003/_next/static/ssr/remoteEntry.js' : 'user@http://micro-front-end-user:3003/_next/static/chunks/remoteEntry.js'
+        }
       }
     }));
     config.plugins.push(new FederatedTypesPlugin({
@@ -37,7 +47,11 @@ module.exports = {
           './system-provider': './modules/system/components/system-provider/system-provider'
         },
         filename: 'static/chunks/remoteEntry.js',
-        name: 'system'
+        name: 'system',
+        remotes: {
+          auth: isServer ? 'auth@http://micro-front-end-auth:3001/_next/static/ssr/remoteEntry.js' : 'auth@http://micro-front-end-auth:3001/_next/static/chunks/remoteEntry.js',
+          user: isServer ? 'user@http://micro-front-end-user:3003/_next/static/ssr/remoteEntry.js' : 'user@http://micro-front-end-user:3003/_next/static/chunks/remoteEntry.js'
+        }
       }
     }));
 
