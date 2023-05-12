@@ -2,9 +2,9 @@ import { AuthUserId } from '@/auth-back-end/decorators';
 import { MongoCollection } from '@/common-back-end/classes';
 import { IdResponse } from '@/common-back-end/types';
 import { buildUrlPath } from '@/formal-system-back-end/helpers';
-import { ClientFormalSystem, NewFormalSystemPayload, PaginatedResults, ServerFormalSystem, UpdateFormalSystemPayload } from '@/formal-system-back-end/types';
+import { ClientFormalSystem, PaginatedResults, ServerFormalSystem, UpdateFormalSystemPayload } from '@/formal-system-back-end/types';
 import { ObjectId, WithId } from 'mongodb';
-import { Body, ConflictException, Delete, Get, HttpCode, NotFoundException, Param, ParseNumberPipe, Patch, Post, Query, UnauthorizedException, ValidationPipe } from 'next-api-decorators';
+import { Body, ConflictException, Delete, Get, HttpCode, NotFoundException, Param, ParseNumberPipe, Patch, Query, UnauthorizedException, ValidationPipe } from 'next-api-decorators';
 
 export class FormalSystemHandler {
   private formalSystemCollection: MongoCollection<ServerFormalSystem> = new MongoCollection<ServerFormalSystem>('systems');
@@ -131,28 +131,5 @@ export class FormalSystemHandler {
     });
 
     return { id };
-  }
-
-  @Post()
-  @HttpCode(204)
-  async createFormalSystem(@Body(ValidationPipe) body: NewFormalSystemPayload, @AuthUserId() createdByUserId: string): Promise<void> {
-    const { title, description } = body;
-
-    const urlPath = buildUrlPath(title);
-
-    const collision = await this.formalSystemCollection.findOne({
-      urlPath
-    });
-
-    if (collision) {
-      throw new ConflictException('URL path already in use.');
-    }
-
-    await this.formalSystemCollection.insertOne({
-      title,
-      urlPath,
-      description,
-      createdByUserId
-    });
   }
 };
