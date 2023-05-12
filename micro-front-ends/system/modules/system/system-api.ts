@@ -1,3 +1,4 @@
+import { createSystem } from '@/system/end-points';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const systemApi = createApi({
@@ -11,8 +12,9 @@ export const systemApi = createApi({
       }
     }
   }),
-  endpoints: () => {
+  endpoints: (builder) => {
     return {
+      createSystem: createSystem(builder)
     };
   },
   tagTypes: ['system'],
