@@ -14,6 +14,7 @@ module.exports = {
 
     config.plugins.push(new NextFederationPlugin({
       exposes: {
+        './create-system-form': './modules/system/components/create-system-form/create-system-form',
         './system-provider': './modules/system/components/system-provider/system-provider'
       },
       filename: 'static/chunks/remoteEntry.js',
@@ -22,6 +23,7 @@ module.exports = {
     config.plugins.push(new FederatedTypesPlugin({
       federationConfig: {
         exposes: {
+          './create-system-form': './modules/system/components/create-system-form/create-system-form',
           './system-provider': './modules/system/components/system-provider/system-provider'
         },
         filename: 'static/ssr/remoteEntry.js',
@@ -31,6 +33,7 @@ module.exports = {
     config.plugins.push(new FederatedTypesPlugin({
       federationConfig: {
         exposes: {
+          './create-system-form': './modules/system/components/create-system-form/create-system-form',
           './system-provider': './modules/system/components/system-provider/system-provider'
         },
         filename: 'static/chunks/remoteEntry.js',
