@@ -6,6 +6,8 @@ async function bootstrap(): Promise<void> {
     abortOnError: false
   });
 
+  app.enableCors();
+
   await app.listen(parseInt(process.env.PORT ?? ''));
 };
 
