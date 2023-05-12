@@ -63,7 +63,7 @@ export const EditProfileForm = (): ReactElement => {
               <Button type='primary' htmlType='submit'>
                 Submit
               </Button>
-              <Button htmlType='button' onClick={resetHandler}>
+              <Button htmlType='reset' onClick={resetHandler}>
                 Reset
               </Button>
               <Button htmlType='button' onClick={back}>
