@@ -1,6 +1,6 @@
 import { useReadUserById } from '@/user/hooks';
 import { UserSignatureProps } from '@/user/types';
-import { Card, Typography } from 'antd';
+import { Card, Skeleton, Typography } from 'antd';
 import { ReactElement } from 'react';
 
 const { Meta } = Card;
@@ -11,26 +11,25 @@ export const UserSignature = (props: UserSignatureProps): ReactElement => {
 
   const { data, loading } = useReadUserById(userId);
 
-  let title = '';
-  let description = 'Loading...';
+  let title = 'Error';
+  let description = 'Failed to load user data.';
   if (data) {
     const { firstName, lastName } = data;
 
     title = label;
     description = `${firstName} ${lastName}`;
-  } else if (!loading) {
-    title = 'Error';
-    description = 'Failed to load user data.';
   }
 
   return (
-    <Meta
-      title={title}
-      description={
-        <Text italic>
-          {description}
-        </Text>
-      }
-    />
+    <Skeleton loading={loading} active>
+      <Meta
+        title={title}
+        description={
+          <Text italic>
+            {description}
+          </Text>
+        }
+      />
+    </Skeleton>
   );
 };
