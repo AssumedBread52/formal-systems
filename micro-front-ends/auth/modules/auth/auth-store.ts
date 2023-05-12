@@ -10,7 +10,7 @@ export const authStore = configureStore({
     return getDefaultMiddleware().concat(middleware).concat((_) => {
       return (next) => {
         return (action) => {
-          if (authApi.endpoints.refreshToken.matchFulfilled(action) || authApi.endpoints.signInUser.matchFulfilled(action)) {
+          if (authApi.endpoints.refreshToken.matchFulfilled(action) || authApi.endpoints.signInUser.matchFulfilled(action) || authApi.endpoints.signUpUser.matchFulfilled(action)) {
             const { payload } = action;
             const { token } = payload;
 
