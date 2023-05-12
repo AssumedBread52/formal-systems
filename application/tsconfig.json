@@ -25,6 +25,18 @@
     "target": "ES5",
     "baseUrl": ".",
     "paths": {
+      "@/auth/*": [
+        "./modules/auth/*",
+        "./@mf-types/auth/_types/*"
+      ],
+      "@/system/*": [
+        "./modules/system/*",
+        "./@mf-types/system/_types/*"
+      ],
+      "@/user/*": [
+        "./modules/user/*",
+        "./@mf-types/user/_types/*"
+      ],
       "@/*": [
         "./modules/*"
       ],
