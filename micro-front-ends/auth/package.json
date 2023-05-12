@@ -15,20 +15,18 @@
   "license": "ISC",
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
-    "@module-federation/nextjs-mf": "^6.2.2",
+    "@module-federation/nextjs-mf": "^6.4.0",
     "@module-federation/typescript": "^2.3.0",
     "@reduxjs/toolkit": "^1.9.5",
-    "antd": "^5.4.6",
-    "next": "^13.2.4",
+    "antd": "^5.4.7",
+    "next": "^13.4.2",
     "next-api-decorators": "^2.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5"
   },
   "devDependencies": {
-    "@types/react": "18.0.33",
-    "eslint": "8.37.0",
-    "eslint-config-next": "13.2.4",
-    "typescript": "^5.0.3"
+    "eslint": "^8.40.0",
+    "eslint-config-next": "^13.4.2"
   }
 }
