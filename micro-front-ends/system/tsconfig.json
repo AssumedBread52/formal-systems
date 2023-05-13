@@ -38,6 +38,12 @@
       ],
       "#/*": [
         "./*"
+      ],
+      "auth/*": [
+        "./@mf-types/auth/*"
+      ],
+      "user/*": [
+        "./@mf-types/user/*"
       ]
     },
     "plugins": [
