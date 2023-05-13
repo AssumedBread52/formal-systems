@@ -21,7 +21,7 @@ export const SystemList = (props: SystemListProps): ReactElement => {
   }
 
   return (
-    <Row gutter={16}>
+    <Row gutter={[16, 16]}>
       {systems.map((system: ClientSystem): ReactElement => {
         const { id, title, urlPath, description, createdByUserId } = system;
 
