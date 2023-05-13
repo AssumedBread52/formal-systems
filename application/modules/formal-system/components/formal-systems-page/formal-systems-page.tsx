@@ -5,8 +5,8 @@ import { HyperLink } from '@/common/components/hyper-link/hyper-link';
 import { PaginationControls } from '@/common/components/pagination-controls/pagination-controls';
 import { Typography } from '@/common/components/typography/typography';
 import { useReadFormalSystemsQuery } from '@/formal-system/hooks';
+import { SystemList } from '@/system/components';
 import { ReactElement, useState } from 'react';
-import { FormalSystemsList } from './formal-systems-list/formal-systems-list';
 
 export const FormalSystemsPage = (): ReactElement => {
   const [page, setPage] = useState<number>(1);
@@ -43,7 +43,7 @@ export const FormalSystemsPage = (): ReactElement => {
           </Flex>
         )}
         {isSuccess && (
-          <FormalSystemsList formalSystems={data.results} />
+          <SystemList systems={data.results} />
         )}
       </section>
     </Box>
