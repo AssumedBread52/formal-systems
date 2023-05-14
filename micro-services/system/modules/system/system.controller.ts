@@ -1,5 +1,5 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
-import { NewSystemPayload, PaginatedResults } from './data-transfer-objects';
+import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { IdPayload, NewSystemPayload, PaginatedResults } from './data-transfer-objects';
 import { SessionUserId } from './decorators';
 import { JwtGuard } from './guards';
 import { SystemService } from './system.service';
@@ -7,6 +7,30 @@ import { SystemService } from './system.service';
 @Controller('system')
 export class SystemController {
   constructor(private systemService: SystemService) {
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete(':id')
+  async deleteById(@SessionUserId() sessionUserId: string, @Param('id') id: string): Promise<IdPayload> {
+    const target = await this.systemService.readById(id);
+
+    if (!target) {
+      return {
+        id
+      };
+    }
+
+    const { createdByUserId } = target;
+
+    if (createdByUserId !== sessionUserId) {
+      throw new ForbiddenException();
+    }
+
+    await this.systemService.delete(id);
+
+    return {
+      id
+    };
   }
 
   @Get()

@@ -57,9 +57,17 @@ export class SystemService {
     return this.systemModel.find(filter).skip(skip).limit(count).exec();
   }
 
+  readById(id: string): Promise<SystemDocument | null> {
+    return this.systemModel.findById(id).exec();
+  }
+
   readByUrlPath(urlPath: string): Promise<SystemDocument | null> {
     return this.systemModel.findOne({
       urlPath
     }).exec();
+  }
+
+  delete(id: string): Promise<SystemDocument | null> {
+    return this.systemModel.findByIdAndDelete(id).exec();
   }
 };
