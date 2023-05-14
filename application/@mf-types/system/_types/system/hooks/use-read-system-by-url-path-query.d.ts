@@ -1,0 +1,1 @@
+export declare const useReadSystemByUrlPathQuery: import("@reduxjs/toolkit/dist/query/react/buildHooks").UseQuery<import("@reduxjs/toolkit/dist/query").QueryDefinition<string, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "system", import("../types").ClientSystem, "system">>;
