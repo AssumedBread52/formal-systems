@@ -1,1 +1,1 @@
-export type TagTypes = 'formal-system' | 'user';
+export type TagTypes = 'formal-system';

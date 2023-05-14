@@ -1,4 +1,4 @@
-import { deleteFormalSystem, updateFormalSystem } from '@/formal-system/end-points';
+import { updateFormalSystem } from '@/formal-system/end-points';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
 
 export const apiSlice = createApi({
@@ -7,9 +7,8 @@ export const apiSlice = createApi({
   }),
   endpoints: (builder) => {
     return {
-      deleteFormalSystem: deleteFormalSystem(builder),
       updateFormalSystem: updateFormalSystem(builder)
     };
   },
-  tagTypes: ['formal-system', 'user']
+  tagTypes: ['formal-system']
 });
