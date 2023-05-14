@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { System, SystemDocument } from './system.schema';
+import { UpdateSystemPayload } from './data-transfer-objects';
 
 @Injectable()
 export class SystemService {
@@ -65,6 +66,23 @@ export class SystemService {
     return this.systemModel.findOne({
       urlPath: encodeURIComponent(urlPath)
     }).exec();
+  }
+
+  async update(system: SystemDocument, updateSystemPayload: UpdateSystemPayload) {
+    const { title, description } = updateSystemPayload;
+    const { urlPath } = system;
+
+    const newUrlPath = encodeURIComponent(title);
+
+    if (newUrlPath !== urlPath) {
+      await this.checkForConflict(newUrlPath);
+    }
+
+    system.title = title;
+    system.urlPath = newUrlPath;
+    system.description = description;
+
+    system.save();
   }
 
   delete(id: string): Promise<SystemDocument | null> {
