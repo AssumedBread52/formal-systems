@@ -4,7 +4,7 @@ import { IdResponse } from '@/common-back-end/types';
 import { buildUrlPath } from '@/formal-system-back-end/helpers';
 import { ClientFormalSystem, PaginatedResults, ServerFormalSystem, UpdateFormalSystemPayload } from '@/formal-system-back-end/types';
 import { ObjectId, WithId } from 'mongodb';
-import { Body, ConflictException, Delete, Get, HttpCode, NotFoundException, Param, ParseNumberPipe, Patch, Query, UnauthorizedException, ValidationPipe } from 'next-api-decorators';
+import { Body, ConflictException, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, ParseNumberPipe, Patch, Query, ValidationPipe } from 'next-api-decorators';
 
 export class FormalSystemHandler {
   private formalSystemCollection: MongoCollection<ServerFormalSystem> = new MongoCollection<ServerFormalSystem>('systems');
@@ -20,7 +20,7 @@ export class FormalSystemHandler {
 
     if (target) {
       if (target.createdByUserId !== createdByUserId) {
-        throw new UnauthorizedException('You cannot delete another user\'s data');
+        throw new ForbiddenException('You cannot delete another user\'s data');
       }
 
       await this.formalSystemCollection.deleteOne({
