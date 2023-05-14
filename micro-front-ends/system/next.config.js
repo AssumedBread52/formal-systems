@@ -17,6 +17,7 @@ module.exports = {
     config.plugins.push(new NextFederationPlugin({
       exposes: {
         './create-system-form': './modules/system/components/create-system-form/create-system-form',
+        './delete-system-form': './modules/system/components/delete-system-form/delete-system-form',
         './search-systems': './modules/system/components/search-systems/search-systems',
         './system-provider': './modules/system/components/system-provider/system-provider'
       },
@@ -31,6 +32,7 @@ module.exports = {
       federationConfig: {
         exposes: {
           './create-system-form': './modules/system/components/create-system-form/create-system-form',
+          './delete-system-form': './modules/system/components/delete-system-form/delete-system-form',
           './search-systems': './modules/system/components/search-systems/search-systems',
           './system-provider': './modules/system/components/system-provider/system-provider'
         },
@@ -46,6 +48,7 @@ module.exports = {
       federationConfig: {
         exposes: {
           './create-system-form': './modules/system/components/create-system-form/create-system-form',
+          './delete-system-form': './modules/system/components/delete-system-form/delete-system-form',
           './search-systems': './modules/system/components/search-systems/search-systems',
           './system-provider': './modules/system/components/system-provider/system-provider'
         },
