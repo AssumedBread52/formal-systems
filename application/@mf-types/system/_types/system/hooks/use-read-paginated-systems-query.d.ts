@@ -1,0 +1,1 @@
+export declare const useReadPaginatedSystemsQuery: import("@reduxjs/toolkit/dist/query/react/buildHooks").UseQuery<import("@reduxjs/toolkit/dist/query").QueryDefinition<import("../types").PaginationParameters, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "system", import("../types").PaginatedResults, "system">>;
