@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
-import { IdPayload, NewSystemPayload, PaginatedResults } from './data-transfer-objects';
+import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { ClientSystem, IdPayload, NewSystemPayload, PaginatedResults } from './data-transfer-objects';
 import { SessionUserId } from './decorators';
 import { JwtGuard } from './guards';
 import { SystemService } from './system.service';
@@ -31,6 +31,17 @@ export class SystemController {
     return {
       id
     };
+  }
+
+  @Get(':urlPath')
+  async getSystemByUrlPath(@Param('urlPath') urlPath: string): Promise<ClientSystem> {
+    const system = await this.systemService.readByUrlPath(urlPath);
+
+    if (!system) {
+      throw new NotFoundException();
+    }
+
+    return new ClientSystem(system);
   }
 
   @Get()
