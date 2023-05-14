@@ -10,7 +10,7 @@ export class SystemController {
   }
 
   @Get()
-  async readFormalSystems(@Query('page', ParseIntPipe) page: number, @Query('count', ParseIntPipe) count: number, @Query('keywords') keywords?: string | string[]): Promise<PaginatedResults> {
+  async getSystems(@Query('page', ParseIntPipe) page: number, @Query('count', ParseIntPipe) count: number, @Query('keywords') keywords?: string | string[]): Promise<PaginatedResults> {
     const total = await this.systemService.readTotalCountByKeywords(keywords);
     const systems = await this.systemService.readPaginatedByKeywords(page, count, keywords);
 
