@@ -18,12 +18,12 @@ export const SystemItem = (props: ClientSystem): ReactElement => {
         </Link>
       }
       actions={[
-        <ProtectedContent>
+        <ProtectedContent userId={createdByUserId}>
           <Link href={`/${urlPath}/edit`}>
             <EditOutlined />
           </Link>
         </ProtectedContent>,
-        <ProtectedContent>
+        <ProtectedContent userId={createdByUserId}>
           <Link href={`/${urlPath}/delete`}>
             <DeleteOutlined />
           </Link>
