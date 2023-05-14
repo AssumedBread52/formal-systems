@@ -4,4 +4,6 @@ export { useDeleteSystem } from './use-delete-system';
 export { useDeleteSystemMutation } from './use-delete-system-mutation';
 export { useReadPaginatedSystems } from './use-read-paginated-systems';
 export { useReadPaginatedSystemsQuery } from './use-read-paginated-systems-query';
+export { useReadSystemByUrlPath } from './use-read-system-by-url-path';
+export { useReadSystemByUrlPathQuery } from './use-read-system-by-url-path-query';
 export { useRouteOnSuccess } from './use-route-on-success';
