@@ -63,7 +63,7 @@ export class SystemService {
 
   readByUrlPath(urlPath: string): Promise<SystemDocument | null> {
     return this.systemModel.findOne({
-      urlPath
+      urlPath: encodeURIComponent(urlPath)
     }).exec();
   }
 
