@@ -1,4 +1,4 @@
-db.getSiblingDB('formal-systems').getCollection('formal-systems').createIndex({
+db.getSiblingDB('formal-systems').getCollection('systems').createIndex({
   title: 'text',
   description: 'text'
 });
