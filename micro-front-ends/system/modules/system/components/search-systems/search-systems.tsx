@@ -1,9 +1,9 @@
 import { useReadPaginatedSystems } from '@/system/hooks';
-import { Button, Card, Col, Input, Pagination, Result, Row } from 'antd';
-import { useRouter } from 'next/router';
-import { Fragment, ReactElement, ReactNode, useState } from 'react';
+import { Card, Col, Input, Pagination, Row } from 'antd';
+import { ReactElement, ReactNode, useState } from 'react';
+import { ErrorResult } from './error-result/error-result';
+import { ProtectedCreateButton } from './protected-create-button/protected-create-button';
 import { SystemList } from './system-list/system-list';
-import { ProtectedContent } from '@/auth/components';
 
 const { Search } = Input;
 
@@ -11,8 +11,6 @@ export const SearchSystems = (): ReactElement => {
   const [page, setPage] = useState<number>(1);
   const [count, setCount] = useState<number>(10);
   const [keywords, setKeywords] = useState<string[]>([]);
-
-  const { push, reload } = useRouter();
 
   const { data, errorMessage, loading } = useReadPaginatedSystems({
     count,
@@ -37,54 +35,31 @@ export const SearchSystems = (): ReactElement => {
     return `${min}-${Math.min(max, total)} of ${total} systems`;
   };
 
-  const clickHandler = (): void => {
-    push('/create-formal-system');
-  };
-
   return (
     <Card
       title='Formal Systems'
       loading={loading}
-      extra={
-        <ProtectedContent>
-          <Button htmlType='button' type='primary' onClick={clickHandler}>
-            Create
-          </Button>
-        </ProtectedContent>
-      }
-      style={{
-        marginLeft: '4rem',
-        marginRight: '4rem'
-      }}
+      extra={<ProtectedCreateButton />}
+      style={{ marginLeft: '4rem', marginRight: '4rem' }}
     >
       {!errorMessage && (
-        <Fragment>
-          <Row gutter={[16, 16]}>
-            <Col span={24}>
-              <Search defaultValue={keywords.join(' ')} loading={loading} allowClear enterButton onSearch={searchHandler} />
-            </Col>
-            <Col span={24}>
-              <Pagination current={page} pageSize={count} showSizeChanger showTitle total={data?.total} style={{ textAlign: 'center' }} showTotal={showTotal} onChange={changeHandler} />
-            </Col>
-            <Col span={24}>
-              <SystemList systems={data?.results ?? []} />
-            </Col>
-            <Col span={24}>
-              <Pagination current={page} pageSize={count} showSizeChanger showTitle total={data?.total} style={{ textAlign: 'center' }} showTotal={showTotal} onChange={changeHandler} />
-            </Col>
-          </Row>
-        </Fragment>
+        <Row gutter={[16, 16]}>
+          <Col span={24}>
+            <Search defaultValue={keywords.join(' ')} loading={loading} allowClear enterButton onSearch={searchHandler} />
+          </Col>
+          <Col span={24}>
+            <Pagination current={page} pageSize={count} showSizeChanger showTitle total={data?.total} style={{ textAlign: 'center' }} showTotal={showTotal} onChange={changeHandler} />
+          </Col>
+          <Col span={24}>
+            <SystemList systems={data?.results ?? []} />
+          </Col>
+          <Col span={24}>
+            <Pagination current={page} pageSize={count} showSizeChanger showTitle total={data?.total} style={{ textAlign: 'center' }} showTotal={showTotal} onChange={changeHandler} />
+          </Col>
+        </Row>
       )}
       {errorMessage && (
-        <Result
-          status='500'
-          subTitle='Error while searching for systems.'
-          extra={[
-            <Button htmlType='button' type='primary' onClick={reload}>
-              Reload
-            </Button>
-          ]}
-        />
+        <ErrorResult />
       )}
     </Card>
   );
