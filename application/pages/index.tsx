@@ -1,1 +1,1 @@
-export { FormalSystemsPage as default } from '@/formal-system/components/formal-systems-page/formal-systems-page';
+export { SearchSystems as default } from '@/system/components';
