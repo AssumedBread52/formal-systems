@@ -1,8 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
-import { System, SystemDocument } from './system.schema';
 import { UpdateSystemPayload } from './data-transfer-objects';
+import { System, SystemDocument } from './system.schema';
 
 @Injectable()
 export class SystemService {
@@ -68,7 +68,7 @@ export class SystemService {
     }).exec();
   }
 
-  async update(system: SystemDocument, updateSystemPayload: UpdateSystemPayload) {
+  async update(system: SystemDocument, updateSystemPayload: UpdateSystemPayload): Promise<void> {
     const { title, description } = updateSystemPayload;
     const { urlPath } = system;
 
