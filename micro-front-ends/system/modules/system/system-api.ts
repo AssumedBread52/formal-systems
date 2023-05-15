@@ -1,4 +1,4 @@
-import { createSystem, deleteSystem, readPaginatedSystems, readSystemByUrlPath } from '@/system/end-points';
+import { createSystem, deleteSystem, readPaginatedSystems, readSystemByUrlPath, updateSystem } from '@/system/end-points';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const systemApi = createApi({
@@ -17,7 +17,8 @@ export const systemApi = createApi({
       createSystem: createSystem(builder),
       deleteSystem: deleteSystem(builder),
       readPaginatedSystems: readPaginatedSystems(builder),
-      readSystemByUrlPath: readSystemByUrlPath(builder)
+      readSystemByUrlPath: readSystemByUrlPath(builder),
+      updateSystem: updateSystem(builder)
     };
   },
   tagTypes: ['system'],
