@@ -1,12 +1,10 @@
 import { theme } from '@/app/constants';
-import { appStore } from '@/app/store';
 import { AuthProvider } from '@/auth/components';
 import { SystemProvider } from '@/system/components';
 import { UserProvider } from '@/user/components';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { Fragment, ReactElement } from 'react';
-import { Provider } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import { Layout } from './layout/layout';
 
@@ -35,19 +33,17 @@ export const ProviderApp = (props: AppProps): ReactElement => {
         <meta name='creator' content='Antonio Sanchez' />
         <meta name='publisher' content='Antonio Sanchez' />
       </Head>
-      <Provider store={appStore}>
-        <ThemeProvider theme={theme}>
-          <AuthProvider>
-            <SystemProvider>
-              <UserProvider>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-              </UserProvider>
-            </SystemProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </Provider>
+      <ThemeProvider theme={theme}>
+        <AuthProvider>
+          <SystemProvider>
+            <UserProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </UserProvider>
+          </SystemProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </Fragment>
   );
 };

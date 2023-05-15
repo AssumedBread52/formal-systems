@@ -4,7 +4,7 @@ import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 
 export const readFormalSystemByUrlPath = async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<ClientFormalSystem>> => {
   try {
-    const urlPath = extractUrlPathValue(context, 'formal-system-url-path');
+    const urlPath = extractUrlPathValue(context, 'system-url-path');
 
     const response = await fetch(`http://localhost:3000/api/formal-system/${urlPath}`);
 
