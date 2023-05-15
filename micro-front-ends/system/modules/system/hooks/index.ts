@@ -7,3 +7,5 @@ export { useReadPaginatedSystemsQuery } from './use-read-paginated-systems-query
 export { useReadSystemByUrlPath } from './use-read-system-by-url-path';
 export { useReadSystemByUrlPathQuery } from './use-read-system-by-url-path-query';
 export { useRouteOnSuccess } from './use-route-on-success';
+export { useUpdateSystem } from './use-update-system';
+export { useUpdateSystemMutation } from './use-update-system-mutation';
