@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { RedisOptions, Transport } from '@nestjs/microservices';
 import { MainModule } from './main.module';
 
 async function bootstrap(): Promise<void> {
@@ -6,8 +7,18 @@ async function bootstrap(): Promise<void> {
     abortOnError: false
   });
 
+  app.connectMicroservice<RedisOptions>({
+    transport: Transport.REDIS,
+    options: {
+      host: process.env.REDIS_HOSTNAME,
+      port: 6379,
+      password: process.env.REDIS_PASSWORD
+    }
+  });
+
   app.enableCors();
 
+  await app.startAllMicroservices();
   await app.listen(parseInt(process.env.PORT ?? ''));
 };
 
