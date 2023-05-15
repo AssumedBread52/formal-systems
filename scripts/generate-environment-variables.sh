@@ -60,16 +60,16 @@ echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-user.e
 echo "PORT=$MICRO_FRONT_END_PORT_USER" >> environment-variables/micro-front-end-user.env
 echo "NEXT_PUBLIC_MICRO_SERVICE_PORT_USER=$MICRO_SERVICE_PORT_USER" >> environment-variables/micro-front-end-user.env
 
-echo "TINI_KILL_PROCESS_GROUP=1" >> environment-variables/application.env
-echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/application.env
-echo "NEXTAUTH_URL=http://localhost:3000" >> environment-variables/application.env
-echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> environment-variables/application.env
-echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/application.env
-echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> environment-variables/application.env
-echo "MONGO_HOSTNAME=database" >> environment-variables/application.env
-echo "NEXT_PUBLIC_MICRO_SERVICE_PORT_AUTH=$MICRO_SERVICE_PORT_AUTH" >> environment-variables/application.env
-echo "NEXT_PUBLIC_MICRO_SERVICE_PORT_SYSTEM=$MICRO_SERVICE_PORT_SYSTEM" >> environment-variables/application.env
-echo "NEXT_PUBLIC_MICRO_SERVICE_PORT_USER=$MICRO_SERVICE_PORT_USER" >> environment-variables/application.env
+echo "TINI_KILL_PROCESS_GROUP=1" >> environment-variables/micro-front-end-application.env
+echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/micro-front-end-application.env
+echo "NEXTAUTH_URL=http://localhost:3000" >> environment-variables/micro-front-end-application.env
+echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> environment-variables/micro-front-end-application.env
+echo "MONGO_USERNAME=$MONGO_USERNAME" >> environment-variables/micro-front-end-application.env
+echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> environment-variables/micro-front-end-application.env
+echo "MONGO_HOSTNAME=database" >> environment-variables/micro-front-end-application.env
+echo "NEXT_PUBLIC_MICRO_SERVICE_PORT_AUTH=$MICRO_SERVICE_PORT_AUTH" >> environment-variables/micro-front-end-application.env
+echo "NEXT_PUBLIC_MICRO_SERVICE_PORT_SYSTEM=$MICRO_SERVICE_PORT_SYSTEM" >> environment-variables/micro-front-end-application.env
+echo "NEXT_PUBLIC_MICRO_SERVICE_PORT_USER=$MICRO_SERVICE_PORT_USER" >> environment-variables/micro-front-end-application.env
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-auth.env
 
@@ -77,4 +77,4 @@ echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-sy
 
 echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-user.env
 
-echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-application.env
+echo "NEXT_TELEMETRY_DISABLED=1" >> environment-variables/npm-micro-front-end-application.env

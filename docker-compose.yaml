@@ -94,6 +94,32 @@ services:
       - ./micro-services/user:/app:rw
     working_dir: /app
 
+  micro-front-end-application:
+    command: npm run dev
+    depends_on:
+      micro-front-end-auth:
+        condition: service_healthy
+      micro-front-end-system:
+        condition: service_healthy
+      micro-front-end-user:
+        condition: service_healthy
+    env_file:
+      - ./environment-variables/micro-front-end-application.env
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:3000/api/app || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    image: node:18.12.1
+    init: true
+    ports:
+      - "3000:3000/tcp"
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-front-ends/application:/app:rw
+    working_dir: /app
+
   micro-front-end-auth:
     command: npm run dev
     depends_on:
@@ -161,32 +187,6 @@ services:
       - ./micro-front-ends/user:/app:rw
     working_dir: /app
 
-  application:
-    command: npm run dev
-    depends_on:
-      micro-front-end-auth:
-        condition: service_healthy
-      micro-front-end-system:
-        condition: service_healthy
-      micro-front-end-user:
-        condition: service_healthy
-    env_file:
-      - ./environment-variables/application.env
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:3000/api/app || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-    image: node:18.12.1
-    init: true
-    ports:
-      - "3000:3000/tcp"
-    user: "${USER_ID}:${GROUP_ID}"
-    volumes:
-      - ./application:/app:rw
-    working_dir: /app
-
   npm-micro-service-auth:
     entrypoint: npm
     image: node:18.12.1
@@ -215,6 +215,18 @@ services:
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./micro-services/user:/app:rw
+    working_dir: /app
+
+  npm-micro-front-end-application:
+    entrypoint: npm
+    env_file:
+      - ./environment-variables/npm-micro-front-end-application.env
+    image: node:18.12.1
+    stdin_open: true
+    tty: true
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./micro-front-ends/application:/app:rw
     working_dir: /app
 
   npm-micro-front-end-auth:
@@ -251,16 +263,4 @@ services:
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./micro-front-ends/user:/app:rw
-    working_dir: /app
-
-  npm-application:
-    entrypoint: npm
-    env_file:
-      - ./environment-variables/npm-application.env
-    image: node:18.12.1
-    stdin_open: true
-    tty: true
-    user: "${USER_ID}:${GROUP_ID}"
-    volumes:
-      - ./application:/app:rw
     working_dir: /app

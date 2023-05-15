@@ -18,17 +18,14 @@ fi
 
 ENVIRONMENT_VARIABLES_CKSM_FILE=check-sums/environment-variables.cksm
 DATABASE_CKSM_FILE=check-sums/database.cksm
-APPLICATION_NODE_MODULES_CKSM_FILE=check-sums/application-node-modules.cksm
 CURRENT_ENVIRONMENT_VARIABLES_CKSM=$(cat scripts/generate-environment-variables.sh | sha1sum)
 CURRENT_DATABASE_CKSM=$(cat database/initialization-scripts/* | sha1sum)
-CURRENT_APPLICATION_NODE_MODULES_CKSM=$(cat application/package-lock.json | sha1sum)
 
 if [ ! -d check-sums ]; then
   mkdir check-sums
 else
   OLD_ENVIRONMENT_VARIABLES_CKSM=$(cat $ENVIRONMENT_VARIABLES_CKSM_FILE)
   OLD_INITIALIZE_DATABASE_CKSM=$(cat $DATABASE_CKSM_FILE)
-  OLD_APPLICATION_NODE_MODULES_CKSM=$(cat $APPLICATION_NODE_MODULES_CKSM_FILE)
 fi
 
 if [ ! -d environment-variables ]; then
@@ -85,20 +82,9 @@ function resolve_node_dependencies() {
 resolve_node_dependencies service auth .nest
 resolve_node_dependencies service system .nest
 resolve_node_dependencies service user .nest
+resolve_node_dependencies front-end application .next
 resolve_node_dependencies front-end auth .next
 resolve_node_dependencies front-end system .next
 resolve_node_dependencies front-end user .next
 
-if [ ! -d application/node_modules ]; then
-  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-application install
-
-  echo -n "$CURRENT_APPLICATION_NODE_MODULES_CKSM" > $APPLICATION_NODE_MODULES_CKSM_FILE
-elif [ ! "$OLD_APPLICATION_NODE_MODULES_CKSM" = "$CURRENT_APPLICATION_NODE_MODULES_CKSM" ]; then
-  rm -rf application/node_modules application/.next
-
-  GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose run --rm npm-application install
-
-  echo -n "$CURRENT_APPLICATION_NODE_MODULES_CKSM" > $APPLICATION_NODE_MODULES_CKSM_FILE
-fi
-
-GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach application
+GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach micro-front-end-application

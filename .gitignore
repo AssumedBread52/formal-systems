@@ -1,6 +1,3 @@
-application/.next/
-application/node_modules/
-application/next-env.d.ts
 check-sums/
 database/data/
 environment-variables/
