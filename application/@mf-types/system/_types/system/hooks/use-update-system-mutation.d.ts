@@ -1,0 +1,1 @@
+export declare const useUpdateSystemMutation: import("@reduxjs/toolkit/dist/query/react/buildHooks").UseMutation<import("@reduxjs/toolkit/dist/query").MutationDefinition<import("../types").UpdateSystemPayload, import("@reduxjs/toolkit/dist/query").BaseQueryFn, "system", import("../types").IdPayload, "system">>;
