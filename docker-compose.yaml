@@ -2,7 +2,7 @@ services:
 
   database:
     env_file:
-      - ./environment-variables/database.env
+      - ./database/variables.env
     healthcheck:
       test: ["CMD-SHELL", "mongosh localhost:27017/test --quiet --eval='db.runCommand(\"ping\").ok || failure()' || exit 1"]
       interval: 10s
@@ -18,7 +18,7 @@ services:
   messaging-service:
     command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
     env_file:
-      - ./environment-variables/messaging-service.env
+      - ./messaging-service/variables.env
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
       interval: 10s
@@ -35,7 +35,7 @@ services:
       micro-service-user:
         condition: service_healthy
     env_file:
-      - ./environment-variables/micro-service-auth.env
+      - ./micro-services/auth/variables.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:5001/app/health-check || exit 1"]
       interval: 10s
@@ -56,7 +56,7 @@ services:
       database:
         condition: service_healthy
     env_file:
-      - ./environment-variables/micro-service-system.env
+      - ./micro-services/system/variables.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:5002/app/health-check || exit 1"]
       interval: 10s
@@ -79,7 +79,7 @@ services:
       messaging-service:
         condition: service_healthy
     env_file:
-      - ./environment-variables/micro-service-user.env
+      - ./micro-services/user/variables.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:5003/app/health-check || exit 1"]
       interval: 10s
@@ -104,7 +104,7 @@ services:
       micro-front-end-user:
         condition: service_healthy
     env_file:
-      - ./environment-variables/micro-front-end-application.env
+      - ./micro-front-ends/application/variables.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:3000/api/app || exit 1"]
       interval: 10s
@@ -126,7 +126,7 @@ services:
       micro-service-auth:
         condition: service_healthy
     env_file:
-      - ./environment-variables/micro-front-end-auth.env
+      - ./micro-front-ends/auth/variables.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:3001/api/app || exit 1"]
       interval: 10s
@@ -151,7 +151,7 @@ services:
       micro-service-system:
         condition: service_healthy
     env_file:
-      - ./environment-variables/micro-front-end-system.env
+      - ./micro-front-ends/system/variables.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:3002/api/app || exit 1"]
       interval: 10s
@@ -172,7 +172,7 @@ services:
       micro-service-user:
         condition: service_healthy
     env_file:
-      - ./environment-variables/micro-front-end-user.env
+      - ./micro-front-ends/user/variables.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:3003/api/app || exit 1"]
       interval: 10s
@@ -220,7 +220,7 @@ services:
   npm-micro-front-end-application:
     entrypoint: npm
     env_file:
-      - ./environment-variables/npm-micro-front-end-application.env
+      - ./micro-front-ends/application/npm.env
     image: node:18.12.1
     stdin_open: true
     tty: true
@@ -232,7 +232,7 @@ services:
   npm-micro-front-end-auth:
     entrypoint: npm
     env_file:
-      - ./environment-variables/npm-micro-front-end-auth.env
+      - ./micro-front-ends/auth/npm.env
     image: node:18.12.1
     stdin_open: true
     tty: true
@@ -244,7 +244,7 @@ services:
   npm-micro-front-end-system:
     entrypoint: npm
     env_file:
-      - ./environment-variables/npm-micro-front-end-system.env
+      - ./micro-front-ends/system/npm.env
     image: node:18.12.1
     stdin_open: true
     tty: true
@@ -256,7 +256,7 @@ services:
   npm-micro-front-end-user:
     entrypoint: npm
     env_file:
-      - ./environment-variables/npm-micro-front-end-user.env
+      - ./micro-front-ends/user/npm.env
     image: node:18.12.1
     stdin_open: true
     tty: true

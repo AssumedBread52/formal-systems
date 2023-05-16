@@ -1,10 +1,15 @@
-check-sums/
 database/data/
-environment-variables/
+database/variables.env
+database/initialization-scripts.cksm
+messaging-service/variables.env
 micro-front-ends/*/.next/
 micro-front-ends/*/node_modules/
 micro-front-ends/*/next-env.d.ts
+micro-front-ends/*/npm.env
 micro-front-ends/*/package-lock.cksm
+micro-front-ends/*/variables.env
 micro-services/*/.nest/
 micro-services/*/node_modules/
 micro-services/*/package-lock.cksm
+micro-services/*/variables.env
+scripts/generate/environment-variables.cksm

@@ -16,42 +16,40 @@ fi
 
 ./scripts/down.sh
 
-ENVIRONMENT_VARIABLES_CKSM_FILE=check-sums/environment-variables.cksm
-DATABASE_CKSM_FILE=check-sums/database.cksm
-CURRENT_ENVIRONMENT_VARIABLES_CKSM=$(cat scripts/generate-environment-variables.sh | sha1sum)
-CURRENT_DATABASE_CKSM=$(cat database/initialization-scripts/* | sha1sum)
+ENVIRONMENT_VARIABLES_CHECK_SUM_FILE=scripts/generate/environment-variables.cksm
+ENVIRONMENT_VARIABLES_CURRENT_CHECK_SUM=$(cat scripts/generate/environment-variables.sh | sha1sum)
 
-if [ ! -d check-sums ]; then
-  mkdir check-sums
-else
-  OLD_ENVIRONMENT_VARIABLES_CKSM=$(cat $ENVIRONMENT_VARIABLES_CKSM_FILE)
-  OLD_INITIALIZE_DATABASE_CKSM=$(cat $DATABASE_CKSM_FILE)
+if [ -f "$ENVIRONMENT_VARIABLES_CHECK_SUM_FILE" ]; then
+  ENVIRONMENT_VARIABLES_OLD_CHECK_SUM=$(cat ENVIRONMENT_VARIABLES_CHECK_SUM_FILE)
 fi
 
-if [ ! -d environment-variables ]; then
-  mkdir environment-variables
+if [ ! -d messaging-service ]; then
+  mkdir messaging-service
 
-  ./scripts/generate-environment-variables.sh
+  ./scripts/generate/environment-variables.sh
 
-  echo -n "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" > $ENVIRONMENT_VARIABLES_CKSM_FILE
-elif [ ! "$OLD_ENVIRONMENT_VARIABLES_CKSM" = "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" ]; then
-  if [ ! -z "$(ls -A environment-variables)" ]; then
-    rm -rf environment-variables/..?* environment-variables/.[!.]* environment-variables/*
-  fi
+  echo -n "$ENVIRONMENT_VARIABLES_CURRENT_CHECK_SUM" > $ENVIRONMENT_VARIABLES_CHECK_SUM_FILE
+elif [ ! "$ENVIRONMENT_VARIABLES_OLD_CHECK_SUM" = "$ENVIRONMENT_VARIABLES_CURRENT_CHECK_SUM" ]; then
+  ./scripts/generate/environment-variables.sh
 
-  ./scripts/generate-environment-variables.sh
+  echo -n "$ENVIRONMENT_VARIABLES_CURRENT_CHECK_SUM" > $ENVIRONMENT_VARIABLES_CHECK_SUM_FILE
+fi
 
-  echo -n "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" > $ENVIRONMENT_VARIABLES_CKSM_FILE
+DATABASE_CHECK_SUM_FILE=database/initialization-scripts.cksm
+DATABASE_CURRENT_CHECK_SUM=$(cat database/initialization-scripts/* | sha1sum)
+
+if [ -f "$DATABASE_CHECK_SUM_FILE" ]; then
+  DATABASE_OLD_CHECK_SUM=$(cat $DATABASE_CHECK_SUM_FILE)
 fi
 
 if [ ! -d database/data ]; then
   mkdir database/data
 
-  echo -n "$CURRENT_DATABASE_CKSM" > $DATABASE_CKSM_FILE
-elif [ ! "$OLD_INITIALIZE_DATABASE_CKSM" = "$CURRENT_DATABASE_CKSM" ] || [ ! "$OLD_ENVIRONMENT_VARIABLES_CKSM" = "$CURRENT_ENVIRONMENT_VARIABLES_CKSM" ]; then
+  echo -n "$DATABASE_CURRENT_CHECK_SUM" > $DATABASE_CHECK_SUM_FILE
+elif [ ! "$DATABASE_OLD_CHECK_SUM" = "$DATABASE_CURRENT_CHECK_SUM" ] || [ ! "$ENVIRONMENT_VARIABLES_OLD_CHECK_SUM" = "$ENVIRONMENT_VARIABLES_CURRENT_CHECK_SUM" ]; then
   rm -rf database/data/..?* database/data/.[!.]* database/data/*
 
-  echo -n "$CURRENT_DATABASE_CKSM" > $DATABASE_CKSM_FILE
+  echo -n "$DATABASE_CURRENT_CHECK_SUM" > $DATABASE_CHECK_SUM_FILE
 elif [ "$1" = "--clean" ] && [ "$(ls -A database/data)" ]; then
   rm -rf database/data/..?* database/data/.[!.]* database/data/*
 fi
@@ -60,9 +58,7 @@ function resolve_node_dependencies() {
   CHECK_SUM_FILE=micro-$1s/$2/package-lock.cksm
   CURRENT_CHECK_SUM=$(cat micro-$1s/$2/package-lock.json | sha1sum)
 
-  if [ ! -d check-sums ]; then
-    mkdir check-sums
-  elif [ -f "$CHECK_SUM_FILE" ]; then
+  if [ -f "$CHECK_SUM_FILE" ]; then
     OLD_CHECK_SUM=$(cat $CHECK_SUM_FILE)
   fi
 
@@ -87,4 +83,4 @@ resolve_node_dependencies front-end auth .next
 resolve_node_dependencies front-end system .next
 resolve_node_dependencies front-end user .next
 
-GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach micro-front-end-application
+# GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach micro-front-end-application
