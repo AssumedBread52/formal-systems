@@ -4,5 +4,7 @@ environment-variables/
 micro-front-ends/*/.next/
 micro-front-ends/*/node_modules/
 micro-front-ends/*/next-env.d.ts
+micro-front-ends/*/package-lock.cksm
 micro-services/*/.nest/
 micro-services/*/node_modules/
+micro-services/*/package-lock.cksm

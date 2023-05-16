@@ -57,7 +57,7 @@ elif [ "$1" = "--clean" ] && [ "$(ls -A database/data)" ]; then
 fi
 
 function resolve_node_dependencies() {
-  CHECK_SUM_FILE=check-sums/micro-$1-$2.cksm
+  CHECK_SUM_FILE=micro-$1s/$2/package-lock.cksm
   CURRENT_CHECK_SUM=$(cat micro-$1s/$2/package-lock.json | sha1sum)
 
   if [ ! -d check-sums ]; then
