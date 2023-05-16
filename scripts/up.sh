@@ -20,7 +20,7 @@ ENVIRONMENT_VARIABLES_CHECK_SUM_FILE=scripts/generate/environment-variables.cksm
 ENVIRONMENT_VARIABLES_CURRENT_CHECK_SUM=$(cat scripts/generate/environment-variables.sh | sha1sum)
 
 if [ -f "$ENVIRONMENT_VARIABLES_CHECK_SUM_FILE" ]; then
-  ENVIRONMENT_VARIABLES_OLD_CHECK_SUM=$(cat ENVIRONMENT_VARIABLES_CHECK_SUM_FILE)
+  ENVIRONMENT_VARIABLES_OLD_CHECK_SUM=$(cat $ENVIRONMENT_VARIABLES_CHECK_SUM_FILE)
 fi
 
 if [ ! -d messaging-service ]; then
