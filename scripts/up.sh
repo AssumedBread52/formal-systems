@@ -83,4 +83,4 @@ resolve_node_dependencies front-end auth .next
 resolve_node_dependencies front-end system .next
 resolve_node_dependencies front-end user .next
 
-# GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach micro-front-end-application
+GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach micro-front-end-application
