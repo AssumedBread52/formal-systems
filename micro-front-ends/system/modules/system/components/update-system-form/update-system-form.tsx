@@ -45,14 +45,18 @@ export const UpdateSystemForm = (): ReactElement => {
   return (
     <Spin spinning={isLoading} size='large' indicator={<LoadingOutlined spin />}>
       <Card title={`Edit Formal System: ${data?.title}`} loading={loading} headStyle={{ textAlign: 'center' }} style={{ maxWidth: '600px', width: '50vw', marginLeft: 'auto', marginRight: 'auto' }}>
-        <TypedForm labelCol={{ span: 8 }} initialValues={data}  onFinish={finishHandler}>
-          <Item label='Title' name='title'>
+        <TypedForm ref={formRef} labelCol={{ span: 8 }} initialValues={data} onFinish={finishHandler}>
+          <Item label='Title' name='title' rules={[
+            { required: true, message: 'Please enter a title or click reset.' }
+          ]}>
             <Input onChange={changeHandler} />
           </Item>
           <Item label='URL Path' name='urlPath'>
             <Input disabled value={encodeURIComponent(title ? title : data?.title ?? '')} />
           </Item>
-          <Item label='Description' name='description'>
+          <Item label='Description' name='description' rules={[
+            { required: true, message: 'Please enter a description or click reset.' }
+          ]}>
             <TextArea />
           </Item>
           <Item wrapperCol={{ offset: 8 }}>
