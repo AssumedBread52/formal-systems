@@ -9,7 +9,7 @@ export class FormalSystemHandler {
   @HttpCode(200)
   async readFormalSystemByUrlPath(@Param('urlPath') urlPath: string): Promise<ClientFormalSystem> {
     const formalSystem = await this.formalSystemCollection.findOne({
-      urlPath
+      urlPath: encodeURIComponent(urlPath)
     });
 
     if (!formalSystem) {
