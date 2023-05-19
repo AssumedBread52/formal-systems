@@ -2,6 +2,10 @@
 
 Docker is a great tool to develop stable isolated environments for development and deployment. Additionally, it allows for the use of a considerable number of tools without the need for a complicated clean up or management system.
 
+## Best practice
+
+Docker containers, and therefore the images the containers are created from, should be focused in their efforts. Having a single container responsible for the entire application (database, messaging-service, back-end, and front-end) or even more than are of responsibility should be considered an anti-pattern.
+
 ## Installation
 
 I'm developing this project on a windows machine. Meaning docker requires three programs installed.
