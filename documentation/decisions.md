@@ -17,4 +17,4 @@ Most initial decisions may not have good documentation. This can be due to a var
 2. Some solutions exist but they come at to high a cost. Cost meaning paid services, time needed to learn how to best incorporate the solution into the project, etc.
 3. There are too many solutions to consider it worthwile to investigate alternatives.
 
-The idea behind the initial documentation is that it can be expanded upon later. Record any options considered and factors that played into that choice being made. Any time an alternative is proposed we only need to adjust as necessary, if needed at all.
+The idea behind the initial documentation is that it can be expanded upon later. Record any options considered and factors that played into that choice being made. Any time an alternative is proposed we only need to adjust as necessary.
