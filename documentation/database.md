@@ -1,6 +1,6 @@
 # Database
 
-Data storage will needed for application data.
+Data storage will be needed for application data.
 
 ## MongoDB
 
