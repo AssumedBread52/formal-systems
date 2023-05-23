@@ -10,3 +10,7 @@ Many commands are going to be needed during the development process. To avoid ne
 ## add-new-bash-script.sh
 
 When a file is created, the default file permissions are `-rw-r--r--`. The file permissions indicate four key pieces of information: (1) whether the file system element is a directory or a file, (2) the read, write, and execute permissions for the root user, (3) the read, write, and execute permissions for the group the file belongs to, and (4) the read, write, and execute permission of the current owner of the file. Every new bash script will need to be modified to be able to be executed. This is achieved with the `chmod` command as `chmod 755 [FILENAME]`. The three numbers indicate the root, group, and user permissions for the file. The number is computed via `r=4`, `w=2`, and `x=1`. Therefore, 755 is read, write, and execute for the root user, read and execute for the group, and read and execute for the current owner.
+
+## down.sh
+
+The docker-compose.yaml configuration requires environment variables. These could be calculated and stored in system environment variables but to be more versitile these can be computed using the `id` command. However, this would require a long command to be memorized so a bash script has been added to store the command.
