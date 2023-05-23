@@ -1,4 +1,4 @@
-# Scripting
+# Scripts
 
 Many commands are going to be needed during the development process. To avoid needed to repetively relearn forgetten commands and to avoid learning extremely long commands in the first place, scripts will be created simplifing the processes involving command line interactions. All scripts must satisfy the following conditions:
 
