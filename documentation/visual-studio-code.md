@@ -2,6 +2,10 @@
 
 This source code editor was chosen because of its versatility and cost. There are a considerable number of options available in the settings for VS Code. Additionally there are extensions that companies as well as individual developers have published for use.
 
+## Installation
+
+VS Code can be installed from [here](https://code.visualstudio.com/).
+
 ## Extensions
 
 ### Required
@@ -11,7 +15,3 @@ This source code editor was chosen because of its versatility and cost. There ar
 ### Optional
 
 1. Helps with docker and docker-compose auto-completion found [here](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker).
-
-## Installation
-
-VS Code can be installed from [here](https://code.visualstudio.com/).
