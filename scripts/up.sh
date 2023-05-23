@@ -11,4 +11,6 @@ if [ "$1" = "--help" ]; then
   exit
 fi
 
+./scripts/down.sh
+
 docker-compose up --detach
