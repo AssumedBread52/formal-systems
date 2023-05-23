@@ -4,4 +4,4 @@ This is a tool that comes installed with Docker Desktop for Windows. This greatl
 
 ## Health-check
 
-All non-utility containers in the docker-compose configuration should have a health-check. This will be used in dependency specification which not only must specify the service the container requires but a condition of healthy. If a container doesn't have a health-check then it will never have a status of healthy.
+All non-utility containers in the docker-compose configuration should have a health-check. This will be used in dependency specification which not only must specify the service the container requires but a condition of healthy. If a container doesn't have a health-check then it will never have a status of healthy. This will prevent unexpected and inconsistent errors from containers having been started but not yet ready to play their part in the architecture.
