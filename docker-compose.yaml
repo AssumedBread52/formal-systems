@@ -1,0 +1,4 @@
+services:
+
+  database:
+    image: mongo:6.0.5
