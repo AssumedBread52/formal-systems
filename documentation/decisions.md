@@ -1,6 +1,6 @@
 # Decisions
 
-As this project is developed many decisions will be made. It is imperative that the reasons behind every decision be documented so as to help guide any future decisions.
+As this project is developed, many decisions will be made and possibly remade. It is imperative that the reasons behind every decision be documented so as to help guide any future decisions.
 
 ## Explaining decisions
 
