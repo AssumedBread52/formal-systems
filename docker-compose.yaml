@@ -1,4 +1,10 @@
 services:
 
   database:
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh localhost:27017/test --quiet --eval='db.runCommand(\"ping\").ok' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     image: mongo:6.0.5
