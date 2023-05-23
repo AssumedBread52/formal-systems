@@ -14,3 +14,7 @@ When a file is created, the default file permissions are `-rw-r--r--`. The file 
 ## down.sh
 
 The docker-compose.yaml configuration requires environment variables. These could be calculated and stored in system environment variables but to be more versitile these can be computed using the `id` command. However, this would require a long command to be memorized so a bash script has been added to store the command.
+
+## up.sh
+
+The docker-compose.yaml configuration requires environment variables. These could be calculated and stored in system environment variables but to be more versitile these can be computed using the `id` command. However, this would require a long command to be memorized so a bash script has been added to store the command. 
