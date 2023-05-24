@@ -1,6 +1,8 @@
 services:
 
   database:
+    env_file:
+      - ./database/credentials.env
     healthcheck:
       test: ["CMD-SHELL", "mongosh localhost:27017/test --quiet --eval='db.runCommand(\"ping\").ok' || exit 1"]
       interval: 10s
