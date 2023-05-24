@@ -8,4 +8,4 @@ if [ "$1" = "--help" ]; then
   exit
 fi
 
-docker-compose down
+GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose down

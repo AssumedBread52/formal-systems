@@ -13,4 +13,8 @@ fi
 
 ./scripts/down.sh
 
-docker-compose up --detach
+if [ ! -d database/data ]; then
+  mkdir database/data
+fi
+
+GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach

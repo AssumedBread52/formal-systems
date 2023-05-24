@@ -8,5 +8,7 @@ services:
       retries: 3
       start_period: 5s
     image: mongo:6.0.5
+    user: "${USER_ID}:${GROUP_ID}"
     volumes:
+      - ./database/data:/data/db:rw
       - ./database/initialization-scripts:/docker-entrypoint-initdb.d:ro
