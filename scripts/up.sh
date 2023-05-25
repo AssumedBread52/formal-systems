@@ -15,7 +15,7 @@ fi
 
 function generate_environment_variables() {
   CHECK_SUM_FILE=scripts/generate/$1.cksm
-  CURRENT_CHECK_SUM=$(cat scripts/generate/$1.sh | sha1sm)
+  CURRENT_CHECK_SUM=$(cat scripts/generate/$1.sh | sha1sum)
 
   if [ -f "$CHECK_SUM_FILE" ]; then
     OLD_CHECK_SUM=$(cat $CHECK_SUM_FILE)
