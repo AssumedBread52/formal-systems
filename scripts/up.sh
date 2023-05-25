@@ -30,6 +30,7 @@ function generate_environment_variables() {
 
 generate_environment_variables database-credentials
 generate_environment_variables database-connection-configuration
+generate_environment_variables back-end-port-number
 
 DATABASE_CHECK_SUM_FILE=database/initialization-scripts.cksm
 DATABASE_CURRENT_CHECK_SUM=$(cat database/initialization-scripts/* | sha1sum)
