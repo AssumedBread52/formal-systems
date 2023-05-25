@@ -2,4 +2,5 @@ back-end/*.env
 database/data/
 database/initialization-scripts.cksm
 database/*.env
+front-end/*.env
 scripts/generate/*.cksm
