@@ -6,6 +6,8 @@ if [ "$1" = "--help" ]; then
   exit
 fi
 
+rm -rf database/data
+
 MONGO_USERNAME="database"
 MONGO_PASSWORD=$(openssl rand -base64 32)
 
