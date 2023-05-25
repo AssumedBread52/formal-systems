@@ -15,6 +15,6 @@ echo -n "" > database/credentials.env
 echo "MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME" >> database/credentials.env
 echo "MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD" >> database/credentials.env
 
-echo -n "" > back-end/credentials.env
-echo "MONGO_USERNAME=$MONGO_USERNAME" >> back-end/credentials.env
-echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> back-end/credentials.env
+echo -n "" > back-end/database-credentials.env
+echo "MONGO_USERNAME=$MONGO_USERNAME" >> back-end/database-credentials.env
+echo "MONGO_PASSWORD=$MONGO_PASSWORD" >> back-end/database-credentials.env
