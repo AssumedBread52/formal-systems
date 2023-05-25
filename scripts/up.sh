@@ -30,6 +30,7 @@ function generate_environment_variables() {
 
 generate_environment_variables database-credentials
 generate_environment_variables database-connection-configuration
+generate_environment_variables back-end-connection-configuration
 generate_environment_variables back-end-port-number
 generate_environment_variables back-end-hostnames
 generate_environment_variables front-end-port-number
