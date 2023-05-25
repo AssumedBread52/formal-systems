@@ -32,6 +32,7 @@ generate_environment_variables database-credentials
 generate_environment_variables database-connection-configuration
 generate_environment_variables back-end-port-number
 generate_environment_variables back-end-hostnames
+generate_environment_variables front-end-port-number
 
 DATABASE_CHECK_SUM_FILE=database/initialization-scripts.cksm
 DATABASE_CURRENT_CHECK_SUM=$(cat database/initialization-scripts/* | sha1sum)
