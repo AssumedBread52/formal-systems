@@ -7,4 +7,4 @@ if [ "$1" = "--help" ]; then
 fi
 
 echo -n "" > back-end/database-connection-scheme.env
-echo "MONGO_SCHEME=mongodb" >> back-end/database-connection-scheme.env
+echo "DATABASE_SCHEME=mongodb" >> back-end/database-connection-scheme.env
