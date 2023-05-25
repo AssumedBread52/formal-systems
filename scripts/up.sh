@@ -13,22 +13,22 @@ fi
 
 ./scripts/down.sh
 
-DATABASE_CREDENTIALS_CHECK_SUM_FILE=scripts/generate/database-credentials.cksm
-DATABASE_CREDENTIALS_CURRENT_CHECK_SUM=$(cat scripts/generate/database-credentials.sh | sha1sum)
+function generate_environment_variables() {
+  CHECK_SUM_FILE=scripts/generate/$1.cksm
+  CURRENT_CHECK_SUM=$(cat scripts/generate/$1.sh | sha1sm)
 
-if [ -f "$DATABASE_CREDENTIALS_CHECK_SUM_FILE" ]; then
-  DATABASE_CREDENTIALS_OLD_CHECK_SUM=$(cat $DATABASE_CREDENTIALS_CHECK_SUM_FILE)
-fi
+  if [ -f "$CHECK_SUM_FILE" ]; then
+    OLD_CHECK_SUM=$(cat $CHECK_SUM_FILE)
+  fi
 
-if [ ! -f database/credentials.env ]; then
-  ./scripts/generate/database-credentials.sh
+  if [ ! "$OLD_CHECK_SUM" = "$CURRENT_CHECK_SUM" ]; then
+    ./scripts/generate/$1.sh
 
-  echo -n "$DATABASE_CREDENTIALS_CURRENT_CHECK_SUM" > $DATABASE_CREDENTIALS_CHECK_SUM_FILE
-elif [ ! "$DATABASE_CREDENTIALS_OLD_CHECK_SUM" = "$DATABASE_CREDENTIALS_CURRENT_CHECK_SUM" ]; then
-  ./scripts/generate/database-credentials.sh
+    echo -n "$CURRENT_CHECK_SUM" > $CHECK_SUM_FILE
+  fi
+}
 
-  echo -n "$DATABASE_CREDENTIALS_CURRENT_CHECK_SUM" > $DATABASE_CREDENTIALS_CHECK_SUM_FILE
-fi
+generate_environment_variables database-credentials
 
 DATABASE_CHECK_SUM_FILE=database/initialization-scripts.cksm
 DATABASE_CURRENT_CHECK_SUM=$(cat database/initialization-scripts/* | sha1sum)
