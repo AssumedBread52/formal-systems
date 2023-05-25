@@ -1,0 +1,12 @@
+{
+  "name": "formal-systems-front-end",
+  "version": "1.0.0",
+  "description": "This is the front-end of the formal systems web app. The formal systems web app is a tool that enables users to learn about formal systems through interaction. \"Play is the highest form of research\" - Albert Einstein",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Antonio Sanchez",
+  "license": "ISC"
+}
