@@ -4,7 +4,11 @@
   "description": "This is the back-end of the formal systems web app. The formal systems web app is a tool that enables users to learn about formal systems through interaction. \"Play is the highest form of research\" - Albert Einstein",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node .nest/main"
   },
   "keywords": [],
   "author": "Antonio Sanchez",
