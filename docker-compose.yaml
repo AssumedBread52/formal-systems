@@ -14,3 +14,13 @@ services:
     volumes:
       - ./database/data:/data/db:rw
       - ./database/initialization-scripts:/docker-entrypoint-initdb.d:ro
+
+  npm-back-end:
+    entrypoint: npm
+    image: node:20.2.0
+    stdin_open: true
+    tty: true
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./back-end:/app:rw
+    working_dir: /app
