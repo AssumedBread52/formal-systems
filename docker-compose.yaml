@@ -24,3 +24,13 @@ services:
     volumes:
       - ./back-end:/app:rw
     working_dir: /app
+
+  npm-front-end:
+    entrypoint: npm
+    image: node:20.2.0
+    stdin_open: true
+    tty: true
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./front-end:/app:rw
+    working_dir: /app
