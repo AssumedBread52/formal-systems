@@ -52,4 +52,4 @@ elif [ ! "$DATABASE_OLD_CHECK_SUM" = "$DATABASE_CURRENT_CHECK_SUM" ]; then
   echo -n "$DATABASE_CURRENT_CHECK_SUM" > $DATABASE_CHECK_SUM_FILE
 fi
 
-GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach database
+GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach back-end
