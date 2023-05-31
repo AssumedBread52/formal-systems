@@ -15,6 +15,29 @@ services:
       - ./database/data:/data/db:rw
       - ./database/initialization-scripts:/docker-entrypoint-initdb.d:ro
 
+  back-end:
+    command: npm run start:dev
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file:
+      - ./back-end/connection-configuration.env
+      - ./back-end/database-connection-configuration.env
+      - ./back-end/database-credentials.env
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:5000/health-check || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    image: node:20.2.0
+    ports:
+      - "5000:5000/tcp"
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./back-end:/app:rw
+    working_dir: /app
+
   npm-back-end:
     entrypoint: npm
     image: node:20.2.0
