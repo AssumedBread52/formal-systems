@@ -20,10 +20,6 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    env_file:
-      - ./back-end/connection-configuration.env
-      - ./back-end/database-connection-configuration.env
-      - ./back-end/database-credentials.env
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:5000/app/status || exit 1"]
       interval: 10s
