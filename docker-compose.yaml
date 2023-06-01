@@ -25,7 +25,7 @@ services:
       - ./back-end/database-connection-configuration.env
       - ./back-end/database-credentials.env
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:5000/health-check || exit 1"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:5000/app/status || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
