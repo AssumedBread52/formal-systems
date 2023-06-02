@@ -28,7 +28,7 @@ function generate_environment_variables() {
   fi
 }
 
-function resolve_node_dependency() {
+function resolve_node_dependencies() {
   CHECK_SUM_FILE=$1/package-lock.cksm
   CURRENT_CHECK_SUM=$(cat $1/package-lock.json | sha1sum)
 
@@ -49,7 +49,7 @@ generate_environment_variables back-end-connection-configuration
 generate_environment_variables jwt-configuration
 generate_environment_variables front-end-connection-configuration
 
-resolve_node_dependency back-end
+resolve_node_dependencies back-end
 
 DATABASE_CHECK_SUM_FILE=database/initialization-scripts.cksm
 DATABASE_CURRENT_CHECK_SUM=$(cat database/initialization-scripts/* | sha1sum)
