@@ -12,5 +12,12 @@
   },
   "keywords": [],
   "author": "Antonio Sanchez",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@nestjs/common": "^9.4.2",
+    "@nestjs/core": "^9.4.2"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^9.5.0"
+  }
 }
