@@ -28,11 +28,28 @@ function generate_environment_variables() {
   fi
 }
 
+function resolve_node_dependency() {
+  CHECK_SUM_FILE=$1/package-lock.cksm
+  CURRENT_CHECK_SUM=$(cat $1/package-lock.json | sha1sum)
+
+  if [ -f "$CHECK_SUM_FILE" ]; then
+    OLD_CHECK_SUM=$(cat $CHECK_SUM_FILE)
+  fi
+
+  if [ ! "$OLD_CHECK_SUM" = "$CURRENT_CHECK_SUM" ]; then
+    ./scripts/npm-$1.sh install
+
+    echo -n "$CURRENT_CHECK_SUM" > $CHECK_SUM_FILE
+  fi
+}
+
 generate_environment_variables database-credentials
 generate_environment_variables database-connection-configuration
 generate_environment_variables back-end-connection-configuration
 generate_environment_variables jwt-configuration
 generate_environment_variables front-end-connection-configuration
+
+resolve_node_dependency back-end
 
 DATABASE_CHECK_SUM_FILE=database/initialization-scripts.cksm
 DATABASE_CURRENT_CHECK_SUM=$(cat database/initialization-scripts/* | sha1sum)
