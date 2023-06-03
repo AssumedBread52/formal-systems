@@ -44,12 +44,11 @@ function resolve_node_dependencies() {
 }
 
 generate_environment_variables database-credentials
-generate_environment_variables database-connection-configuration
-generate_environment_variables back-end-connection-configuration
-generate_environment_variables jwt-configuration
-generate_environment_variables front-end-connection-configuration
+generate_environment_variables back-end-configuration
+generate_environment_variables front-end-configuration
 
 resolve_node_dependencies back-end
+resolve_node_dependencies front-end
 
 DATABASE_CHECK_SUM_FILE=database/initialization-scripts.cksm
 DATABASE_CURRENT_CHECK_SUM=$(cat database/initialization-scripts/* | sha1sum)
