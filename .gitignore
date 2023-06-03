@@ -1,8 +1,12 @@
+back-end/.nest/
 back-end/node_modules/
-back-end/*.env
 back-end/*.cksm
+back-end/*.env
 database/data/
-database/initialization-scripts.cksm
+database/*.cksm
 database/*.env
+front-end/.next/
+front-end/node_modules/
+front-end/*.cksm
 front-end/*.env
 scripts/generate/*.cksm
