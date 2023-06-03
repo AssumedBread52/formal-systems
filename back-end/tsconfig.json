@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "CommonJS",
+    "outDir": "./.nest",
+    "paths": {
+      "@/*": [
+        "./modules/*"
+      ]
+    },
+    "target": "ES2019"
+  }
+}
