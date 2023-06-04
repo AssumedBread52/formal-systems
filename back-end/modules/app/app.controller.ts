@@ -1,9 +1,17 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { readFileSync } from 'fs';
 
 @Controller('app')
 export class AppController {
-  private packageJson = JSON.parse(readFileSync(process.env.npm_package_json, 'utf-8'));
+  private packageJson: {
+    dependencies: Record<string, string>;
+    devDependencies: Record<string, string>;
+  };
+
+  constructor(configService: ConfigService) {
+    this.packageJson = JSON.parse(readFileSync(configService.get<string>('npm_package_json') ?? '', 'utf-8'));
+  }
 
   @Get('status')
   @HttpCode(HttpStatus.NO_CONTENT)
