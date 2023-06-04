@@ -6,13 +6,13 @@ import { Column, Entity, ObjectIdColumn } from 'typeorm';
 })
 export class UserEntity {
   @ObjectIdColumn()
-  _id: ObjectId;
+  _id: ObjectId = new ObjectId();
   @Column()
-  firstName: string;
+  firstName: string = '';
   @Column()
-  lastName: string;
+  lastName: string = '';
   @Column()
-  email: string;
+  email: string = '';
   @Column()
-  hashedPassword: string;
+  hashedPassword: string = '';
 };
