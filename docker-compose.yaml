@@ -34,6 +34,25 @@ services:
       - ./back-end:/app:rw
     working_dir: /app
 
+  front-end:
+    command: npm run dev
+    depends_on:
+      back-end:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:3000/health-check || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    image: node:20.2.0
+    ports:
+      - "3000:3000/tcp"
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./front-end:/app:rw
+    working_dir: /app
+
   npm-back-end:
     entrypoint: npm
     image: node:20.2.0
