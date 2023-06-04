@@ -10,6 +10,7 @@
         "./modules/*"
       ]
     },
+    "strict": true,
     "target": "ES2019"
   },
   "include": [

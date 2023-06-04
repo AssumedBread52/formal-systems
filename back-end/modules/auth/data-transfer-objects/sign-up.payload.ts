@@ -2,11 +2,11 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class SignUpPayload {
   @IsNotEmpty()
-  firstName: string;
+  firstName: string = '';
   @IsNotEmpty()
-  lastName: string;
+  lastName: string = '';
   @IsEmail()
-  email: string;
+  email: string = '';
   @IsNotEmpty()
-  password: string;
+  password: string = '';
 };
