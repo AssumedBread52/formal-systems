@@ -2,10 +2,10 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class EditProfilePayload {
   @IsNotEmpty()
-  newFirstName: string;
+  newFirstName: string = '';
   @IsNotEmpty()
-  newLastName: string;
+  newLastName: string = '';
   @IsEmail()
-  newEmail: string;
+  newEmail: string = '';
   newPassword?: string;
 };
