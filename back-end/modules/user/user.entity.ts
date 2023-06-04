@@ -1,9 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
-@Entity({
-  name: 'user'
-})
+@Entity('user')
 export class UserEntity {
   @ObjectIdColumn()
   _id: ObjectId = new ObjectId();
