@@ -9,6 +9,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
+    ConfigModule,
     JwtModule.registerAsync({
       imports: [
         ConfigModule
