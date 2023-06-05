@@ -14,7 +14,7 @@ export class AuthService {
     const user = await this.userService.readByEmail(email);
 
     if (!user) {
-      throw new UnauthorizedException('User not found.');
+      throw new UnauthorizedException('Invalid e-mail address or password.');
     }
 
     const { hashedPassword } = user;
@@ -32,7 +32,7 @@ export class AuthService {
     const user = await this.userService.readById(id);
 
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new UnauthorizedException('Invalid token.');
     }
 
     return user;
