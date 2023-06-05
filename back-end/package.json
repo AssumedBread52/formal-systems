@@ -2,7 +2,7 @@
   "name": "formal-systems-back-end",
   "version": "1.0.0",
   "description": "This is the back-end of the formal systems web app. The formal systems web app is a tool that enables users to learn about formal systems through interaction. \"Play is the highest form of research\" - Albert Einstein",
-  "main": "index.js",
+  "main": ".nest/main.js",
   "scripts": {
     "build": "nest build",
     "start": "nest start",
