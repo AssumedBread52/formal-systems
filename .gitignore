@@ -9,4 +9,5 @@ front-end/.next/
 front-end/node_modules/
 front-end/*.cksm
 front-end/*.env
+front-end/next-env.d.ts
 scripts/generate/*.cksm
