@@ -1,13 +1,13 @@
+import { UserEntity } from '@/user/user.entity';
+import { UserService } from '@/user/user.service';
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserService } from '@/user/user.service';
-import { JwtGuard } from './guards/jwt.guard';
-import { SessionUser } from './decorators/session-user';
-import { UserEntity } from '@/user/user.entity';
 import { IdPayload } from './data-transfer-objects/id.payload';
-import { TokenPayload } from './data-transfer-objects/token.payload';
-import { LocalGuard } from './guards/local.guard';
 import { SignUpPayload } from './data-transfer-objects/sign-up.payload';
+import { TokenPayload } from './data-transfer-objects/token.payload';
+import { SessionUser } from './decorators/session-user';
+import { JwtGuard } from './guards/jwt.guard';
+import { LocalGuard } from './guards/local.guard';
 
 @Controller('auth')
 export class AuthController {
