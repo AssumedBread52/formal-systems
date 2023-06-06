@@ -1,6 +1,6 @@
 import { UserEntity } from '@/user/user.entity';
 import { UserService } from '@/user/user.service';
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
 import { TokenPayload } from './data-transfer-objects/token.payload';
