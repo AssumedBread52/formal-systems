@@ -6,11 +6,21 @@ export default function RootLayout(props: PropsWithChildren): ReactElement {
   const { children } = props;
 
   return (
-    <html lang="en">
+    <html lang='en'>
       <head>
         <link href='index.css' rel='stylesheet' />
       </head>
-      <body>{children}</body>
+      <body>
+        <header>
+          Header!
+        </header>
+        <main>
+          {children}
+        </main>
+        <footer>
+          Footer!
+        </footer>
+      </body>
     </html>
   );
 }
