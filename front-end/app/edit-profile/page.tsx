@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 export default function(): ReactElement {
   return (
     <h1>
-      Main Page
+      Edit Profile Page
     </h1>
   );
 }

@@ -1,5 +1,3 @@
-'use client'
-
 import { PropsWithChildren, ReactElement } from 'react';
 
 export default function RootLayout(props: PropsWithChildren): ReactElement {
