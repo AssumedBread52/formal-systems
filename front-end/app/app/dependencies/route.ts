@@ -1,1 +1,1 @@
-export { GET } from '@/app/api/dependencies';
+export { GET } from '@/app/routes/dependencies';

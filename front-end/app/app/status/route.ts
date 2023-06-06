@@ -1,1 +1,1 @@
-export { GET } from '@/app/api/status';
+export { GET } from '@/app/routes/status';
