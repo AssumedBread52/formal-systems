@@ -1,7 +1,7 @@
+import { AppProvider } from '@/app/components/app-provider/app-provider';
 import { AntdLayoutContent } from '@/common/components/antd-layout-content/antd-layout-content';
 import { AntdLayoutFooter } from '@/common/components/antd-layout-footer/antd-layout-footer';
 import { AntdLayoutHeader } from '@/common/components/antd-layout-header/antd-layout-header';
-import { AntdLayout } from '@/common/components/antd-layout/antd-layout';
 import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { PropsWithChildren, ReactElement } from 'react';
 import { DependenciesBlock } from './dependencies-block/dependencies-block';
@@ -21,7 +21,7 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
         <link href='index.css' rel='stylesheet' />
       </head>
       <body>
-        <AntdLayout>
+        <AppProvider>
           <AntdLayoutHeader>
             <HeaderMenu />
           </AntdLayoutHeader>
@@ -44,7 +44,7 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
               )}
             </AntdSpace>
           </AntdLayoutFooter>
-        </AntdLayout>
+        </AppProvider>
       </body>
     </html>
   );
