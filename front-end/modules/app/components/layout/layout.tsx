@@ -2,9 +2,10 @@ import { AntdLayoutContent } from '@/common/components/antd-layout-content/antd-
 import { AntdLayoutFooter } from '@/common/components/antd-layout-footer/antd-layout-footer';
 import { AntdLayoutHeader } from '@/common/components/antd-layout-header/antd-layout-header';
 import { AntdLayout } from '@/common/components/antd-layout/antd-layout';
+import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { PropsWithChildren, ReactElement } from 'react';
 import { DependenciesBlock } from './dependencies-block/dependencies-block';
-import { AntdSpace } from '@/common/components/antd-space/antd-space';
+import { HeaderMenu } from './header-menu/header-menu';
 
 export const Layout = async (props: PropsWithChildren): Promise<ReactElement> => {
   const { children } = props;
@@ -21,7 +22,9 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
       </head>
       <body>
         <AntdLayout>
-          <AntdLayoutHeader />
+          <AntdLayoutHeader>
+            <HeaderMenu />
+          </AntdLayoutHeader>
           <AntdLayoutContent>
             {children}
           </AntdLayoutContent>
