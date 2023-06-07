@@ -10,7 +10,7 @@ export const DependenciesBlock = (props: DependenciesBlockProps): ReactElement =
   const packageNames = Object.keys(packages);
 
   return (
-    <AntdCard bodyStyle={{ padding: 0 }} bordered={false} className='ant-card-contain-grid' title={label}>
+    <AntdCard bordered={false} className='ant-card-contain-grid' title={label}>
       {packageNames.map((packageName: string): ReactElement => {
         const version = packages[packageName];
 
