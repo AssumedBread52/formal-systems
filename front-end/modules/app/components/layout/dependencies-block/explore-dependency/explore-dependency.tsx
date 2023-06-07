@@ -17,7 +17,7 @@ export const ExploreDependency = (props: PropsWithChildren<ExploreDependencyProp
   };
 
   return (
-    <Grid style={{ cursor: 'pointer', textAlign: 'center', width: '20%' }} onClick={clickHandler}>
+    <Grid style={{ cursor: 'pointer', textAlign: 'center' }} onClick={clickHandler}>
       {children}
     </Grid>
   );
