@@ -1,3 +1,3 @@
-export const TagTypes = {
+export const Tags = {
   SessionUserId: 'session-user-id'
 } as const;
