@@ -1,3 +1,3 @@
-import { TagTypes } from '@/app/constants/tag-types';
+import { Tags } from '@/app/constants/tags';
 
-export type TagTypes = typeof TagTypes[keyof typeof TagTypes];
+export type TagTypes = typeof Tags[keyof typeof Tags];
