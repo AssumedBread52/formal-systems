@@ -1,10 +1,10 @@
 import packageJson from '#/package.json';
 import { AppProvider } from '@/app/components/app-provider/app-provider';
+import { AntdCollapse } from '@/common/components/antd-collapse/antd-collapse';
 import { AntdLayoutContent } from '@/common/components/antd-layout-content/antd-layout-content';
 import { AntdLayoutFooter } from '@/common/components/antd-layout-footer/antd-layout-footer';
 import { AntdLayoutHeader } from '@/common/components/antd-layout-header/antd-layout-header';
 import { AntdLayout } from '@/common/components/antd-layout/antd-layout';
-import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { Metadata } from 'next';
 import { PropsWithChildren, ReactElement } from 'react';
 import { DependenciesBlock } from './dependencies-block/dependencies-block';
@@ -17,6 +17,37 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
   const backEndDevDependenciesResponse = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/app/dev-dependencies`);
   const { dependencies, devDependencies } = packageJson;
 
+  const items = [
+    {
+      children: (
+        <DependenciesBlock packages={await backEndDependenciesResponse.json()} />
+      ),
+      key: 'back-end-dependencies',
+      label: 'Back End Dependencies'
+    },
+    {
+      children: (
+        <DependenciesBlock packages={await backEndDevDependenciesResponse.json()} />
+      ),
+      key: 'back-end-development-dependencies',
+      label: 'Back End Development Dependencies'
+    },
+    {
+      children: (
+        <DependenciesBlock packages={dependencies} />
+      ),
+      key: 'front-end-dependencies',
+      label: 'Front End Dependencies'
+    },
+    {
+      children: (
+        <DependenciesBlock packages={devDependencies} />
+      ),
+      key: 'front-end-development-dependencies',
+      label: 'Front End Development Dependencies'
+    }
+  ];
+
   return (
     <html lang='en'>
       <head>
@@ -28,20 +59,11 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
             <AntdLayoutHeader>
               <HeaderMenu />
             </AntdLayoutHeader>
-            <AntdLayoutContent style={{ margin: '50px', marginBottom: '26px' }}>
+            <AntdLayoutContent style={{ padding: '24px 50px' }}>
               {children}
             </AntdLayoutContent>
             <AntdLayoutFooter>
-              <AntdSpace direction='vertical'>
-                {backEndDependenciesResponse.ok && (
-                  <DependenciesBlock packages={await backEndDependenciesResponse.json()} />
-                )}
-                {backEndDevDependenciesResponse.ok && (
-                  <DependenciesBlock packages={await backEndDevDependenciesResponse.json()} />
-                )}
-                <DependenciesBlock packages={dependencies} />
-                <DependenciesBlock packages={devDependencies} />
-              </AntdSpace>
+              <AntdCollapse defaultActiveKey={['back-end-dependencies', 'back-end-development-dependencies', 'front-end-dependencies', 'front-end-development-dependencies']} items={items} />
             </AntdLayoutFooter>
           </AntdLayout>
         </AppProvider>
