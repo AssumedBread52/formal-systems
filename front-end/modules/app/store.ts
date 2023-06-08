@@ -1,9 +1,9 @@
-import { AnyAction, Dispatch, Middleware, MiddlewareArray, configureStore } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { api } from './api';
 
 const { middleware, reducer, reducerPath } = api;
 
-let refreshTimeout: null | NodeJS.Timeout = null;
+let refreshTimeout: NodeJS.Timeout | null = null;
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) => {
