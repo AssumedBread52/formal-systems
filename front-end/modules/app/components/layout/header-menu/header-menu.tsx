@@ -1,7 +1,7 @@
 'use client';
 
 import { useIsAuthorized } from '@/auth/hooks/use-is-authorized';
-import { Menu } from 'antd';
+import { AntdMenu } from '@/common/components/antd-menu/antd-menu';
 import { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -40,6 +40,6 @@ export const HeaderMenu = (): ReactElement => {
   }
 
   return (
-    <Menu selectedKeys={[pathname]} mode='horizontal' items={items} theme='dark' />
+    <AntdMenu selectedKeys={[pathname]} mode='horizontal' items={items} theme='dark' />
   );
 };
