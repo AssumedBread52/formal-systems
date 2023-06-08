@@ -34,13 +34,13 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
             <AntdLayoutFooter>
               <AntdSpace direction='vertical'>
                 {backEndDependenciesResponse.ok && (
-                  <DependenciesBlock label='Back End Dependencies' packages={await backEndDependenciesResponse.json()} />
+                  <DependenciesBlock packages={await backEndDependenciesResponse.json()} />
                 )}
                 {backEndDevDependenciesResponse.ok && (
-                  <DependenciesBlock label='Back End Development Dependencies' packages={await backEndDevDependenciesResponse.json()} />
+                  <DependenciesBlock packages={await backEndDevDependenciesResponse.json()} />
                 )}
-                <DependenciesBlock label='Front End Dependencies' packages={dependencies} />
-                <DependenciesBlock label='Front End Development Dependencies' packages={devDependencies} />
+                <DependenciesBlock packages={dependencies} />
+                <DependenciesBlock packages={devDependencies} />
               </AntdSpace>
             </AntdLayoutFooter>
           </AntdLayout>
