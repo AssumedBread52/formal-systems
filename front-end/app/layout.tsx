@@ -1,1 +1,1 @@
-export { Layout as default } from '@/app/components/layout/layout';
+export { Layout as default, metadata } from '@/app/components/layout/layout';

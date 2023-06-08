@@ -3,6 +3,7 @@ import { AntdLayoutContent } from '@/common/components/antd-layout-content/antd-
 import { AntdLayoutFooter } from '@/common/components/antd-layout-footer/antd-layout-footer';
 import { AntdLayoutHeader } from '@/common/components/antd-layout-header/antd-layout-header';
 import { AntdSpace } from '@/common/components/antd-space/antd-space';
+import { Metadata } from 'next';
 import { PropsWithChildren, ReactElement } from 'react';
 import { DependenciesBlock } from './dependencies-block/dependencies-block';
 import { HeaderMenu } from './header-menu/header-menu';
@@ -49,3 +50,8 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
     </html>
   );
 };
+
+export const metadata = {
+  title: 'Formal Systems',
+  description: 'This web app is a tool that enables users to learn about formal systems through interaction. "Play is the highest form of research" - Albert Einstein'
+} as Metadata;
