@@ -4,7 +4,7 @@ const { useGetSessionUserIdQuery } = api;
 
 export const useIsAuthorized = (userId?: string): boolean => {
   const { data, isSuccess } = useGetSessionUserIdQuery(undefined, {
-    skip: !localStorage.getItem('token')
+    skip: typeof window === 'undefined' || !localStorage.getItem('token')
   });
 
   if (!isSuccess) {
