@@ -22,7 +22,7 @@ export const Info = (): ReactElement => {
           <RenderMath content='f\in{^\omega}A\to f=\langle f_0,f_1,\dots\rangle' />
           Two finite sequences can be concatenated into a single finite sequence.
           <RenderMath content='h=f\frown g' />
-          The length of the concatenated sequence is the sum of the lengths of the operands.
+          The length of the resultant sequence is the sum of the lengths of the operands.
           <RenderMath content='\vert h\vert=\vert f\vert+\vert g\vert' />
           The order of terms are determined by the order of the operands.
           <RenderMath content='h_n=\begin{cases}f_n&0\le n\lt\vert f\vert\\g_{n-\vert f\vert}&\vert f\vert\le n\lt\vert f\vert+\vert g\vert\end{cases}' />
