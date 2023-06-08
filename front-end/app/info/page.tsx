@@ -1,9 +1,1 @@
-import { ReactElement } from 'react';
-
-export default function(): ReactElement {
-  return (
-    <h1>
-      Info Page
-    </h1>
-  );
-}
+export { Info as default } from '@/app/components/info/info';
