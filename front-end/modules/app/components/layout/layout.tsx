@@ -1,3 +1,4 @@
+import packageJson from '#/package.json';
 import { AppProvider } from '@/app/components/app-provider/app-provider';
 import { AntdLayoutContent } from '@/common/components/antd-layout-content/antd-layout-content';
 import { AntdLayoutFooter } from '@/common/components/antd-layout-footer/antd-layout-footer';
@@ -13,8 +14,7 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
 
   const backEndDependenciesResponse = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/app/dependencies`);
   const backEndDevDependenciesResponse = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/app/dev-dependencies`);
-  const frontEndDependenciesResponse = await fetch(`http://localhost:${process.env.PORT}/app/dependencies`);
-  const frontEndDevDependenciesResponse = await fetch(`http://localhost:${process.env.PORT}/app/dev-dependencies`);
+  const { dependencies, devDependencies } = packageJson;
 
   return (
     <html lang='en'>
@@ -37,12 +37,8 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
               {backEndDevDependenciesResponse.ok && (
                 <DependenciesBlock label='Back End Development Dependencies' packages={await backEndDevDependenciesResponse.json()} />
               )}
-              {frontEndDependenciesResponse.ok && (
-                <DependenciesBlock label='Front End Dependencies' packages={await frontEndDependenciesResponse.json()} />
-              )}
-              {frontEndDevDependenciesResponse.ok && (
-                <DependenciesBlock label='Front End Development Dependencies' packages={await frontEndDevDependenciesResponse.json()} />
-              )}
+              <DependenciesBlock label='Front End Dependencies' packages={dependencies} />
+              <DependenciesBlock label='Front End Development Dependencies' packages={devDependencies} />
             </AntdSpace>
           </AntdLayoutFooter>
         </AppProvider>
