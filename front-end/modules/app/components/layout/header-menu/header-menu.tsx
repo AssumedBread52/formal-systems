@@ -13,28 +13,28 @@ export const HeaderMenu = (): ReactElement => {
   const isAuthorized = useIsAuthorized();
 
   const items = [
-    { label: <Link href='/'>Formal Systems</Link>, key: '/', title: 'Search Formal Systems' },
-    { label: <Link href='/info'>Info</Link>, key: '/info', title: 'What are Formal Systems' },
+    { key: '/', label: <Link href='/'>Formal Systems</Link>, title: 'Search Formal Systems' },
+    { key: '/info', label: <Link href='/info'>Info</Link>, title: 'What are Formal Systems' },
   ] as ItemType<MenuItemType>[];
 
   if (isAuthorized) {
     items.push({
-      label: <Link href='/sign-out'>Sign Out</Link>,
       key: '/sign-out',
+      label: <Link href='/sign-out'>Sign Out</Link>,
       title: 'Sign Out'
     }, {
-      label: <Link href='/edit-profile'>Edit Profile</Link>,
       key: '/edit-profile',
+      label: <Link href='/edit-profile'>Edit Profile</Link>,
       title: 'Edit Your Profile'
     });
   } else {
     items.push({
-      label: <Link href='/sign-in'>Sign In</Link>,
       key: '/sign-in',
+      label: <Link href='/sign-in'>Sign In</Link>,
       title: 'Sign In'
     }, {
-      label: <Link href='/sign-up'>Sign Up</Link>,
       key: '/sign-up',
+      label: <Link href='/sign-up'>Sign Up</Link>,
       title: 'Sign Up'
     });
   }
