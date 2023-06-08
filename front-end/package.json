@@ -14,10 +14,12 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
     "antd": "^5.5.2",
+    "katex": "^0.16.7",
     "next": "^13.4.4",
     "react-redux": "^8.0.7"
   },
   "devDependencies": {
+    "@types/katex": "^0.16.0",
     "@types/node": "^20.2.5",
     "@types/react": "^18.2.8",
     "typescript": "^5.1.3"
