@@ -51,6 +51,6 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
 };
 
 export const metadata = {
-  title: 'Formal Systems',
-  description: 'This web app is a tool that enables users to learn about formal systems through interaction. "Play is the highest form of research" - Albert Einstein'
+  description: 'This web app is a tool that enables users to learn about formal systems through interaction. "Play is the highest form of research" - Albert Einstein',
+  title: 'Formal Systems'
 } as Metadata;
