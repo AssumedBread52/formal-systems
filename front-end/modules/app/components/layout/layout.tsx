@@ -26,7 +26,7 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
           <AntdLayoutHeader>
             <HeaderMenu />
           </AntdLayoutHeader>
-          <AntdLayoutContent>
+          <AntdLayoutContent style={{ margin: '50px', marginBottom: '26px' }}>
             {children}
           </AntdLayoutContent>
           <AntdLayoutFooter>
