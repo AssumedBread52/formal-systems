@@ -3,6 +3,7 @@ import { AppProvider } from '@/app/components/app-provider/app-provider';
 import { AntdLayoutContent } from '@/common/components/antd-layout-content/antd-layout-content';
 import { AntdLayoutFooter } from '@/common/components/antd-layout-footer/antd-layout-footer';
 import { AntdLayoutHeader } from '@/common/components/antd-layout-header/antd-layout-header';
+import { AntdLayout } from '@/common/components/antd-layout/antd-layout';
 import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { Metadata } from 'next';
 import { PropsWithChildren, ReactElement } from 'react';
@@ -23,24 +24,26 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
       </head>
       <body>
         <AppProvider>
-          <AntdLayoutHeader>
-            <HeaderMenu />
-          </AntdLayoutHeader>
-          <AntdLayoutContent style={{ margin: '50px', marginBottom: '26px' }}>
-            {children}
-          </AntdLayoutContent>
-          <AntdLayoutFooter>
-            <AntdSpace direction='vertical'>
-              {backEndDependenciesResponse.ok && (
-                <DependenciesBlock label='Back End Dependencies' packages={await backEndDependenciesResponse.json()} />
-              )}
-              {backEndDevDependenciesResponse.ok && (
-                <DependenciesBlock label='Back End Development Dependencies' packages={await backEndDevDependenciesResponse.json()} />
-              )}
-              <DependenciesBlock label='Front End Dependencies' packages={dependencies} />
-              <DependenciesBlock label='Front End Development Dependencies' packages={devDependencies} />
-            </AntdSpace>
-          </AntdLayoutFooter>
+          <AntdLayout>
+            <AntdLayoutHeader>
+              <HeaderMenu />
+            </AntdLayoutHeader>
+            <AntdLayoutContent style={{ margin: '50px', marginBottom: '26px' }}>
+              {children}
+            </AntdLayoutContent>
+            <AntdLayoutFooter>
+              <AntdSpace direction='vertical'>
+                {backEndDependenciesResponse.ok && (
+                  <DependenciesBlock label='Back End Dependencies' packages={await backEndDependenciesResponse.json()} />
+                )}
+                {backEndDevDependenciesResponse.ok && (
+                  <DependenciesBlock label='Back End Development Dependencies' packages={await backEndDevDependenciesResponse.json()} />
+                )}
+                <DependenciesBlock label='Front End Dependencies' packages={dependencies} />
+                <DependenciesBlock label='Front End Development Dependencies' packages={devDependencies} />
+              </AntdSpace>
+            </AntdLayoutFooter>
+          </AntdLayout>
         </AppProvider>
       </body>
     </html>
