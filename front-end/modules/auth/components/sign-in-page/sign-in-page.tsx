@@ -17,7 +17,7 @@ export const SignInPage = (): ReactElement => {
         <InputPassword name='password' />
         <AntdFormItem wrapperCol={{ sm: { span: 24 }, md: { offset: 8 } }}>
           <AntdSpace wrap>
-            <AntdButton type='primary' htmlType='submit'>
+            <AntdButton htmlType='submit' type='primary'>
               Submit
             </AntdButton>
             <CancelButton />
