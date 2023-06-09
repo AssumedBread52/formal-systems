@@ -8,7 +8,7 @@ export const InputPassword = (props: InputProps): ReactElement => {
 
   return (
     <AntdFormItem label='Password' name={name} rules={[
-      { required: !optional, message: 'Please enter your password.' }
+      { required: !optional, message: 'Password is required.' }
     ]}>
       <AntdInputPassword />
     </AntdFormItem>

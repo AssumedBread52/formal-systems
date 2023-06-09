@@ -8,7 +8,7 @@ export const InputEmail = (props: InputProps): ReactElement => {
 
   return (
     <AntdFormItem label='E-mail' name={name} rules={[
-      { required: !optional, message: 'Please enter your e-mail address.' },
+      { required: !optional, message: 'E-mail is required.' },
       { type: 'email', message: 'Invalid format' }
     ]}>
       <AntdInput />
