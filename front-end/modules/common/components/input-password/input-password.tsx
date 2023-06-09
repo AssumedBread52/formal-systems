@@ -4,11 +4,11 @@ import { InputProps } from '@/common/types/input-props';
 import { ReactElement } from 'react';
 
 export const InputPassword = (props: InputProps): ReactElement => {
-  const { name } = props;
+  const { name, optional } = props;
 
   return (
     <AntdFormItem label='Password' name={name} rules={[
-      { required: true, message: 'Please enter your password.' }
+      { required: !optional, message: 'Please enter your password.' }
     ]}>
       <AntdInputPassword />
     </AntdFormItem>
