@@ -15,7 +15,7 @@ export const DependenciesBlock = (props: DependenciesBlockProps): ReactElement =
         const version = packages[packageName];
 
         return (
-          <AntdCol xs={24} sm={24} md={12} lg={8} xl={6} xxl={6}>
+          <AntdCol key={packageName} xs={24} sm={24} md={12} lg={8} xl={6} xxl={6}>
             <AntdCard bodyStyle={{ textAlign: 'center' }} extra={<a target='_blank' href={`https://www.npmjs.com/package/${packageName}`}>Explore</a>} title={packageName} type='inner'>
               version: {version.substring(1)}
             </AntdCard>
