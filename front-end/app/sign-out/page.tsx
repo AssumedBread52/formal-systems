@@ -1,9 +1,1 @@
-import { ReactElement } from 'react';
-
-export default function(): ReactElement {
-  return (
-    <h1>
-      Sign Out Page
-    </h1>
-  );
-}
+export { SignOutPage as default } from '@/auth/components/sign-out-page/sign-out-page';
