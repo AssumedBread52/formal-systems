@@ -1,6 +1,7 @@
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { RenderMath } from '@/common/components/render-math/render-math';
+import { Metadata } from 'next';
 import { ReactElement } from 'react';
 
 export const Info = (): ReactElement => {
@@ -118,3 +119,7 @@ export const Info = (): ReactElement => {
     </AntdCard>
   );
 };
+
+export const metadata = {
+  title: 'What are formal systems?'
+} as Metadata;

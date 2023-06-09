@@ -1,1 +1,1 @@
-export { Info as default } from '@/app/components/info/info';
+export { Info as default, metadata } from '@/app/components/info/info';
