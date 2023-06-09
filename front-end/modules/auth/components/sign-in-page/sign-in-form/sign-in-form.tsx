@@ -16,12 +16,12 @@ export const SignInForm = (props: PropsWithChildren): ReactElement => {
   const [finishHandler, spinning, description] = useSignIn();
 
   return (
-    <AntdSpin spinning={spinning} size='large' indicator={<AntdLoadingOutlined spin />}>
+    <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={spinning}>
       <TypedAntdForm labelCol={{ sm: { span: 0 },  md: { span: 8 } }} wrapperCol={{ sm: { span: 24 }, md: { span: 16 } }} onFinish={finishHandler}>
         {children}
       </TypedAntdForm>
       {description && (
-        <AntdAlert message='Error' description={description} type='error' showIcon closable />
+        <AntdAlert closable description={description} message='Error' showIcon type='error' />
       )}
     </AntdSpin>
   );
