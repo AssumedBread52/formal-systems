@@ -1,17 +1,12 @@
 import { AntdCard } from '@/common/components/antd-card/antd-card';
-import { SearchControls } from '@/common/components/search-controls/search-controls';
 import { ReactElement } from 'react';
 import { CreateButton } from './create-button/create-button';
-import { SystemList } from './system-list/system-list';
+import { SearchControls } from './search-controls/search-controls';
 
 export const SearchSystems = (): ReactElement => {
-  const { results, total } = { results: [], total: 0 };
-
   return (
     <AntdCard extra={<CreateButton />} title='Formal Systems'>
-      <SearchControls resultType='formal systems' total={total}>
-        <SystemList systems={results} />
-      </SearchControls>
+      <SearchControls />
     </AntdCard>
   );
 };

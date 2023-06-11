@@ -4,11 +4,12 @@ import { AntdCol } from '@/common/components/antd-col/antd-col';
 import { AntdRow } from '@/common/components/antd-row/antd-row';
 import { InputPagination } from '@/common/components/input-pagination/input-pagination';
 import { InputSearch } from '@/common/components/input-search/input-search';
-import { SearchControlsProps } from '@/common/types/search-controls-props';
-import { PropsWithChildren, ReactElement } from 'react';
+import { useSearchSystems } from '@/system/hooks/use-search-systems';
 
-export const SearchControls = (props: PropsWithChildren<SearchControlsProps>): ReactElement => {
-  const { children, total, resultType } = props;
+export const SearchControls = () => {
+  const [searchResults] = useSearchSystems();
+
+  const { total } = searchResults ?? { total: 0 };
 
   return (
     <AntdRow gutter={[0, 16]}>
@@ -16,13 +17,13 @@ export const SearchControls = (props: PropsWithChildren<SearchControlsProps>): R
         <InputSearch />
       </AntdCol>
       <AntdCol span={24}>
-        <InputPagination resultType={resultType} total={total} />
+        <InputPagination resultType='Formal Systems' total={total} />
       </AntdCol>
       <AntdCol span={24}>
-        {children}
+        Search Results
       </AntdCol>
       <AntdCol span={24}>
-        <InputPagination resultType={resultType} total={total} />
+        <InputPagination resultType='Formal Systems' total={total} />
       </AntdCol>
     </AntdRow>
   );
