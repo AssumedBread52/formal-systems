@@ -1,9 +1,9 @@
 'use client';
 
 import { AntdCol } from '@/common/components/antd-col/antd-col';
-import { AntdInputSearch } from '@/common/components/antd-input-search/antd-input-search';
 import { AntdPagination } from '@/common/components/antd-pagination/antd-pagination';
 import { AntdRow } from '@/common/components/antd-row/antd-row';
+import { InputSearch } from '@/common/components/input-search/input-search';
 import { SearchControlsProps } from '@/common/types/search-controls-props';
 import { SearchParameters } from '@/common/types/search-parameters';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -39,24 +39,10 @@ export const SearchControls = (props: PropsWithChildren<SearchControlsProps>): R
     push(`${pathname}?${stringify(searchParameters)}`);
   };
 
-  const searchHandler = (value: string): void => {
-    const newKeywords = value.split(' ').filter((newKeyword: string): boolean => {
-      return 0 !== newKeyword.length;
-    });
-
-    const searchParameters = { count, page: 1 } as SearchParameters;
-
-    if (0 < newKeywords.length) {
-      searchParameters.keywords = newKeywords;
-    }
-
-    push(`${pathname}?${stringify(searchParameters)}`);
-  };
-
   return (
     <AntdRow gutter={[0, 16]}>
       <AntdCol span={24}>
-        <AntdInputSearch allowClear defaultValue={keywords.join(' ')} enterButton onSearch={searchHandler} />
+        <InputSearch />
       </AntdCol>
       <AntdCol span={24}>
         <AntdPagination current={page} pageSize={count} showQuickJumper showSizeChanger showTitle style={{ textAlign: 'center' }} total={total} onChange={changeHandler} showTotal={showTotal} />
