@@ -6,7 +6,7 @@ import { InputPagination } from '@/common/components/input-pagination/input-pagi
 import { InputSearch } from '@/common/components/input-search/input-search';
 import { useSearchSystems } from '@/system/hooks/use-search-systems';
 
-export const SearchControls = () => {
+export const SearchContent = () => {
   const [searchResults] = useSearchSystems();
 
   const { total } = searchResults ?? { total: 0 };
