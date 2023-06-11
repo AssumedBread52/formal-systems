@@ -4,6 +4,7 @@ import { AntdDeleteOutlined } from '@/common/components/antd-delete-outlined/ant
 import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
 import { AntdEditOutlined } from '@/common/components/antd-edit-outlined/antd-edit-outlined';
 import { System } from '@/system/types/system';
+import { UserSignature } from '@/user/components/user-signature/user-signature';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
@@ -14,6 +15,7 @@ export const SystemItem = (props: Omit<System, 'id'>): ReactElement => {
     <AntdCard actions={[<ProtectedContent><Link href={`/formal-system/${urlPath}/edit`}><AntdEditOutlined /></Link></ProtectedContent>, <ProtectedContent><Link href={`/formal-system/${urlPath}/delete`}><AntdDeleteOutlined /></Link></ProtectedContent>]} extra={<Link href={`/formal-system/${urlPath}`}>Explore</Link>} title={title} type='inner'>
       {description}
       <AntdDivider />
+      <UserSignature userId={createdByUserId} />
     </AntdCard>
   );
 };
