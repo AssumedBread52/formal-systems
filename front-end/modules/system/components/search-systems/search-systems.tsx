@@ -9,7 +9,7 @@ export const SearchSystems = (): ReactElement => {
 
   return (
     <AntdCard extra={<CreateButton />} title='Formal Systems'>
-      <SearchControls total={total} resultType='formal systems'>
+      <SearchControls resultType='formal systems' total={total}>
         <SystemList systems={results} />
       </SearchControls>
     </AntdCard>
