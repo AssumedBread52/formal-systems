@@ -11,6 +11,7 @@ import { EndpointBuilder } from '@reduxjs/toolkit/dist/query/endpointDefinitions
 import { BaseQueryFn, createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
 import { Tags } from './constants/tags';
 import { TagTypes } from './types/tag-types';
+import { getUserById } from '@/user/end-points/get-user-by-id';
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -35,6 +36,7 @@ export const api = createApi({
 
     editProfile: ReturnType<typeof editProfile>;
     getSessionUser: ReturnType<typeof getSessionUser>;
+    getUserById: ReturnType<typeof getUserById>;
   } => {
     return {
       getSessionUserId: getSessionUserId(builder),
@@ -47,7 +49,8 @@ export const api = createApi({
       searchSystems: searchSystems(builder),
 
       editProfile: editProfile(builder),
-      getSessionUser: getSessionUser(builder)
+      getSessionUser: getSessionUser(builder),
+      getUserById: getUserById(builder)
     };
   },
   reducerPath: 'api',
