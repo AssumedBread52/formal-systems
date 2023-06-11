@@ -1,9 +1,1 @@
-import { ReactElement } from 'react';
-
-export default function(): ReactElement {
-  return (
-    <h1>
-      Main Page
-    </h1>
-  );
-}
+export { SearchSystems as default } from '@/system/components/search-systems/search-systems';
