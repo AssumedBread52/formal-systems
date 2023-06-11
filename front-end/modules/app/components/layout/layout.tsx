@@ -1,4 +1,5 @@
 import packageJson from '#/package.json';
+import '#/public/index.css';
 import { AppProvider } from '@/app/components/app-provider/app-provider';
 import { AntdCollapse } from '@/common/components/antd-collapse/antd-collapse';
 import { AntdLayoutContent } from '@/common/components/antd-layout-content/antd-layout-content';
@@ -50,16 +51,13 @@ export const Layout = async (props: PropsWithChildren): Promise<ReactElement> =>
 
   return (
     <html lang='en'>
-      <head>
-        <link href='index.css' rel='stylesheet' />
-      </head>
       <body>
         <AppProvider>
           <AntdLayout>
             <AntdLayoutHeader>
               <HeaderMenu />
             </AntdLayoutHeader>
-            <AntdLayoutContent style={{ padding: '24px 50px' }}>
+            <AntdLayoutContent style={{ padding: '50px' }}>
               {children}
             </AntdLayoutContent>
             <AntdLayoutFooter>
