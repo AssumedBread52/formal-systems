@@ -12,7 +12,7 @@ export const SystemItem = (props: Omit<System, 'id'>): ReactElement => {
   const { title, urlPath, description, createdByUserId } = props;
 
   return (
-    <AntdCard actions={[<ProtectedContent><Link href={`/formal-system/${urlPath}/edit`}><AntdEditOutlined /></Link></ProtectedContent>, <ProtectedContent><Link href={`/formal-system/${urlPath}/delete`}><AntdDeleteOutlined /></Link></ProtectedContent>]} extra={<Link href={`/formal-system/${urlPath}`}>Explore</Link>} title={title} type='inner'>
+    <AntdCard actions={[<ProtectedContent userId={createdByUserId}><Link href={`/formal-system/${urlPath}/edit`}><AntdEditOutlined /></Link></ProtectedContent>, <ProtectedContent userId={createdByUserId}><Link href={`/formal-system/${urlPath}/delete`}><AntdDeleteOutlined /></Link></ProtectedContent>]} extra={<Link href={`/formal-system/${urlPath}`}>Explore</Link>} title={title} type='inner'>
       {description}
       <AntdDivider />
       <UserSignature userId={createdByUserId} />
