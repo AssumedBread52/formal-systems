@@ -9,12 +9,13 @@ import { InputSearch } from '@/common/components/input-search/input-search';
 import { useSearchSystems } from '@/system/hooks/use-search-systems';
 import { useRouter } from 'next/navigation';
 import { LoadingResults } from './loading-results/loading-results';
+import { SystemList } from './system-list/system-list';
 
 export const SearchContent = () => {
   const { back } = useRouter();
   const [searchResults, loading, errorMessage] = useSearchSystems();
 
-  const { total } = searchResults ?? { total: 0 };
+  const { results, total } = searchResults ?? { results: [], total: 0 };
 
   return (
     <AntdRow gutter={[0, 16]}>
@@ -30,6 +31,9 @@ export const SearchContent = () => {
         )}
         {errorMessage && (
           <AntdResult status='500' subTitle={errorMessage} extra={[<AntdButton htmlType='button' type='primary' onClick={back}>Back</AntdButton>]} />
+        )}
+        {!loading && !errorMessage && (
+          <SystemList systems={results} />
         )}
       </AntdCol>
       <AntdCol span={24}>
