@@ -7,7 +7,7 @@ import { BaseQueryFn } from '@reduxjs/toolkit/dist/query';
 import { EndpointBuilder, QueryDefinition } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { stringify } from 'querystring';
 
-export const getSystems = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): QueryDefinition<SearchParameters, BaseQueryFn, TagTypes, SearchResults<System>, 'api'> => {
+export const searchSystems = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): QueryDefinition<SearchParameters, BaseQueryFn, TagTypes, SearchResults<System>, 'api'> => {
   return builder.query<SearchResults<System>, SearchParameters>({
     providesTags: [Tags.System],
     query: (searchParameters: SearchParameters): string => {

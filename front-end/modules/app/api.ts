@@ -4,7 +4,7 @@ import { signIn } from '@/auth/end-points/sign-in';
 import { signOut } from '@/auth/end-points/sign-out';
 import { signUp } from '@/auth/end-points/sign-up';
 import { createSystem } from '@/system/end-points/create-system';
-import { getSystems } from '@/system/end-points/get-systems';
+import { searchSystems } from '@/system/end-points/search-systems';
 import { editProfile } from '@/user/end-points/edit-profile';
 import { getSessionUser } from '@/user/end-points/get-session-user';
 import { EndpointBuilder } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
@@ -31,7 +31,7 @@ export const api = createApi({
     signUp: ReturnType<typeof signUp>;
 
     createSystem: ReturnType<typeof createSystem>;
-    getSystems: ReturnType<typeof getSystems>;
+    searchSystems: ReturnType<typeof searchSystems>;
 
     editProfile: ReturnType<typeof editProfile>;
     getSessionUser: ReturnType<typeof getSessionUser>;
@@ -44,7 +44,7 @@ export const api = createApi({
       signUp: signUp(builder),
 
       createSystem: createSystem(builder),
-      getSystems: getSystems(builder),
+      searchSystems: searchSystems(builder),
 
       editProfile: editProfile(builder),
       getSessionUser: getSessionUser(builder)
