@@ -3,6 +3,7 @@ import { refreshToken } from '@/auth/end-points/refresh-token';
 import { signIn } from '@/auth/end-points/sign-in';
 import { signOut } from '@/auth/end-points/sign-out';
 import { signUp } from '@/auth/end-points/sign-up';
+import { createSystem } from '@/system/end-points/create-system';
 import { editProfile } from '@/user/end-points/edit-profile';
 import { getSessionUser } from '@/user/end-points/get-session-user';
 import { EndpointBuilder } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
@@ -22,22 +23,28 @@ export const api = createApi({
     }
   }),
   endpoints: (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): {
-    editProfile: ReturnType<typeof editProfile>;
-    getSessionUser: ReturnType<typeof getSessionUser>;
     getSessionUserId: ReturnType<typeof getSessionUserId>;
     refreshToken: ReturnType<typeof refreshToken>;
     signIn: ReturnType<typeof signIn>;
     signOut: ReturnType<typeof signOut>;
     signUp: ReturnType<typeof signUp>;
+
+    createSystem: ReturnType<typeof createSystem>;
+
+    editProfile: ReturnType<typeof editProfile>;
+    getSessionUser: ReturnType<typeof getSessionUser>;
   } => {
     return {
-      editProfile: editProfile(builder),
-      getSessionUser: getSessionUser(builder),
       getSessionUserId: getSessionUserId(builder),
       refreshToken: refreshToken(builder),
       signIn: signIn(builder),
       signOut: signOut(builder),
-      signUp: signUp(builder)
+      signUp: signUp(builder),
+
+      createSystem: createSystem(builder),
+
+      editProfile: editProfile(builder),
+      getSessionUser: getSessionUser(builder)
     };
   },
   reducerPath: 'api',
