@@ -7,11 +7,11 @@ import { createSystem } from '@/system/end-points/create-system';
 import { searchSystems } from '@/system/end-points/search-systems';
 import { editProfile } from '@/user/end-points/edit-profile';
 import { getSessionUser } from '@/user/end-points/get-session-user';
+import { getUserById } from '@/user/end-points/get-user-by-id';
 import { EndpointBuilder } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { BaseQueryFn, createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
 import { Tags } from './constants/tags';
 import { TagTypes } from './types/tag-types';
-import { getUserById } from '@/user/end-points/get-user-by-id';
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
