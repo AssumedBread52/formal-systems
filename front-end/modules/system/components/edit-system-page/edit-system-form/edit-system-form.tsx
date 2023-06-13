@@ -32,7 +32,7 @@ export const EditSystemForm = (props: PropsWithChildren): ReactElement => {
       newDescription: description
     };
   }
-  
+
   return (
     <AntdCard headStyle={{ textAlign: 'center' }} loading={loading} style={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '180px', width: '50vw' }} title={`Edit ${decodeURIComponent(urlPath)}`}>
       <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={spinning}>
