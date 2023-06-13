@@ -1,3 +1,5 @@
+'use client';
+
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
 import { useGetSystemByUrlPath } from '@/system/hooks/use-get-system-by-url-path';
