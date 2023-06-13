@@ -13,5 +13,5 @@ export const useEditSystem = (): [MutationTrigger<MutationDefinition<EditSystemP
 
   useRouteBack(isSuccess);
 
-  return [editSystem, isLoading, isError ? 'Failed to edit system.' : ''];
+  return [editSystem, isLoading, isError ? 'Failed to edit formal system.' : ''];
 };
