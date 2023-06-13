@@ -30,7 +30,7 @@ export const SearchContent = () => {
           <LoadingResults />
         )}
         {!loading && !searchResults && (
-          <AntdResult status='500' subTitle='Failed to find formal systems.' extra={[<AntdButton htmlType='button' type='primary' onClick={back}>Back</AntdButton>]} />
+          <AntdResult status='500' subTitle='Failed to find formal systems.' extra={[<AntdButton key='back' htmlType='button' type='primary' onClick={back}>Back</AntdButton>]} />
         )}
         {searchResults && (
           <SystemList systems={results} />
