@@ -13,7 +13,7 @@ import { SystemList } from './system-list/system-list';
 
 export const SearchContent = () => {
   const { back } = useRouter();
-  const [searchResults, loading, errorMessage] = useSearchSystems();
+  const [searchResults, loading] = useSearchSystems();
 
   const { results, total } = searchResults ?? { results: [], total: 0 };
 
@@ -29,10 +29,10 @@ export const SearchContent = () => {
         {loading && (
           <LoadingResults />
         )}
-        {errorMessage && (
-          <AntdResult status='500' subTitle={errorMessage} extra={[<AntdButton htmlType='button' type='primary' onClick={back}>Back</AntdButton>]} />
+        {!loading && !searchResults && (
+          <AntdResult status='500' subTitle='Failed to find formal systems.' extra={[<AntdButton htmlType='button' type='primary' onClick={back}>Back</AntdButton>]} />
         )}
-        {!loading && !errorMessage && (
+        {searchResults && (
           <SystemList systems={results} />
         )}
       </AntdCol>

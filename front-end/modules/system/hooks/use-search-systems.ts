@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 
 const { useSearchSystemsQuery } = api;
 
-export const useSearchSystems = (): [SearchResults<System> | undefined, boolean, string] => {
+export const useSearchSystems = (): [SearchResults<System> | undefined, boolean] => {
   const searchParams = useSearchParams();
 
   const count = parseInt(searchParams.get('count') ?? '10');
@@ -18,7 +18,7 @@ export const useSearchSystems = (): [SearchResults<System> | undefined, boolean,
     searchParameters.keywords = keywords;
   }
 
-  const { data, isError, isUninitialized } = useSearchSystemsQuery(searchParameters);
+  const { data, isLoading, isUninitialized } = useSearchSystemsQuery(searchParameters);
 
-  return [data, isError || isUninitialized, isError ? 'Failed to search for formal systems.' : ''];
+  return [data, isLoading || isUninitialized];
 };
