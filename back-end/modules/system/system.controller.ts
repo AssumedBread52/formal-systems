@@ -1,7 +1,7 @@
 import { IdPayload } from '@/auth/data-transfer-objects/id.payload';
 import { SessionUserId } from '@/auth/decorators/session-user-id';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
-import { Body, Controller, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditSystemPayload } from './data-transfer-objects/edit-system.payload';
 import { NewSystemPayload } from './data-transfer-objects/new-system.payload';
@@ -11,6 +11,26 @@ import { SystemService } from './system.service';
 @Controller('system')
 export class SystemController {
   constructor(private systemService: SystemService) {
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete(':id')
+  async deleteSystem(@SessionUserId() sessionUserId: ObjectId, @Param('id') id: string): Promise<IdPayload> {
+    const system = await this.systemService.readById(id);
+
+    if (!system) {
+      return {
+        id
+      };
+    }
+
+    const { createdByUserId } = system;
+
+    if (createdByUserId.toString() !== sessionUserId.toString()) {
+      throw new ForbiddenException('You cannot delete entities unless you created them.');
+    }
+
+    return this.systemService.delete(id);
   }
 
   @Get()
