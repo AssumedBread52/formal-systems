@@ -8,7 +8,7 @@ export const InputLastName = (props: InputProps): ReactElement => {
 
   return (
     <AntdFormItem label='Last Name' name={name} rules={[
-      { required: !optional, message: 'Last name is required.' },
+      { required: !optional, message: 'Last name is required.' }
     ]}>
       <AntdInput />
     </AntdFormItem>
