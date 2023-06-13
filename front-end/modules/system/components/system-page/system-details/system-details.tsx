@@ -11,7 +11,7 @@ export const SystemDetails = (): ReactElement => {
   const params = useParams();
   const { 'system-url-path': urlPath } = params;
 
-  const [system, loading] = useGetSystemByUrlPath(urlPath ?? '');
+  const [system, loading] = useGetSystemByUrlPath(urlPath);
 
   const { description, createdByUserId } = system ?? { description: '', createdByUserId: '' };
 
