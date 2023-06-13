@@ -9,7 +9,9 @@ import { stringify } from 'querystring';
 
 export const searchSystems = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): QueryDefinition<SearchParameters, BaseQueryFn, TagTypes, SearchResults<System>, 'api'> => {
   return builder.query<SearchResults<System>, SearchParameters>({
-    providesTags: [Tags.System],
+    providesTags: [
+      Tags.System
+    ],
     query: (searchParameters: SearchParameters): string => {
       return `/system?${stringify(searchParameters)}`;
     }
