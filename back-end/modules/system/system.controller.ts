@@ -6,6 +6,7 @@ import { ObjectId } from 'mongodb';
 import { EditSystemPayload } from './data-transfer-objects/edit-system.payload';
 import { NewSystemPayload } from './data-transfer-objects/new-system.payload';
 import { PaginatedResultsPayload } from './data-transfer-objects/paginated-results.payload';
+import { SystemPayload } from './data-transfer-objects/system.payload';
 import { SystemService } from './system.service';
 
 @Controller('system')
@@ -36,6 +37,17 @@ export class SystemController {
   @Get()
   getSystems(@Query('page', ParseIntPipe) page: number, @Query('count', ParseIntPipe) count: number, @Query('keywords') keywords?: string | string[]): Promise<PaginatedResultsPayload> {
     return this.systemService.readSystems(page, count, keywords);
+  }
+
+  @Get(':urlPath')
+  async getByUrlPath(@Param('urlPath') urlPath: string): Promise<SystemPayload> {
+    const system = await this.systemService.readByUrlPath(urlPath);
+
+    if (!system) {
+      throw new NotFoundException('System not found.');
+    }
+
+    return new SystemPayload(system);
   }
 
   @UseGuards(JwtGuard)

@@ -53,6 +53,12 @@ export class SystemService {
     });
   }
 
+  readByUrlPath(urlPath: string): Promise<SystemEntity | null> {
+    return this.systemRepository.findOneBy({
+      urlPath: encodeURIComponent(urlPath)
+    });
+  }
+
   async readSystems(page: number, take: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
     const skip = (page - 1) * take;
     const where = {} as RootFilterOperators<SystemEntity>;
