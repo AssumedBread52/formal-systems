@@ -1,3 +1,4 @@
+import { UserEntity } from '@/user/user.entity';
 import { ObjectId } from 'mongodb';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
@@ -13,4 +14,8 @@ export class SystemEntity {
   description: string = '';
   @Column()
   createdByUserId: ObjectId = new ObjectId();
+  @Column({
+    nullable: true
+  })
+  createdByUser?: UserEntity;
 };

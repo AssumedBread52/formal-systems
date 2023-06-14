@@ -1,4 +1,7 @@
 import { SystemEntity } from '@/system/system.entity';
+import { UserPayload } from '@/user/data-transfer-objects/user.payload';
+import { Optional } from '@nestjs/common';
+import { Type } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 import { ObjectId } from 'mongodb';
 
@@ -13,14 +16,20 @@ export class SystemPayload {
   description: string;
   @IsNotEmpty()
   createdByUserId: ObjectId;
+  @Optional()
+  @Type(() => UserPayload)
+  createdByUser?: UserPayload;
 
   constructor(system: SystemEntity) {
-    const { _id, title, urlPath, description, createdByUserId } = system;
+    const { _id, title, urlPath, description, createdByUserId, createdByUser } = system;
 
     this.id = _id;
     this.title = title;
     this.urlPath = urlPath;
     this.description = description;
     this.createdByUserId = createdByUserId;
+    if (createdByUser) {
+      this.createdByUser = new UserPayload(createdByUser);
+    }
   }
 };

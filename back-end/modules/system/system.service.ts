@@ -70,11 +70,29 @@ export class SystemService {
       };
     }
 
-    const [results, total] = await this.systemRepository.findAndCount({
-      skip,
-      take,
-      where
-    });
+    const total = await this.systemRepository.countBy(where);
+    const results = await this.systemRepository.aggregateEntity([
+      {
+        $match: where,
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'createdByUserId',
+          foreignField: '_id',
+          as: 'createdByUser'
+        }
+      },
+      {
+        $set: {
+          createdByUser: {
+            $arrayElemAt: [
+              "$createdByUser", 0
+            ]
+          }
+        }
+      }
+    ]).skip(skip).limit(take).toArray();
 
     return new PaginatedResultsPayload(total, results);
   }
