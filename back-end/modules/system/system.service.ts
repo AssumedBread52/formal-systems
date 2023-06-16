@@ -53,10 +53,37 @@ export class SystemService {
     });
   }
 
-  readByUrlPath(urlPath: string): Promise<SystemEntity | null> {
-    return this.systemRepository.findOneBy({
-      urlPath: encodeURIComponent(urlPath)
-    });
+  async readByUrlPath(urlPath: string): Promise<SystemEntity | null> {
+    const entities = await this.systemRepository.aggregateEntity([
+      {
+        $match: {
+          urlPath: encodeURIComponent(urlPath)
+        }
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'createdByUserId',
+          foreignField: '_id',
+          as: 'createdByUser'
+        }
+      },
+      {
+        $set: {
+          createdByUser: {
+            $arrayElemAt: [
+              "$createdByUser", 0
+            ]
+          }
+        }
+      }
+    ]).toArray();
+
+    if (0 === entities.length) {
+      return null;
+    } else {
+      return entities[0];
+    }
   }
 
   async readSystems(page: number, take: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
