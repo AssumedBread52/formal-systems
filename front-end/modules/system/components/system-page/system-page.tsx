@@ -6,10 +6,10 @@ import { SystemDetails } from './system-details/system-details';
 
 export const SystemPage = (props: ServerSideProps): ReactElement => {
   const { params } = props;
-  const { 'system-url-path': urlPath } = params;
+  const { 'system-id': id } = params;
 
   return (
-    <AntdCard title={decodeURIComponent(urlPath ?? '')}>
+    <AntdCard title={id}>
       <SystemDetails />
     </AntdCard>
   );
@@ -17,9 +17,9 @@ export const SystemPage = (props: ServerSideProps): ReactElement => {
 
 export const generateMetadata = (props: ServerSideProps): Metadata => {
   const { params } = props;
-  const { 'system-url-path': urlPath } = params;
+  const { 'system-id': id } = params;
 
   return {
-    title: decodeURIComponent(urlPath ?? '')
+    title: id
   };
 };

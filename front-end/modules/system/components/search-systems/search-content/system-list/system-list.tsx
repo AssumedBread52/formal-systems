@@ -20,11 +20,11 @@ export const SystemList = (props: SystemListProps): ReactElement => {
   return (
     <AntdRow gutter={[16, 16]}>
       {systems.map((system: System): ReactElement => {
-        const { id, title, urlPath, description, createdByUserId } = system;
+        const { id, title, description, createdByUserId } = system;
 
         return (
           <AntdCol key={id} span={24}>
-            <SystemItem title={title} urlPath={urlPath} description={description} createdByUserId={createdByUserId} />
+            <SystemItem id={id} title={title} description={description} createdByUserId={createdByUserId} />
           </AntdCol>
         );
       })}

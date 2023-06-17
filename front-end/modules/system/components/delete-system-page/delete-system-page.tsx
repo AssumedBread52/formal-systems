@@ -24,9 +24,9 @@ export const DeleteSystemPage = (): ReactElement => {
 
 export const generateMetadata = (props: ServerSideProps): Metadata => {
   const { params } = props;
-  const { 'system-url-path': urlPath } = params;
+  const { 'system-id': id } = params;
 
   return {
-    title: `Delete ${decodeURIComponent(urlPath ?? '')}`
+    title: `Delete ${id}`
   };
 };

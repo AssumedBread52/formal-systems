@@ -8,11 +8,11 @@ import { UserSignature } from '@/user/components/user-signature/user-signature';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
-export const SystemItem = (props: Omit<System, 'id'>): ReactElement => {
-  const { title, urlPath, description, createdByUserId } = props;
+export const SystemItem = (props: System): ReactElement => {
+  const { id, title, description, createdByUserId } = props;
 
   return (
-    <AntdCard actions={[<ProtectedContent userId={createdByUserId}><Link href={`/formal-system/${urlPath}/edit`}><AntdEditOutlined /></Link></ProtectedContent>, <ProtectedContent userId={createdByUserId}><Link href={`/formal-system/${urlPath}/delete`}><AntdDeleteOutlined /></Link></ProtectedContent>]} extra={<Link href={`/formal-system/${urlPath}`}>Explore</Link>} title={title} type='inner'>
+    <AntdCard actions={[<ProtectedContent userId={createdByUserId}><Link href={`/formal-system/${id}/edit`}><AntdEditOutlined /></Link></ProtectedContent>, <ProtectedContent userId={createdByUserId}><Link href={`/formal-system/${id}/delete`}><AntdDeleteOutlined /></Link></ProtectedContent>]} extra={<Link href={`/formal-system/${id}`}>Explore</Link>} title={title} type='inner'>
       {description}
       <AntdDivider />
       <UserSignature userId={createdByUserId} />

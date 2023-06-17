@@ -31,11 +31,9 @@ export const EditSystemPage = (): ReactElement => {
 
 export const generateMetadata = (props: ServerSideProps): Metadata => {
   const { params } = props;
-  const { 'system-url-path': urlPath } = params;
-
-  const title = decodeURIComponent(urlPath ?? '');
+  const { 'system-id': id } = params;
 
   return {
-    title: `Edit ${title}`
+    title: `Edit ${id}`
   };
 };

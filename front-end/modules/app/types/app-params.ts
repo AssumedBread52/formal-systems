@@ -1,3 +1,3 @@
 export type AppParams = {
-  'system-url-path'?: string;
+  'system-id'?: string;
 };

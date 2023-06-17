@@ -6,7 +6,7 @@ import { signUp } from '@/auth/end-points/sign-up';
 import { createSystem } from '@/system/end-points/create-system';
 import { deleteSystem } from '@/system/end-points/delete-system';
 import { editSystem } from '@/system/end-points/edit-system';
-import { getSystemByUrlPath } from '@/system/end-points/get-system-by-url-path';
+import { getSystemById } from '@/system/end-points/get-system-by-id';
 import { searchSystems } from '@/system/end-points/search-systems';
 import { editProfile } from '@/user/end-points/edit-profile';
 import { getSessionUser } from '@/user/end-points/get-session-user';
@@ -37,7 +37,7 @@ export const api = createApi({
     createSystem: ReturnType<typeof createSystem>;
     deleteSystem: ReturnType<typeof deleteSystem>;
     editSystem: ReturnType<typeof editSystem>;
-    getSystemByUrlPath: ReturnType<typeof getSystemByUrlPath>;
+    getSystemById: ReturnType<typeof getSystemById>;
     searchSystems: ReturnType<typeof searchSystems>;
 
     editProfile: ReturnType<typeof editProfile>;
@@ -54,7 +54,7 @@ export const api = createApi({
       createSystem: createSystem(builder),
       deleteSystem: deleteSystem(builder),
       editSystem: editSystem(builder),
-      getSystemByUrlPath: getSystemByUrlPath(builder),
+      getSystemById: getSystemById(builder),
       searchSystems: searchSystems(builder),
 
       editProfile: editProfile(builder),

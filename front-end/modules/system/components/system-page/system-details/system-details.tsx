@@ -2,16 +2,16 @@
 
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
-import { useGetSystemByUrlPath } from '@/system/hooks/use-get-system-by-url-path';
+import { useGetSystemById } from '@/system/hooks/use-get-system-by-id';
 import { UserSignature } from '@/user/components/user-signature/user-signature';
 import { useParams } from 'next/navigation';
 import { Fragment, ReactElement } from 'react';
 
 export const SystemDetails = (): ReactElement => {
   const params = useParams();
-  const { 'system-url-path': urlPath } = params;
+  const { 'system-id': id } = params;
 
-  const [system, loading] = useGetSystemByUrlPath(urlPath);
+  const [system, loading] = useGetSystemById(id);
 
   const { description, createdByUserId } = system ?? { description: '', createdByUserId: '' };
 
