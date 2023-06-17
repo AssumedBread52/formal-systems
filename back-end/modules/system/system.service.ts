@@ -55,7 +55,7 @@ export class SystemService {
     const entities = await this.systemRepository.aggregateEntity([
       {
         $match: {
-          id: new ObjectId(id)
+          _id: new ObjectId(id)
         }
       },
       {
