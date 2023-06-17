@@ -1,6 +1,5 @@
 import packageJson from '#/package.json';
 import '#/public/index.css';
-import { AppProvider } from '@/app/components/app-provider/app-provider';
 import { AntdCollapse } from '@/common/components/antd-collapse/antd-collapse';
 import { AntdLayoutContent } from '@/common/components/antd-layout-content/antd-layout-content';
 import { AntdLayoutFooter } from '@/common/components/antd-layout-footer/antd-layout-footer';
@@ -8,6 +7,7 @@ import { AntdLayoutHeader } from '@/common/components/antd-layout-header/antd-la
 import { AntdLayout } from '@/common/components/antd-layout/antd-layout';
 import { Metadata } from 'next';
 import { PropsWithChildren, ReactElement } from 'react';
+import { AppProvider } from './app-provider/app-provider';
 import { DependenciesBlock } from './dependencies-block/dependencies-block';
 import { HeaderMenu } from './header-menu/header-menu';
 
