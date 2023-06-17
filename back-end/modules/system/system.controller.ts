@@ -39,9 +39,9 @@ export class SystemController {
     return this.systemService.readSystems(page, count, keywords);
   }
 
-  @Get(':urlPath')
-  async getByUrlPath(@Param('urlPath') urlPath: string): Promise<SystemPayload> {
-    const system = await this.systemService.readByUrlPath(urlPath);
+  @Get(':id')
+  async getById(@Param('id') id: string): Promise<SystemPayload> {
+    const system = await this.systemService.readById(id, true);
 
     if (!system) {
       throw new NotFoundException('System not found.');

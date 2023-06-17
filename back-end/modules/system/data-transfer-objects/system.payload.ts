@@ -11,8 +11,6 @@ export class SystemPayload {
   @IsNotEmpty()
   title: string;
   @IsNotEmpty()
-  urlPath: string;
-  @IsNotEmpty()
   description: string;
   @IsNotEmpty()
   createdByUserId: ObjectId;
@@ -21,11 +19,10 @@ export class SystemPayload {
   createdByUser?: UserPayload;
 
   constructor(system: SystemEntity) {
-    const { _id, title, urlPath, description, createdByUserId, createdByUser } = system;
+    const { _id, title, description, createdByUserId, createdByUser } = system;
 
     this.id = _id;
     this.title = title;
-    this.urlPath = urlPath;
     this.description = description;
     this.createdByUserId = createdByUserId;
     if (createdByUser) {

@@ -9,8 +9,6 @@ export class SystemEntity {
   @Column()
   title: string = '';
   @Column()
-  urlPath: string = '';
-  @Column()
   description: string = '';
   @Column()
   createdByUserId: ObjectId = new ObjectId();

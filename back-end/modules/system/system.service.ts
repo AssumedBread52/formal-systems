@@ -13,9 +13,10 @@ export class SystemService {
   constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
   }
 
-  async checkForConflict(urlPath: string): Promise<void> {
+  async checkForConflict(title: string, userId: ObjectId): Promise<void> {
     const collision = await this.systemRepository.findOneBy({
-      urlPath
+      title,
+      createdByUserId: userId
     });
 
     if (collision) {
@@ -25,13 +26,11 @@ export class SystemService {
 
   async create(system: NewSystemPayload, sessionUserId: ObjectId): Promise<SystemEntity> {
     const { title, description } = system;
-    const urlPath = encodeURIComponent(title);
 
-    await this.checkForConflict(urlPath);
+    await this.checkForConflict(title, sessionUserId);
 
     const { identifiers } = await this.systemRepository.insert({
       title,
-      urlPath,
       description,
       createdByUserId: sessionUserId
     });
@@ -41,23 +40,22 @@ export class SystemService {
     return {
       _id,
       title,
-      urlPath,
       description,
       createdByUserId: sessionUserId
     };
   }
 
-  readById(id: string): Promise<SystemEntity | null> {
-    return this.systemRepository.findOneBy({
-      _id: new ObjectId(id)
-    });
-  }
+  async readById(id: string, extended?: boolean): Promise<SystemEntity | null> {
+    if (!extended) {
+      return this.systemRepository.findOneBy({
+        _id: new ObjectId(id)
+      });
+    }
 
-  async readByUrlPath(urlPath: string): Promise<SystemEntity | null> {
     const entities = await this.systemRepository.aggregateEntity([
       {
         $match: {
-          urlPath: encodeURIComponent(urlPath)
+          id: new ObjectId(id)
         }
       },
       {
@@ -125,17 +123,14 @@ export class SystemService {
   }
 
   async update(system: SystemEntity, editSystemPayload: EditSystemPayload): Promise<IdPayload> {
-    const { _id, urlPath } = system;
+    const { _id, title, createdByUserId } = system;
     const { newTitle, newDescription } = editSystemPayload;
 
-    const newUrlPath = encodeURIComponent(newTitle);
-
-    if (urlPath !== newUrlPath) {
-      await this.checkForConflict(newUrlPath);
+    if (title !== newTitle) {
+      await this.checkForConflict(newTitle, createdByUserId);
     }
 
     system.title = newTitle;
-    system.urlPath = newUrlPath;
     system.description = newDescription;
 
     const result = await this.systemRepository.update(_id, system);
