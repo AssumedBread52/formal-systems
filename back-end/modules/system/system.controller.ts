@@ -41,7 +41,7 @@ export class SystemController {
 
   @Get(':id')
   async getById(@Param('id') id: string): Promise<SystemPayload> {
-    const system = await this.systemService.readById(id, true);
+    const system = await this.systemService.readById(id);
 
     if (!system) {
       throw new NotFoundException('System not found.');

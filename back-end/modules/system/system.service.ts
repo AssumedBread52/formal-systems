@@ -45,43 +45,10 @@ export class SystemService {
     };
   }
 
-  async readById(id: string, extended?: boolean): Promise<SystemEntity | null> {
-    if (!extended) {
-      return this.systemRepository.findOneBy({
-        _id: new ObjectId(id)
-      });
-    }
-
-    const entities = await this.systemRepository.aggregateEntity([
-      {
-        $match: {
-          _id: new ObjectId(id)
-        }
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'createdByUserId',
-          foreignField: '_id',
-          as: 'createdByUser'
-        }
-      },
-      {
-        $set: {
-          createdByUser: {
-            $arrayElemAt: [
-              "$createdByUser", 0
-            ]
-          }
-        }
-      }
-    ]).toArray();
-
-    if (0 === entities.length) {
-      return null;
-    } else {
-      return entities[0];
-    }
+  async readById(id: string): Promise<SystemEntity | null> {
+    return this.systemRepository.findOneBy({
+      _id: new ObjectId(id)
+    });
   }
 
   async readSystems(page: number, take: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
@@ -95,29 +62,11 @@ export class SystemService {
       };
     }
 
-    const total = await this.systemRepository.countBy(where);
-    const results = await this.systemRepository.aggregateEntity([
-      {
-        $match: where,
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'createdByUserId',
-          foreignField: '_id',
-          as: 'createdByUser'
-        }
-      },
-      {
-        $set: {
-          createdByUser: {
-            $arrayElemAt: [
-              "$createdByUser", 0
-            ]
-          }
-        }
-      }
-    ]).skip(skip).limit(take).toArray();
+    const [results, total] = await this.systemRepository.findAndCount({
+      where,
+      skip,
+      take
+    });
 
     return new PaginatedResultsPayload(total, results);
   }
