@@ -12,6 +12,6 @@ export const SearchError = (props: ErrorProps): ReactElement => {
   ];
 
   return (
-    <Result extra={extra} status='500' subTitle='Failed to find formal systems.' />
+    <Result extra={extra} status='500' subTitle='Failed to find formal systems.' title='Search Error' />
   );
 };
