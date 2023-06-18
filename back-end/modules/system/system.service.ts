@@ -13,14 +13,14 @@ export class SystemService {
   constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
   }
 
-  async checkForConflict(title: string, userId: ObjectId): Promise<void> {
+  async checkForConflict(title: string, createdByUserId: ObjectId): Promise<void> {
     const collision = await this.systemRepository.findOneBy({
       title,
-      createdByUserId: userId
+      createdByUserId
     });
 
     if (collision) {
-      throw new ConflictException('Systems must have a unique URL path.');
+      throw new ConflictException('Systems created by the same user must have a unique title.');
     }
   }
 
