@@ -8,9 +8,9 @@ import { usePathname } from 'next/navigation';
 import { ReactElement } from 'react';
 
 export const HeaderMenu = (): ReactElement => {
-  const pathname = usePathname();
-
   const isAuthorized = useIsAuthorized();
+
+  const pathname = usePathname();
 
   const items = [
     { key: '/', label: <Link href='/'>Formal Systems</Link>, title: 'Search Formal Systems' },
