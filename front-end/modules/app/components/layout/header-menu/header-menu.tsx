@@ -14,7 +14,7 @@ export const HeaderMenu = (): ReactElement => {
 
   const items = [
     { key: '/', label: <Link href='/'>Formal Systems</Link>, title: 'Search Formal Systems' },
-    { key: '/info', label: <Link href='/info'>Info</Link>, title: 'What are Formal Systems' },
+    { key: '/info', label: <Link href='/info'>Info</Link>, title: 'What are Formal Systems' }
   ] as ItemType<MenuItemType>[];
 
   if (isAuthorized) {
