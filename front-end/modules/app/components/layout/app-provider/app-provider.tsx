@@ -11,9 +11,15 @@ export const AppProvider = (props: PropsWithChildren): ReactElement => {
   useEffect((): void => {
     const token = localStorage.getItem('token');
 
-    if (token) {
-      store.dispatch(api.endpoints.refreshToken.initiate());
+    if (!token) {
+      return;
     }
+
+    const { endpoints } = api;
+
+    const { refreshToken } = endpoints;
+
+    store.dispatch(refreshToken.initiate());
   }, []);
 
   return (
