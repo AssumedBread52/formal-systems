@@ -8,10 +8,10 @@ import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
 
 const { useEditProfileMutation } = api;
 
-export const useEditProfile = (): [MutationTrigger<MutationDefinition<EditProfilePayload, BaseQueryFn, TagTypes, IdPayload, 'api'>>, boolean, string] => {
+export const useEditProfile = (): [MutationTrigger<MutationDefinition<EditProfilePayload, BaseQueryFn, TagTypes, IdPayload, 'api'>>, boolean, boolean] => {
   const [editProfile, { isError, isLoading, isSuccess }] = useEditProfileMutation();
 
   useRouteBack(isSuccess);
 
-  return [editProfile, isLoading, isError ? 'Failed to edit profile.' : ''];
+  return [editProfile, isLoading, isError];
 };

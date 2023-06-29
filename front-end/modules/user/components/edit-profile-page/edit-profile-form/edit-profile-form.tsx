@@ -17,7 +17,7 @@ export const EditProfileForm = (props: PropsWithChildren): ReactElement => {
 
   const [user, loading] = useSessionUser();
 
-  const [finishHandler, spinning, description] = useEditProfile();
+  const [editProfile, isEditingProfile, hasFailed] = useEditProfile();
 
   let initialValues = {};
   if (user) {
@@ -32,12 +32,12 @@ export const EditProfileForm = (props: PropsWithChildren): ReactElement => {
 
   return (
     <AntdCard headStyle={{ textAlign: 'center' }} loading={loading} style={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '180px', width: '50vw' }} title='Edit Profile'>
-      <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={spinning}>
-        <TypedAntdForm initialValues={initialValues} labelCol={{ sm: { span: 0 }, md: { span: 8 } }} wrapperCol={{ sm: { span: 24 }, md: { span: 16 } }} onFinish={finishHandler}>
+      <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={isEditingProfile}>
+        <TypedAntdForm initialValues={initialValues} labelCol={{ sm: { span: 0 }, md: { span: 8 } }} wrapperCol={{ sm: { span: 24 }, md: { span: 16 } }} onFinish={editProfile}>
           {children}
         </TypedAntdForm>
-        {description && (
-          <AntdAlert closable description={description} message='Error' showIcon type='error' />
+        {hasFailed && (
+          <AntdAlert closable description='Failed to edit profile.' message='Error' showIcon type='error' />
         )}
       </AntdSpin>
     </AntdCard>
