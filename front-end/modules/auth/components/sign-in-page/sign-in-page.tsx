@@ -11,11 +11,11 @@ import { SignInForm } from './sign-in-form/sign-in-form';
 
 export const SignInPage = (): ReactElement => {
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '180px', width: '50vw' }} title='Sign In'>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Sign In'>
       <SignInForm>
         <InputEmail name='email' />
         <InputPassword name='password' />
-        <AntdFormItem wrapperCol={{ sm: { span: 24 }, md: { offset: 8 } }}>
+        <AntdFormItem wrapperCol={{ xs: { span: 24 }, sm: { offset: 8 } }}>
           <AntdSpace wrap>
             <AntdButton htmlType='submit' type='primary'>
               Submit
