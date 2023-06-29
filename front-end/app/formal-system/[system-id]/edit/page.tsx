@@ -7,7 +7,9 @@ const Page = async (props: ServerSideProps): Promise<never> => {
 
   const { 'system-id': id } = params;
 
-  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/system/${id}`);
+  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/system/${id}`, {
+    cache: 'no-store'
+  });
 
   const system = await response.json() as System;
 
