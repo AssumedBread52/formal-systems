@@ -17,7 +17,7 @@ export const EditProfilePage = (): ReactElement => {
       <InputLastName name='newLastName' />
       <InputEmail name='newEmail' />
       <InputPassword name='newPassword' optional />
-      <AntdFormItem wrapperCol={{ sm: { span: 24 }, md: { offset: 8 } }}>
+      <AntdFormItem wrapperCol={{ xs: { span: 24 }, sm: { offset: 8 } }}>
         <AntdSpace wrap>
           <AntdButton htmlType='submit' type='primary'>
             Submit

@@ -31,9 +31,9 @@ export const EditProfileForm = (props: PropsWithChildren): ReactElement => {
   }
 
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} loading={loading} style={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '180px', width: '50vw' }} title='Edit Profile'>
+    <AntdCard headStyle={{ textAlign: 'center' }} loading={loading} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Edit Profile'>
       <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={isEditingProfile}>
-        <TypedAntdForm initialValues={initialValues} labelCol={{ sm: { span: 0 }, md: { span: 8 } }} wrapperCol={{ sm: { span: 24 }, md: { span: 16 } }} onFinish={editProfile}>
+        <TypedAntdForm initialValues={initialValues} labelCol={{ xs: { span: 0 }, sm: { span: 8 } }} wrapperCol={{ xs: { span: 24 }, sm: { span: 16 } }} onFinish={editProfile}>
           {children}
         </TypedAntdForm>
         {hasFailed && (
