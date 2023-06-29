@@ -13,15 +13,15 @@ const TypedAntdForm = AntdForm<NewSystemPayload>;
 export const CreateSystemForm = (props: PropsWithChildren): ReactElement => {
   const { children } = props;
 
-  const [finishHandler, spinning, description] = useCreateSystem();
+  const [createSystem, isCreatingSystem, hasFailed] = useCreateSystem();
 
   return (
-    <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={spinning}>
-      <TypedAntdForm labelCol={{ sm: { span: 0 }, md: { span: 8 } }} wrapperCol={{ sm: { span: 24 }, md: { span: 16 } }} onFinish={finishHandler}>
+    <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={isCreatingSystem}>
+      <TypedAntdForm labelCol={{ sm: { span: 0 }, md: { span: 8 } }} wrapperCol={{ sm: { span: 24 }, md: { span: 16 } }} onFinish={createSystem}>
         {children}
       </TypedAntdForm>
-      {description && (
-        <AntdAlert closable description={description} message='Error' showIcon type='error' />
+      {hasFailed && (
+        <AntdAlert closable description='Failed to create formal system.' message='Error' showIcon type='error' />
       )}
     </AntdSpin>
   );

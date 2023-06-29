@@ -7,10 +7,10 @@ import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
 
 const { useCreateSystemMutation } = api;
 
-export const useCreateSystem = (): [MutationTrigger<MutationDefinition<NewSystemPayload, BaseQueryFn, TagTypes, void, 'api'>>, boolean, string] => {
+export const useCreateSystem = (): [MutationTrigger<MutationDefinition<NewSystemPayload, BaseQueryFn, TagTypes, void, 'api'>>, boolean, boolean] => {
   const [createSystem, { isError, isLoading, isSuccess }] = useCreateSystemMutation();
 
   useRouteBack(isSuccess);
 
-  return [createSystem, isLoading, isError ? 'Failed to create system.' : ''];
+  return [createSystem, isLoading, isError];
 };
