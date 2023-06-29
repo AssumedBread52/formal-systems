@@ -38,9 +38,7 @@ export const generateMetadata = async (props: ServerSideProps): Promise<Metadata
 
   const { 'system-title': systemTitle = '' } = params;
 
-  const title = decodeURIComponent(systemTitle);
-
   return {
-    title: `Delete ${title}`
+    title: `Delete ${decodeURIComponent(systemTitle)}`
   };
 };

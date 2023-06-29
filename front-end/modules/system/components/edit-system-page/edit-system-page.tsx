@@ -52,9 +52,7 @@ export const generateMetadata = async (props: ServerSideProps): Promise<Metadata
 
   const { 'system-title': systemTitle = '' } = params;
 
-  const title = decodeURIComponent(systemTitle);
-
   return {
-    title: `Edit ${title}`
+    title: `Edit ${decodeURIComponent(systemTitle)}`
   };
 };
