@@ -6,10 +6,10 @@ import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
 
 const { useSignOutMutation } = api;
 
-export const useSignOut = (): [MutationTrigger<MutationDefinition<void, BaseQueryFn, TagTypes, void, 'api'>>, boolean, string] => {
+export const useSignOut = (): [MutationTrigger<MutationDefinition<void, BaseQueryFn, TagTypes, void, 'api'>>, boolean, boolean] => {
   const [signOut, { isError, isLoading, isSuccess }] = useSignOutMutation();
 
   useRouteBack(isSuccess);
 
-  return [signOut, isLoading, isError ? 'Failed to sign out.' : ''];
+  return [signOut, isLoading, isError];
 };

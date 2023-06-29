@@ -12,15 +12,15 @@ const TypedAntdForm = AntdForm<void>;
 export const SignOutForm = (props: PropsWithChildren): ReactElement => {
   const { children } = props;
 
-  const [finishHandler, spinning, description] = useSignOut();
+  const [signOut, isSigningOut, hasFailed] = useSignOut();
 
   return (
-    <AntdSpin indicator={<AntdLoadingOutlined spin />} size='large' spinning={spinning}>
-      <TypedAntdForm onFinish={finishHandler}>
+    <AntdSpin indicator={<AntdLoadingOutlined spin />} size='large' spinning={isSigningOut}>
+      <TypedAntdForm onFinish={signOut}>
         {children}
       </TypedAntdForm>
-      {description && (
-        <AntdAlert closable description={description} message='Error' showIcon type='error' />
+      {hasFailed && (
+        <AntdAlert closable description='Failed to sign out.' message='Error' showIcon type='error' />
       )}
     </AntdSpin>
   );
