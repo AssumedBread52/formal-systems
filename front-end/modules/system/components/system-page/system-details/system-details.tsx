@@ -1,22 +1,30 @@
-'use client';
-
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
-import { useGetSystemById } from '@/system/hooks/use-get-system-by-id';
-import { UserSignature } from '@/user/components/user-signature/user-signature';
-import { useParams } from 'next/navigation';
-import { Fragment, ReactElement } from 'react';
+import { IdPayload } from '@/common/types/id-payload';
+import { System } from '@/system/types/system';
+import { UserSignatureProps } from '@/user/types/user-signature-props';
+import dynamic from 'next/dynamic';
+import { ComponentType, Fragment, ReactElement } from 'react';
 
-export const SystemDetails = (): ReactElement => {
-  const params = useParams();
-  const { 'system-id': id } = params;
+const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps>> => {
+  const { UserSignature } = await import('@/user/components/user-signature/user-signature');
 
-  const [system, loading] = useGetSystemById(id);
+  return UserSignature;
+});
 
-  const { description, createdByUserId } = system ?? { description: '', createdByUserId: '' };
+export const SystemDetails = async (props: IdPayload): Promise<ReactElement> => {
+  const { id } = props;
+
+  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/system/${id}`, {
+    cache: 'no-store'
+  });
+
+  const system = await response.json() as System;
+
+  const { description, createdByUserId } = system;
 
   return (
-    <AntdCard loading={loading} type='inner'>
+    <AntdCard type='inner'>
       {system && (
         <Fragment>
           {description}
