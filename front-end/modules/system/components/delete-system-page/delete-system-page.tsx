@@ -20,11 +20,11 @@ export const DeleteSystemPage = async (props: ServerSideProps): Promise<ReactEle
 
   const system = await response.json() as System;
 
-  const { title } = system;
+  const { id, title } = system;
 
   return (
     <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${title}`}>
-      <DeleteSystemForm>
+      <DeleteSystemForm id={id}>
         <AntdFormItem style={{ textAlign: 'center' }}>
           <AntdSpace direction='vertical'>
             <AntdButton htmlType='submit' type='primary'>
