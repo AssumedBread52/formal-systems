@@ -41,9 +41,11 @@ export const DeleteSystemPage = async (props: ServerSideProps): Promise<ReactEle
 export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
   const { params } = props;
 
-  const { 'system-id': id } = params;
+  const { 'system-id': systemId } = params;
 
-  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/system/${id}`);
+  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/system/${systemId}`, {
+    cache: 'no-store'
+  });
 
   const system = await response.json() as System;
 
