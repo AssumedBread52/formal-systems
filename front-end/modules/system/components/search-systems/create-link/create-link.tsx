@@ -2,7 +2,7 @@ import { ProtectedContent } from '@/auth/components/protected-content/protected-
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
-export const CreateButton = (): ReactElement => {
+export const CreateLink = (): ReactElement => {
   return (
     <ProtectedContent>
       <Link href='/formal-system/create'>

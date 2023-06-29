@@ -1,11 +1,11 @@
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { ReactElement } from 'react';
-import { CreateButton } from './create-button/create-button';
+import { CreateLink } from './create-link/create-link';
 import { SearchContent } from './search-content/search-content';
 
 export const SearchSystems = (): ReactElement => {
   return (
-    <AntdCard extra={<CreateButton />} title='Formal Systems'>
+    <AntdCard extra={<CreateLink />} title='Formal Systems'>
       <SearchContent />
     </AntdCard>
   );
