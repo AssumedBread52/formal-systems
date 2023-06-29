@@ -7,10 +7,10 @@ import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
 
 const { useDeleteSystemMutation } = api;
 
-export const useDeleteSystem = (): [MutationTrigger<MutationDefinition<string, BaseQueryFn, TagTypes, IdPayload, 'api'>>, boolean, string] => {
+export const useDeleteSystem = (): [MutationTrigger<MutationDefinition<IdPayload, BaseQueryFn, TagTypes, IdPayload, 'api'>>, boolean, boolean] => {
   const [deleteSystem, { isError, isLoading, isSuccess }] = useDeleteSystemMutation();
 
   useRouteBack(isSuccess);
 
-  return [deleteSystem, isLoading, isError ? 'Failed to delete formal system.' : ''];
+  return [deleteSystem, isLoading, isError];
 };

@@ -4,6 +4,7 @@ import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item';
 import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { CancelButton } from '@/common/components/cancel-button/cancel-button';
+import { InputHiddenId } from '@/common/components/input-hidden-id/input-hidden-id';
 import { System } from '@/system/types/system';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
@@ -25,6 +26,7 @@ export const DeleteSystemPage = async (props: ServerSideProps): Promise<ReactEle
   return (
     <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${title}`}>
       <DeleteSystemForm id={id}>
+        <InputHiddenId />
         <AntdFormItem style={{ textAlign: 'center' }}>
           <AntdSpace direction='vertical'>
             <AntdButton htmlType='submit' type='primary'>

@@ -8,20 +8,20 @@ import { IdPayload } from '@/common/types/id-payload';
 import { useDeleteSystem } from '@/system/hooks/use-delete-system';
 import { PropsWithChildren, ReactElement } from 'react';
 
-const TypedAntdForm = AntdForm<void>;
+const TypedAntdForm = AntdForm<IdPayload>;
 
 export const DeleteSystemForm = (props: PropsWithChildren<IdPayload>): ReactElement => {
-  const { children, id } = props;
+  const { children } = props;
 
-  const [finishHandler, spinning, description] = useDeleteSystem();
+  const [deleteSystem, isDeletingSystem, hasFailed] = useDeleteSystem();
 
   return (
-    <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={spinning}>
-      <TypedAntdForm onFinish={() => finishHandler(id)}>
+    <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={isDeletingSystem}>
+      <TypedAntdForm initialValues={props} onFinish={deleteSystem}>
         {children}
       </TypedAntdForm>
-      {description && (
-        <AntdAlert closable description={description} message='Error' showIcon type='error' />
+      {hasFailed && (
+        <AntdAlert closable description='Failed to delete formal system.' message='Error' showIcon type='error' />
       )}
     </AntdSpin>
   );
