@@ -8,10 +8,10 @@ import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
 
 const { useEditSystemMutation } = api;
 
-export const useEditSystem = (): [MutationTrigger<MutationDefinition<EditSystemPayload, BaseQueryFn, TagTypes, IdPayload, 'api'>>, boolean, string] => {
+export const useEditSystem = (): [MutationTrigger<MutationDefinition<EditSystemPayload, BaseQueryFn, TagTypes, IdPayload, 'api'>>, boolean, boolean] => {
   const [editSystem, { isError, isLoading, isSuccess }] = useEditSystemMutation();
 
   useRouteBack(isSuccess);
 
-  return [editSystem, isLoading, isError ? 'Failed to edit formal system.' : ''];
+  return [editSystem, isLoading, isError];
 };

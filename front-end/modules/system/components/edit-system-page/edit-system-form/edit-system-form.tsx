@@ -21,7 +21,7 @@ export const EditSystemForm = (props: PropsWithChildren): ReactElement => {
 
   const [system, loading] = useGetSystemById(id);
 
-  const [finishHandler, spinning, description] = useEditSystem();
+  const [editSystem, isEditingSystem, hasFailed] = useEditSystem();
 
   let initialValues = {};
   if (system) {
@@ -35,12 +35,12 @@ export const EditSystemForm = (props: PropsWithChildren): ReactElement => {
 
   return (
     <AntdCard headStyle={{ textAlign: 'center' }} loading={loading} style={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '180px', width: '50vw' }} title={`Edit ${id}`}>
-      <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={spinning}>
-        <TypedAntdForm initialValues={initialValues} labelCol={{ sm: { span: 0 }, md: { span: 8 } }} wrapperCol={{ sm: { span: 24 }, md: { span: 16 } }} onFinish={finishHandler}>
+      <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={isEditingSystem}>
+        <TypedAntdForm initialValues={initialValues} labelCol={{ sm: { span: 0 }, md: { span: 8 } }} wrapperCol={{ sm: { span: 24 }, md: { span: 16 } }} onFinish={editSystem}>
           {children}
         </TypedAntdForm>
-        {description && (
-          <AntdAlert closable description={description} message='Error' showIcon type='error' />
+        {hasFailed && (
+          <AntdAlert closable description='Failed to edit formal system.' message='Error' showIcon type='error' />
         )}
       </AntdSpin>
     </AntdCard>
