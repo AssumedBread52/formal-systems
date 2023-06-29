@@ -6,7 +6,7 @@ import { System } from '@/system/types/system';
 import { stringify } from 'querystring';
 import { ReactElement } from 'react';
 import { CreateLink } from './create-link/create-link';
-import { SearchContent } from './search-content/search-content';
+import { SystemList } from './system-list/system-list';
 
 export const SearchSystems = async (props: ServerSideProps): Promise<ReactElement> => {
   const { searchParams } = props;
@@ -30,7 +30,7 @@ export const SearchSystems = async (props: ServerSideProps): Promise<ReactElemen
   return (
     <AntdCard extra={<CreateLink />} title='Formal Systems'>
       <PaginationSearchControls resultType='Formal Systems' total={total}>
-        <SearchContent results={results} total={total} />
+        <SystemList systems={results} />
       </PaginationSearchControls>
     </AntdCard>
   );
