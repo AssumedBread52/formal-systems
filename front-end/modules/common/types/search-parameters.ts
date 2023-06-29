@@ -1,5 +1,5 @@
 export type SearchParameters = {
   count: number;
-  keywords?: string | string[];
+  keywords?: string[];
   page: number;
 };
