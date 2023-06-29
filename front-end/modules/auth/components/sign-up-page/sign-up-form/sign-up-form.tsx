@@ -13,15 +13,15 @@ const TypedAntdForm = AntdForm<SignUpPayload>;
 export const SignUpForm = (props: PropsWithChildren): ReactElement => {
   const { children } = props;
 
-  const [finishHandler, spinning, description] = useSignUp();
+  const [signUp, isSigningUp, hasFailed] = useSignUp();
 
   return (
-    <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={spinning}>
-      <TypedAntdForm labelCol={{ xs: { span: 0 }, sm: { span: 8 } }} wrapperCol={{ xs: { span: 24 }, sm: { span: 16 } }} onFinish={finishHandler}>
+    <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={isSigningUp}>
+      <TypedAntdForm labelCol={{ xs: { span: 0 }, sm: { span: 8 } }} wrapperCol={{ xs: { span: 24 }, sm: { span: 16 } }} onFinish={signUp}>
         {children}
       </TypedAntdForm>
-      {description && (
-        <AntdAlert closable description={description} message='Error' showIcon type='error' />
+      {hasFailed && (
+        <AntdAlert closable description='Failed to sign up.' message='Error' showIcon type='error' />
       )}
     </AntdSpin>
   );

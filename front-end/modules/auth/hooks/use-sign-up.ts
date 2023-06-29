@@ -8,10 +8,10 @@ import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
 
 const { useSignUpMutation } = api;
 
-export const useSignUp = (): [MutationTrigger<MutationDefinition<SignUpPayload, BaseQueryFn, TagTypes, TokenPayload, 'api'>>, boolean, string] => {
+export const useSignUp = (): [MutationTrigger<MutationDefinition<SignUpPayload, BaseQueryFn, TagTypes, TokenPayload, 'api'>>, boolean, boolean] => {
   const [signUp, { isError, isLoading, isSuccess }] = useSignUpMutation();
 
   useRouteBack(isSuccess);
 
-  return [signUp, isLoading, isError ? 'Failed to sign up.' : ''];
+  return [signUp, isLoading, isError];
 };
