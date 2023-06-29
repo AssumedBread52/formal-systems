@@ -6,16 +6,19 @@ import { AntdResult } from '@/common/components/antd-result/antd-result';
 import { AntdRow } from '@/common/components/antd-row/antd-row';
 import { InputPagination } from '@/common/components/input-pagination/input-pagination';
 import { InputSearch } from '@/common/components/input-search/input-search';
+import { SearchResults } from '@/common/types/search-results';
 import { useSearchSystems } from '@/system/hooks/use-search-systems';
+import { System } from '@/system/types/system';
 import { useRouter } from 'next/navigation';
 import { LoadingResults } from './loading-results/loading-results';
 import { SystemList } from './system-list/system-list';
 
-export const SearchContent = () => {
-  const { back } = useRouter();
-  const [searchResults, loading] = useSearchSystems();
+export const SearchContent = (props: SearchResults<System>) => {
+  const { results, total } = props;
 
-  const { results, total } = searchResults ?? { results: [], total: 0 };
+  const { back } = useRouter();
+
+  const [searchResults, loading] = useSearchSystems();
 
   return (
     <AntdRow gutter={[0, 16]}>
