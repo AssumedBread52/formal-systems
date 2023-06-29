@@ -6,7 +6,7 @@ export const CreateLink = (): ReactElement => {
   return (
     <ProtectedContent>
       <Link href='/formal-system/create'>
-        Create
+        Create Formal System
       </Link>
     </ProtectedContent>
   );
