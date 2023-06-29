@@ -26,7 +26,7 @@ export const EditSystemPage = async (props: ServerSideProps): Promise<ReactEleme
   const { id, title, description } = system;
 
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '600px' }} title={`Edit ${title}`}>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Edit ${title}`}>
       <EditSystemForm id={id} newTitle={title} newDescription={description}>
         <InputHiddenId />
         <InputTitle name='newTitle' />
@@ -55,6 +55,6 @@ export const generateMetadata = async (props: ServerSideProps): Promise<Metadata
   const title = decodeURIComponent(systemTitle);
 
   return {
-    title: `Delete ${title}`
+    title: `Edit ${title}`
   };
 };
