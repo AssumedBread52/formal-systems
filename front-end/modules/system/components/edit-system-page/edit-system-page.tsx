@@ -1,25 +1,34 @@
 import { ServerSideProps } from '@/app/types/server-side-props';
 import { AntdButton } from '@/common/components/antd-button/antd-button';
+import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item';
 import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { CancelButton } from '@/common/components/cancel-button/cancel-button';
 import { InputDescription } from '@/common/components/input-description/input-description';
+import { InputHiddenId } from '@/common/components/input-hidden-id/input-hidden-id';
 import { InputTitle } from '@/common/components/input-title/input-title';
+import { System } from '@/system/types/system';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { EditSystemForm } from './edit-system-form/edit-system-form';
-import { AntdCard } from '@/common/components/antd-card/antd-card';
 
-export const EditSystemPage = (props: ServerSideProps): ReactElement => {
+export const EditSystemPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params } = props;
 
-  const { 'system-title': systemTitle = '' } = params;
+  const { 'system-id': systemId } = params;
 
-  const title = decodeURIComponent(systemTitle);
+  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/system/${systemId}`, {
+    cache: 'no-store'
+  });
+
+  const system = await response.json() as System;
+
+  const { id, title, description } = system;
 
   return (
     <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '180px', width: '50vw' }} title={`Edit ${title}`}>
-      <EditSystemForm>
+      <EditSystemForm id={id} newTitle={title} newDescription={description}>
+        <InputHiddenId />
         <InputTitle name='newTitle' />
         <InputDescription name='newDescription' />
         <AntdFormItem wrapperCol={{ sm: { span: 24 }, md: { offset: 8 } }}>
