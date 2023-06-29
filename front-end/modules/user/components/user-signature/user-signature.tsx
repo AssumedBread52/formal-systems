@@ -1,29 +1,21 @@
-'use client';
-
 import { AntdCardMeta } from '@/common/components/antd-card-meta/antd-card-meta';
-import { AntdSkeleton } from '@/common/components/antd-skeleton/antd-skeleton';
-import { AntdTypographyText } from '@/common/components/antd-typography-text/antd-typography-text';
-import { useGetUserById } from '@/user/hooks/use-get-user-by-id';
+import { User } from '@/user/types/user';
 import { UserSignatureProps } from '@/user/types/user-signature-props';
 import { ReactElement } from 'react';
+import { Description } from './description/description';
 
-export const UserSignature = (props: UserSignatureProps): ReactElement => {
+export const UserSignature = async (props: UserSignatureProps): Promise<ReactElement> => {
   const { userId } = props;
 
-  const [user, loading] = useGetUserById(userId);
+  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/user/${userId}`, {
+    cache: 'no-store'
+  });
 
-  let title = 'Error';
-  let description = 'Failed to load user data.';
-  if (user) {
-    const { firstName, lastName } = user;
+  const user = await response.json() as User;
 
-    title = 'Created By';
-    description = `${firstName} ${lastName}`;
-  }
+  const { firstName, lastName } = user;
 
   return (
-    <AntdSkeleton active loading={loading}>
-      <AntdCardMeta title={title} description={<AntdTypographyText italic>{description}</AntdTypographyText>} />
-    </AntdSkeleton>
+    <AntdCardMeta title='Created By' description={<Description firstName={firstName} lastName={lastName} />} />
   );
 };
