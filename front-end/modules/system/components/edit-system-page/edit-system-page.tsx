@@ -26,12 +26,12 @@ export const EditSystemPage = async (props: ServerSideProps): Promise<ReactEleme
   const { id, title, description } = system;
 
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '180px', width: '50vw' }} title={`Edit ${title}`}>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '600px' }} title={`Edit ${title}`}>
       <EditSystemForm id={id} newTitle={title} newDescription={description}>
         <InputHiddenId />
         <InputTitle name='newTitle' />
         <InputDescription name='newDescription' />
-        <AntdFormItem wrapperCol={{ sm: { span: 24 }, md: { offset: 8 } }}>
+        <AntdFormItem wrapperCol={{ xs: { span: 24 }, sm: { offset: 8 } }}>
           <AntdSpace wrap>
             <AntdButton htmlType='submit' type='primary'>
               Submit

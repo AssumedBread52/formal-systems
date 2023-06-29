@@ -17,7 +17,7 @@ export const EditSystemForm = (props: PropsWithChildren<EditSystemPayload>): Rea
 
   return (
     <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={isEditingSystem}>
-      <TypedAntdForm initialValues={props} labelCol={{ sm: { span: 0 }, md: { span: 8 } }} wrapperCol={{ sm: { span: 24 }, md: { span: 16 } }} onFinish={editSystem}>
+      <TypedAntdForm initialValues={props} labelCol={{ xs: { span: 0 }, sm: { span: 8 } }} wrapperCol={{ xs: { span: 24 }, sm: { span: 16 } }} onFinish={editSystem}>
         {children}
       </TypedAntdForm>
       {hasFailed && (
