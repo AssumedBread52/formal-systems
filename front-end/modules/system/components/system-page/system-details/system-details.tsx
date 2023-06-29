@@ -4,7 +4,7 @@ import { IdPayload } from '@/common/types/id-payload';
 import { System } from '@/system/types/system';
 import { UserSignatureProps } from '@/user/types/user-signature-props';
 import dynamic from 'next/dynamic';
-import { ComponentType, Fragment, ReactElement } from 'react';
+import { ComponentType, ReactElement } from 'react';
 
 const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps>> => {
   const { UserSignature } = await import('@/user/components/user-signature/user-signature');
@@ -25,13 +25,9 @@ export const SystemDetails = async (props: IdPayload): Promise<ReactElement> => 
 
   return (
     <AntdCard type='inner'>
-      {system && (
-        <Fragment>
-          {description}
-          <AntdDivider />
-          <UserSignature userId={createdByUserId} />
-        </Fragment>
-      )}
+      {description}
+      <AntdDivider />
+      <UserSignature userId={createdByUserId} />
     </AntdCard>
   );
 };
