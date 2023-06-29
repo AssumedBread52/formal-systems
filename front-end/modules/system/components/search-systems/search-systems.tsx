@@ -1,5 +1,6 @@
 import { ServerSideProps } from '@/app/types/server-side-props';
 import { AntdCard } from '@/common/components/antd-card/antd-card';
+import { PaginationSearchControls } from '@/common/components/pagination-search-controls/pagination-search-controls';
 import { SearchResults } from '@/common/types/search-results';
 import { System } from '@/system/types/system';
 import { stringify } from 'querystring';
@@ -28,7 +29,9 @@ export const SearchSystems = async (props: ServerSideProps): Promise<ReactElemen
 
   return (
     <AntdCard extra={<CreateLink />} title='Formal Systems'>
-      <SearchContent results={results} total={total} />
+      <PaginationSearchControls resultType='Formal Systems' total={total}>
+        <SearchContent results={results} total={total} />
+      </PaginationSearchControls>
     </AntdCard>
   );
 };
