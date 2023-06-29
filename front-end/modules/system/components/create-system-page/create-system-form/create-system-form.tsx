@@ -17,7 +17,7 @@ export const CreateSystemForm = (props: PropsWithChildren): ReactElement => {
 
   return (
     <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={isCreatingSystem}>
-      <TypedAntdForm labelCol={{ sm: { span: 0 }, md: { span: 8 } }} wrapperCol={{ sm: { span: 24 }, md: { span: 16 } }} onFinish={createSystem}>
+      <TypedAntdForm labelCol={{ xs: { span: 0 }, sm: { span: 8 } }} wrapperCol={{ xs: { span: 24 }, sm: { span: 16 } }} onFinish={createSystem}>
         {children}
       </TypedAntdForm>
       {hasFailed && (

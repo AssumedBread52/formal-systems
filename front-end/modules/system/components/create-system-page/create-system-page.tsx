@@ -11,11 +11,11 @@ import { CreateSystemForm } from './create-system-form/create-system-form';
 
 export const CreateSystemPage = (): ReactElement => {
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '180px', width: '50vw' }} title='Create Formal System'>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Create Formal System'>
       <CreateSystemForm>
         <InputTitle name='title' />
         <InputDescription name='description' />
-        <AntdFormItem wrapperCol={{ sm: { span: 24 }, md: { offset: 8 } }}>
+        <AntdFormItem wrapperCol={{ xs: { span: 24 }, sm: { offset: 8 } }}>
           <AntdSpace wrap>
             <AntdButton htmlType='submit' type='primary'>
               Submit
