@@ -5,7 +5,6 @@ import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item'
 import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { CancelButton } from '@/common/components/cancel-button/cancel-button';
 import { InputHiddenId } from '@/common/components/input-hidden-id/input-hidden-id';
-import { System } from '@/system/types/system';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { DeleteSystemForm } from './delete-system-form/delete-system-form';
@@ -13,19 +12,13 @@ import { DeleteSystemForm } from './delete-system-form/delete-system-form';
 export const DeleteSystemPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params } = props;
 
-  const { 'system-id': systemId } = params;
+  const { 'system-id': systemId = '', 'system-title': systemTitle = '' } = params;
 
-  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/system/${systemId}`, {
-    cache: 'no-store'
-  });
-
-  const system = await response.json() as System;
-
-  const { id, title } = system;
+  const title = decodeURIComponent(systemTitle);
 
   return (
     <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${title}`}>
-      <DeleteSystemForm id={id}>
+      <DeleteSystemForm id={systemId}>
         <InputHiddenId />
         <AntdFormItem style={{ textAlign: 'center' }}>
           <AntdSpace direction='vertical'>
@@ -43,15 +36,9 @@ export const DeleteSystemPage = async (props: ServerSideProps): Promise<ReactEle
 export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
   const { params } = props;
 
-  const { 'system-id': systemId } = params;
+  const { 'system-title': systemTitle = '' } = params;
 
-  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/system/${systemId}`, {
-    cache: 'no-store'
-  });
-
-  const system = await response.json() as System;
-
-  const { title } = system;
+  const title = decodeURIComponent(systemTitle);
 
   return {
     title: `Delete ${title}`
