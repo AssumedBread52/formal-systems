@@ -17,7 +17,7 @@ export const SignUpForm = (props: PropsWithChildren): ReactElement => {
 
   return (
     <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={spinning}>
-      <TypedAntdForm labelCol={{ sm: { span: 0 }, md: { span: 8 } }} wrapperCol={{ sm: { span: 24 }, md: { span: 16 } }} onFinish={finishHandler}>
+      <TypedAntdForm labelCol={{ xs: { span: 0 }, sm: { span: 8 } }} wrapperCol={{ xs: { span: 24 }, sm: { span: 16 } }} onFinish={finishHandler}>
         {children}
       </TypedAntdForm>
       {description && (

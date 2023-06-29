@@ -13,13 +13,13 @@ import { SignUpForm } from './sign-up-form/sign-up-form';
 
 export const SignUpPage = (): ReactElement => {
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', minWidth: '180px', width: '50vw' }} title='Sign Up'>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Sign Up'>
       <SignUpForm>
         <InputFirstName name='firstName' />
         <InputLastName name='lastName' />
         <InputEmail name='email' />
         <InputPassword name='password' />
-        <AntdFormItem wrapperCol={{ sm: { span: 24 }, md: { offset: 8 } }}>
+        <AntdFormItem wrapperCol={{ xs: { span: 24 }, sm: { offset: 8 } }}>
           <AntdSpace wrap>
             <AntdButton htmlType='submit' type='primary'>
               Submit
