@@ -15,7 +15,7 @@ export const SignOutForm = (props: PropsWithChildren): ReactElement => {
   const [signOut, isSigningOut, hasFailed] = useSignOut();
 
   return (
-    <AntdSpin indicator={<AntdLoadingOutlined spin />} size='large' spinning={isSigningOut}>
+    <AntdSpin indicator={<AntdLoadingOutlined />} size='large' spinning={isSigningOut}>
       <TypedAntdForm onFinish={signOut}>
         {children}
       </TypedAntdForm>
