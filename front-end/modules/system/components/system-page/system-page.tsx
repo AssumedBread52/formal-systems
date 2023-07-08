@@ -1,7 +1,7 @@
 import { ServerSideProps } from '@/app/types/server-side-props';
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
-import { System } from '@/system/types/system';
+import { fetchSystem } from '@/system/fetch-data/fetch-system';
 import { UserSignatureProps } from '@/user/types/user-signature-props';
 import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
@@ -18,13 +18,7 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
 
   const { 'system-id': systemId = '', 'system-title': systemTitle = '' } = params;
 
-  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/system/${systemId}`, {
-    cache: 'no-store'
-  });
-
-  const system = await response.json() as System;
-
-  const { description, createdByUserId } = system;
+  const { description, createdByUserId } = await fetchSystem(systemId);
 
   return (
     <AntdCard title={decodeURIComponent(systemTitle)}>

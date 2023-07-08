@@ -7,7 +7,7 @@ import { CancelButton } from '@/common/components/cancel-button/cancel-button';
 import { InputDescription } from '@/common/components/input-description/input-description';
 import { InputHiddenId } from '@/common/components/input-hidden-id/input-hidden-id';
 import { InputTitle } from '@/common/components/input-title/input-title';
-import { System } from '@/system/types/system';
+import { fetchSystem } from '@/system/fetch-data/fetch-system';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { EditSystemForm } from './edit-system-form/edit-system-form';
@@ -15,15 +15,9 @@ import { EditSystemForm } from './edit-system-form/edit-system-form';
 export const EditSystemPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params } = props;
 
-  const { 'system-id': systemId } = params;
+  const { 'system-id': systemId = '' } = params;
 
-  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}/system/${systemId}`, {
-    cache: 'no-store'
-  });
-
-  const system = await response.json() as System;
-
-  const { id, title, description } = system;
+  const { id, title, description } = await fetchSystem(systemId);
 
   return (
     <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Edit ${title}`}>
