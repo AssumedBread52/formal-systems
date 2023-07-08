@@ -40,6 +40,6 @@ export const HeaderMenu = (): ReactElement => {
   }
 
   return (
-    <AntdMenu selectedKeys={[pathname]} mode='horizontal' items={items} theme='dark' />
+    <AntdMenu items={items} mode='horizontal' selectedKeys={[pathname]} theme='dark' />
   );
 };
