@@ -13,28 +13,60 @@ export const HeaderMenu = (): ReactElement => {
   const pathname = usePathname();
 
   const items = [
-    { key: '/', label: <Link href='/'>Formal Systems</Link>, title: 'Search Formal Systems' },
-    { key: '/info', label: <Link href='/info'>Info</Link>, title: 'What are Formal Systems' }
+    {
+      key: '/',
+      label: (
+        <Link href='/'>
+          Formal Systems
+        </Link>
+      ),
+      title: 'Search Formal Systems'
+    },
+    {
+      key: '/info',
+      label: (
+        <Link href='/info'>
+          Info
+        </Link>
+      ),
+      title: 'What are Formal Systems'
+    }
   ] as ItemType<MenuItemType>[];
 
   if (isAuthorized) {
     items.push({
       key: '/sign-out',
-      label: <Link href='/sign-out'>Sign Out</Link>,
+      label: (
+        <Link href='/sign-out'>
+          Sign Out
+        </Link>
+      ),
       title: 'Sign Out'
     }, {
       key: '/edit-profile',
-      label: <Link href='/edit-profile'>Edit Profile</Link>,
+      label: (
+        <Link href='/edit-profile'>
+          Edit Profile
+        </Link>
+      ),
       title: 'Edit Your Profile'
     });
   } else {
     items.push({
       key: '/sign-in',
-      label: <Link href='/sign-in'>Sign In</Link>,
+      label: (
+        <Link href='/sign-in'>
+          Sign In
+        </Link>
+      ),
       title: 'Sign In'
     }, {
       key: '/sign-up',
-      label: <Link href='/sign-up'>Sign Up</Link>,
+      label: (
+        <Link href='/sign-up'>
+          Sign Up
+        </Link>
+      ),
       title: 'Sign Up'
     });
   }
