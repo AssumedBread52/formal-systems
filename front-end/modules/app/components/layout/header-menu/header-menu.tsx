@@ -29,7 +29,7 @@ export const HeaderMenu = (): ReactElement => {
           Info
         </Link>
       ),
-      title: 'What are Formal Systems'
+      title: 'What are Formal Systems?'
     }
   ] as ItemType<MenuItemType>[];
 
