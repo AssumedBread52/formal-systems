@@ -9,7 +9,7 @@ import { AppProvider } from './app-provider/app-provider';
 import { FooterDependencies } from './footer-dependencies/footer-dependencies';
 import { HeaderMenu } from './header-menu/header-menu';
 
-export const Layout = async (props: PropsWithChildren): Promise<ReactElement> => {
+export const Layout = (props: PropsWithChildren): ReactElement => {
   const { children } = props;
 
   return (
