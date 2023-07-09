@@ -10,7 +10,7 @@ export const DependenciesBlock = (props: DependenciesBlockProps): ReactElement =
   const packageNames = Object.keys(packages);
 
   return (
-    <AntdRow gutter={[4, 4]} justify='start'>
+    <AntdRow gutter={[4, 4]}>
       {packageNames.map((packageName: string): ReactElement => {
         const version = packages[packageName];
 
