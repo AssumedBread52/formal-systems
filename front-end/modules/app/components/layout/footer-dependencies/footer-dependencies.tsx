@@ -20,7 +20,8 @@ export const FooterDependencies = async (): Promise<ReactElement> => {
       ),
       collapsible: 'icon' as CollapsibleType,
       key: 'back-end-dependencies',
-      label: 'Back End Dependencies'
+      label: 'Back End Dependencies',
+      showArrow: false
     },
     {
       children: (
@@ -28,7 +29,8 @@ export const FooterDependencies = async (): Promise<ReactElement> => {
       ),
       collapsible: 'icon' as CollapsibleType,
       key: 'back-end-dev-dependencies',
-      label: 'Back End Development Dependencies'
+      label: 'Back End Development Dependencies',
+      showArrow: false
     },
     {
       children: (
@@ -36,7 +38,8 @@ export const FooterDependencies = async (): Promise<ReactElement> => {
       ),
       collapsible: 'icon' as CollapsibleType,
       key: 'front-end-dependencies',
-      label: 'Front End Dependencies'
+      label: 'Front End Dependencies',
+      showArrow: false
     },
     {
       children: (
@@ -44,7 +47,8 @@ export const FooterDependencies = async (): Promise<ReactElement> => {
       ),
       collapsible: 'icon' as CollapsibleType,
       key: 'front-end-dev-dependencies',
-      label: 'Front End Development Dependencies'
+      label: 'Front End Development Dependencies',
+      showArrow: false
     }
   ];
 
