@@ -47,6 +47,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   signOut(@Res({ passthrough: true }) response: Response): void {
     response.clearCookie('token');
+    response.clearCookie('authStatus');
   }
 
   @Post('sign-up')
@@ -61,6 +62,10 @@ export class AuthController {
   private setTokenCookie(response: Response, token: string): void {
     response.cookie('token', token, {
       httpOnly: true,
+      maxAge: 60000,
+      secure: true
+    });
+    response.cookie('authStatus', 'true', {
       maxAge: 60000,
       secure: true
     });
