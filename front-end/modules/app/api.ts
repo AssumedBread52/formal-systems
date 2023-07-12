@@ -15,14 +15,7 @@ import { TagTypes } from './types/tag-types';
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://${process.env.NEXT_PUBLIC_BACK_END_HOSTNAME}:${process.env.NEXT_PUBLIC_BACK_END_PORT}`,
-    prepareHeaders: (headers: Headers): void => {
-      const token = localStorage.getItem('token');
-
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-    }
+    baseUrl: '/api'
   }),
   endpoints: (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): {
     getSessionUserId: ReturnType<typeof getSessionUserId>;
