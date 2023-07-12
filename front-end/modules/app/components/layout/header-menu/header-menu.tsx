@@ -1,16 +1,13 @@
-'use client';
-
-import { useIsAuthorized } from '@/auth/hooks/use-is-authorized';
 import { AntdMenu } from '@/common/components/antd-menu/antd-menu';
 import { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
+import { cookies, headers } from 'next/headers';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { ReactElement } from 'react';
 
 export const HeaderMenu = (): ReactElement => {
-  const isAuthorized = useIsAuthorized();
+  const isAuthorized = cookies().get('token');
 
-  const pathname = usePathname();
+  const pathname = headers().get('x-invoke-path') ?? '';
 
   const items = [
     {

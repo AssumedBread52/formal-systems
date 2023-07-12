@@ -1,4 +1,3 @@
-import { getSessionUserId } from '@/auth/end-points/get-session-user-id';
 import { refreshToken } from '@/auth/end-points/refresh-token';
 import { signIn } from '@/auth/end-points/sign-in';
 import { signOut } from '@/auth/end-points/sign-out';
@@ -17,7 +16,6 @@ export const api = createApi({
     baseUrl: '/api'
   }),
   endpoints: (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): {
-    getSessionUserId: ReturnType<typeof getSessionUserId>;
     refreshToken: ReturnType<typeof refreshToken>;
     signIn: ReturnType<typeof signIn>;
     signOut: ReturnType<typeof signOut>;
@@ -30,7 +28,6 @@ export const api = createApi({
     editProfile: ReturnType<typeof editProfile>;
   } => {
     return {
-      getSessionUserId: getSessionUserId(builder),
       refreshToken: refreshToken(builder),
       signIn: signIn(builder),
       signOut: signOut(builder),
