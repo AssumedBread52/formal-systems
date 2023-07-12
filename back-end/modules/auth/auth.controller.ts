@@ -1,10 +1,10 @@
 import { UserEntity } from '@/user/user.entity';
 import { UserService } from '@/user/user.service';
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Res, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { IdPayload } from './data-transfer-objects/id.payload';
 import { SignUpPayload } from './data-transfer-objects/sign-up.payload';
-import { TokenPayload } from './data-transfer-objects/token.payload';
 import { SessionUser } from './decorators/session-user';
 import { JwtGuard } from './guards/jwt.guard';
 import { LocalGuard } from './guards/local.guard';
@@ -26,26 +26,43 @@ export class AuthController {
 
   @UseGuards(JwtGuard)
   @Post('refresh-token')
-  refreshToken(@SessionUser() sessionUser: UserEntity): Promise<TokenPayload> {
-    return this.authService.generateTokenPayload(sessionUser);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async refreshToken(@SessionUser() sessionUser: UserEntity, @Res({ passthrough: true }) response: Response): Promise<void> {
+    const token = await this.authService.generateTokenPayload(sessionUser);
+
+    this.setTokenCookie(response, token);
   }
 
   @UseGuards(LocalGuard)
   @Post('sign-in')
-  signIn(@SessionUser() sessionUser: UserEntity): Promise<TokenPayload> {
-    return this.authService.generateTokenPayload(sessionUser);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async signIn(@SessionUser() sessionUser: UserEntity, @Res({ passthrough: true }) response: Response): Promise<void> {
+    const token = await this.authService.generateTokenPayload(sessionUser);
+
+    this.setTokenCookie(response, token);
   }
 
   @UseGuards(JwtGuard)
   @Post('sign-out')
   @HttpCode(HttpStatus.NO_CONTENT)
-  signOut(): void {
+  signOut(@Res({ passthrough: true }) response: Response): void {
+    response.clearCookie('token');
   }
 
   @Post('sign-up')
-  async signUp(@Body(ValidationPipe) signUpPayload: SignUpPayload): Promise<TokenPayload> {
+  async signUp(@Body(ValidationPipe) signUpPayload: SignUpPayload, @Res({ passthrough: true }) response: Response): Promise<void> {
     const user = await this.userService.create(signUpPayload);
 
-    return this.authService.generateTokenPayload(user);
+    const token = await this.authService.generateTokenPayload(user);
+
+    this.setTokenCookie(response, token);
+  }
+
+  private setTokenCookie(response: Response, token: string): void {
+    response.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 60000,
+      secure: true
+    });
   }
 };
