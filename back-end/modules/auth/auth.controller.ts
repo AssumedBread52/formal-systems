@@ -28,7 +28,7 @@ export class AuthController {
   @Post('refresh-token')
   @HttpCode(HttpStatus.NO_CONTENT)
   async refreshToken(@SessionUser() sessionUser: UserEntity, @Res({ passthrough: true }) response: Response): Promise<void> {
-    const token = await this.authService.generateTokenPayload(sessionUser);
+    const token = await this.authService.generateToken(sessionUser);
 
     this.setTokenCookie(response, token);
   }
@@ -37,7 +37,7 @@ export class AuthController {
   @Post('sign-in')
   @HttpCode(HttpStatus.NO_CONTENT)
   async signIn(@SessionUser() sessionUser: UserEntity, @Res({ passthrough: true }) response: Response): Promise<void> {
-    const token = await this.authService.generateTokenPayload(sessionUser);
+    const token = await this.authService.generateToken(sessionUser);
 
     this.setTokenCookie(response, token);
   }
@@ -53,7 +53,7 @@ export class AuthController {
   async signUp(@Body(ValidationPipe) signUpPayload: SignUpPayload, @Res({ passthrough: true }) response: Response): Promise<void> {
     const user = await this.userService.create(signUpPayload);
 
-    const token = await this.authService.generateTokenPayload(user);
+    const token = await this.authService.generateToken(user);
 
     this.setTokenCookie(response, token);
   }

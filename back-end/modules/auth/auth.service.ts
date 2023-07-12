@@ -37,7 +37,7 @@ export class AuthService {
     return user;
   }
 
-  generateTokenPayload(user: UserEntity): Promise<string> {
+  generateToken(user: UserEntity): Promise<string> {
     const { _id } = user;
 
     return this.jwtService.signAsync({
