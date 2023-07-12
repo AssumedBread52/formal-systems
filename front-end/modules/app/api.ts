@@ -7,7 +7,6 @@ import { createSystem } from '@/system/end-points/create-system';
 import { deleteSystem } from '@/system/end-points/delete-system';
 import { editSystem } from '@/system/end-points/edit-system';
 import { editProfile } from '@/user/end-points/edit-profile';
-import { getSessionUser } from '@/user/end-points/get-session-user';
 import { EndpointBuilder } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { BaseQueryFn, createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
 import { Tags } from './constants/tags';
@@ -29,7 +28,6 @@ export const api = createApi({
     editSystem: ReturnType<typeof editSystem>;
 
     editProfile: ReturnType<typeof editProfile>;
-    getSessionUser: ReturnType<typeof getSessionUser>;
   } => {
     return {
       getSessionUserId: getSessionUserId(builder),
@@ -42,8 +40,7 @@ export const api = createApi({
       deleteSystem: deleteSystem(builder),
       editSystem: editSystem(builder),
 
-      editProfile: editProfile(builder),
-      getSessionUser: getSessionUser(builder)
+      editProfile: editProfile(builder)
     };
   },
   reducerPath: 'api',

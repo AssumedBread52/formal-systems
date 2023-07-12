@@ -6,13 +6,16 @@ import { InputEmail } from '@/common/components/input-email/input-email';
 import { InputFirstName } from '@/common/components/input-first-name/input-first-name';
 import { InputLastName } from '@/common/components/input-last-name/input-last-name';
 import { InputPassword } from '@/common/components/input-password/input-password';
+import { fetchSessionUser } from '@/user/fetch-data/fetch-session-user';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { EditProfileForm } from './edit-profile-form/edit-profile-form';
 
-export const EditProfilePage = (): ReactElement => {
+export const EditProfilePage = async (): Promise<ReactElement> => {
+  const { firstName, lastName, email } = await fetchSessionUser();
+
   return (
-    <EditProfileForm>
+    <EditProfileForm newFirstName={firstName} newLastName={lastName} newEmail={email}>
       <InputFirstName name='newFirstName' />
       <InputLastName name='newLastName' />
       <InputEmail name='newEmail' />
