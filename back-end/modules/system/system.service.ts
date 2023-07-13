@@ -95,17 +95,13 @@ export class SystemService {
     };
   }
 
-  async delete(id: string): Promise<IdPayload> {
-    const result = await this.systemRepository.delete(id);
+  async delete(system: SystemEntity): Promise<IdPayload> {
+    const { _id } = system;
 
-    const { affected } = result;
-
-    if (1 !== affected) {
-      throw new InternalServerErrorException(`Deleting by ID affected ${affected} instead of 1.`);
-    }
+    await this.systemRepository.remove(system);
 
     return {
-      id
+      id: _id.toString()
     };
   }
 };

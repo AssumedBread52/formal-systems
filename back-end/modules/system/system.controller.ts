@@ -31,7 +31,7 @@ export class SystemController {
       throw new ForbiddenException('You cannot delete entities unless you created them.');
     }
 
-    return this.systemService.delete(id);
+    return this.systemService.delete(system);
   }
 
   @Get()
