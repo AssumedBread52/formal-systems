@@ -10,7 +10,7 @@ export const InputDescription = (props: InputProps): ReactElement => {
     <AntdFormItem label='Description' name={name} rules={[
       { required: !optional, message: 'Description is required.' }
     ]}>
-      <AntdInputTextarea />
+      <AntdInputTextarea autoSize={{ minRows: 5 }} />
     </AntdFormItem>
   );
 };
