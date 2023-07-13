@@ -1,9 +1,15 @@
 import { AntdAvatar } from '@/common/components/antd-avatar/antd-avatar';
+import { AntdBadge } from '@/common/components/antd-badge/antd-badge';
 import { AntdUserOutlined } from '@/common/components/antd-user-outlined/antd-user-outlined';
+import { User } from '@/user/types/user';
 import { ReactElement } from 'react';
 
-export const UserAvatar = (): ReactElement => {
+export const UserAvatar = (props: Omit<User, 'id' | 'firstName' | 'lastName' | 'email'>): ReactElement => {
+  const { entities } = props;
+
   return (
-    <AntdAvatar icon={<AntdUserOutlined />} />
+    <AntdBadge count={entities} title='Entites this user has created.'>
+      <AntdAvatar icon={<AntdUserOutlined />} size='large' />
+    </AntdBadge>
   );
 };

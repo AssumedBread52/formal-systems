@@ -13,4 +13,6 @@ export class UserEntity {
   email: string = '';
   @Column()
   hashedPassword: string = '';
+  @Column()
+  entities: number = 0;
 };

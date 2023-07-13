@@ -29,12 +29,24 @@ export class UserService {
 
     const hashedPassword = await hash(password, 12);
 
-    return this.userRepository.save({
+    const { identifiers } = await this.userRepository.insert({
       firstName,
       lastName,
       email,
-      hashedPassword
+      hashedPassword,
+      entities: 0
     });
+
+    const { _id } = identifiers[0];
+
+    return {
+      _id,
+      firstName,
+      lastName,
+      email,
+      hashedPassword,
+      entities: 0
+    };
   }
 
   readByEmail(email: string): Promise<UserEntity | null> {
