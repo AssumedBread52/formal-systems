@@ -8,7 +8,7 @@ export const UserAvatar = (props: Omit<User, 'id' | 'firstName' | 'lastName' | '
   const { entities } = props;
 
   return (
-    <AntdBadge count={entities} title='Entites this user has created.'>
+    <AntdBadge count={entities} title='Entites created'>
       <AntdAvatar icon={<AntdUserOutlined />} size='large' />
     </AntdBadge>
   );
