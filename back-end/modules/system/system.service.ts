@@ -1,5 +1,5 @@
 import { IdPayload } from '@/auth/data-transfer-objects/id.payload';
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
@@ -73,13 +73,7 @@ export class SystemService {
     system.title = newTitle;
     system.description = newDescription;
 
-    const result = await this.systemRepository.update(_id, system);
-
-    const { affected } = result;
-
-    if (1 !== affected) {
-      throw new InternalServerErrorException(`Updating by ID affected ${affected} instead of 1.`);
-    }
+    await this.systemRepository.save(system);
 
     return {
       id: _id.toString()
