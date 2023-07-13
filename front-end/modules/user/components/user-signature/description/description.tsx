@@ -2,12 +2,14 @@ import { AntdTypographyText } from '@/common/components/antd-typography-text/ant
 import { User } from '@/user/types/user';
 import { ReactElement } from 'react';
 
-export const Description = (props: Omit<User, 'id' | 'email' | 'entities'>): ReactElement => {
-  const { firstName, lastName } = props;
+export const Description = (props: Omit<User, 'id' | 'entities'>): ReactElement => {
+  const { firstName, lastName, email } = props;
 
   return (
     <AntdTypographyText italic>
       {`${firstName} ${lastName}`}
+      <br />
+      {email}
     </AntdTypographyText>
   );
 };
