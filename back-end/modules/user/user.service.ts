@@ -29,24 +29,13 @@ export class UserService {
 
     const hashedPassword = await hash(password, 12);
 
-    const { identifiers } = await this.userRepository.insert({
+    return this.userRepository.save({
       firstName,
       lastName,
       email,
       hashedPassword,
       entities: 0
     });
-
-    const { _id } = identifiers[0];
-
-    return {
-      _id,
-      firstName,
-      lastName,
-      email,
-      hashedPassword,
-      entities: 0
-    };
   }
 
   readByEmail(email: string): Promise<UserEntity | null> {
@@ -62,7 +51,7 @@ export class UserService {
   }
 
   async update(sessionUser: UserEntity, editProfilePayload: EditProfilePayload): Promise<void> {
-    const { _id, email } = sessionUser;
+    const { email } = sessionUser;
     const { newFirstName, newLastName, newEmail, newPassword } = editProfilePayload;
 
     if (email !== newEmail) {
@@ -76,6 +65,6 @@ export class UserService {
       sessionUser.hashedPassword = await hash(newPassword, 12);
     }
 
-    await this.userRepository.update(_id, sessionUser);
+    await this.userRepository.save(sessionUser);
   }
 };
