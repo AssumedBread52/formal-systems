@@ -29,20 +29,11 @@ export class SystemService {
 
     await this.checkForConflict(title, sessionUserId);
 
-    const { identifiers } = await this.systemRepository.insert({
+    return this.systemRepository.save({
       title,
       description,
       createdByUserId: sessionUserId
     });
-
-    const { _id } = identifiers[0];
-
-    return {
-      _id,
-      title,
-      description,
-      createdByUserId: sessionUserId
-    };
   }
 
   async readById(id: string): Promise<SystemEntity | null> {
