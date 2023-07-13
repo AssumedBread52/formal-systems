@@ -5,7 +5,7 @@ export const fetchSessionUser = async (): Promise<User> => {
   const response = await fetch(`http://localhost:${process.env.PORT}/api/user/session-user`, {
     cache: 'no-store',
     headers: {
-      cookie: cookies().toString()
+      Cookie: cookies().toString()
     }
   });
 
