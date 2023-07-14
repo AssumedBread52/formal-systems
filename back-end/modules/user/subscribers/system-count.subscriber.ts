@@ -2,11 +2,11 @@ import { SystemEntity } from '@/system/system.entity';
 import { UserEntity } from '@/user/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, Repository } from 'typeorm';
+import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, MongoRepository, RemoveEvent } from 'typeorm';
 
 @EventSubscriber()
 export class SystemCountSubscriber implements EntitySubscriberInterface<SystemEntity> {
-  constructor(dataSource: DataSource, @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>) {
+  constructor(dataSource: DataSource, @InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>) {
     dataSource.subscribers.push(this);
   }
 
