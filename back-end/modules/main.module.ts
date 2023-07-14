@@ -4,6 +4,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DatabaseType } from 'typeorm';
 import { AppModule } from './app/app.module';
 import { AuthModule } from './auth/auth.module';
+import { SymbolModule } from './symbol/symbol.module';
 import { SystemModule } from './system/system.module';
 import { UserModule } from './user/user.module';
 
@@ -18,6 +19,7 @@ import { UserModule } from './user/user.module';
         'database-credentials.env'
       ]
     }),
+    SymbolModule,
     SystemModule,
     TypeOrmModule.forRootAsync({
       imports: [
