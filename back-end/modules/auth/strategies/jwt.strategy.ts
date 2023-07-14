@@ -1,5 +1,5 @@
 import { AuthService } from '@/auth/auth.service';
-import { IdPayload } from '@/auth/data-transfer-objects/id.payload';
+import { IdPayload } from '@/common/data-transfer-objects/id.payload';
 import { UserEntity } from '@/user/user.entity';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

@@ -1,6 +1,6 @@
-import { IdPayload } from '@/auth/data-transfer-objects/id.payload';
 import { SessionUser } from '@/auth/decorators/session-user';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
+import { IdPayload } from '@/common/data-transfer-objects/id.payload';
 import { Body, Controller, Get, NotFoundException, Param, Patch, UseGuards, ValidationPipe } from '@nestjs/common';
 import { EditProfilePayload } from './data-transfer-objects/edit-profile.payload';
 import { UserPayload } from './data-transfer-objects/user.payload';

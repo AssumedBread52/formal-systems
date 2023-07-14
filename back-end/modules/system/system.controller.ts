@@ -1,6 +1,6 @@
-import { IdPayload } from '@/auth/data-transfer-objects/id.payload';
 import { SessionUserId } from '@/auth/decorators/session-user-id';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
+import { IdPayload } from '@/common/data-transfer-objects/id.payload';
 import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditSystemPayload } from './data-transfer-objects/edit-system.payload';

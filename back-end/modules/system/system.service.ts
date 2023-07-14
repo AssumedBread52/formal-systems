@@ -1,4 +1,4 @@
-import { IdPayload } from '@/auth/data-transfer-objects/id.payload';
+import { IdPayload } from '@/common/data-transfer-objects/id.payload';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
