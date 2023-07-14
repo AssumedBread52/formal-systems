@@ -2,7 +2,7 @@ import { System } from '@/system/types/system';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
-export const ExploreLink = (props: Omit<System, 'description' | 'createdByUserId'>): ReactElement => {
+export const ExploreLink = (props: Omit<System, 'description' | 'constantSymbolCount' | 'variableSymbolCount' | 'createdByUserId'>): ReactElement => {
   const { id, title } = props;
 
   return (

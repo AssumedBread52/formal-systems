@@ -10,5 +10,9 @@ export class SystemEntity {
   @Column()
   description: string = '';
   @Column()
+  constantSymbolCount: number = 0;
+  @Column()
+  variableSymbolCount: number = 0;
+  @Column()
   createdByUserId: ObjectId = new ObjectId();
 };

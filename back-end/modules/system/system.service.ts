@@ -32,6 +32,8 @@ export class SystemService {
     return this.systemRepository.save({
       title,
       description,
+      constantSymbolCount: 0,
+      variableSymbolCount: 0,
       createdByUserId: sessionUserId
     });
   }

@@ -4,7 +4,7 @@ import { System } from '@/system/types/system';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
-export const DeleteLink = (props: Omit<System, 'description'>): ReactElement => {
+export const DeleteLink = (props: Omit<System, 'description' | 'constantSymbolCount' | 'variableSymbolCount'>): ReactElement => {
   const { id, title, createdByUserId } = props;
 
   return (
