@@ -3,6 +3,6 @@ export type User = {
   firstName: string;
   lastName: string;
   email: string;
-  systemEntitiesCount: number;
-  symbolEntitiesCount: number;
+  systemCount: number;
+  symbolCount: number;
 };

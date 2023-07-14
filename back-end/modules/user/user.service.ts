@@ -34,8 +34,8 @@ export class UserService {
       lastName,
       email,
       hashedPassword,
-      systemEntitiesCount: 0,
-      symbolEntitiesCount: 0
+      systemCount: 0,
+      symbolCount: 0
     });
   }
 

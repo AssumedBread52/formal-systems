@@ -27,7 +27,7 @@ export class SystemCountSubscriber implements EntitySubscriberInterface<SystemEn
       throw new NotFoundException('Formal system creator not found.');
     }
 
-    user.systemEntitiesCount++;
+    user.systemCount++;
 
     this.userRepository.save(user);
   }
@@ -45,7 +45,7 @@ export class SystemCountSubscriber implements EntitySubscriberInterface<SystemEn
       throw new NotFoundException('Formal system creator not found.');
     }
 
-    user.systemEntitiesCount--;
+    user.systemCount--;
 
     this.userRepository.save(user);
   }

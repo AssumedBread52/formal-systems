@@ -2,7 +2,7 @@ import { AntdTypographyText } from '@/common/components/antd-typography-text/ant
 import { User } from '@/user/types/user';
 import { ReactElement } from 'react';
 
-export const Description = (props: Omit<User, 'id' | 'systemEntitiesCount' | 'symbolEntitiesCount'>): ReactElement => {
+export const Description = (props: Omit<User, 'id' | 'systemCount' | 'symbolCount'>): ReactElement => {
   const { firstName, lastName, email } = props;
 
   return (

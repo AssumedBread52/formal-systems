@@ -13,19 +13,19 @@ export class UserPayload {
   email: string;
   @IsInt()
   @Min(0)
-  systemEntitiesCount: number;
+  systemCount: number;
   @IsInt()
   @Min(0)
-  symbolEntitiesCount: number;
+  symbolCount: number;
 
   constructor(user: UserEntity) {
-    const { _id, firstName, lastName, email, systemEntitiesCount, symbolEntitiesCount } = user;
+    const { _id, firstName, lastName, email, systemCount, symbolCount } = user;
 
     this.id = _id;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
-    this.systemEntitiesCount = systemEntitiesCount;
-    this.symbolEntitiesCount = symbolEntitiesCount;
+    this.systemCount = systemCount;
+    this.symbolCount = symbolCount;
   }
 };

@@ -8,9 +8,9 @@ import { UserAvatar } from './user-avatar/user-avatar';
 export const UserSignature = async (props: UserSignatureProps): Promise<ReactElement> => {
   const { userId } = props;
 
-  const { firstName, lastName, email, systemEntitiesCount, symbolEntitiesCount } = await fetchUser(userId);
+  const { firstName, lastName, email, systemCount, symbolCount } = await fetchUser(userId);
 
   return (
-    <AntdCardMeta avatar={<UserAvatar systemEntitiesCount={systemEntitiesCount} symbolEntitiesCount={symbolEntitiesCount} />} title='Created By' description={<Description firstName={firstName} lastName={lastName} email={email} />} />
+    <AntdCardMeta avatar={<UserAvatar systemCount={systemCount} symbolCount={symbolCount} />} title='Created By' description={<Description firstName={firstName} lastName={lastName} email={email} />} />
   );
 };

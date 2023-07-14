@@ -27,7 +27,7 @@ export class SymbolCountSubscriber implements EntitySubscriberInterface<SymbolEn
       throw new NotFoundException('Symbol creator not found.');
     }
 
-    user.symbolEntitiesCount++;
+    user.symbolCount++;
 
     this.userRepository.save(user);
   }
@@ -45,7 +45,7 @@ export class SymbolCountSubscriber implements EntitySubscriberInterface<SymbolEn
       throw new NotFoundException('Symbol creator not found.');
     }
 
-    user.symbolEntitiesCount--;
+    user.symbolCount--;
 
     this.userRepository.save(user);
   }
