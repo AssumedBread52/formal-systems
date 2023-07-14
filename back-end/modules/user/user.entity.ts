@@ -14,5 +14,5 @@ export class UserEntity {
   @Column()
   hashedPassword: string = '';
   @Column()
-  entities: number = 0;
+  systemEntitiesCount: number = 0;
 };

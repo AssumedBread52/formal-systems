@@ -12,15 +12,15 @@ export class UserPayload {
   email: string;
   @IsInt()
   @Min(0)
-  entities: number;
+  systemEntitiesCount: number;
 
   constructor(user: UserEntity) {
-    const { _id, firstName, lastName, email, entities } = user;
+    const { _id, firstName, lastName, email, systemEntitiesCount } = user;
 
     this.id = _id.toString();
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
-    this.entities = entities;
+    this.systemEntitiesCount = systemEntitiesCount;
   }
 };
