@@ -3,13 +3,13 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
-import { Repository } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { EditProfilePayload } from './data-transfer-objects/edit-profile.payload';
 import { UserEntity } from './user.entity';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>) {
+  constructor(@InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>) {
   }
 
   private async checkForConflict(email: string): Promise<void> {
