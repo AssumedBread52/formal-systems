@@ -36,7 +36,7 @@ export class SystemService {
     });
   }
 
-  async readById(id: string): Promise<SystemEntity | null> {
+  readById(id: string): Promise<SystemEntity | null> {
     return this.systemRepository.findOneBy({
       _id: new ObjectId(id)
     });
