@@ -1,9 +1,10 @@
 import { UserEntity } from '@/user/user.entity';
 import { IsEmail, IsInt, IsNotEmpty, Min } from 'class-validator';
+import { ObjectId } from 'mongodb';
 
 export class UserPayload {
   @IsNotEmpty()
-  id: string;
+  id: ObjectId;
   @IsNotEmpty()
   firstName: string;
   @IsNotEmpty()
@@ -17,7 +18,7 @@ export class UserPayload {
   constructor(user: UserEntity) {
     const { _id, firstName, lastName, email, systemEntitiesCount } = user;
 
-    this.id = _id.toString();
+    this.id = _id;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
