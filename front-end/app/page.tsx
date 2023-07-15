@@ -1,1 +1,7 @@
-export { SearchSystems as default } from '@/system/components/search-systems/search-systems';
+import { redirect } from 'next/navigation';
+
+const Page = async (): Promise<never> => {
+  redirect('/formal-systems');
+};
+
+export default Page;
