@@ -10,9 +10,11 @@ export const SymbolList = (props: SymbolListProps): ReactElement => {
   const { symbols } = props;
 
   if (0 === symbols.length) {
-    <AntdEmpty>
-      No symbols were found matching your search criteria.
-    </AntdEmpty>
+    return (
+      <AntdEmpty>
+        No symbols were found matching your search criteria.
+      </AntdEmpty>
+    );
   }
 
   return (
