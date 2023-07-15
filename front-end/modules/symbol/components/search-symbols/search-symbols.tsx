@@ -17,15 +17,14 @@ export const SearchSymbols = async (props: ServerSideProps): Promise<ReactElemen
     searchParams.page = '1';
   }
 
-  const { 'system-id': systemId = '' } = params;
+  const { 'system-id': systemId = '', 'system-title': systemTitle = '' } = params;
 
   const { results, total } = await fetchSymbolSearch(systemId, searchParams);
 
   return (
     <AntdCard title='Symbols'>
       <PaginationSearchControls resultType='Symbols' total={total}>
-        {results.length}
-        <SymbolList />
+        <SymbolList symbols={results} systemTitle={systemTitle} />
       </PaginationSearchControls>
     </AntdCard>
   );
