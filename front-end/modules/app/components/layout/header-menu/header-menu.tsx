@@ -11,9 +11,9 @@ export const HeaderMenu = (): ReactElement => {
 
   const items = [
     {
-      key: '/',
+      key: '/formal-systems',
       label: (
-        <Link href='/'>
+        <Link href='/formal-systems'>
           Formal Systems
         </Link>
       ),
