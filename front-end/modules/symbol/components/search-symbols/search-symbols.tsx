@@ -4,6 +4,7 @@ import { PaginationSearchControls } from '@/common/components/pagination-search-
 import { fetchSymbolSearch } from '@/symbol/fetch-data/fetch-symbols-search';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
+import { SymbolList } from './symbol-list/symbol-list';
 
 export const SearchSymbols = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params, searchParams } = props;
@@ -24,6 +25,7 @@ export const SearchSymbols = async (props: ServerSideProps): Promise<ReactElemen
     <AntdCard title='Symbols'>
       <PaginationSearchControls resultType='Symbols' total={total}>
         {results.length}
+        <SymbolList />
       </PaginationSearchControls>
     </AntdCard>
   );
