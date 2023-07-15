@@ -1,12 +1,29 @@
+import { AntdCol } from '@/common/components/antd-col/antd-col';
+import { AntdEmpty } from '@/common/components/antd-empty/antd-empty';
+import { AntdRow } from '@/common/components/antd-row/antd-row';
+import { Symbol } from '@/symbol/types/symbol';
 import { SymbolListProps } from '@/symbol/types/symbol-list-props';
 import { ReactElement } from 'react';
 
 export const SymbolList = (props: SymbolListProps): ReactElement => {
-  const {} = props;
+  const { symbols } = props;
+
+  if (0 === symbols.length) {
+    <AntdEmpty>
+      No symbols were found matching your search criteria.
+    </AntdEmpty>
+  }
 
   return (
-    <h1>
-      Symbol List
-    </h1>
+    <AntdRow gutter={[0, 16]}>
+      {symbols.map((symbol: Symbol): ReactElement => {
+        const { id } = symbol;
+
+        return (
+          <AntdCol key={id} span={24}>
+          </AntdCol>
+        );
+      })}
+    </AntdRow>
   );
 };
