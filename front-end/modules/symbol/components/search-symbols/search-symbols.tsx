@@ -4,6 +4,7 @@ import { PaginationSearchControls } from '@/common/components/pagination-search-
 import { fetchSymbolSearch } from '@/symbol/fetch-data/fetch-symbols-search';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
+import { CreateLink } from './create-link/create-link';
 import { SymbolList } from './symbol-list/symbol-list';
 
 export const SearchSymbols = async (props: ServerSideProps): Promise<ReactElement> => {
@@ -22,7 +23,7 @@ export const SearchSymbols = async (props: ServerSideProps): Promise<ReactElemen
   const { results, total } = await fetchSymbolSearch(systemId, searchParams);
 
   return (
-    <AntdCard title='Symbols'>
+    <AntdCard extra={<CreateLink id={systemId} title={systemTitle} />} title='Symbols'>
       <PaginationSearchControls resultType='Symbols' total={total}>
         <SymbolList symbols={results} systemTitle={systemTitle} />
       </PaginationSearchControls>
