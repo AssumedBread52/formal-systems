@@ -29,6 +29,17 @@ export const SearchSymbols = async (props: ServerSideProps): Promise<ReactElemen
   );
 };
 
+// import { CreateLink } from './create-link/create-link';
+// import { SymbolList } from './symbol-list/symbol-list';
+
+//   const { 'system-id': systemId = '', 'system-title': systemTitle = '' } = params;
+
+//   return (
+//     <AntdCard extra={<CreateLink id={systemId} title={systemTitle} />} title='Symbols'>
+//         <SymbolList symbols={results} systemTitle={systemTitle} />
+//     </AntdCard>
+//   );
+
 export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
   const { params } = props;
 

@@ -18,7 +18,7 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
     <AntdCard title={title}>
       <SystemItem id={id} title={title} description={description} createdByUserId={createdByUserId} />
       <AntdDivider />
-      <SymbolDescription constantSymbolCount={constantSymbolCount} variableSymbolCount={variableSymbolCount} />
+      <SymbolDescription id={id} title={title} constantSymbolCount={constantSymbolCount} variableSymbolCount={variableSymbolCount} />
     </AntdCard>
   );
 };
