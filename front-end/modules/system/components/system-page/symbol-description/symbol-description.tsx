@@ -2,13 +2,20 @@ import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdDescriptionsItem } from '@/common/components/antd-descriptions-item/antd-descriptions-item';
 import { AntdDescriptions } from '@/common/components/antd-descriptions/antd-descriptions';
 import { System } from '@/system/types/system';
+import Link from 'next/link';
 import { ReactElement } from 'react';
 
-export const SymbolDescription = (props: Omit<System, 'id' | 'title' | 'description' | 'createdByUserId'>): ReactElement => {
-  const { constantSymbolCount, variableSymbolCount } = props;
+export const SymbolDescription = (props: Omit<System, 'description' | 'createdByUserId'>): ReactElement => {
+  const { id, title, constantSymbolCount, variableSymbolCount } = props;
+
+  const exploreLink = (
+    <Link href={`/formal-system/${id}/${title}/symbols`}>
+      Explore
+    </Link>
+  );
 
   return (
-    <AntdCard title='Symbols' type='inner'>
+    <AntdCard extra={exploreLink} title='Symbols' type='inner'>
       <AntdDescriptions bordered colon>
         <AntdDescriptionsItem label='Symbol Count'>
           {constantSymbolCount + variableSymbolCount}
