@@ -1,12 +1,13 @@
 import { ServerSideProps } from '@/app/types/server-side-props';
+import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
 
 export const SearchSymbols = (): ReactElement => {
   return (
-    <h1>
+    <AntdCard title='Symbols'>
       Search Symbols
-    </h1>
+    </AntdCard>
   );
 };
 
