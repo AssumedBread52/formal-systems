@@ -7,6 +7,8 @@ import { UserSignatureProps } from '@/user/types/user-signature-props';
 import dynamic from 'next/dynamic';
 import { headers } from 'next/headers';
 import { ComponentType, Fragment, ReactElement, ReactNode } from 'react';
+import { DeleteLink } from './delete-link/delete-link';
+import { EditLink } from './edit-link/edit-link';
 import { ExploreLink } from './explore-link/explore-link';
 
 const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps>> => {
@@ -19,6 +21,8 @@ export const SymbolItem = (props: Symbol & SystemTitle): ReactElement => {
   const { id, title, description, type, content, systemId, createdByUserId, systemTitle } = props;
 
   const actions = [
+    <EditLink id={id} title={title} systemId={systemId} systemTitle={systemTitle} createdByUserId={createdByUserId} />,
+    <DeleteLink id={id} title={title} systemId={systemId} systemTitle={systemTitle} createdByUserId={createdByUserId} />
   ] as ReactNode[];
 
   const pathname = headers().get('x-invoke-path') ?? '';
