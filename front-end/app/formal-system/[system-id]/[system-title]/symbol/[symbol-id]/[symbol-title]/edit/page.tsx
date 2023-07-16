@@ -1,11 +1,1 @@
-import { ReactElement } from 'react';
-
-const Page = (): ReactElement => {
-  return (
-    <h1>
-      Placeholder for updating symbols
-    </h1>
-  );
-};
-
-export default Page;
+export { EditSystemPage as default, generateMetadata } from '@/symbol/components/edit-symbol-page/edit-symbol-page';
