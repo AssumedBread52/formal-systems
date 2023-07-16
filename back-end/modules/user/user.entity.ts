@@ -16,5 +16,7 @@ export class UserEntity {
   @Column()
   systemCount: number = 0;
   @Column()
-  symbolCount: number = 0;
+  constantSymbolCount: number = 0;
+  @Column()
+  variableSymbolCount: number = 0;
 };

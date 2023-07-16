@@ -35,7 +35,8 @@ export class UserService {
       email,
       hashedPassword,
       systemCount: 0,
-      symbolCount: 0
+      constantSymbolCount: 0,
+      variableSymbolCount: 0
     });
   }
 

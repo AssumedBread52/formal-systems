@@ -5,10 +5,10 @@ import { User } from '@/user/types/user';
 import { ReactElement } from 'react';
 
 export const UserAvatar = (props: Omit<User, 'id' | 'firstName' | 'lastName' | 'email'>): ReactElement => {
-  const { systemCount, symbolCount } = props;
+  const { systemCount, constantSymbolCount, variableSymbolCount } = props;
 
   return (
-    <AntdBadge count={systemCount + symbolCount} title='Entities created'>
+    <AntdBadge count={systemCount + constantSymbolCount + variableSymbolCount} title='Entities created'>
       <AntdAvatar icon={<AntdUserOutlined />} size='large' />
     </AntdBadge>
   );

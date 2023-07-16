@@ -4,5 +4,6 @@ export type User = {
   lastName: string;
   email: string;
   systemCount: number;
-  symbolCount: number;
+  constantSymbolCount: number;
+  variableSymbolCount: number;
 };

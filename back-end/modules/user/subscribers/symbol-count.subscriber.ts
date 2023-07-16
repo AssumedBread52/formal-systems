@@ -1,3 +1,4 @@
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { UserEntity } from '@/user/user.entity';
 import { NotFoundException } from '@nestjs/common';
@@ -17,7 +18,7 @@ export class SymbolCountSubscriber implements EntitySubscriberInterface<SymbolEn
   async afterInsert(event: InsertEvent<SymbolEntity>): Promise<void> {
     const { entity } = event;
 
-    const { createdByUserId } = entity;
+    const { type, createdByUserId } = entity;
 
     const user = await this.userRepository.findOneBy({
       _id: createdByUserId
@@ -27,7 +28,14 @@ export class SymbolCountSubscriber implements EntitySubscriberInterface<SymbolEn
       throw new NotFoundException('Symbol creator not found.');
     }
 
-    user.symbolCount++;
+    switch (type) {
+      case SymbolType.Constant:
+        user.constantSymbolCount++;
+        break;
+      case SymbolType.Variable:
+        user.variableSymbolCount++;
+        break;
+    }
 
     this.userRepository.save(user);
   }
@@ -35,7 +43,7 @@ export class SymbolCountSubscriber implements EntitySubscriberInterface<SymbolEn
   async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
     const { databaseEntity } = event;
 
-    const { createdByUserId } = databaseEntity;
+    const { type, createdByUserId } = databaseEntity;
 
     const user = await this.userRepository.findOneBy({
       _id: createdByUserId
@@ -45,7 +53,14 @@ export class SymbolCountSubscriber implements EntitySubscriberInterface<SymbolEn
       throw new NotFoundException('Symbol creator not found.');
     }
 
-    user.symbolCount--;
+    switch (type) {
+      case SymbolType.Constant:
+        user.constantSymbolCount--;
+        break;
+      case SymbolType.Variable:
+        user.variableSymbolCount--;
+        break;
+    }
 
     this.userRepository.save(user);
   }
