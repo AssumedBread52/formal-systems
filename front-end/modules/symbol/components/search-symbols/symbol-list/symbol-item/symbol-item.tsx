@@ -6,7 +6,7 @@ import { SystemTitle } from '@/system/types/system-title';
 import { UserSignatureProps } from '@/user/types/user-signature-props';
 import dynamic from 'next/dynamic';
 import { headers } from 'next/headers';
-import { ComponentType, Fragment, ReactElement } from 'react';
+import { ComponentType, Fragment, ReactElement, ReactNode } from 'react';
 import { ExploreLink } from './explore-link/explore-link';
 
 const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps>> => {
@@ -17,6 +17,9 @@ const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps
 
 export const SymbolItem = (props: Symbol & SystemTitle): ReactElement => {
   const { id, title, description, type, content, systemId, createdByUserId, systemTitle } = props;
+
+  const actions = [
+  ] as ReactNode[];
 
   const pathname = headers().get('x-invoke-path') ?? '';
 
@@ -31,7 +34,7 @@ export const SymbolItem = (props: Symbol & SystemTitle): ReactElement => {
   );
 
   return (
-    <AntdCard extra={exploreLink} title={title} type='inner'>
+    <AntdCard actions={actions} extra={exploreLink} title={title} type='inner'>
       {description}
       <AntdDivider />
       {type}
