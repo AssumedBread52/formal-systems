@@ -2,6 +2,7 @@ import { refreshToken } from '@/auth/end-points/refresh-token';
 import { signIn } from '@/auth/end-points/sign-in';
 import { signOut } from '@/auth/end-points/sign-out';
 import { signUp } from '@/auth/end-points/sign-up';
+import { createSymbol } from '@/symbol/end-points/create-symbol';
 import { createSystem } from '@/system/end-points/create-system';
 import { deleteSystem } from '@/system/end-points/delete-system';
 import { editSystem } from '@/system/end-points/edit-system';
@@ -21,6 +22,8 @@ export const api = createApi({
     signOut: ReturnType<typeof signOut>;
     signUp: ReturnType<typeof signUp>;
 
+    createSymbol: ReturnType<typeof createSymbol>;
+
     createSystem: ReturnType<typeof createSystem>;
     deleteSystem: ReturnType<typeof deleteSystem>;
     editSystem: ReturnType<typeof editSystem>;
@@ -32,6 +35,8 @@ export const api = createApi({
       signIn: signIn(builder),
       signOut: signOut(builder),
       signUp: signUp(builder),
+
+      createSymbol: createSymbol(builder),
 
       createSystem: createSystem(builder),
       deleteSystem: deleteSystem(builder),
