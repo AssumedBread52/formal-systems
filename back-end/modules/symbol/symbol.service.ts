@@ -4,9 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId, RootFilterOperators } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 import { EditSymbolPayload } from './data-transfer-objects/edit-symbol.payload';
+import { NewSymbolPayload } from './data-transfer-objects/new-symbol.payload';
 import { PaginatedResultsPayload } from './data-transfer-objects/paginated-results.payload';
 import { SymbolEntity } from './symbol.entity';
-import { NewSymbolPayload } from './data-transfer-objects/new-symbol.payload';
 
 @Injectable()
 export class SymbolService {
