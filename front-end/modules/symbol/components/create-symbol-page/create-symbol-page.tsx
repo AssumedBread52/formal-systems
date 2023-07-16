@@ -3,6 +3,7 @@ import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item';
 import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { CancelButton } from '@/common/components/cancel-button/cancel-button';
+import { InputContent } from '@/common/components/input-content/input-content';
 import { InputDescription } from '@/common/components/input-description/input-description';
 import { InputHiddenSystemId } from '@/common/components/input-hidden-system-id/input-hidden-system-id';
 import { InputSymbolType } from '@/common/components/input-symbol-type/input-symbol-type';
@@ -18,7 +19,7 @@ export const CreateSymbolPage = (): ReactElement => {
         <InputTitle name='title' />
         <InputDescription name='description' />
         <InputSymbolType name='type' />
-        Content
+        <InputContent name='content' />
         <InputHiddenSystemId />
         <AntdFormItem wrapperCol={{ xs: { span: 24 }, sm: { offset: 8 } }}>
           <AntdSpace wrap>
