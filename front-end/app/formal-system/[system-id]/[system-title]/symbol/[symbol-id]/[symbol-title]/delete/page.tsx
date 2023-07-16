@@ -1,11 +1,1 @@
-import { ReactElement } from 'react';
-
-const Page = (): ReactElement => {
-  return (
-    <h1>
-      Placeholder for deleting symbols
-    </h1>
-  );
-};
-
-export default Page;
+export { DeleteSymbolPage as default, generateMetadata } from '@/symbol/components/delete-symbol-page/delete-symbol-page';

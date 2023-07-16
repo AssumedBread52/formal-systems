@@ -3,6 +3,7 @@ import { signIn } from '@/auth/end-points/sign-in';
 import { signOut } from '@/auth/end-points/sign-out';
 import { signUp } from '@/auth/end-points/sign-up';
 import { createSymbol } from '@/symbol/end-points/create-symbol';
+import { deleteSymbol } from '@/symbol/end-points/delete-symbol';
 import { createSystem } from '@/system/end-points/create-system';
 import { deleteSystem } from '@/system/end-points/delete-system';
 import { editSystem } from '@/system/end-points/edit-system';
@@ -23,6 +24,7 @@ export const api = createApi({
     signUp: ReturnType<typeof signUp>;
 
     createSymbol: ReturnType<typeof createSymbol>;
+    deleteSymbol: ReturnType<typeof deleteSymbol>;
 
     createSystem: ReturnType<typeof createSystem>;
     deleteSystem: ReturnType<typeof deleteSystem>;
@@ -37,6 +39,7 @@ export const api = createApi({
       signUp: signUp(builder),
 
       createSymbol: createSymbol(builder),
+      deleteSymbol: deleteSymbol(builder),
 
       createSystem: createSystem(builder),
       deleteSystem: deleteSystem(builder),
