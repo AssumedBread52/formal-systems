@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class EditProfilePayload {
   @IsNotEmpty()
@@ -7,5 +7,6 @@ export class EditProfilePayload {
   newLastName: string = '';
   @IsEmail()
   newEmail: string = '';
+  @IsOptional()
   newPassword?: string;
 };
