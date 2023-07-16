@@ -21,7 +21,7 @@ export const DeleteSymbolForm = (props: PropsWithChildren<DeleteSymbolPayload>):
         {children}
       </TypedAntdForm>
       {hasFailed && (
-        <AntdAlert closable description='Failed to delete formal system.' message='Error' showIcon type='error' />
+        <AntdAlert closable description='Failed to delete symbol.' message='Error' showIcon type='error' />
       )}
     </AntdSpin>
   );
