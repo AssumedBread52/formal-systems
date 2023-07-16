@@ -1,11 +1,1 @@
-import { ReactElement } from 'react';
-
-const Page = (): ReactElement => {
-  return (
-    <h1>
-      Placeholder for creating new symbols
-    </h1>
-  );
-};
-
-export default Page;
+export { CreateSymbolPage as default, metadata } from '@/symbol/components/create-symbol-page/create-symbol-page';
