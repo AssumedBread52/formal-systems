@@ -18,12 +18,12 @@ export const SymbolList = (props: SymbolListProps): ReactElement => {
   }
 
   return (
-    <AntdRow gutter={[0, 16]}>
+    <AntdRow gutter={16}>
       {symbols.map((symbol: Symbol): ReactElement => {
         const { id, title, description, type, content, systemId, createdByUserId } = symbol;
 
         return (
-          <AntdCol key={id} span={24}>
+          <AntdCol key={id} span={12}>
             <SymbolItem id={id} title={title} description={description} type={type} content={content} systemId={systemId} createdByUserId={createdByUserId} systemTitle={systemTitle} />
           </AntdCol>
         );
