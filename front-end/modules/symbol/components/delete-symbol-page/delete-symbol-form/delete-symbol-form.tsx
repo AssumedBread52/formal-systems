@@ -5,12 +5,12 @@ import { AntdForm } from '@/common/components/antd-form/antd-form';
 import { AntdLoadingOutlined } from '@/common/components/antd-loading-outlined/antd-loading-outlined';
 import { AntdSpin } from '@/common/components/antd-spin/antd-spin';
 import { useDeleteSymbol } from '@/symbol/hooks/use-delete-symbol';
-import { Symbol } from '@/symbol/types/symbol';
+import { DeleteSymbolPayload } from '@/symbol/types/delete-symbol-payload';
 import { PropsWithChildren, ReactElement } from 'react';
 
-const TypedAntdForm = AntdForm<Pick<Symbol, 'id' | 'systemId'>>;
+const TypedAntdForm = AntdForm<DeleteSymbolPayload>;
 
-export const DeleteSymbolForm = (props: PropsWithChildren<Pick<Symbol, 'id' | 'systemId'>>): ReactElement => {
+export const DeleteSymbolForm = (props: PropsWithChildren<DeleteSymbolPayload>): ReactElement => {
   const { children } = props;
 
   const [deleteSymbol, isDeletingSymbol, hasFailed] = useDeleteSymbol();
