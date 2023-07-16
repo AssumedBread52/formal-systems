@@ -1,6 +1,7 @@
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
 import { RenderMath } from '@/common/components/render-math/render-math';
+import { SymbolType } from '@/symbol/enums/symbol-type';
 import { Symbol } from '@/symbol/types/symbol';
 import { SystemTitle } from '@/system/types/system-title';
 import { UserSignatureProps } from '@/user/types/user-signature-props';
@@ -41,7 +42,7 @@ export const SymbolItem = (props: Symbol & SystemTitle): ReactElement => {
     <AntdCard actions={actions} extra={exploreLink} title={title} type='inner'>
       {description}
       <AntdDivider />
-      {type}
+      {SymbolType[type]}
       <AntdDivider />
       <RenderMath content={content} />
       <AntdDivider />
