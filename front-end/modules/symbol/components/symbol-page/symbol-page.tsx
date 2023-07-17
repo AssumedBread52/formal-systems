@@ -3,9 +3,9 @@ import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
 import { SymbolItem } from '@/symbol/components/symbol-item/symbol-item';
 import { fetchSymbol } from '@/symbol/fetch-data/fetch-symbol';
+import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { SymbolDescription } from './symbol-description/symbol-description';
-import { Metadata } from 'next';
 
 export const SymbolPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params } = props;
