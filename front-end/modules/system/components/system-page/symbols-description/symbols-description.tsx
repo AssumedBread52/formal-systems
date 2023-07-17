@@ -5,7 +5,7 @@ import { System } from '@/system/types/system';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
-export const SymbolDescription = (props: Omit<System, 'description' | 'createdByUserId'>): ReactElement => {
+export const SymbolsDescription = (props: Omit<System, 'description' | 'createdByUserId'>): ReactElement => {
   const { id, title, constantSymbolCount, variableSymbolCount } = props;
 
   const exploreLink = (

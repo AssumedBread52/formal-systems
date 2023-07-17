@@ -5,7 +5,7 @@ import { SystemItem } from '@/system/components/system-item/system-item';
 import { fetchSystem } from '@/system/fetch-data/fetch-system';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
-import { SymbolDescription } from './symbol-description/symbol-description';
+import { SymbolsDescription } from './symbols-description/symbols-description';
 
 export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params } = props;
@@ -18,7 +18,7 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
     <AntdCard title={title}>
       <SystemItem id={id} title={title} description={description} createdByUserId={createdByUserId} />
       <AntdDivider />
-      <SymbolDescription id={id} title={title} constantSymbolCount={constantSymbolCount} variableSymbolCount={variableSymbolCount} />
+      <SymbolsDescription id={id} title={title} constantSymbolCount={constantSymbolCount} variableSymbolCount={variableSymbolCount} />
     </AntdCard>
   );
 };
