@@ -4,8 +4,11 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DatabaseType } from 'typeorm';
 import { AppModule } from './app/app.module';
 import { AuthModule } from './auth/auth.module';
+import { CleanUpSubscriber } from './symbol/subscribers/clean-up.subscriber';
 import { SymbolModule } from './symbol/symbol.module';
 import { SystemModule } from './system/system.module';
+import { SymbolCountSubscriber } from './user/subscribers/symbol-count.subscriber';
+import { SystemCountSubscriber } from './user/subscribers/system-count.subscriber';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -41,8 +44,15 @@ import { UserModule } from './user/user.module';
         const name = configService.get<string>('DATABASE_NAME');
         const url = `${scheme}://${username}:${encodeURIComponent(password ?? '')}@${host}:${port}/${name}?authSource=admin`;
 
+        const subscribers = [
+          CleanUpSubscriber,
+          SymbolCountSubscriber,
+          SystemCountSubscriber
+        ];
+
         return {
           autoLoadEntities,
+          subscribers,
           type,
           url
         };

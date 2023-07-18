@@ -1,12 +1,11 @@
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SystemEntity } from '@/system/system.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntitySubscriberInterface, EventSubscriber, MongoRepository, RemoveEvent } from 'typeorm';
+import { EntitySubscriberInterface, EventSubscriber, MongoRepository, RemoveEvent } from 'typeorm';
 
 @EventSubscriber()
 export class CleanUpSubscriber implements EntitySubscriberInterface<SystemEntity> {
-  constructor(dataSource: DataSource, @InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>) {
-    dataSource.subscribers.push(this);
+  constructor(@InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>) {
   }
 
   listenTo(): string | Function {

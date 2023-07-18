@@ -3,12 +3,11 @@ import { SymbolEntity } from '@/symbol/symbol.entity';
 import { UserEntity } from '@/user/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, MongoRepository, RemoveEvent } from 'typeorm';
+import { EntitySubscriberInterface, EventSubscriber, InsertEvent, MongoRepository, RemoveEvent } from 'typeorm';
 
 @EventSubscriber()
 export class SymbolCountSubscriber implements EntitySubscriberInterface<SymbolEntity> {
-  constructor(dataSource: DataSource, @InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>) {
-    dataSource.subscribers.push(this);
+  constructor(@InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>) {
   }
 
   listenTo(): string | Function {
