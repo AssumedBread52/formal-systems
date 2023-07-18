@@ -10,7 +10,7 @@ export class AppController {
   };
 
   constructor(configService: ConfigService) {
-    this.packageJson = JSON.parse(readFileSync(configService.get<string>('npm_package_json') ?? '', 'utf-8'));
+    this.packageJson = JSON.parse(readFileSync(configService.get<string>('npm_package_json')!, 'utf-8'));
   }
 
   @Get('status')
