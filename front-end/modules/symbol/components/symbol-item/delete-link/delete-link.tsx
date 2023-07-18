@@ -5,7 +5,7 @@ import { SystemTitle } from '@/system/types/system-title';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
-export const DeleteLink = (props: Omit<Symbol & SystemTitle, 'description' | 'type' | 'content'>): ReactElement => {
+export const DeleteLink = (props: Omit<Symbol & SystemTitle, 'description' | 'type' | 'content' | 'axiomaticStatementAppearances' | 'nonAxiomaticStatementAppearances'>): ReactElement => {
   const { id, title, systemId, createdByUserId, systemTitle } = props;
 
   return (

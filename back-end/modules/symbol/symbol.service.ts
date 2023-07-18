@@ -35,6 +35,8 @@ export class SymbolService {
       type,
       content,
       systemId,
+      axiomaticStatementAppearances: 0,
+      nonAxiomaticStatementAppearances: 0,
       createdByUserId: sessionUserId
     });
   }

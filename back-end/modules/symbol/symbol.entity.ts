@@ -18,6 +18,10 @@ export class SymbolEntity {
   @Column()
   content: string = '';
   @Column()
+  axiomaticStatementAppearances: number = 0;
+  @Column()
+  nonAxiomaticStatementAppearances: number = 0;
+  @Column()
   systemId: ObjectId = new ObjectId();
   @Column()
   createdByUserId: ObjectId = new ObjectId();

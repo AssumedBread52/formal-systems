@@ -12,13 +12,13 @@ export const SymbolPage = async (props: ServerSideProps): Promise<ReactElement> 
 
   const { 'system-id': systemId = '', 'system-title': systemTitle = '', 'symbol-id': symbolId = '' } = params;
 
-  const { id, title, description, type, content, createdByUserId } = await fetchSymbol(systemId, symbolId);
+  const { id, title, description, type, content, axiomaticStatementAppearances, nonAxiomaticStatementAppearances, createdByUserId } = await fetchSymbol(systemId, symbolId);
 
   return (
     <AntdCard title={title}>
       <SymbolItem id={id} title={title} description={description} type={type} content={content} systemId={systemId} createdByUserId={createdByUserId} systemTitle={decodeURIComponent(systemTitle)} />
       <AntdDivider />
-      <SymbolDescription />
+      <SymbolDescription axiomaticStatementAppearances={axiomaticStatementAppearances} nonAxiomaticStatementAppearances={nonAxiomaticStatementAppearances} />
     </AntdCard>
   );
 };

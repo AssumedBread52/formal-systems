@@ -3,7 +3,7 @@ import { SystemTitle } from '@/system/types/system-title';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
-export const ExploreLink = (props: Omit<Symbol & SystemTitle, 'description' | 'type' | 'content' | 'createdByUserId'>): ReactElement => {
+export const ExploreLink = (props: Omit<Symbol & SystemTitle, 'description' | 'type' | 'content' | 'axiomaticStatementAppearances' | 'nonAxiomaticStatementAppearances' | 'createdByUserId'>): ReactElement => {
   const { id, title, systemId, systemTitle } = props;
 
   return (

@@ -18,7 +18,7 @@ const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps
   return UserSignature;
 });
 
-export const SymbolItem = (props: Symbol & SystemTitle): ReactElement => {
+export const SymbolItem = (props: Omit<Symbol & SystemTitle, 'axiomaticStatementAppearances' | 'nonAxiomaticStatementAppearances'>): ReactElement => {
   const { id, title, description, type, content, systemId, createdByUserId, systemTitle } = props;
 
   const actions = [
