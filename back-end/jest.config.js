@@ -6,6 +6,6 @@ module.exports = {
   },
   rootDir: 'modules',
   transform: {
-    '^.+\\.ts': 'ts-jest'
+    '^.+\\.ts$': 'ts-jest'
   }
 };
