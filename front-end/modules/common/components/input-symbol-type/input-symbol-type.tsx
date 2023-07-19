@@ -1,9 +1,9 @@
 import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item';
 import { AntdRadioGroup } from '@/common/components/antd-radio-group/antd-radio-group';
+import { AntdRadio } from '@/common/components/antd-radio/antd-radio';
 import { InputProps } from '@/common/types/input-props';
-import { ReactElement } from 'react';
-import { AntdRadio } from '../antd-radio/antd-radio';
 import { SymbolType } from '@/symbol/enums/symbol-type';
+import { ReactElement } from 'react';
 
 export const InputSymbolType = (props: InputProps): ReactElement => {
   const { name, optional } = props;
