@@ -1,6 +1,9 @@
+import { SystemEntity } from '@/system/system.entity';
+import { SystemModule } from '@/system/system.module';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { AppModule } from './app.module';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { SystemRepositoryMock } from './mocks/system-repository.mock';
 
 describe('Test the status', (): void => {
   let app: INestApplication;
@@ -8,9 +11,9 @@ describe('Test the status', (): void => {
   beforeAll(async (): Promise<void> => {
     const moduleRef = await Test.createTestingModule({
       imports: [
-        AppModule
+        SystemModule
       ]
-    }).compile();
+    }).overrideProvider(getRepositoryToken(SystemEntity)).useClass(SystemRepositoryMock).compile();
 
     app = moduleRef.createNestApplication();
 
