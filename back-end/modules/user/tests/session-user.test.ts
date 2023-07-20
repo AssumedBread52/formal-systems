@@ -14,7 +14,7 @@ import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { UserRepositoryMock } from './mocks/user-repository.mock';
 
-describe('Test the status', (): void => {
+describe('Session User', (): void => {
   const signUpPayload = {
     firstName: 'Test',
     lastName: 'User',
