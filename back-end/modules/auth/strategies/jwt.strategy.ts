@@ -21,10 +21,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrat
   private static extractJwt(request: Request): string | null {
     const { cookies } = request;
 
-    if (!cookies) {
-      return null;
-    }
-
     const { token } = cookies;
 
     if (!token) {
