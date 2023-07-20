@@ -13,7 +13,7 @@ import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { UserRepositoryMock } from './mocks/user-repository.mock';
 
-describe('Search by ID', (): void => {
+describe('Read by ID', (): void => {
   const signUpPayload = {
     firstName: 'Test',
     lastName: 'User',
