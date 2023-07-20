@@ -52,6 +52,7 @@ describe('Sign Up', (): void => {
     const cookies = response.get('Set-Cookie');
 
     expect(response.statusCode).toBe(HttpStatus.CREATED);
+    expect(response.body).toEqual({});
     expect(cookies).toHaveLength(2);
     expect(cookies[0]).toMatch(/token=.+; Max-Age=60; .+; HttpOnly; Secure/);
     expect(cookies[1]).toMatch(/authStatus=true; Max-Age=60; .+; Secure/);
@@ -70,6 +71,7 @@ describe('Sign Up', (): void => {
     const cookies = response.get('Set-Cookie');
 
     expect(response.statusCode).toBe(HttpStatus.CREATED);
+    expect(response.body).toEqual({});
     expect(cookies).toHaveLength(2);
     expect(cookies[0]).toMatch(/token=.+; Max-Age=60; .+; HttpOnly; Secure/);
     expect(cookies[1]).toMatch(/authStatus=true; Max-Age=60; .+; Secure/);
