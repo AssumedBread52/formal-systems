@@ -3,6 +3,7 @@ import { UserService } from '@/user/user.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class AuthService {
@@ -37,11 +38,9 @@ export class AuthService {
     return user;
   }
 
-  generateToken(user: UserEntity): Promise<string> {
-    const { _id } = user;
-
+  generateToken(userId: ObjectId): Promise<string> {
     return this.jwtService.signAsync({
-      id: _id.toString()
+      id: userId.toString()
     });
   }
 };

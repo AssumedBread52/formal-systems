@@ -1,10 +1,10 @@
-import { UserEntity } from '@/user/user.entity';
 import { UserService } from '@/user/user.service';
 import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards, ValidationPipe } from '@nestjs/common';
 import { Response } from 'express';
+import { ObjectId } from 'mongodb';
 import { AuthService } from './auth.service';
 import { SignUpPayload } from './data-transfer-objects/sign-up.payload';
-import { SessionUser } from './decorators/session-user';
+import { SessionUserId } from './decorators/session-user-id';
 import { JwtGuard } from './guards/jwt.guard';
 import { LocalGuard } from './guards/local.guard';
 
@@ -16,8 +16,8 @@ export class AuthController {
   @UseGuards(JwtGuard)
   @Post('refresh-token')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async refreshToken(@SessionUser() sessionUser: UserEntity, @Res({ passthrough: true }) response: Response): Promise<void> {
-    const token = await this.authService.generateToken(sessionUser);
+  async refreshToken(@SessionUserId() sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): Promise<void> {
+    const token = await this.authService.generateToken(sessionUserId);
 
     this.setTokenCookie(response, token);
   }
@@ -25,8 +25,8 @@ export class AuthController {
   @UseGuards(LocalGuard)
   @Post('sign-in')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async signIn(@SessionUser() sessionUser: UserEntity, @Res({ passthrough: true }) response: Response): Promise<void> {
-    const token = await this.authService.generateToken(sessionUser);
+  async signIn(@SessionUserId() sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): Promise<void> {
+    const token = await this.authService.generateToken(sessionUserId);
 
     this.setTokenCookie(response, token);
   }
@@ -41,9 +41,9 @@ export class AuthController {
 
   @Post('sign-up')
   async signUp(@Body(ValidationPipe) signUpPayload: SignUpPayload, @Res({ passthrough: true }) response: Response): Promise<void> {
-    const user = await this.userService.create(signUpPayload);
+    const { _id } = await this.userService.create(signUpPayload);
 
-    const token = await this.authService.generateToken(user);
+    const token = await this.authService.generateToken(_id);
 
     this.setTokenCookie(response, token);
   }
