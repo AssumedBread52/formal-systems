@@ -3,7 +3,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 
-describe('Test the status', (): void => {
+describe('Test the status check', (): void => {
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
