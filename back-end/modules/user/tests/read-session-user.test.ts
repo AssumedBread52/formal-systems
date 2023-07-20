@@ -41,7 +41,7 @@ describe('Read Session User', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).get('/user/session-user', console.log);
+    const response = await request(app.getHttpServer()).get('/user/session-user');
 
     expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
     expect(response.body).toEqual({
