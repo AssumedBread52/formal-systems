@@ -1,0 +1,9 @@
+{
+  "exclude": [
+    ".nest",
+    "coverage",
+    "modules/**/tests/*",
+    "node_modules"
+  ],
+  "extends": "./tsconfig.json"
+}
