@@ -71,7 +71,7 @@ export class SystemController {
   @UseGuards(JwtGuard)
   @Post()
   @HttpCode(HttpStatus.NO_CONTENT)
-  postSystem(@SessionUserId() sessionUserId: ObjectId, @Body(ValidationPipe) newSystemPayload: NewSystemPayload): void {
-    this.systemService.create(newSystemPayload, sessionUserId);
+  async postSystem(@SessionUserId() sessionUserId: ObjectId, @Body(ValidationPipe) newSystemPayload: NewSystemPayload): Promise<void> {
+    await this.systemService.create(newSystemPayload, sessionUserId);
   }
 };
