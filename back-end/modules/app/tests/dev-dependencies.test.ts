@@ -19,7 +19,7 @@ describe('Dev-Dependencies', (): void => {
     await app.init();
   });
 
-  it('tests dependencies response', async (): Promise<void> => {
+  it('succeeds in returning the dev-dependencies with their respective versions', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).get('/app/dev-dependencies');
 
     const { devDependencies } = JSON.parse(readFileSync(process.env.npm_package_json!, 'utf-8'));
