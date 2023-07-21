@@ -42,9 +42,11 @@ describe('Sign In', (): void => {
   });
 
   it('fails with incorrect e-mail address', async (): Promise<void> => {
+    const { password } = signUpPayload;
+
     const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
-      email: signUpPayload.email + 'extra',
-      password: signUpPayload.password
+      email: 'incorrect',
+      password
     });
 
     expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
@@ -56,9 +58,11 @@ describe('Sign In', (): void => {
   });
 
   it('fails with incorrect password', async (): Promise<void> => {
+    const { email } = signUpPayload;
+
     const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
-      email: signUpPayload.email,
-      password: signUpPayload.password + 'extra'
+      email,
+      password: 'incorrect'
     });
 
     expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
