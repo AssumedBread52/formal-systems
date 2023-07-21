@@ -50,7 +50,7 @@ describe('Read by ID', (): void => {
     });
   });
 
-  it('succeeds with valid token', async (): Promise<void> => {
+  it('succeeds with a valid ID', async (): Promise<void> => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     expect(userRepositoryMock.users.length).toBeGreaterThan(0);
