@@ -34,9 +34,16 @@ describe('Update Session User', (): void => {
     await app.init();
 
     await request(app.getHttpServer()).post('/auth/sign-up').send({
-      firstName: 'Test',
-      lastName: 'User',
-      email: 'test@test.com',
+      firstName: 'Test1',
+      lastName: 'User1',
+      email: 'test1@test.com',
+      password: '123456'
+    });
+
+    await request(app.getHttpServer()).post('/auth/sign-up').send({
+      firstName: 'Test2',
+      lastName: 'User2',
+      email: 'test2@test.com',
       password: '123456'
     });
   });
@@ -69,6 +76,26 @@ describe('Update Session User', (): void => {
         'newEmail must be an email'
       ],
       statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails if new e-mail address is already in use', async (): Promise<void> => {
+    const token = await generateToken(app);
+
+    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newFirstName: 'Example',
+      newLastName: 'Case',
+      newEmail: 'test2@test.com',
+      newPassword: 'qwerty'
+    });
+
+    expect(response.statusCode).toBe(HttpStatus.CONFLICT);
+    expect(response.body).toEqual({
+      error: 'Conflict',
+      message: 'Users must have a unique e-mail address.',
+      statusCode: HttpStatus.CONFLICT
     });
   });
 
