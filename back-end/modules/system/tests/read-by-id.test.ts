@@ -1,5 +1,6 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
+import { generateToken } from '@/auth/tests/helpers/generate-token';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemModule } from '@/system/system.module';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -12,15 +13,8 @@ import * as cookieParser from 'cookie-parser';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { SystemRepositoryMock } from './mocks/system-repository.mock';
-import { AuthService } from '@/auth/auth.service';
 
 describe('Read by ID', (): void => {
-  const signUpPayload = {
-    firstName: 'Test',
-    lastName: 'User',
-    email: 'test@test.com',
-    password: '123456'
-  };
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -37,11 +31,14 @@ describe('Read by ID', (): void => {
 
     await app.init();
 
-    await request(app.getHttpServer()).post('/auth/sign-up').send(signUpPayload);
+    await request(app.getHttpServer()).post('/auth/sign-up').send({
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test@test.com',
+      password: '123456'
+    });
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    const token = await app.get(AuthService).generateToken(userRepositoryMock.users[0]._id);
+    const token = await generateToken(app);
 
     await request(app.getHttpServer()).post('/system').set('Cookie', [
       `token=${token}`
@@ -67,18 +64,18 @@ describe('Read by ID', (): void => {
 
     expect(systemRepositoryMock.systems.length).toBeGreaterThan(0);
 
-    const { _id } = systemRepositoryMock.systems[0];
+    const { _id, title, description, constantSymbolCount, variableSymbolCount, createdByUserId } = systemRepositoryMock.systems[0];
 
     const response = await request(app.getHttpServer()).get(`/system/${_id}`);
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toEqual({
-      id: systemRepositoryMock.systems[0]._id.toString(),
-      title: systemRepositoryMock.systems[0].title,
-      description: systemRepositoryMock.systems[0].description,
-      constantSymbolCount: systemRepositoryMock.systems[0].constantSymbolCount,
-      variableSymbolCount: systemRepositoryMock.systems[0].variableSymbolCount,
-      createdByUserId: systemRepositoryMock.systems[0].createdByUserId.toString()
+      id: _id.toString(),
+      title,
+      description,
+      constantSymbolCount,
+      variableSymbolCount,
+      createdByUserId: createdByUserId.toString()
     });
   });
 
