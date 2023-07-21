@@ -1,6 +1,5 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
-import { AuthService } from '@/auth/auth.service';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.mock';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -11,6 +10,7 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
 import * as request from 'supertest';
+import { generateToken } from './helpers/generate-token';
 import { testWithExpiredToken } from './helpers/test-with-expired-token';
 import { testWithInvalidToken } from './helpers/test-with-invalid-token';
 import { testWithMissingToken } from './helpers/test-with-missing-token';
@@ -53,12 +53,7 @@ describe('Refresh Token', (): void => {
   });
 
   it('succeeds with valid token', async (): Promise<void> => {
-    const authService = app.get(AuthService);
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
-
-    const token = await authService.generateToken(userRepositoryMock.users[0]._id);
+    const token = await generateToken(app);
 
     const response = await request(app.getHttpServer()).post('/auth/refresh-token').set('Cookie', [
       `token=${token}`
