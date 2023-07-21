@@ -1,6 +1,9 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
+import { testWithExpiredToken } from '@/auth/tests/helpers/test-with-expired-token';
+import { testWithInvalidToken } from '@/auth/tests/helpers/test-with-invalid-token';
+import { testWithMissingToken } from '@/auth/tests/helpers/test-with-missing-token';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.mock';
 import { UserEntity } from '@/user/user.entity';
@@ -10,7 +13,6 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
-import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { UserRepositoryMock } from './mocks/user-repository.mock';
 
@@ -41,30 +43,15 @@ describe('Read Session User', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).get('/user/session-user');
-
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      message: 'Unauthorized',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+    await testWithMissingToken(app, 'get', '/user/session-user');
   });
 
-  it('fails with token that has an invalid user id', async (): Promise<void> => {
-    const authService = app.get(AuthService);
+  it('fails with an invalid token', async (): Promise<void> => {
+    await testWithInvalidToken(app, 'get', '/user/session-user');
+  });
 
-    const token = await authService.generateToken(new ObjectId());
-
-    const response = await request(app.getHttpServer()).get('/user/session-user').set('Cookie', [
-      `token=${token}`
-    ]);
-
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      error: 'Unauthorized',
-      message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+  it('fails with an expired token', async (): Promise<void> => {
+    await testWithExpiredToken(app, 'get', '/user/session-user');
   });
 
   it('succeeds with a valid token', async (): Promise<void> => {
