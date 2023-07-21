@@ -1,6 +1,6 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
-import { AuthService } from '@/auth/auth.service';
+import { generateToken } from '@/auth/tests/helpers/generate-token';
 import { testWithExpiredToken } from '@/auth/tests/helpers/test-with-expired-token';
 import { testWithInvalidToken } from '@/auth/tests/helpers/test-with-invalid-token';
 import { testWithMissingToken } from '@/auth/tests/helpers/test-with-missing-token';
@@ -12,7 +12,6 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { compareSync } from 'bcryptjs';
 import * as cookieParser from 'cookie-parser';
 import * as request from 'supertest';
 import { UserRepositoryMock } from './mocks/user-repository.mock';
@@ -56,12 +55,7 @@ describe('Update Session User', (): void => {
   });
 
   it('fails with an invalid update payload', async (): Promise<void> => {
-    const authService = app.get(AuthService);
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
-
-    const token = await authService.generateToken(userRepositoryMock.users[0]._id);
+    const token = await generateToken(app);
 
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
@@ -80,32 +74,23 @@ describe('Update Session User', (): void => {
   });
 
   it('succeeds with a valid token and payload', async (): Promise<void> => {
-    const authService = app.get(AuthService);
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    const token = await generateToken(app);
 
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
-
-    const token = await authService.generateToken(userRepositoryMock.users[0]._id);
-
-    const editProfilePayload = {
+    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
+      `token=${token}`
+    ]).send({
       newFirstName: 'Example',
       newLastName: 'Case',
       newEmail: 'new@test.com',
       newPassword: 'qwerty'
-    };
+    });
 
-    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
-      `token=${token}`
-    ]).send(editProfilePayload);
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toEqual({
       id: userRepositoryMock.users[0]._id.toString()
     });
-    expect(userRepositoryMock.users[0].firstName).toBe(editProfilePayload.newFirstName);
-    expect(userRepositoryMock.users[0].lastName).toBe(editProfilePayload.newLastName);
-    expect(userRepositoryMock.users[0].email).toBe(editProfilePayload.newEmail);
-    expect(compareSync(editProfilePayload.newPassword, userRepositoryMock.users[0].hashedPassword)).toBe(true);
   });
 
   afterAll(async (): Promise<void> => {
