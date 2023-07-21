@@ -59,8 +59,13 @@ describe('Sign Out', (): void => {
       `token=${token}`
     ]);
 
+    const cookies = response.get('Set-Cookie');
+
     expect(response.statusCode).toBe(HttpStatus.NO_CONTENT);
     expect(response.body).toEqual({});
+    expect(cookies).toHaveLength(2);
+    expect(cookies[0]).toMatch(/^token=; Path=\/; Expires=Thu, 01 Jan 1970 00:00:00 GMT$/);
+    expect(cookies[1]).toMatch(/^authStatus=; Path=\/; Expires=Thu, 01 Jan 1970 00:00:00 GMT$/);
   });
 
   afterAll(async (): Promise<void> => {
