@@ -44,7 +44,7 @@ describe('Sign Out', (): void => {
   });
 
   it('fails with token that has an invalid user id', async (): Promise<void> => {
-    testWithInvalidToken(app, '/auth/sign-out');
+    await testWithInvalidToken(app, '/auth/sign-out');
   });
 
   it('succeeds with valid token', async (): Promise<void> => {
