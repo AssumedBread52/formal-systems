@@ -70,9 +70,11 @@ describe('Sign In', (): void => {
   });
 
   it('succeeds with correct e-mail address and password', async (): Promise<void> => {
+    const { email, password } = signUpPayload;
+
     const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
-      email: signUpPayload.email,
-      password: signUpPayload.password
+      email,
+      password
     });
 
     expect(response.statusCode).toBe(HttpStatus.NO_CONTENT);
