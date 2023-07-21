@@ -4,7 +4,7 @@ import { Test } from '@nestjs/testing';
 import { readFileSync } from 'fs';
 import * as request from 'supertest';
 
-describe('Test the dependencies call', (): void => {
+describe('Dependencies', (): void => {
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
