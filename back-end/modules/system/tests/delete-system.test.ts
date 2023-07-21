@@ -17,7 +17,7 @@ import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { SystemRepositoryMock } from './mocks/system-repository.mock';
 
-describe('Sign Up', (): void => {
+describe('Delete System', (): void => {
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
