@@ -3,7 +3,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 
-describe('Test the status check', (): void => {
+describe('Status Check', (): void => {
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -18,7 +18,7 @@ describe('Test the status check', (): void => {
     await app.init();
   });
 
-  it('tests the status check', async (): Promise<void> => {
+  it('succeeds in indicating the server is up and running', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).get('/app/status');
 
     expect(response.statusCode).toBe(HttpStatus.NO_CONTENT);
