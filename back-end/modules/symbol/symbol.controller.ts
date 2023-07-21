@@ -21,9 +21,7 @@ export class SymbolController {
     const symbol = await this.symbolService.readById(id);
 
     if (!symbol) {
-      return {
-        id
-      };
+      return new IdPayload(new ObjectId(id));
     }
 
     const { createdByUserId } = symbol;

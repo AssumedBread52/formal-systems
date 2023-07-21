@@ -77,9 +77,7 @@ export class SystemService {
 
     await this.systemRepository.save(system);
 
-    return {
-      id: _id.toString()
-    };
+    return new IdPayload(_id);
   }
 
   async delete(system: SystemEntity): Promise<IdPayload> {
@@ -87,8 +85,6 @@ export class SystemService {
 
     await this.systemRepository.remove(system);
 
-    return {
-      id: _id.toString()
-    };
+    return new IdPayload(_id);
   }
 };

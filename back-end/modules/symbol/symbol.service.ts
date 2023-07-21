@@ -84,9 +84,7 @@ export class SymbolService {
 
     await this.symbolRepository.save(symbol);
 
-    return {
-      id: _id.toString()
-    };
+    return new IdPayload(_id);
   }
 
   async delete(symbol: SymbolEntity): Promise<IdPayload> {
@@ -94,8 +92,6 @@ export class SymbolService {
 
     await this.symbolRepository.remove(symbol);
 
-    return {
-      id: _id.toString()
-    };
+    return new IdPayload(_id);
   }
 };

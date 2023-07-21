@@ -36,8 +36,6 @@ export class UserController {
 
     const { _id } = sessionUser;
 
-    return {
-      id: _id.toString()
-    };
+    return new IdPayload(_id);
   }
 };

@@ -20,9 +20,7 @@ export class SystemController {
     const system = await this.systemService.readById(id);
 
     if (!system) {
-      return {
-        id
-      };
+      return new IdPayload(new ObjectId(id));
     }
 
     const { createdByUserId } = system;
