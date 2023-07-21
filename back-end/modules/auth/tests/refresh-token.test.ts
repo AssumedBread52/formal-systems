@@ -42,15 +42,15 @@ describe('Refresh Token', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testWithMissingToken(app, '/auth/refresh-token');
+    await testWithMissingToken(app, 'post', '/auth/refresh-token');
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testWithInvalidToken(app, '/auth/refresh-token');
+    await testWithInvalidToken(app, 'post', '/auth/refresh-token');
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testWithExpiredToken(app, '/auth/refresh-token');
+    await testWithExpiredToken(app, 'post', '/auth/refresh-token');
   });
 
   it('succeeds with valid token', async (): Promise<void> => {

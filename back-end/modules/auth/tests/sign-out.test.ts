@@ -40,15 +40,15 @@ describe('Sign Out', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testWithMissingToken(app, '/auth/sign-out');
+    await testWithMissingToken(app, 'post', '/auth/sign-out');
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testWithInvalidToken(app, '/auth/sign-out');
+    await testWithInvalidToken(app, 'post', '/auth/sign-out');
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testWithExpiredToken(app, '/auth/sign-out');
+    await testWithExpiredToken(app, 'post', '/auth/sign-out');
   });
 
   it('succeeds with valid token', async (): Promise<void> => {

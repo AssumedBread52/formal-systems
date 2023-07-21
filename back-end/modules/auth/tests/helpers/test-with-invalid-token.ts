@@ -3,12 +3,12 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
-export const testWithInvalidToken = async (app: INestApplication, url: string): Promise<void> => {
+export const testWithInvalidToken = async (app: INestApplication, method: 'get' | 'post', url: string): Promise<void> => {
   const authService = app.get(AuthService);
 
   const token = await authService.generateToken(new ObjectId());
 
-  const response = await request(app.getHttpServer()).post(url).set('Cookie', [
+  const response = await request(app.getHttpServer())[method](url).set('Cookie', [
     `token=${token}`
   ]);
 
