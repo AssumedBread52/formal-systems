@@ -10,8 +10,8 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
-import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
+import { testWithInvalidToken } from './helpers/test-with-invalid-token';
 import { testWithMissingToken } from './helpers/test-with-missing-token';
 
 describe('Refresh Token', (): void => {
@@ -40,24 +40,11 @@ describe('Refresh Token', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    testWithMissingToken(app, '/auth/refresh-token');
+    await testWithMissingToken(app, '/auth/refresh-token');
   });
 
   it('fails with token that has an invalid user id', async (): Promise<void> => {
-    const authService = app.get(AuthService);
-
-    const token = await authService.generateToken(new ObjectId());
-
-    const response = await request(app.getHttpServer()).post('/auth/refresh-token').set('Cookie', [
-      `token=${token}`
-    ]);
-
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      error: 'Unauthorized',
-      message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+    await testWithInvalidToken(app, '/auth/refresh-token');
   });
 
   it('succeeds with valid token', async (): Promise<void> => {
