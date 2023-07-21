@@ -17,12 +17,6 @@ import * as request from 'supertest';
 import { UserRepositoryMock } from './mocks/user-repository.mock';
 
 describe('Read Session User', (): void => {
-  const signUpPayload = {
-    firstName: 'Test',
-    lastName: 'User',
-    email: 'test@test.com',
-    password: '123456'
-  };
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -39,7 +33,12 @@ describe('Read Session User', (): void => {
 
     await app.init();
 
-    await request(app.getHttpServer()).post('/auth/sign-up').send(signUpPayload);
+    await request(app.getHttpServer()).post('/auth/sign-up').send({
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test@test.com',
+      password: '123456'
+    });
   });
 
   it('fails without a token', async (): Promise<void> => {
