@@ -14,6 +14,10 @@ export class SystemRepositoryMock {
     return args;
   });
 
+  findAndCount = jest.fn((): [SystemEntity[], number] => {
+    return [this.systems, this.systems.length];
+  });
+
   findOneBy = jest.fn((args: Partial<SystemEntity>): SystemEntity | null => {
     const { _id, title, createdByUserId } = args;
 
