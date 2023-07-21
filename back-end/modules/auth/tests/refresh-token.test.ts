@@ -43,7 +43,7 @@ describe('Refresh Token', (): void => {
     await testWithMissingToken(app, '/auth/refresh-token');
   });
 
-  it('fails with token that has an invalid user id', async (): Promise<void> => {
+  it('fails with an invalid token', async (): Promise<void> => {
     await testWithInvalidToken(app, '/auth/refresh-token');
   });
 
