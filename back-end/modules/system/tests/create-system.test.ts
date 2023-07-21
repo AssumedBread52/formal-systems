@@ -92,6 +92,7 @@ describe('Sign Up', (): void => {
 
   it('succeeds if the title is unique for this user', async (): Promise<void> => {
     const authService = app.get(AuthService);
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     expect(userRepositoryMock.users.length).toBeGreaterThan(0);
