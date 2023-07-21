@@ -11,9 +11,9 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
 import * as request from 'supertest';
+import { testWithExpiredToken } from './helpers/test-with-expired-token';
 import { testWithInvalidToken } from './helpers/test-with-invalid-token';
 import { testWithMissingToken } from './helpers/test-with-missing-token';
-import { testWithExpiredToken } from './helpers/test-with-expired-token';
 
 describe('Refresh Token', (): void => {
   const signUpPayload = {
