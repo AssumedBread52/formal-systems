@@ -3,7 +3,7 @@ import * as request from 'supertest';
 import { expectBadAuthPayloadResponse } from './expect-bad-auth-payload-response';
 import { generateToken } from './generate-token';
 
-export const testWithExpiredToken = async (app: INestApplication, method: 'get' | 'post', url: string): Promise<void> => {
+export const testWithExpiredToken = async (app: INestApplication, method: 'get' | 'patch' | 'post', url: string): Promise<void> => {
   const token = await generateToken(app);
 
   await new Promise((resolve: (value: unknown) => void): NodeJS.Timeout => {
