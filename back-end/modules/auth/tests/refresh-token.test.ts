@@ -12,6 +12,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
+import { testWithMissingToken } from './helpers/test-with-missing-token';
 
 describe('Refresh Token', (): void => {
   const signUpPayload = {
@@ -39,13 +40,7 @@ describe('Refresh Token', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).post('/auth/refresh-token');
-
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      message: 'Unauthorized',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+    testWithMissingToken(app, '/auth/refresh-token');
   });
 
   it('fails with token that has an invalid user id', async (): Promise<void> => {
