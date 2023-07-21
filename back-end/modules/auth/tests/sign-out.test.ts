@@ -13,6 +13,7 @@ import * as cookieParser from 'cookie-parser';
 import * as request from 'supertest';
 import { testWithInvalidToken } from './helpers/test-with-invalid-token';
 import { testWithMissingToken } from './helpers/test-with-missing-token';
+import { testWithExpiredToken } from './helpers/test-with-expired-token';
 
 describe('Sign Out', (): void => {
   const signUpPayload = {
@@ -45,6 +46,10 @@ describe('Sign Out', (): void => {
 
   it('fails with an invalid token', async (): Promise<void> => {
     await testWithInvalidToken(app, '/auth/sign-out');
+  });
+
+  it('fails with an expired token', async (): Promise<void> => {
+    await testWithExpiredToken(app, '/auth/sign-out');
   });
 
   it('succeeds with valid token', async (): Promise<void> => {
