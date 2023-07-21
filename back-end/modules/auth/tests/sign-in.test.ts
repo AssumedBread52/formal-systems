@@ -34,6 +34,16 @@ describe('Sign In', (): void => {
     await request(app.getHttpServer()).post('/auth/sign-up').send(signUpPayload);
   });
 
+  it('fails with invalid payload', async (): Promise<void> => {
+    const response = await request(app.getHttpServer()).post('/auth/sign-in');
+
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
   it('fails with incorrect e-mail address', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
       email: signUpPayload.email + 'extra',
