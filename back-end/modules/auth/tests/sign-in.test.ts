@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
+import { expectSetToken } from './helpers/expect-set-token';
 
 describe('Sign In', (): void => {
   const signUpPayload = {
@@ -67,13 +68,9 @@ describe('Sign In', (): void => {
       password: signUpPayload.password
     });
 
-    const cookies = response.get('Set-Cookie');
-
     expect(response.statusCode).toBe(HttpStatus.NO_CONTENT);
     expect(response.body).toEqual({});
-    expect(cookies).toHaveLength(2);
-    expect(cookies[0]).toMatch(/token=.+; Max-Age=60; .+; HttpOnly; Secure/);
-    expect(cookies[1]).toMatch(/authStatus=true; Max-Age=60; .+; Secure/);
+    expectSetToken(response);
   });
 
   afterAll(async (): Promise<void> => {

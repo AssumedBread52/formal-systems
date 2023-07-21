@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
+import { expectSetToken } from './helpers/expect-set-token';
 
 describe('Sign Up', (): void => {
   let app: INestApplication;
@@ -49,13 +50,9 @@ describe('Sign Up', (): void => {
       password: '123456'
     });
 
-    const cookies = response.get('Set-Cookie');
-
     expect(response.statusCode).toBe(HttpStatus.CREATED);
     expect(response.body).toEqual({});
-    expect(cookies).toHaveLength(2);
-    expect(cookies[0]).toMatch(/token=.+; Max-Age=60; .+; HttpOnly; Secure/);
-    expect(cookies[1]).toMatch(/authStatus=true; Max-Age=60; .+; Secure/);
+    expectSetToken(response);
   });
 
   it('fails with e-mail collision', async (): Promise<void> => {
@@ -68,13 +65,9 @@ describe('Sign Up', (): void => {
 
     const response = await request(app.getHttpServer()).post('/auth/sign-up').send(signUpPayload);
 
-    const cookies = response.get('Set-Cookie');
-
     expect(response.statusCode).toBe(HttpStatus.CREATED);
     expect(response.body).toEqual({});
-    expect(cookies).toHaveLength(2);
-    expect(cookies[0]).toMatch(/token=.+; Max-Age=60; .+; HttpOnly; Secure/);
-    expect(cookies[1]).toMatch(/authStatus=true; Max-Age=60; .+; Secure/);
+    expectSetToken(response);
 
     const collision = await request(app.getHttpServer()).post('/auth/sign-up').send(signUpPayload);
 

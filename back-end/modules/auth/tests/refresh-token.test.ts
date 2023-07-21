@@ -10,6 +10,7 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
 import * as request from 'supertest';
+import { expectSetToken } from './helpers/expect-set-token';
 import { generateToken } from './helpers/generate-token';
 import { testWithExpiredToken } from './helpers/test-with-expired-token';
 import { testWithInvalidToken } from './helpers/test-with-invalid-token';
@@ -59,13 +60,9 @@ describe('Refresh Token', (): void => {
       `token=${token}`
     ]);
 
-    const cookies = response.get('Set-Cookie');
-
     expect(response.statusCode).toBe(HttpStatus.NO_CONTENT);
     expect(response.body).toEqual({});
-    expect(cookies).toHaveLength(2);
-    expect(cookies[0]).toMatch(/token=.+; Max-Age=60; .+; HttpOnly; Secure/);
-    expect(cookies[1]).toMatch(/authStatus=true; Max-Age=60; .+; Secure/);
+    expectSetToken(response);
   });
 
   afterAll(async (): Promise<void> => {
