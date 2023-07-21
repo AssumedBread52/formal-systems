@@ -17,12 +17,6 @@ import { testWithInvalidToken } from './helpers/test-with-invalid-token';
 import { testWithMissingToken } from './helpers/test-with-missing-token';
 
 describe('Refresh Token', (): void => {
-  const signUpPayload = {
-    firstName: 'Test',
-    lastName: 'User',
-    email: 'test@test.com',
-    password: '123456'
-  };
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -38,7 +32,12 @@ describe('Refresh Token', (): void => {
 
     await app.init();
 
-    await request(app.getHttpServer()).post('/auth/sign-up').send(signUpPayload);
+    await request(app.getHttpServer()).post('/auth/sign-up').send({
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test@test.com',
+      password: '123456'
+    });
   });
 
   it('fails without a token', async (): Promise<void> => {
