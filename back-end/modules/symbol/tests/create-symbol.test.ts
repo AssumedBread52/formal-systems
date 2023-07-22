@@ -191,7 +191,10 @@ describe('Create Symbol', (): void => {
     });
 
     expect(collision.statusCode).toBe(HttpStatus.CONFLICT);
-    expect(response.body).toEqual({
+    expect(collision.body).toEqual({
+      error: 'Conflict',
+      message: 'Symbols within a formal system must have unique content.',
+      statusCode: HttpStatus.CONFLICT
     });
   });
 
