@@ -34,9 +34,9 @@ export class SymbolService {
       description,
       type,
       content,
-      systemId,
       axiomaticStatementAppearances: 0,
       nonAxiomaticStatementAppearances: 0,
+      systemId,
       createdByUserId: sessionUserId
     });
   }
