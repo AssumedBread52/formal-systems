@@ -83,6 +83,6 @@ export class SymbolController {
       throw new ForbiddenException('Symbols cannot be added to formal systems unless you created them.');
     }
 
-    this.symbolService.create(newSymbolPayload, sessionUserId, _id);
+    await this.symbolService.create(newSymbolPayload, sessionUserId, _id);
   }
 };
