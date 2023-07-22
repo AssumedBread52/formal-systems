@@ -62,15 +62,15 @@ describe('Create Symbol', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testWithMissingToken(app, 'post', '/system');
+    await testWithMissingToken(app, 'post', `/system/${new ObjectId()}/symbol`);
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testWithInvalidToken(app, 'post', '/system');
+    await testWithInvalidToken(app, 'post', `/system/${new ObjectId()}/symbol`);
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testWithExpiredToken(app, 'post', '/system');
+    await testWithExpiredToken(app, 'post', `/system/${new ObjectId()}/symbol`);
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
