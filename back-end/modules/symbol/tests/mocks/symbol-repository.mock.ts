@@ -5,10 +5,10 @@ export class SymbolRepositoryMock {
   symbols = [] as SymbolEntity[];
 
   findOneBy = jest.fn((args: Partial<SymbolEntity>): SymbolEntity | null => {
-    const { content, systemId } = args;
+    const { _id, content, systemId } = args;
 
     for (const symbol of this.symbols) {
-      if ((!content || content === symbol.content) && (!systemId || systemId.toString() === symbol.systemId.toString())) {
+      if ((!_id || _id.toString() === symbol._id.toString()) && (!content || content === symbol.content) && (!systemId || systemId.toString() === symbol.systemId.toString())) {
         return symbol;
       }
     }
