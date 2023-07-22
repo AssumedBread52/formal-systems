@@ -11,7 +11,9 @@ export class PaginatedResultsPayload {
   @ValidateNested({
     each: true
   })
-  @Type(() => SymbolPayload)
+  @Type(() => {
+    return SymbolPayload;
+  })
   results: SymbolPayload[];
 
   constructor(total: number, results: SymbolEntity[]) {
