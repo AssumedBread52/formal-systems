@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 
 export class UserRepositoryMock {
   users = [] as UserEntity[];
+
   findOneBy = jest.fn((args: Partial<UserEntity>): UserEntity | null => {
     const { _id, email } = args;
 
