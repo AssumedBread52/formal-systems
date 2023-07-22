@@ -16,6 +16,16 @@ export class SymbolRepositoryMock {
     return null;
   });
 
+  remove = jest.fn((args: SymbolEntity): SymbolEntity => {
+    const { _id } = args;
+
+    this.symbols = this.symbols.filter((system: SymbolEntity): boolean => {
+      return _id.toString() !== system._id.toString();
+    });
+
+    return args;
+  });
+
   save = jest.fn((args: SymbolEntity): SymbolEntity => {
     args._id = new ObjectId();
 

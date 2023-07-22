@@ -4,16 +4,6 @@ import { ObjectId } from 'mongodb';
 export class SystemRepositoryMock {
   systems = [] as SystemEntity[];
 
-  remove = jest.fn((args: SystemEntity): SystemEntity => {
-    const { _id } = args;
-
-    this.systems = this.systems.filter((system: SystemEntity): boolean => {
-      return _id.toString() !== system._id.toString();
-    });
-
-    return args;
-  });
-
   findAndCount = jest.fn((): [SystemEntity[], number] => {
     return [this.systems, this.systems.length];
   });
@@ -28,6 +18,16 @@ export class SystemRepositoryMock {
     }
 
     return null;
+  });
+
+  remove = jest.fn((args: SystemEntity): SystemEntity => {
+    const { _id } = args;
+
+    this.systems = this.systems.filter((system: SystemEntity): boolean => {
+      return _id.toString() !== system._id.toString();
+    });
+
+    return args;
   });
 
   save = jest.fn((args: SystemEntity): SystemEntity => {
