@@ -1,5 +1,6 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
+import { AuthService } from '@/auth/auth.service';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.mock';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -9,10 +10,10 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
+import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { generateToken } from './helpers/generate-token';
 import { testWithExpiredToken } from './helpers/test-with-expired-token';
-import { testWithInvalidToken } from './helpers/test-with-invalid-token';
 
 describe('Sign Out', (): void => {
   let app: INestApplication;
@@ -49,7 +50,20 @@ describe('Sign Out', (): void => {
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testWithInvalidToken(app, 'post', '/auth/sign-out');
+    const authService = app.get(AuthService);
+  
+    const token = await authService.generateToken(new ObjectId());
+  
+    const response = await request(app.getHttpServer()).post('/auth/sign-out').set('Cookie', [
+      `token=${token}`
+    ]);
+  
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an expired token', async (): Promise<void> => {

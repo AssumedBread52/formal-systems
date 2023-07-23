@@ -1,8 +1,8 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
+import { AuthService } from '@/auth/auth.service';
 import { generateToken } from '@/auth/tests/helpers/generate-token';
 import { testWithExpiredToken } from '@/auth/tests/helpers/test-with-expired-token';
-import { testWithInvalidToken } from '@/auth/tests/helpers/test-with-invalid-token';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemModule } from '@/system/system.module';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -67,7 +67,20 @@ describe('Delete System', (): void => {
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testWithInvalidToken(app, 'delete', `/system/${new ObjectId()}`);
+    const authService = app.get(AuthService);
+  
+    const token = await authService.generateToken(new ObjectId());
+  
+    const response = await request(app.getHttpServer()).delete(`/system/${new ObjectId()}`).set('Cookie', [
+      `token=${token}`
+    ]);
+  
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an expired token', async (): Promise<void> => {

@@ -1,8 +1,8 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
+import { AuthService } from '@/auth/auth.service';
 import { generateToken } from '@/auth/tests/helpers/generate-token';
 import { testWithExpiredToken } from '@/auth/tests/helpers/test-with-expired-token';
-import { testWithInvalidToken } from '@/auth/tests/helpers/test-with-invalid-token';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
@@ -71,7 +71,20 @@ describe('Create Symbol', (): void => {
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testWithInvalidToken(app, 'post', `/system/${new ObjectId()}/symbol`);
+    const authService = app.get(AuthService);
+  
+    const token = await authService.generateToken(new ObjectId());
+  
+    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/symbol`).set('Cookie', [
+      `token=${token}`
+    ]);
+  
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an expired token', async (): Promise<void> => {
