@@ -1,6 +1,6 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
-import { generateToken } from '@/auth/tests/helpers/generate-token';
+import { AuthService } from '@/auth/auth.service';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemModule } from '@/system/system.module';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -38,7 +38,13 @@ describe('Read by ID', (): void => {
       password: '123456'
     });
 
-    const token = await generateToken(app);
+    const authService = app.get(AuthService);
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+  
+    const { _id } = userRepositoryMock.users[0];
+  
+    const token = await authService.generateToken(_id);
 
     await request(app.getHttpServer()).post('/system').set('Cookie', [
       `token=${token}`

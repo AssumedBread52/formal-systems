@@ -1,7 +1,6 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
-import { generateToken } from '@/auth/tests/helpers/generate-token';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemModule } from '@/system/system.module';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -45,7 +44,13 @@ describe('Delete System', (): void => {
       password: '123456'
     });
 
-    const token = await generateToken(app);
+    const authService = app.get(AuthService);
+  
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+  
+    const { _id } = userRepositoryMock.users[0];
+  
+    const token = await authService.generateToken(_id);
 
     await request(app.getHttpServer()).post('/system').set('Cookie', [
       `token=${token}`
@@ -83,7 +88,15 @@ describe('Delete System', (): void => {
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    const token = await generateToken(app);
+    const authService = app.get(AuthService);
+  
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+  
+    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+  
+    const { _id } = userRepositoryMock.users[0];
+  
+    const token = await authService.generateToken(_id);
   
     await new Promise((resolve: (value: unknown) => void): NodeJS.Timeout => {
       return setTimeout(resolve, 2000);
@@ -101,7 +114,15 @@ describe('Delete System', (): void => {
   });
 
   it('succeeds if the system does not exist', async (): Promise<void> => {
-    const token = await generateToken(app);
+    const authService = app.get(AuthService);
+  
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+  
+    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+  
+    const { _id } = userRepositoryMock.users[0];
+  
+    const token = await authService.generateToken(_id);
 
     const systemId = new ObjectId();
 
@@ -116,7 +137,15 @@ describe('Delete System', (): void => {
   });
 
   it('fails if the system createdByUserId does not match the user ID in the token', async (): Promise<void> => {
-    const token = await generateToken(app, 1);
+    const authService = app.get(AuthService);
+  
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+  
+    expect(userRepositoryMock.users.length).toBeGreaterThan(1);
+  
+    const { _id: userId } = userRepositoryMock.users[1];
+  
+    const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
@@ -137,7 +166,15 @@ describe('Delete System', (): void => {
   });
 
   it('succeeds if the system createdByUserId matches the user ID in the token', async (): Promise<void> => {
-    const token = await generateToken(app);
+    const authService = app.get(AuthService);
+  
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+  
+    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+  
+    const { _id: userId } = userRepositoryMock.users[0];
+  
+    const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 

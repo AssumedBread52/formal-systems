@@ -1,7 +1,6 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
-import { generateToken } from '@/auth/tests/helpers/generate-token';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.mock';
 import { UserEntity } from '@/user/user.entity';
@@ -68,7 +67,15 @@ describe('Read Session User', (): void => {
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    const token = await generateToken(app);
+    const authService = app.get(AuthService);
+  
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+  
+    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+  
+    const { _id } = userRepositoryMock.users[0];
+  
+    const token = await authService.generateToken(_id);
   
     await new Promise((resolve: (value: unknown) => void): NodeJS.Timeout => {
       return setTimeout(resolve, 2000);
@@ -86,23 +93,29 @@ describe('Read Session User', (): void => {
   });
 
   it('succeeds with a valid token', async (): Promise<void> => {
-    const token = await generateToken(app);
+    const authService = app.get(AuthService);
+  
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+  
+    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+  
+    const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount } = userRepositoryMock.users[0];
+  
+    const token = await authService.generateToken(_id);
 
     const response = await request(app.getHttpServer()).get('/user/session-user').set('Cookie', [
       `token=${token}`
     ]);
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toEqual({
-      id: userRepositoryMock.users[0]._id.toString(),
-      firstName: userRepositoryMock.users[0].firstName,
-      lastName: userRepositoryMock.users[0].lastName,
-      email: userRepositoryMock.users[0].email,
-      systemCount: userRepositoryMock.users[0].systemCount,
-      constantSymbolCount: userRepositoryMock.users[0].constantSymbolCount,
-      variableSymbolCount: userRepositoryMock.users[0].variableSymbolCount
+      id: _id.toString(),
+      firstName,
+      lastName,
+      email,
+      systemCount,
+      constantSymbolCount,
+      variableSymbolCount
     });
   });
 

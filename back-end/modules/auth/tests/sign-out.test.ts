@@ -12,7 +12,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { generateToken } from './helpers/generate-token';
 
 describe('Sign Out', (): void => {
   let app: INestApplication;
@@ -66,7 +65,15 @@ describe('Sign Out', (): void => {
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    const token = await generateToken(app);
+    const authService = app.get(AuthService);
+  
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+  
+    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+  
+    const { _id } = userRepositoryMock.users[0];
+  
+    const token = await authService.generateToken(_id);
   
     await new Promise((resolve: (value: unknown) => void): NodeJS.Timeout => {
       return setTimeout(resolve, 2000);
@@ -84,7 +91,15 @@ describe('Sign Out', (): void => {
   });
 
   it('succeeds with valid token', async (): Promise<void> => {
-    const token = await generateToken(app);
+    const authService = app.get(AuthService);
+  
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+  
+    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+  
+    const { _id } = userRepositoryMock.users[0];
+  
+    const token = await authService.generateToken(_id);
 
     const response = await request(app.getHttpServer()).post('/auth/sign-out').set('Cookie', [
       `token=${token}`
