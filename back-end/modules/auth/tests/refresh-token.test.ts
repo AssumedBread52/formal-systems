@@ -13,7 +13,6 @@ import * as cookieParser from 'cookie-parser';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { generateToken } from './helpers/generate-token';
-import { testWithExpiredToken } from './helpers/test-with-expired-token';
 
 describe('Refresh Token', (): void => {
   let app: INestApplication;
@@ -67,7 +66,21 @@ describe('Refresh Token', (): void => {
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testWithExpiredToken(app, 'post', '/auth/refresh-token');
+    const token = await generateToken(app);
+  
+    await new Promise((resolve: (value: unknown) => void): NodeJS.Timeout => {
+      return setTimeout(resolve, 2000);
+    });
+  
+    const response = await request(app.getHttpServer()).post('/auth/refresh-token').set('Cookie', [
+      `token=${token}`
+    ]);
+  
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('succeeds with valid token', async (): Promise<void> => {

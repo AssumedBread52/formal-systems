@@ -2,7 +2,6 @@ import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
 import { generateToken } from '@/auth/tests/helpers/generate-token';
-import { testWithExpiredToken } from '@/auth/tests/helpers/test-with-expired-token';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemModule } from '@/system/system.module';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -69,7 +68,21 @@ describe('Create System', (): void => {
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testWithExpiredToken(app, 'post', '/system');
+    const token = await generateToken(app);
+  
+    await new Promise((resolve: (value: unknown) => void): NodeJS.Timeout => {
+      return setTimeout(resolve, 2000);
+    });
+  
+    const response = await request(app.getHttpServer()).post('/system').set('Cookie', [
+      `token=${token}`
+    ]);
+  
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {

@@ -2,7 +2,6 @@ import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
 import { generateToken } from '@/auth/tests/helpers/generate-token';
-import { testWithExpiredToken } from '@/auth/tests/helpers/test-with-expired-token';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.mock';
 import { UserEntity } from '@/user/user.entity';
@@ -69,7 +68,21 @@ describe('Read Session User', (): void => {
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testWithExpiredToken(app, 'get', '/user/session-user');
+    const token = await generateToken(app);
+  
+    await new Promise((resolve: (value: unknown) => void): NodeJS.Timeout => {
+      return setTimeout(resolve, 2000);
+    });
+  
+    const response = await request(app.getHttpServer()).get('/user/session-user').set('Cookie', [
+      `token=${token}`
+    ]);
+  
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('succeeds with a valid token', async (): Promise<void> => {

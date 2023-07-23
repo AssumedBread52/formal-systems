@@ -2,7 +2,6 @@ import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
 import { generateToken } from '@/auth/tests/helpers/generate-token';
-import { testWithExpiredToken } from '@/auth/tests/helpers/test-with-expired-token';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
@@ -88,7 +87,21 @@ describe('Create Symbol', (): void => {
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testWithExpiredToken(app, 'post', `/system/${new ObjectId()}/symbol`);
+    const token = await generateToken(app);
+  
+    await new Promise((resolve: (value: unknown) => void): NodeJS.Timeout => {
+      return setTimeout(resolve, 2000);
+    });
+  
+    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/symbol`).set('Cookie', [
+      `token=${token}`
+    ]);
+  
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
