@@ -1,6 +1,8 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { generateToken } from '@/auth/tests/helpers/generate-token';
+import { testWithExpiredToken } from '@/auth/tests/helpers/test-with-expired-token';
+import { testWithInvalidToken } from '@/auth/tests/helpers/test-with-invalid-token';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
@@ -13,12 +15,9 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
+import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { SymbolRepositoryMock } from './mocks/symbol-repository.mock';
-import { testWithMissingToken } from '@/auth/tests/helpers/test-with-missing-token';
-import { ObjectId } from 'mongodb';
-import { testWithInvalidToken } from '@/auth/tests/helpers/test-with-invalid-token';
-import { testWithExpiredToken } from '@/auth/tests/helpers/test-with-expired-token';
 
 describe('Create Symbol', (): void => {
   let app: INestApplication;
@@ -75,7 +74,13 @@ describe('Create Symbol', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testWithMissingToken(app, 'delete', `/system/${new ObjectId()}/symbol/${new ObjectId()}`);
+    const response = await request(app.getHttpServer()).delete(`/system/${new ObjectId()}/symbol/${new ObjectId()}`);
+  
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an invalid token', async (): Promise<void> => {

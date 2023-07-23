@@ -3,7 +3,6 @@ import { AuthModule } from '@/auth/auth.module';
 import { generateToken } from '@/auth/tests/helpers/generate-token';
 import { testWithExpiredToken } from '@/auth/tests/helpers/test-with-expired-token';
 import { testWithInvalidToken } from '@/auth/tests/helpers/test-with-invalid-token';
-import { testWithMissingToken } from '@/auth/tests/helpers/test-with-missing-token';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.mock';
 import { UserEntity } from '@/user/user.entity';
@@ -49,7 +48,13 @@ describe('Update Session User', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testWithMissingToken(app, 'patch', '/user/session-user');
+    const response = await request(app.getHttpServer()).patch('/user/session-user');
+  
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an invalid token', async (): Promise<void> => {

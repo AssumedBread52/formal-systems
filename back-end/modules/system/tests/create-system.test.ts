@@ -3,7 +3,6 @@ import { AuthModule } from '@/auth/auth.module';
 import { generateToken } from '@/auth/tests/helpers/generate-token';
 import { testWithExpiredToken } from '@/auth/tests/helpers/test-with-expired-token';
 import { testWithInvalidToken } from '@/auth/tests/helpers/test-with-invalid-token';
-import { testWithMissingToken } from '@/auth/tests/helpers/test-with-missing-token';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemModule } from '@/system/system.module';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -42,7 +41,13 @@ describe('Create System', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testWithMissingToken(app, 'post', '/system');
+    const response = await request(app.getHttpServer()).post('/system');
+  
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an invalid token', async (): Promise<void> => {

@@ -13,7 +13,6 @@ import * as request from 'supertest';
 import { generateToken } from './helpers/generate-token';
 import { testWithExpiredToken } from './helpers/test-with-expired-token';
 import { testWithInvalidToken } from './helpers/test-with-invalid-token';
-import { testWithMissingToken } from './helpers/test-with-missing-token';
 
 describe('Sign Out', (): void => {
   let app: INestApplication;
@@ -40,7 +39,13 @@ describe('Sign Out', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testWithMissingToken(app, 'post', '/auth/sign-out');
+    const response = await request(app.getHttpServer()).post('/auth/sign-out');
+
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
