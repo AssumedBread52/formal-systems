@@ -4,6 +4,10 @@ import { ObjectId } from 'mongodb';
 export class SymbolRepositoryMock {
   symbols = [] as SymbolEntity[];
 
+  findAndCount = jest.fn((): [SymbolEntity[], number] => {
+    return [this.symbols, this.symbols.length];
+  });
+
   findOneBy = jest.fn((args: Partial<SymbolEntity>): SymbolEntity | null => {
     const { _id, content, systemId } = args;
 
