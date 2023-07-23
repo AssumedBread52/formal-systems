@@ -9,7 +9,6 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
-import { expectBadAuthPayloadResponse } from './helpers/expect-bad-auth-payload-response';
 import { expectSetToken } from './helpers/expect-set-token';
 
 describe('Sign In', (): void => {
@@ -38,7 +37,11 @@ describe('Sign In', (): void => {
   it('fails with invalid payload', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).post('/auth/sign-in');
 
-    expectBadAuthPayloadResponse(response);
+    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(response.body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with incorrect e-mail address', async (): Promise<void> => {

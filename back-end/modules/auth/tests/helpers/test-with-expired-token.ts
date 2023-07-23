@@ -1,6 +1,5 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { expectBadAuthPayloadResponse } from './expect-bad-auth-payload-response';
 import { generateToken } from './generate-token';
 
 export const testWithExpiredToken = async (app: INestApplication, method: 'delete' | 'get' | 'patch' | 'post', url: string): Promise<void> => {
@@ -14,5 +13,9 @@ export const testWithExpiredToken = async (app: INestApplication, method: 'delet
     `token=${token}`
   ]);
 
-  expectBadAuthPayloadResponse(response);
+  expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+  expect(response.body).toEqual({
+    message: 'Unauthorized',
+    statusCode: HttpStatus.UNAUTHORIZED
+  });
 };
