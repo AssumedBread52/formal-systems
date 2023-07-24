@@ -22,22 +22,19 @@ export class UserService {
     }
   }
 
-  async create(user: SignUpPayload): Promise<UserEntity> {
-    const { firstName, lastName, email, password } = user;
+  async create(signUpPayload: SignUpPayload): Promise<UserEntity> {
+    const { firstName, lastName, email, password } = signUpPayload;
 
     await this.checkForConflict(email);
 
-    const hashedPassword = await hash(password, 12);
+    const user = new UserEntity();
 
-    return this.userRepository.save({
-      firstName,
-      lastName,
-      email,
-      hashedPassword,
-      systemCount: 0,
-      constantSymbolCount: 0,
-      variableSymbolCount: 0
-    });
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.hashedPassword = await hash(password, 12);
+
+    return this.userRepository.save(user);
   }
 
   readByEmail(email: string): Promise<UserEntity | null> {
@@ -52,7 +49,7 @@ export class UserService {
     });
   }
 
-  async update(sessionUser: UserEntity, editProfilePayload: EditProfilePayload): Promise<void> {
+  async update(sessionUser: UserEntity, editProfilePayload: EditProfilePayload): Promise<UserEntity> {
     const { email } = sessionUser;
     const { newFirstName, newLastName, newEmail, newPassword } = editProfilePayload;
 
@@ -67,6 +64,6 @@ export class UserService {
       sessionUser.hashedPassword = await hash(newPassword, 12);
     }
 
-    await this.userRepository.save(sessionUser);
+    return this.userRepository.save(sessionUser);
   }
 };

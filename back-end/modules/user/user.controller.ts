@@ -32,9 +32,7 @@ export class UserController {
   @UseGuards(JwtGuard)
   @Patch('session-user')
   async patchSessionUser(@SessionUser() sessionUser: UserEntity, @Body(ValidationPipe) editProfilePayload: EditProfilePayload): Promise<IdPayload> {
-    await this.userService.update(sessionUser, editProfilePayload);
-
-    const { _id } = sessionUser;
+    const { _id } = await this.userService.update(sessionUser, editProfilePayload);
 
     return new IdPayload(_id);
   }
