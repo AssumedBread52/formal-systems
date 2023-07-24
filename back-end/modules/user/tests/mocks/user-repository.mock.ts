@@ -1,5 +1,5 @@
 import { UserEntity } from '@/user/user.entity';
-import { ObjectId } from 'mongodb';
+import { hash } from 'bcryptjs';
 
 export class UserRepositoryMock {
   users = [] as UserEntity[];
@@ -17,10 +17,31 @@ export class UserRepositoryMock {
   });
 
   save = jest.fn((args: UserEntity): UserEntity => {
-    args._id = new ObjectId();
-
     this.users.push(args);
 
     return args;
   });
+
+  private generateUsers = async (count: number): Promise<void> => {
+    if (this.users.length >= count) {
+      return;
+    }
+
+    for (let index = this.users.length; index < count; index++) {
+      const user = new UserEntity();
+
+      user.firstName = `Test${index}`;
+      user.lastName = `User${index}`;
+      user.email = `test${index}@test.com`;
+      user.hashedPassword = await hash('123456', 12);
+
+      this.users.push(user);
+    }
+  };
+
+  retrieveUser = async (index: number): Promise<UserEntity> => {
+    await this.generateUsers(index + 1);
+
+    return this.users[index];
+  }
 };
