@@ -24,21 +24,21 @@ export class SymbolService {
     }
   }
 
-  async create(symbol: NewSymbolPayload, sessionUserId: ObjectId, systemId: ObjectId): Promise<SymbolEntity> {
-    const { title, description, type, content } = symbol;
+  async create(newSymbolPayload: NewSymbolPayload, sessionUserId: ObjectId, systemId: ObjectId): Promise<SymbolEntity> {
+    const { title, description, type, content } = newSymbolPayload;
 
     await this.checkForConflict(content, systemId);
 
-    return this.symbolRepository.save({
-      title,
-      description,
-      type,
-      content,
-      axiomaticStatementAppearances: 0,
-      nonAxiomaticStatementAppearances: 0,
-      systemId,
-      createdByUserId: sessionUserId
-    });
+    const symbol = new SymbolEntity();
+
+    symbol.title = title;
+    symbol.description = description;
+    symbol.type = type;
+    symbol.content = content;
+    symbol.systemId = systemId;
+    symbol.createdByUserId = sessionUserId;
+
+    return this.symbolRepository.save(symbol);
   }
 
   readById(id: string): Promise<SymbolEntity | null> {

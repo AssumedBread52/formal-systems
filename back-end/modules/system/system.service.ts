@@ -24,18 +24,18 @@ export class SystemService {
     }
   }
 
-  async create(system: NewSystemPayload, sessionUserId: ObjectId): Promise<SystemEntity> {
-    const { title, description } = system;
+  async create(newSystemPayload: NewSystemPayload, sessionUserId: ObjectId): Promise<SystemEntity> {
+    const { title, description } = newSystemPayload;
 
     await this.checkForConflict(title, sessionUserId);
 
-    return this.systemRepository.save({
-      title,
-      description,
-      constantSymbolCount: 0,
-      variableSymbolCount: 0,
-      createdByUserId: sessionUserId
-    });
+    const system = new SystemEntity();
+
+    system.title = title;
+    system.description = description;
+    system.createdByUserId = sessionUserId;
+
+    return this.systemRepository.save(system);
   }
 
   readById(id: string): Promise<SystemEntity | null> {
