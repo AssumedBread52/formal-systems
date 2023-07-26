@@ -15,12 +15,6 @@ export class UserRepositoryMock extends EntityRepositoryMock<UserEntity> {
     return null;
   });
 
-  save = jest.fn((args: UserEntity): UserEntity => {
-    this.entities.push(args);
-
-    return args;
-  });
-
   private generateUsers = async (count: number): Promise<void> => {
     if (this.entities.length >= count) {
       return;

@@ -1,6 +1,5 @@
 import { EntityRepositoryMock } from '@/common/tests/mocks/entity-repository.mock';
 import { SystemEntity } from '@/system/system.entity';
-import { ObjectId } from 'mongodb';
 
 export class SystemRepositoryMock extends EntityRepositoryMock<SystemEntity> {
   findAndCount = jest.fn((): [SystemEntity[], number] => {
@@ -25,14 +24,6 @@ export class SystemRepositoryMock extends EntityRepositoryMock<SystemEntity> {
     this.entities = this.entities.filter((system: SystemEntity): boolean => {
       return _id.toString() !== system._id.toString();
     });
-
-    return args;
-  });
-
-  save = jest.fn((args: SystemEntity): SystemEntity => {
-    args._id = new ObjectId();
-
-    this.entities.push(args);
 
     return args;
   });

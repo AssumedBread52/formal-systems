@@ -1,6 +1,5 @@
 import { EntityRepositoryMock } from '@/common/tests/mocks/entity-repository.mock';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { ObjectId } from 'mongodb';
 
 export class SymbolRepositoryMock extends EntityRepositoryMock<SymbolEntity> {
   findAndCount = jest.fn((): [SymbolEntity[], number] => {
@@ -25,14 +24,6 @@ export class SymbolRepositoryMock extends EntityRepositoryMock<SymbolEntity> {
     this.entities = this.entities.filter((system: SymbolEntity): boolean => {
       return _id.toString() !== system._id.toString();
     });
-
-    return args;
-  });
-
-  save = jest.fn((args: SymbolEntity): SymbolEntity => {
-    args._id = new ObjectId();
-
-    this.entities.push(args);
 
     return args;
   });
