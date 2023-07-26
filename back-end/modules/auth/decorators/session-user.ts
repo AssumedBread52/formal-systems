@@ -1,5 +1,5 @@
 import { UserEntity } from '@/user/user.entity';
-import { ExecutionContext, UnauthorizedException, createParamDecorator } from '@nestjs/common';
+import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 import { Request } from 'express';
 
 export const SessionUser = createParamDecorator((_: unknown, context: ExecutionContext): UserEntity => {
@@ -7,9 +7,5 @@ export const SessionUser = createParamDecorator((_: unknown, context: ExecutionC
 
   const { user } = request;
 
-  if (!user) {
-    throw new UnauthorizedException('User must be authorized.');
-  }
-
-  return user;
+  return user!;
 });
