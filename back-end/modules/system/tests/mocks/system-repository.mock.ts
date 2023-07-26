@@ -2,10 +2,6 @@ import { EntityRepositoryMock } from '@/common/tests/mocks/entity-repository.moc
 import { SystemEntity } from '@/system/system.entity';
 
 export class SystemRepositoryMock extends EntityRepositoryMock<SystemEntity> {
-  findAndCount = jest.fn((): [SystemEntity[], number] => {
-    return [this.entities, this.entities.length];
-  });
-
   findOneBy = jest.fn((args: Partial<SystemEntity>): SystemEntity | null => {
     const { _id, title, createdByUserId } = args;
 

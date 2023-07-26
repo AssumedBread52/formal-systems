@@ -2,10 +2,6 @@ import { EntityRepositoryMock } from '@/common/tests/mocks/entity-repository.moc
 import { SymbolEntity } from '@/symbol/symbol.entity';
 
 export class SymbolRepositoryMock extends EntityRepositoryMock<SymbolEntity> {
-  findAndCount = jest.fn((): [SymbolEntity[], number] => {
-    return [this.entities, this.entities.length];
-  });
-
   findOneBy = jest.fn((args: Partial<SymbolEntity>): SymbolEntity | null => {
     const { _id, content, systemId } = args;
 
