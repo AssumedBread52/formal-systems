@@ -3,7 +3,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
-export const testInvalidToken = async (app: INestApplication, method: 'get' | 'delete' | 'patch' | 'post', path: string): Promise<void> => {
+export const testInvalidToken = async (app: INestApplication, method: 'delete' | 'get' | 'patch' | 'post', path: string): Promise<void> => {
   const authService = app.get(AuthService);
 
   const token = await authService.generateToken(new ObjectId());
