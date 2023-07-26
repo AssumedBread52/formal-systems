@@ -1,6 +1,7 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
+import { testExpiredToken } from '@/auth/tests/helpers/testExpiredToken';
 import { testMissingToken } from '@/auth/tests/helpers/testMissingToken';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
@@ -69,6 +70,10 @@ describe('Create Symbol', (): void => {
     await testMissingToken(app, 'post', `/system/${new ObjectId()}/symbol`);
   });
 
+  it('fails with an expired token', async (): Promise<void> => {
+    await testExpiredToken(app, 'post', `/system/${new ObjectId()}/symbol`);
+  });
+
   it('fails with an invalid token', async (): Promise<void> => {
     const authService = app.get(AuthService);
   
@@ -82,32 +87,6 @@ describe('Create Symbol', (): void => {
     expect(response.body).toEqual({
       error: 'Unauthorized',
       message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
-  });
-
-  it('fails with an expired token', async (): Promise<void> => {
-    const authService = app.get(AuthService);
-  
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
-    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
-    const { _id } = userRepositoryMock.entities[0];
-  
-    const token = await authService.generateToken(_id);
-  
-    await new Promise((resolve: (value: unknown) => void): NodeJS.Timeout => {
-      return setTimeout(resolve, 2000);
-    });
-  
-    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/symbol`).set('Cookie', [
-      `token=${token}`
-    ]);
-  
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      message: 'Unauthorized',
       statusCode: HttpStatus.UNAUTHORIZED
     });
   });

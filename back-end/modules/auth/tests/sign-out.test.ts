@@ -12,6 +12,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
+import { testExpiredToken } from './helpers/testExpiredToken';
 import { testMissingToken } from './helpers/testMissingToken';
 
 describe('Sign Out', (): void => {
@@ -42,6 +43,10 @@ describe('Sign Out', (): void => {
     await testMissingToken(app, 'post', '/auth/sign-out');
   });
 
+  it('fails with an expired token', async (): Promise<void> => {
+    await testExpiredToken(app, 'post', '/auth/sign-out');
+  });
+
   it('fails with an invalid token', async (): Promise<void> => {
     const authService = app.get(AuthService);
   
@@ -55,32 +60,6 @@ describe('Sign Out', (): void => {
     expect(response.body).toEqual({
       error: 'Unauthorized',
       message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
-  });
-
-  it('fails with an expired token', async (): Promise<void> => {
-    const authService = app.get(AuthService);
-  
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
-    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
-    const { _id } = userRepositoryMock.entities[0];
-  
-    const token = await authService.generateToken(_id);
-  
-    await new Promise((resolve: (value: unknown) => void): NodeJS.Timeout => {
-      return setTimeout(resolve, 2000);
-    });
-  
-    const response = await request(app.getHttpServer()).post('/auth/sign-out').set('Cookie', [
-      `token=${token}`
-    ]);
-  
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      message: 'Unauthorized',
       statusCode: HttpStatus.UNAUTHORIZED
     });
   });

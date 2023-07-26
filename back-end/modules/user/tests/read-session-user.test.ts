@@ -14,6 +14,7 @@ import * as cookieParser from 'cookie-parser';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { UserRepositoryMock } from './mocks/user-repository.mock';
+import { testExpiredToken } from '@/auth/tests/helpers/testExpiredToken';
 
 describe('Read Session User', (): void => {
   let app: INestApplication;
@@ -44,6 +45,10 @@ describe('Read Session User', (): void => {
     await testMissingToken(app, 'get', '/user/session-user');
   });
 
+  it('fails with an expired token', async (): Promise<void> => {
+    await testExpiredToken(app, 'get', '/user/session-user');
+  });
+
   it('fails with an invalid token', async (): Promise<void> => {
     const authService = app.get(AuthService);
   
@@ -57,32 +62,6 @@ describe('Read Session User', (): void => {
     expect(response.body).toEqual({
       error: 'Unauthorized',
       message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
-  });
-
-  it('fails with an expired token', async (): Promise<void> => {
-    const authService = app.get(AuthService);
-  
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
-    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
-    const { _id } = userRepositoryMock.entities[0];
-  
-    const token = await authService.generateToken(_id);
-  
-    await new Promise((resolve: (value: unknown) => void): NodeJS.Timeout => {
-      return setTimeout(resolve, 2000);
-    });
-  
-    const response = await request(app.getHttpServer()).get('/user/session-user').set('Cookie', [
-      `token=${token}`
-    ]);
-  
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      message: 'Unauthorized',
       statusCode: HttpStatus.UNAUTHORIZED
     });
   });
