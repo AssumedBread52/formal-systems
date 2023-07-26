@@ -91,7 +91,7 @@ describe('Sign Up', (): void => {
   afterEach((): void => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.users = [];
+    userRepositoryMock.entities = [];
   });
 
   afterAll(async (): Promise<void> => {

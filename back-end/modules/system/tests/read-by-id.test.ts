@@ -42,7 +42,7 @@ describe('Read by ID', (): void => {
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -68,9 +68,9 @@ describe('Read by ID', (): void => {
   it('succeeds with valid token', async (): Promise<void> => {
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    expect(systemRepositoryMock.systems.length).toBeGreaterThan(0);
+    expect(systemRepositoryMock.entities.length).toBeGreaterThan(0);
 
-    const { _id, title, description, constantSymbolCount, variableSymbolCount, createdByUserId } = systemRepositoryMock.systems[0];
+    const { _id, title, description, constantSymbolCount, variableSymbolCount, createdByUserId } = systemRepositoryMock.entities[0];
 
     const response = await request(app.getHttpServer()).get(`/system/${_id}`);
 

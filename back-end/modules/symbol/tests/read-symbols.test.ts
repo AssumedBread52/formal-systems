@@ -45,7 +45,7 @@ describe('Search Symbols', (): void => {
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    const { _id: userId } = userRepositoryMock.users[0];
+    const { _id: userId } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(userId);
   
@@ -58,7 +58,7 @@ describe('Search Symbols', (): void => {
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    const { _id } = systemRepositoryMock.systems[0];
+    const { _id } = systemRepositoryMock.entities[0];
 
     await request(app.getHttpServer()).post(`/system/${_id}/symbol`).set('Cookie', [
       `token=${token}`
@@ -95,16 +95,16 @@ describe('Search Symbols', (): void => {
   it('succeeds without a keywords query parameter', async (): Promise<void> => {
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
 
-    expect(symbolRepositoryMock.symbols.length).toBeGreaterThan(0);
+    expect(symbolRepositoryMock.entities.length).toBeGreaterThan(0);
 
-    const { systemId } = symbolRepositoryMock.symbols[0];
+    const { systemId } = symbolRepositoryMock.entities[0];
 
     const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol?page=1&count=10`);
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toEqual({
-      total: symbolRepositoryMock.symbols.length,
-      results: symbolRepositoryMock.symbols.map((symbol: SymbolEntity): Object => {
+      total: symbolRepositoryMock.entities.length,
+      results: symbolRepositoryMock.entities.map((symbol: SymbolEntity): Object => {
         const { _id, title, description, type, content, axiomaticStatementAppearances, nonAxiomaticStatementAppearances, systemId, createdByUserId } = symbol;
 
         return {
@@ -125,16 +125,16 @@ describe('Search Symbols', (): void => {
   it('succeeds with a single keywords query parameter', async (): Promise<void> => {
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
 
-    expect(symbolRepositoryMock.symbols.length).toBeGreaterThan(0);
+    expect(symbolRepositoryMock.entities.length).toBeGreaterThan(0);
 
-    const { systemId } = symbolRepositoryMock.symbols[0];
+    const { systemId } = symbolRepositoryMock.entities[0];
 
     const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol?page=1&count=10&keywords=test`);
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toEqual({
-      total: symbolRepositoryMock.symbols.length,
-      results: symbolRepositoryMock.symbols.map((symbol: SymbolEntity): Object => {
+      total: symbolRepositoryMock.entities.length,
+      results: symbolRepositoryMock.entities.map((symbol: SymbolEntity): Object => {
         const { _id, title, description, type, content, axiomaticStatementAppearances, nonAxiomaticStatementAppearances, systemId, createdByUserId } = symbol;
 
         return {
@@ -155,16 +155,16 @@ describe('Search Symbols', (): void => {
   it('succeeds with multiple keywords query parameter', async (): Promise<void> => {
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
 
-    expect(symbolRepositoryMock.symbols.length).toBeGreaterThan(0);
+    expect(symbolRepositoryMock.entities.length).toBeGreaterThan(0);
 
-    const { systemId } = symbolRepositoryMock.symbols[0];
+    const { systemId } = symbolRepositoryMock.entities[0];
 
     const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol?page=1&count=10&keywords=test&keywords=user`);
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toEqual({
-      total: symbolRepositoryMock.symbols.length,
-      results: symbolRepositoryMock.symbols.map((symbol: SymbolEntity): Object => {
+      total: symbolRepositoryMock.entities.length,
+      results: symbolRepositoryMock.entities.map((symbol: SymbolEntity): Object => {
         const { _id, title, description, type, content, axiomaticStatementAppearances, nonAxiomaticStatementAppearances, systemId, createdByUserId } = symbol;
 
         return {

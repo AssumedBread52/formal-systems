@@ -78,9 +78,9 @@ describe('Update Session User', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
   
@@ -104,9 +104,9 @@ describe('Update Session User', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -131,9 +131,9 @@ describe('Update Session User', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -159,9 +159,9 @@ describe('Update Session User', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -176,7 +176,7 @@ describe('Update Session User', (): void => {
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toEqual({
-      id: userRepositoryMock.users[0]._id.toString()
+      id: userRepositoryMock.entities[0]._id.toString()
     });
   });
 

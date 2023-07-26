@@ -49,7 +49,7 @@ describe('Update System', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -100,9 +100,9 @@ describe('Update System', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
   
@@ -126,9 +126,9 @@ describe('Update System', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -152,9 +152,9 @@ describe('Update System', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -178,17 +178,17 @@ describe('Update System', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(1);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(1);
   
-    const { _id: userId } = userRepositoryMock.users[1];
+    const { _id: userId } = userRepositoryMock.entities[1];
   
     const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    expect(systemRepositoryMock.systems.length).toBeGreaterThan(0);
+    expect(systemRepositoryMock.entities.length).toBeGreaterThan(0);
 
-    const { _id } = systemRepositoryMock.systems[0];
+    const { _id } = systemRepositoryMock.entities[0];
 
     const response = await request(app.getHttpServer()).patch(`/system/${_id}`).set('Cookie', [
       `token=${token}`
@@ -210,18 +210,18 @@ describe('Update System', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id: userId } = userRepositoryMock.users[0];
+    const { _id: userId } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    expect(systemRepositoryMock.systems.length).toBeGreaterThan(1);
+    expect(systemRepositoryMock.entities.length).toBeGreaterThan(1);
 
-    const { _id } = systemRepositoryMock.systems[0];
-    const { title } = systemRepositoryMock.systems[1];
+    const { _id } = systemRepositoryMock.entities[0];
+    const { title } = systemRepositoryMock.entities[1];
 
     const response = await request(app.getHttpServer()).patch(`/system/${_id}`).set('Cookie', [
       `token=${token}`
@@ -243,17 +243,17 @@ describe('Update System', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id: userId } = userRepositoryMock.users[0];
+    const { _id: userId } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    expect(systemRepositoryMock.systems.length).toBeGreaterThan(1);
+    expect(systemRepositoryMock.entities.length).toBeGreaterThan(1);
 
-    const { _id } = systemRepositoryMock.systems[0];
+    const { _id } = systemRepositoryMock.entities[0];
 
     const response = await request(app.getHttpServer()).patch(`/system/${_id}`).set('Cookie', [
       `token=${token}`

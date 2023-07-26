@@ -52,21 +52,21 @@ describe('Read by ID', (): void => {
   it('succeeds with a valid ID', async (): Promise<void> => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
 
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
 
     const response = await request(app.getHttpServer()).get(`/user/${_id}`);
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toEqual({
-      id: userRepositoryMock.users[0]._id.toString(),
-      firstName: userRepositoryMock.users[0].firstName,
-      lastName: userRepositoryMock.users[0].lastName,
-      email: userRepositoryMock.users[0].email,
-      systemCount: userRepositoryMock.users[0].systemCount,
-      constantSymbolCount: userRepositoryMock.users[0].constantSymbolCount,
-      variableSymbolCount: userRepositoryMock.users[0].variableSymbolCount
+      id: userRepositoryMock.entities[0]._id.toString(),
+      firstName: userRepositoryMock.entities[0].firstName,
+      lastName: userRepositoryMock.entities[0].lastName,
+      email: userRepositoryMock.entities[0].email,
+      systemCount: userRepositoryMock.entities[0].systemCount,
+      constantSymbolCount: userRepositoryMock.entities[0].constantSymbolCount,
+      variableSymbolCount: userRepositoryMock.entities[0].variableSymbolCount
     });
   });
 

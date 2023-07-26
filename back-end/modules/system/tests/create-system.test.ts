@@ -71,9 +71,9 @@ describe('Create System', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
   
@@ -97,9 +97,9 @@ describe('Create System', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -123,9 +123,9 @@ describe('Create System', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -150,9 +150,9 @@ describe('Create System', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -178,7 +178,7 @@ describe('Create System', (): void => {
   afterEach((): void => {
     const systemRepository = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    systemRepository.systems = [];
+    systemRepository.entities = [];
   });
 
   afterAll(async (): Promise<void> => {

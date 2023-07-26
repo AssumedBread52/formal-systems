@@ -52,7 +52,7 @@ describe('Create Symbol', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    const { _id: userId } = userRepositoryMock.users[0];
+    const { _id: userId } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(userId);
 
@@ -65,7 +65,7 @@ describe('Create Symbol', (): void => {
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    const { _id } = systemRepositoryMock.systems[0];
+    const { _id } = systemRepositoryMock.entities[0];
 
     await request(app.getHttpServer()).post(`/system/${_id}/symbol`).set('Cookie', [
       `token=${token}`
@@ -118,9 +118,9 @@ describe('Create Symbol', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
   
@@ -144,9 +144,9 @@ describe('Create Symbol', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -171,9 +171,9 @@ describe('Create Symbol', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -199,17 +199,17 @@ describe('Create Symbol', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(1);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(1);
   
-    const { _id: userId } = userRepositoryMock.users[1];
+    const { _id: userId } = userRepositoryMock.entities[1];
   
     const token = await authService.generateToken(userId);
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
 
-    expect(symbolRepositoryMock.symbols.length).toBeGreaterThan(0);
+    expect(symbolRepositoryMock.entities.length).toBeGreaterThan(0);
 
-    const { _id } = symbolRepositoryMock.symbols[0];
+    const { _id } = symbolRepositoryMock.entities[0];
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/symbol/${_id}`).set('Cookie', [
       `token=${token}`
@@ -233,17 +233,17 @@ describe('Create Symbol', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id: userId } = userRepositoryMock.users[0];
+    const { _id: userId } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(userId);
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
 
-    expect(symbolRepositoryMock.symbols.length).toBeGreaterThan(0);
+    expect(symbolRepositoryMock.entities.length).toBeGreaterThan(0);
 
-    const { _id } = symbolRepositoryMock.symbols[0];
+    const { _id } = symbolRepositoryMock.entities[0];
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/symbol/${_id}`).set('Cookie', [
       `token=${token}`
@@ -267,17 +267,17 @@ describe('Create Symbol', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
   
-    expect(userRepositoryMock.users.length).toBeGreaterThan(0);
+    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
   
-    const { _id: userId } = userRepositoryMock.users[0];
+    const { _id: userId } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(userId);
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
 
-    expect(symbolRepositoryMock.symbols.length).toBeGreaterThan(0);
+    expect(symbolRepositoryMock.entities.length).toBeGreaterThan(0);
 
-    const { _id } = symbolRepositoryMock.symbols[0];
+    const { _id } = symbolRepositoryMock.entities[0];
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/symbol/${_id}`).set('Cookie', [
       `token=${token}`

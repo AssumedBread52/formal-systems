@@ -41,7 +41,7 @@ describe('Search', (): void => {
   
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    const { _id } = userRepositoryMock.users[0];
+    const { _id } = userRepositoryMock.entities[0];
   
     const token = await authService.generateToken(_id);
 
@@ -89,8 +89,8 @@ describe('Search', (): void => {
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toEqual({
-      total: systemRepositoryMock.systems.length,
-      results: systemRepositoryMock.systems.map((system: SystemEntity): Object => {
+      total: systemRepositoryMock.entities.length,
+      results: systemRepositoryMock.entities.map((system: SystemEntity): Object => {
         const { _id, title, description, constantSymbolCount, variableSymbolCount, createdByUserId } = system;
         return {
           id: _id.toString(),
@@ -111,8 +111,8 @@ describe('Search', (): void => {
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toEqual({
-      total: systemRepositoryMock.systems.length,
-      results: systemRepositoryMock.systems.map((system: SystemEntity): Object => {
+      total: systemRepositoryMock.entities.length,
+      results: systemRepositoryMock.entities.map((system: SystemEntity): Object => {
         const { _id, title, description, constantSymbolCount, variableSymbolCount, createdByUserId } = system;
         return {
           id: _id.toString(),
@@ -133,8 +133,8 @@ describe('Search', (): void => {
 
     expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toEqual({
-      total: systemRepositoryMock.systems.length,
-      results: systemRepositoryMock.systems.map((system: SystemEntity): Object => {
+      total: systemRepositoryMock.entities.length,
+      results: systemRepositoryMock.entities.map((system: SystemEntity): Object => {
         const { _id, title, description, constantSymbolCount, variableSymbolCount, createdByUserId } = system;
         return {
           id: _id.toString(),
