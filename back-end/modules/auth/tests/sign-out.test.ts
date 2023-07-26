@@ -12,6 +12,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
+import { testMissingToken } from './helpers/testMissingToken';
 
 describe('Sign Out', (): void => {
   let app: INestApplication;
@@ -38,13 +39,7 @@ describe('Sign Out', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).post('/auth/sign-out');
-
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      message: 'Unauthorized',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+    await testMissingToken(app, 'post', '/auth/sign-out');
   });
 
   it('fails with an invalid token', async (): Promise<void> => {

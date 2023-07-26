@@ -13,6 +13,7 @@ import * as cookieParser from 'cookie-parser';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { SystemRepositoryMock } from './mocks/system-repository.mock';
+import { testMissingToken } from '@/auth/tests/helpers/testMissingToken';
 
 describe('Delete System', (): void => {
   let app: INestApplication;
@@ -61,13 +62,7 @@ describe('Delete System', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).delete(`/system/${new ObjectId()}`);
-  
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      message: 'Unauthorized',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+    await testMissingToken(app, 'delete', `/system/${new ObjectId()}`);
   });
 
   it('fails with an invalid token', async (): Promise<void> => {

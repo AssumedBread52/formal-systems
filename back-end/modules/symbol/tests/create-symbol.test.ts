@@ -1,6 +1,7 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
+import { testMissingToken } from '@/auth/tests/helpers/testMissingToken';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
@@ -65,13 +66,7 @@ describe('Create Symbol', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/symbol`);
-  
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      message: 'Unauthorized',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+    await testMissingToken(app, 'post', `/system/${new ObjectId()}/symbol`);
   });
 
   it('fails with an invalid token', async (): Promise<void> => {

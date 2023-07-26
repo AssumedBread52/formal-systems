@@ -1,6 +1,7 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
+import { testMissingToken } from '@/auth/tests/helpers/testMissingToken';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemModule } from '@/system/system.module';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -40,13 +41,7 @@ describe('Create System', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).post('/system');
-  
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      message: 'Unauthorized',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+    await testMissingToken(app, 'post', '/system');
   });
 
   it('fails with an invalid token', async (): Promise<void> => {

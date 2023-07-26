@@ -1,6 +1,7 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
+import { testMissingToken } from '@/auth/tests/helpers/testMissingToken';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.mock';
 import { UserEntity } from '@/user/user.entity';
@@ -40,13 +41,7 @@ describe('Read Session User', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).get('/user/session-user');
-  
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      message: 'Unauthorized',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+    await testMissingToken(app, 'get', '/user/session-user');
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
