@@ -20,7 +20,7 @@ import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { SymbolRepositoryMock } from './mocks/symbol-repository.mock';
 
-describe('Create Symbol', (): void => {
+describe('Delete Symbol', (): void => {
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
