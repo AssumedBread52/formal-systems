@@ -6,7 +6,7 @@ export const testMissingToken = async (app: INestApplication, method: 'get' | 'd
 
   expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
   expect(response.body).toEqual({
-    message: 'Unathorized',
+    message: 'Unauthorized',
     statusCode: HttpStatus.UNAUTHORIZED
   });
 };
