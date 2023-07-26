@@ -10,9 +10,9 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
-import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { testExpiredToken } from './helpers/testExpiredToken';
+import { testInvalidToken } from './helpers/testInvalidToken';
 import { testMissingToken } from './helpers/testMissingToken';
 
 describe('Sign Out', (): void => {
@@ -48,20 +48,7 @@ describe('Sign Out', (): void => {
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    const authService = app.get(AuthService);
-  
-    const token = await authService.generateToken(new ObjectId());
-  
-    const response = await request(app.getHttpServer()).post('/auth/sign-out').set('Cookie', [
-      `token=${token}`
-    ]);
-  
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      error: 'Unauthorized',
-      message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+    await testInvalidToken(app, 'post', '/auth/sign-out');
   });
 
   it('succeeds with valid token', async (): Promise<void> => {

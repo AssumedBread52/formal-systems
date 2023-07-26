@@ -2,6 +2,7 @@ import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
 import { testExpiredToken } from '@/auth/tests/helpers/testExpiredToken';
+import { testInvalidToken } from '@/auth/tests/helpers/testInvalidToken';
 import { testMissingToken } from '@/auth/tests/helpers/testMissingToken';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
@@ -88,20 +89,7 @@ describe('Create Symbol', (): void => {
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    const authService = app.get(AuthService);
-  
-    const token = await authService.generateToken(new ObjectId());
-  
-    const response = await request(app.getHttpServer()).delete(`/system/${new ObjectId()}/symbol/${new ObjectId()}`).set('Cookie', [
-      `token=${token}`
-    ]);
-  
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      error: 'Unauthorized',
-      message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+    await testInvalidToken(app, 'delete', `/system/${new ObjectId()}/symbol/${new ObjectId()}`);
   });
 
   it('succeeds if the system does not exist', async (): Promise<void> => {

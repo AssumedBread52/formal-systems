@@ -15,6 +15,7 @@ import * as cookieParser from 'cookie-parser';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { SystemRepositoryMock } from './mocks/system-repository.mock';
+import { testInvalidToken } from '@/auth/tests/helpers/testInvalidToken';
 
 describe('Update System', (): void => {
   let app: INestApplication;
@@ -79,20 +80,7 @@ describe('Update System', (): void => {
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    const authService = app.get(AuthService);
-  
-    const token = await authService.generateToken(new ObjectId());
-  
-    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}`).set('Cookie', [
-      `token=${token}`
-    ]);
-  
-    expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toEqual({
-      error: 'Unauthorized',
-      message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
+    await testInvalidToken(app, 'patch', `/system/${new ObjectId()}`);
   });
 
   it('fails with an invalid update payload', async (): Promise<void> => {
