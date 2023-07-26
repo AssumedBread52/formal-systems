@@ -55,13 +55,13 @@ describe('Read Session User', (): void => {
 
   it('succeeds with a valid token', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     const response = await request(app.getHttpServer()).get('/user/session-user').set('Cookie', [

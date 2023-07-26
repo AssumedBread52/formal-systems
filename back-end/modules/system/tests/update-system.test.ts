@@ -49,11 +49,11 @@ describe('Update System', (): void => {
     });
 
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     await request(app.getHttpServer()).post('/system').set('Cookie', [
@@ -85,13 +85,13 @@ describe('Update System', (): void => {
 
   it('fails with an invalid update payload', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}`).set('Cookie', [
@@ -111,13 +111,13 @@ describe('Update System', (): void => {
 
   it('fails with an invalid system ID', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}`).set('Cookie', [
@@ -137,13 +137,13 @@ describe('Update System', (): void => {
 
   it('fails when updating a system the user did not create', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(1);
-  
+
     const { _id: userId } = userRepositoryMock.entities[1];
-  
+
     const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
@@ -169,13 +169,13 @@ describe('Update System', (): void => {
 
   it('fails when updating the title to a value in use by a system created by that user', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id: userId } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
@@ -202,13 +202,13 @@ describe('Update System', (): void => {
 
   it('succeeds with a valid token, a valid payload, and non-conflicting title', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id: userId } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;

@@ -54,9 +54,9 @@ describe('Create Symbol', (): void => {
     const authService = app.get(AuthService);
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     await request(app.getHttpServer()).post('/system').set('Cookie', [
@@ -81,13 +81,13 @@ describe('Create Symbol', (): void => {
 
   it('fails with an invalid payload', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/symbol`).set('Cookie', [
@@ -108,13 +108,13 @@ describe('Create Symbol', (): void => {
 
   it('fails if system does not exist', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/symbol`).set('Cookie', [
@@ -136,13 +136,13 @@ describe('Create Symbol', (): void => {
 
   it('fails if user did not create the system', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(1);
-  
+
     const { _id: userId } = userRepositoryMock.entities[1];
-  
+
     const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
@@ -170,13 +170,13 @@ describe('Create Symbol', (): void => {
 
   it('succeeds if content is unique in the formal system', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id: userId } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
@@ -200,13 +200,13 @@ describe('Create Symbol', (): void => {
 
   it('fails if content is not unique in the formal system', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id: userId } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;

@@ -52,11 +52,11 @@ describe('Update Symbol', (): void => {
     });
 
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     const { _id: userId } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(userId);
 
     await request(app.getHttpServer()).post('/system').set('Cookie', [
@@ -103,13 +103,13 @@ describe('Update Symbol', (): void => {
 
   it('fails with an invalid payload', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/symbol/${new ObjectId()}`).set('Cookie', [
@@ -130,13 +130,13 @@ describe('Update Symbol', (): void => {
 
   it('fails if symbol does not exist', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/symbol/${new ObjectId()}`).set('Cookie', [
@@ -158,13 +158,13 @@ describe('Update Symbol', (): void => {
 
   it('fails if user did not create the symbol', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(1);
-  
+
     const { _id: userId } = userRepositoryMock.entities[1];
-  
+
     const token = await authService.generateToken(userId);
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
@@ -192,13 +192,13 @@ describe('Update Symbol', (): void => {
 
   it('fails if another symbol already has the new content', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id: userId } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(userId);
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
@@ -226,13 +226,13 @@ describe('Update Symbol', (): void => {
 
   it('succeeds if the new content is new to the system', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id: userId } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(userId);
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;

@@ -53,13 +53,13 @@ describe('Sign Out', (): void => {
 
   it('succeeds with valid token', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     const response = await request(app.getHttpServer()).post('/auth/sign-out').set('Cookie', [

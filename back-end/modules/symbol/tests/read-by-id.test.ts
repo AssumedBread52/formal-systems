@@ -44,11 +44,11 @@ describe('Read by ID', (): void => {
     const authService = app.get(AuthService);
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     const { _id: userId } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(userId);
-  
+
     await request(app.getHttpServer()).post('/system').set('Cookie', [
       `token=${token}`
     ]).send({

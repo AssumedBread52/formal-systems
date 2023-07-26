@@ -54,9 +54,9 @@ describe('Delete Symbol', (): void => {
     const authService = app.get(AuthService);
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     const { _id: userId } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(userId);
 
     await request(app.getHttpServer()).post('/system').set('Cookie', [
@@ -94,13 +94,13 @@ describe('Delete Symbol', (): void => {
 
   it('succeeds if the system does not exist', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     const symbolId = new ObjectId();
@@ -117,13 +117,13 @@ describe('Delete Symbol', (): void => {
 
   it('fails if the symbol createdByUserId does not match the user ID in the token', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(1);
-  
+
     const { _id: userId } = userRepositoryMock.entities[1];
-  
+
     const token = await authService.generateToken(userId);
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
@@ -146,13 +146,13 @@ describe('Delete Symbol', (): void => {
 
   it('succeeds if the symbol createdByUserId matches the user ID in the token', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id: userId } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(userId);
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;

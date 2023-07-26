@@ -48,11 +48,11 @@ describe('Delete System', (): void => {
     });
 
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     await request(app.getHttpServer()).post('/system').set('Cookie', [
@@ -77,13 +77,13 @@ describe('Delete System', (): void => {
 
   it('succeeds if the system does not exist', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(_id);
 
     const systemId = new ObjectId();
@@ -100,13 +100,13 @@ describe('Delete System', (): void => {
 
   it('fails if the system createdByUserId does not match the user ID in the token', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(1);
-  
+
     const { _id: userId } = userRepositoryMock.entities[1];
-  
+
     const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
@@ -129,13 +129,13 @@ describe('Delete System', (): void => {
 
   it('succeeds if the system createdByUserId matches the user ID in the token', async (): Promise<void> => {
     const authService = app.get(AuthService);
-  
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-  
+
     expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-  
+
     const { _id: userId } = userRepositoryMock.entities[0];
-  
+
     const token = await authService.generateToken(userId);
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
