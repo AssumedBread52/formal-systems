@@ -7,13 +7,13 @@ describe('Status Check', (): void => {
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
-    const moduleRef = await Test.createTestingModule({
+    const testingModule = await Test.createTestingModule({
       imports: [
         AppModule
       ]
     }).compile();
 
-    app = moduleRef.createNestApplication();
+    app = testingModule.createNestApplication();
 
     await app.init();
   });
