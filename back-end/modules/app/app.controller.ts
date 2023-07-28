@@ -10,7 +10,7 @@ export class AppController {
   };
 
   constructor(configService: ConfigService) {
-    this.packageJson = JSON.parse(readFileSync(configService.get<string>('npm_package_json')!, 'utf-8'));
+    this.packageJson = JSON.parse(readFileSync(configService.getOrThrow<string>('npm_package_json'), 'utf-8'));
   }
 
   @Get('status')
@@ -20,11 +20,15 @@ export class AppController {
 
   @Get('dependencies')
   getDependencies(): Record<string, string> {
-    return this.packageJson.dependencies;
+    const { dependencies } = this.packageJson;
+
+    return dependencies;
   }
 
   @Get('dev-dependencies')
   getDevDependencies(): Record<string, string> {
-    return this.packageJson.devDependencies;
+    const { devDependencies } = this.packageJson;
+
+    return devDependencies;
   }
 };
