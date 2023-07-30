@@ -41,13 +41,13 @@ export class SymbolService {
     return this.symbolRepository.save(symbol);
   }
 
-  readById(id: string): Promise<SymbolEntity | null> {
+  readById(id: ObjectId): Promise<SymbolEntity | null> {
     return this.symbolRepository.findOneBy({
       _id: new ObjectId(id)
     });
   }
 
-  async readSymbols(systemId: string, page: number, take: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
+  async readSymbols(systemId: ObjectId, page: number, take: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
     const skip = (page - 1) * take;
     const where = {
       systemId: new ObjectId(systemId)

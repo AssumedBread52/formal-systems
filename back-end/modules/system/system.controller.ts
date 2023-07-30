@@ -1,7 +1,8 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
+import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
-import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditSystemPayload } from './payloads/edit-system.payload';
 import { NewSystemPayload } from './payloads/new-system.payload';
@@ -16,7 +17,7 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Delete(':id')
-  async deleteSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('id') id: string): Promise<IdPayload> {
+  async deleteSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('id') id: ObjectId): Promise<IdPayload> {
     const system = await this.systemService.readById(id);
 
     if (!system) {
@@ -38,7 +39,7 @@ export class SystemController {
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<SystemPayload> {
+  async getById(@ObjectIdDecorator('id') id: ObjectId): Promise<SystemPayload> {
     const system = await this.systemService.readById(id);
 
     if (!system) {
@@ -50,7 +51,7 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Patch(':id')
-  async patchSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('id') id: string, @Body(ValidationPipe) editSystemPayload: EditSystemPayload): Promise<IdPayload> {
+  async patchSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('id') id: ObjectId, @Body(ValidationPipe) editSystemPayload: EditSystemPayload): Promise<IdPayload> {
     const system = await this.systemService.readById(id);
 
     if (!system) {

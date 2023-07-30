@@ -28,7 +28,7 @@ export class AuthService {
     return user;
   }
 
-  async validateUserById(id: string): Promise<UserEntity> {
+  async validateUserById(id: ObjectId): Promise<UserEntity> {
     const user = await this.userService.readById(id);
 
     if (!user) {

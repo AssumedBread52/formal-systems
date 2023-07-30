@@ -3,9 +3,9 @@ import { ObjectId } from 'mongodb';
 
 export class IdPayload {
   @IsNotEmpty()
-  id: string;
+  id: ObjectId;
 
   constructor(_id: ObjectId) {
-    this.id = _id.toString();
+    this.id = _id;
   }
 };

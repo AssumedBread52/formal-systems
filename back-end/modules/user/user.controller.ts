@@ -1,7 +1,9 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
+import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
-import { Body, Controller, Get, NotFoundException, Param, Patch, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Patch, UseGuards, ValidationPipe } from '@nestjs/common';
+import { ObjectId } from 'typeorm';
 import { EditProfilePayload } from './payloads/edit-profile.payload';
 import { UserPayload } from './payloads/user.payload';
 import { UserEntity } from './user.entity';
@@ -19,7 +21,7 @@ export class UserController {
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<UserPayload> {
+  async getById(@ObjectIdDecorator('id') id: ObjectId): Promise<UserPayload> {
     const user = await this.userService.readById(id);
 
     if (!user) {
