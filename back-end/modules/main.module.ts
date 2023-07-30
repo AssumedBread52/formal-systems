@@ -34,15 +34,15 @@ import { UserModule } from './user/user.module';
       useFactory: (configService: ConfigService): TypeOrmModuleOptions => {
         const autoLoadEntities = true;
 
-        const type = configService.get<DatabaseType>('DATABASE_TYPE');
+        const type = configService.getOrThrow<DatabaseType>('DATABASE_TYPE');
 
-        const scheme = configService.get<string>('DATABASE_SCHEME');
-        const username = configService.get<string>('DATABASE_USERNAME');
-        const password = configService.get<string>('DATABASE_PASSWORD');
-        const host = configService.get<string>('DATABASE_HOST');
-        const port = configService.get<number>('DATABASE_PORT');
-        const name = configService.get<string>('DATABASE_NAME');
-        const url = `${scheme}://${username}:${encodeURIComponent(password ?? '')}@${host}:${port}/${name}?authSource=admin`;
+        const scheme = configService.getOrThrow<string>('DATABASE_SCHEME');
+        const username = configService.getOrThrow<string>('DATABASE_USERNAME');
+        const password = configService.getOrThrow<string>('DATABASE_PASSWORD');
+        const host = configService.getOrThrow<string>('DATABASE_HOST');
+        const port = configService.getOrThrow<number>('DATABASE_PORT');
+        const name = configService.getOrThrow<string>('DATABASE_NAME');
+        const url = `${scheme}://${username}:${encodeURIComponent(password)}@${host}:${port}/${name}?authSource=admin`;
 
         const subscribers = [
           CleanUpSubscriber,

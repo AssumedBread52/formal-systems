@@ -14,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrat
     super({
       jwtFromRequest: JwtStrategy.extractJwt,
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JSON_WEB_TOKEN_SECRET')
+      secretOrKey: configService.getOrThrow<string>('JSON_WEB_TOKEN_SECRET')
     } as StrategyOptions);
   }
 

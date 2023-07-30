@@ -18,8 +18,8 @@ import { LocalStrategy } from './strategies/local.strategy';
         ConfigService
       ],
       useFactory: (configService: ConfigService): JwtModuleOptions => {
-        const secret = configService.get<string>('JSON_WEB_TOKEN_SECRET');
-        const expiresIn = configService.get<string>('JSON_WEB_TOKEN_EXPIRES_IN');
+        const secret = configService.getOrThrow<string>('JSON_WEB_TOKEN_SECRET');
+        const expiresIn = configService.getOrThrow<string>('JSON_WEB_TOKEN_EXPIRES_IN');
 
         return {
           secret,
