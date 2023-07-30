@@ -3,10 +3,10 @@ import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards, Validatio
 import { Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { AuthService } from './auth.service';
-import { SignUpPayload } from './data-transfer-objects/sign-up.payload';
 import { SessionUserDecorator } from './decorators/session-user.decorator';
 import { JwtGuard } from './guards/jwt.guard';
 import { LocalGuard } from './guards/local.guard';
+import { SignUpPayload } from './payloads/sign-up.payload';
 
 @Controller('auth')
 export class AuthController {

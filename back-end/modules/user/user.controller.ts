@@ -1,9 +1,9 @@
-import { SessionUser } from '@/auth/decorators/session-user';
+import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
-import { IdPayload } from '@/common/data-transfer-objects/id.payload';
+import { IdPayload } from '@/common/payloads/id.payload';
 import { Body, Controller, Get, NotFoundException, Param, Patch, UseGuards, ValidationPipe } from '@nestjs/common';
-import { EditProfilePayload } from './data-transfer-objects/edit-profile.payload';
-import { UserPayload } from './data-transfer-objects/user.payload';
+import { EditProfilePayload } from './payloads/edit-profile.payload';
+import { UserPayload } from './payloads/user.payload';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
@@ -14,7 +14,7 @@ export class UserController {
 
   @UseGuards(JwtGuard)
   @Get('session-user')
-  getSessionUser(@SessionUser() sessionUser: UserEntity): UserPayload {
+  getSessionUser(@SessionUserDecorator() sessionUser: UserEntity): UserPayload {
     return new UserPayload(sessionUser);
   }
 
@@ -31,7 +31,7 @@ export class UserController {
 
   @UseGuards(JwtGuard)
   @Patch('session-user')
-  async patchSessionUser(@SessionUser() sessionUser: UserEntity, @Body(ValidationPipe) editProfilePayload: EditProfilePayload): Promise<IdPayload> {
+  async patchSessionUser(@SessionUserDecorator() sessionUser: UserEntity, @Body(ValidationPipe) editProfilePayload: EditProfilePayload): Promise<IdPayload> {
     const { _id } = await this.userService.update(sessionUser, editProfilePayload);
 
     return new IdPayload(_id);

@@ -1,10 +1,10 @@
-import { SignUpPayload } from '@/auth/data-transfer-objects/sign-up.payload';
+import { SignUpPayload } from '@/auth/payloads/sign-up.payload';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
-import { EditProfilePayload } from './data-transfer-objects/edit-profile.payload';
+import { EditProfilePayload } from './payloads/edit-profile.payload';
 import { UserEntity } from './user.entity';
 
 @Injectable()

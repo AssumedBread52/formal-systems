@@ -1,11 +1,11 @@
-import { IdPayload } from '@/common/data-transfer-objects/id.payload';
+import { IdPayload } from '@/common/payloads/id.payload';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
-import { EditSystemPayload } from './data-transfer-objects/edit-system.payload';
-import { NewSystemPayload } from './data-transfer-objects/new-system.payload';
-import { PaginatedResultsPayload } from './data-transfer-objects/paginated-results.payload';
+import { EditSystemPayload } from './payloads/edit-system.payload';
+import { NewSystemPayload } from './payloads/new-system.payload';
+import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
 import { SystemEntity } from './system.entity';
 
 @Injectable()

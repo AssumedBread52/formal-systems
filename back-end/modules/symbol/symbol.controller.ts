@@ -1,13 +1,13 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
-import { IdPayload } from '@/common/data-transfer-objects/id.payload';
+import { IdPayload } from '@/common/payloads/id.payload';
 import { SystemService } from '@/system/system.service';
 import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
-import { EditSymbolPayload } from './data-transfer-objects/edit-symbol.payload';
-import { NewSymbolPayload } from './data-transfer-objects/new-symbol.payload';
-import { PaginatedResultsPayload } from './data-transfer-objects/paginated-results.payload';
-import { SymbolPayload } from './data-transfer-objects/symbol.payload';
+import { EditSymbolPayload } from './payloads/edit-symbol.payload';
+import { NewSymbolPayload } from './payloads/new-symbol.payload';
+import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
+import { SymbolPayload } from './payloads/symbol.payload';
 import { SymbolService } from './symbol.service';
 
 @Controller('system/:systemId/symbol')
