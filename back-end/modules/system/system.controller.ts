@@ -1,4 +1,4 @@
-import { SessionUserId } from '@/auth/decorators/session-user-id';
+import { SessionUser } from '@/auth/decorators/session-user';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { IdPayload } from '@/common/data-transfer-objects/id.payload';
 import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
@@ -16,7 +16,7 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Delete(':id')
-  async deleteSystem(@SessionUserId() sessionUserId: ObjectId, @Param('id') id: string): Promise<IdPayload> {
+  async deleteSystem(@SessionUser('_id') sessionUserId: ObjectId, @Param('id') id: string): Promise<IdPayload> {
     const system = await this.systemService.readById(id);
 
     if (!system) {
@@ -50,7 +50,7 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Patch(':id')
-  async patchSystem(@SessionUserId() sessionUserId: ObjectId, @Param('id') id: string, @Body(ValidationPipe) editSystemPayload: EditSystemPayload): Promise<IdPayload> {
+  async patchSystem(@SessionUser('_id') sessionUserId: ObjectId, @Param('id') id: string, @Body(ValidationPipe) editSystemPayload: EditSystemPayload): Promise<IdPayload> {
     const system = await this.systemService.readById(id);
 
     if (!system) {
@@ -69,7 +69,7 @@ export class SystemController {
   @UseGuards(JwtGuard)
   @Post()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async postSystem(@SessionUserId() sessionUserId: ObjectId, @Body(ValidationPipe) newSystemPayload: NewSystemPayload): Promise<void> {
+  async postSystem(@SessionUser('_id') sessionUserId: ObjectId, @Body(ValidationPipe) newSystemPayload: NewSystemPayload): Promise<void> {
     await this.systemService.create(newSystemPayload, sessionUserId);
   }
 };

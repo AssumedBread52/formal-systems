@@ -1,4 +1,4 @@
-import { SessionUserId } from '@/auth/decorators/session-user-id';
+import { SessionUser } from '@/auth/decorators/session-user';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { IdPayload } from '@/common/data-transfer-objects/id.payload';
 import { SystemService } from '@/system/system.service';
@@ -17,7 +17,7 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Delete(':id')
-  async deleteSymbol(@SessionUserId() sessionUserId: ObjectId, @Param('id') id: string): Promise<IdPayload> {
+  async deleteSymbol(@SessionUser('_id') sessionUserId: ObjectId, @Param('id') id: string): Promise<IdPayload> {
     const symbol = await this.symbolService.readById(id);
 
     if (!symbol) {
@@ -51,7 +51,7 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Patch(':id')
-  async patchSymbol(@SessionUserId() sessionUserId: ObjectId, @Param('id') id: string, @Body(ValidationPipe) editSymbolPayload: EditSymbolPayload): Promise<IdPayload> {
+  async patchSymbol(@SessionUser('_id') sessionUserId: ObjectId, @Param('id') id: string, @Body(ValidationPipe) editSymbolPayload: EditSymbolPayload): Promise<IdPayload> {
     const symbol = await this.symbolService.readById(id);
 
     if (!symbol) {
@@ -70,7 +70,7 @@ export class SymbolController {
   @UseGuards(JwtGuard)
   @Post()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async postSymbol(@SessionUserId() sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body(ValidationPipe) newSymbolPayload: NewSymbolPayload): Promise<void> {
+  async postSymbol(@SessionUser('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body(ValidationPipe) newSymbolPayload: NewSymbolPayload): Promise<void> {
     const system = await this.systemService.readById(systemId);
 
     if (!system) {

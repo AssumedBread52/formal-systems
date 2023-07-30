@@ -4,7 +4,7 @@ import { Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { AuthService } from './auth.service';
 import { SignUpPayload } from './data-transfer-objects/sign-up.payload';
-import { SessionUserId } from './decorators/session-user-id';
+import { SessionUser } from './decorators/session-user';
 import { JwtGuard } from './guards/jwt.guard';
 import { LocalGuard } from './guards/local.guard';
 
@@ -16,7 +16,7 @@ export class AuthController {
   @UseGuards(JwtGuard)
   @Post('refresh-token')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async refreshToken(@SessionUserId() sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): Promise<void> {
+  async refreshToken(@SessionUser('_id') sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): Promise<void> {
     const token = await this.authService.generateToken(sessionUserId);
 
     this.setTokenCookie(response, token);
@@ -25,7 +25,7 @@ export class AuthController {
   @UseGuards(LocalGuard)
   @Post('sign-in')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async signIn(@SessionUserId() sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): Promise<void> {
+  async signIn(@SessionUser('_id') sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): Promise<void> {
     const token = await this.authService.generateToken(sessionUserId);
 
     this.setTokenCookie(response, token);
