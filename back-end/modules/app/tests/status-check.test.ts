@@ -1,4 +1,5 @@
 import { AppModule } from '@/app/app.module';
+import { expectCorrectResponse } from '@/common/tests/helpers/expectCorrectResponse';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -21,8 +22,7 @@ describe('Status Check', (): void => {
   it('succeeds in indicating the server is up and running', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).get('/app/status');
 
-    expect(response.statusCode).toBe(HttpStatus.NO_CONTENT);
-    expect(response.body).toEqual({});
+    expectCorrectResponse(response, HttpStatus.NO_CONTENT, {});
   });
 
   afterAll(async (): Promise<void> => {

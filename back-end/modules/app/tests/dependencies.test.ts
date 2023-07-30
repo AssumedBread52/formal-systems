@@ -1,4 +1,5 @@
 import { AppModule } from '@/app/app.module';
+import { expectCorrectResponse } from '@/common/tests/helpers/expectCorrectResponse';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { readFileSync } from 'fs';
@@ -24,8 +25,7 @@ describe('Dependencies', (): void => {
 
     const { dependencies } = JSON.parse(readFileSync(process.env.npm_package_json!, 'utf-8'));
 
-    expect(response.statusCode).toBe(HttpStatus.OK);
-    expect(response.body).toEqual(dependencies);
+    expectCorrectResponse(response, HttpStatus.OK, dependencies);
   });
 
   afterAll(async (): Promise<void> => {
