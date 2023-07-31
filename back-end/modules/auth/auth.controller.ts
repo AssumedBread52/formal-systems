@@ -19,7 +19,7 @@ export class AuthController {
   async refreshToken(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): Promise<void> {
     const token = await this.authService.generateToken(sessionUserId);
 
-    this.setTokenCookie(response, token);
+    this.setAuthCookies(response, token);
   }
 
   @UseGuards(LocalGuard)
@@ -28,7 +28,7 @@ export class AuthController {
   async signIn(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): Promise<void> {
     const token = await this.authService.generateToken(sessionUserId);
 
-    this.setTokenCookie(response, token);
+    this.setAuthCookies(response, token);
   }
 
   @UseGuards(JwtGuard)
@@ -45,10 +45,10 @@ export class AuthController {
 
     const token = await this.authService.generateToken(_id);
 
-    this.setTokenCookie(response, token);
+    this.setAuthCookies(response, token);
   }
 
-  private setTokenCookie(response: Response, token: string): void {
+  private setAuthCookies(response: Response, token: string): void {
     response.cookie('token', token, {
       httpOnly: true,
       maxAge: 60000,
