@@ -1,5 +1,5 @@
 import { AppModule } from '@/app/app.module';
-import { expectCorrectResponse } from '@/common/tests/helpers/expectCorrectResponse';
+import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
