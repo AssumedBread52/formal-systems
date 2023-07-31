@@ -1,5 +1,6 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
+import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.mock';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -9,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
+import { expectAuthCookies } from './helpers/expect-auth-cookies';
 
 describe('Sign Up', (): void => {
   let app: INestApplication;
@@ -28,8 +30,7 @@ describe('Sign Up', (): void => {
   it('fails without the proper sign up payload', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).post('/auth/sign-up');
 
-    expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
-    expect(response.body).toEqual({
+    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
       error: 'Bad Request',
       message: [
         'firstName should not be empty',
@@ -51,19 +52,12 @@ describe('Sign Up', (): void => {
 
     const response = await request(app.getHttpServer()).post('/auth/sign-up').send(signUpPayload);
 
-    expect(response.statusCode).toBe(HttpStatus.CREATED);
-    expect(response.body).toEqual({});
-
-    const cookies = response.get('Set-Cookie');
-
-    expect(cookies).toHaveLength(2);
-    expect(cookies[0]).toMatch(/^token=.+; Max-Age=60; .+; HttpOnly; Secure$/);
-    expect(cookies[1]).toMatch(/^authStatus=true; Max-Age=60; .+; Secure$/);
+    expectCorrectResponse(response, HttpStatus.CREATED, {});
+    expectAuthCookies(response);
 
     const collision = await request(app.getHttpServer()).post('/auth/sign-up').send(signUpPayload);
 
-    expect(collision.statusCode).toBe(HttpStatus.CONFLICT);
-    expect(collision.body).toEqual({
+    expectCorrectResponse(collision, HttpStatus.CONFLICT, {
       error: 'Conflict',
       message: 'Users must have a unique e-mail address.',
       statusCode: HttpStatus.CONFLICT
@@ -78,14 +72,8 @@ describe('Sign Up', (): void => {
       password: '123456'
     });
 
-    expect(response.statusCode).toBe(HttpStatus.CREATED);
-    expect(response.body).toEqual({});
-
-    const cookies = response.get('Set-Cookie');
-
-    expect(cookies).toHaveLength(2);
-    expect(cookies[0]).toMatch(/^token=.+; Max-Age=60; .+; HttpOnly; Secure$/);
-    expect(cookies[1]).toMatch(/^authStatus=true; Max-Age=60; .+; Secure$/);
+    expectCorrectResponse(response, HttpStatus.CREATED, {});
+    expectAuthCookies(response);
   });
 
   afterEach((): void => {
