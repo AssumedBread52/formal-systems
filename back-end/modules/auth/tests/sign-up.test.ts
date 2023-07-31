@@ -41,24 +41,6 @@ describe('Sign Up', (): void => {
     });
   });
 
-  it('succeeds without e-mail address collision', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).post('/auth/sign-up').send({
-      firstName: 'Test',
-      lastName: 'User',
-      email: 'test@test.com',
-      password: '123456'
-    });
-
-    expect(response.statusCode).toBe(HttpStatus.CREATED);
-    expect(response.body).toEqual({});
-
-    const cookies = response.get('Set-Cookie');
-
-    expect(cookies).toHaveLength(2);
-    expect(cookies[0]).toMatch(/^token=.+; Max-Age=60; .+; HttpOnly; Secure$/);
-    expect(cookies[1]).toMatch(/^authStatus=true; Max-Age=60; .+; Secure$/);
-  });
-
   it('fails with e-mail collision', async (): Promise<void> => {
     const signUpPayload = {
       firstName: 'Test',
@@ -86,6 +68,24 @@ describe('Sign Up', (): void => {
       message: 'Users must have a unique e-mail address.',
       statusCode: HttpStatus.CONFLICT
     });
+  });
+
+  it('succeeds without e-mail address collision', async (): Promise<void> => {
+    const response = await request(app.getHttpServer()).post('/auth/sign-up').send({
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test@test.com',
+      password: '123456'
+    });
+
+    expect(response.statusCode).toBe(HttpStatus.CREATED);
+    expect(response.body).toEqual({});
+
+    const cookies = response.get('Set-Cookie');
+
+    expect(cookies).toHaveLength(2);
+    expect(cookies[0]).toMatch(/^token=.+; Max-Age=60; .+; HttpOnly; Secure$/);
+    expect(cookies[1]).toMatch(/^authStatus=true; Max-Age=60; .+; Secure$/);
   });
 
   afterEach((): void => {
