@@ -31,8 +31,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrat
   }
 
   validate(idPayload: IdPayload): Promise<UserEntity> {
-    const { _id } = idPayload;
+    const { id } = idPayload;
 
-    return this.authService.validateUserById(_id);
+    return this.authService.validateUserById(id);
   }
 };

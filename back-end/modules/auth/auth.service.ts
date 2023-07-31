@@ -40,7 +40,7 @@ export class AuthService {
 
   generateToken(userId: ObjectId): Promise<string> {
     return this.jwtService.signAsync({
-      _id: userId
+      id: userId
     });
   }
 };
