@@ -28,8 +28,8 @@ export class AuthService {
     return user;
   }
 
-  async validateUserById(id: ObjectId): Promise<UserEntity> {
-    const user = await this.userService.readById(id);
+  async validateUserById(userId: ObjectId): Promise<UserEntity> {
+    const user = await this.userService.readById(userId);
 
     if (!user) {
       throw new UnauthorizedException('Invalid token.');
@@ -40,7 +40,7 @@ export class AuthService {
 
   generateToken(userId: ObjectId): Promise<string> {
     return this.jwtService.signAsync({
-      id: userId.toString()
+      _id: userId
     });
   }
 };
