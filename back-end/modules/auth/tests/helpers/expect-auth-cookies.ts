@@ -1,6 +1,6 @@
 import { Response } from 'supertest';
 
-export const expectAuthCookies = (response: Response) => {
+export const expectAuthCookies = (response: Response): void => {
   const cookies = response.get('Set-Cookie');
 
   expect(cookies).toHaveLength(2);
