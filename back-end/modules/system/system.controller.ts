@@ -16,12 +16,12 @@ export class SystemController {
   }
 
   @UseGuards(JwtGuard)
-  @Delete(':id')
-  async deleteSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('id') id: ObjectId): Promise<IdPayload> {
-    const system = await this.systemService.readById(id);
+  @Delete(':systemId')
+  async deleteSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId): Promise<IdPayload> {
+    const system = await this.systemService.readById(systemId);
 
     if (!system) {
-      return new IdPayload(new ObjectId(id));
+      return new IdPayload(new ObjectId(systemId));
     }
 
     const { createdByUserId } = system;
@@ -38,9 +38,9 @@ export class SystemController {
     return this.systemService.readSystems(page, count, keywords);
   }
 
-  @Get(':id')
-  async getById(@ObjectIdDecorator('id') id: ObjectId): Promise<SystemPayload> {
-    const system = await this.systemService.readById(id);
+  @Get(':systemId')
+  async getById(@ObjectIdDecorator('systemId') systemId: ObjectId): Promise<SystemPayload> {
+    const system = await this.systemService.readById(systemId);
 
     if (!system) {
       throw new NotFoundException('System not found.');
@@ -50,9 +50,9 @@ export class SystemController {
   }
 
   @UseGuards(JwtGuard)
-  @Patch(':id')
-  async patchSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('id') id: ObjectId, @Body(ValidationPipe) editSystemPayload: EditSystemPayload): Promise<IdPayload> {
-    const system = await this.systemService.readById(id);
+  @Patch(':systemId')
+  async patchSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(ValidationPipe) editSystemPayload: EditSystemPayload): Promise<IdPayload> {
+    const system = await this.systemService.readById(systemId);
 
     if (!system) {
       throw new NotFoundException('System not found.');
