@@ -44,8 +44,7 @@ export class SystemService {
     });
   }
 
-  async readSystems(page: number, take: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
-    const skip = (page - 1) * take;
+  async readSystems(page: number, count: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
     const where = {} as RootFilterOperators<SystemEntity>;
 
     if (keywords && 0 !== keywords.length) {
@@ -57,8 +56,8 @@ export class SystemService {
 
     const [results, total] = await this.systemRepository.findAndCount({
       where,
-      skip,
-      take
+      skip: (page - 1) * count,
+      take: count
     });
 
     return new PaginatedResultsPayload(total, results);
