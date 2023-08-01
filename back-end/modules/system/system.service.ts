@@ -76,7 +76,7 @@ export class SystemService {
     return this.systemRepository.save(system);
   }
 
-  async delete(system: SystemEntity): Promise<SystemEntity> {
+  delete(system: SystemEntity): Promise<SystemEntity> {
     return this.systemRepository.remove(system);
   }
 };
