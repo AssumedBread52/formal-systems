@@ -25,7 +25,7 @@ export class UserController {
     const user = await this.userService.readById(id);
 
     if (!user) {
-      throw new NotFoundException('User with given ID not found.');
+      throw new NotFoundException('User not found.');
     }
 
     return new UserPayload(user);
