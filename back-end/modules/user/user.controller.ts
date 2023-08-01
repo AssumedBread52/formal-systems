@@ -3,7 +3,7 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { Body, Controller, Get, NotFoundException, Patch, UseGuards, ValidationPipe } from '@nestjs/common';
-import { ObjectId } from 'typeorm';
+import { ObjectId } from 'mongodb';
 import { EditProfilePayload } from './payloads/edit-profile.payload';
 import { UserPayload } from './payloads/user.payload';
 import { UserEntity } from './user.entity';
@@ -20,9 +20,9 @@ export class UserController {
     return new UserPayload(sessionUser);
   }
 
-  @Get(':id')
-  async getById(@ObjectIdDecorator('id') id: ObjectId): Promise<UserPayload> {
-    const user = await this.userService.readById(id);
+  @Get(':userId')
+  async getById(@ObjectIdDecorator('userId') userId: ObjectId): Promise<UserPayload> {
+    const user = await this.userService.readById(userId);
 
     if (!user) {
       throw new NotFoundException('User not found.');
