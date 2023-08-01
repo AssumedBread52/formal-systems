@@ -43,9 +43,9 @@ export class UserService {
     });
   }
 
-  readById(id: ObjectId): Promise<UserEntity | null> {
+  readById(userId: ObjectId): Promise<UserEntity | null> {
     return this.userRepository.findOneBy({
-      _id: new ObjectId(id)
+      _id: userId
     });
   }
 
