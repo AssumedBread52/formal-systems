@@ -1,4 +1,3 @@
-import { IdPayload } from '@/common/payloads/id.payload';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -63,8 +62,8 @@ export class SystemService {
     return new PaginatedResultsPayload(total, results);
   }
 
-  async update(system: SystemEntity, editSystemPayload: EditSystemPayload): Promise<IdPayload> {
-    const { _id, title, createdByUserId } = system;
+  async update(system: SystemEntity, editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
+    const { title, createdByUserId } = system;
     const { newTitle, newDescription } = editSystemPayload;
 
     if (title !== newTitle) {
@@ -74,16 +73,10 @@ export class SystemService {
     system.title = newTitle;
     system.description = newDescription;
 
-    await this.systemRepository.save(system);
-
-    return new IdPayload(_id);
+    return this.systemRepository.save(system);
   }
 
-  async delete(system: SystemEntity): Promise<IdPayload> {
-    const { _id } = system;
-
-    await this.systemRepository.remove(system);
-
-    return new IdPayload(_id);
+  async delete(system: SystemEntity): Promise<SystemEntity> {
+    return this.systemRepository.remove(system);
   }
 };
