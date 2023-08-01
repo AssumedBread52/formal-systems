@@ -11,8 +11,8 @@ export class SymbolEntity {
   @Column()
   description: string = '';
   @Column({
-    type: 'enum',
-    enum: SymbolType
+    enum: SymbolType,
+    type: 'enum'
   })
   type: SymbolType = SymbolType.Constant;
   @Column()
