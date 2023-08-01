@@ -63,10 +63,12 @@ export class SystemController {
     const { createdByUserId } = system;
 
     if (sessionUserId.toString() !== createdByUserId.toString()) {
-      throw new ForbiddenException('You cannot update entities unless you created them.');
+      throw new ForbiddenException('You cannot update a system unless you created it.');
     }
 
-    return this.systemService.update(system, editSystemPayload);
+    const { _id } = await this.systemService.update(system, editSystemPayload);
+
+    return new IdPayload(_id);
   }
 
   @UseGuards(JwtGuard)
