@@ -1,9 +1,15 @@
 import { SystemEntity } from '@/system/system.entity';
-import { IsInt, IsNotEmpty, Min } from 'class-validator';
+import { Transform, TransformFnParams } from 'class-transformer';
+import { IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
 import { ObjectId } from 'mongodb';
 
 export class SystemPayload {
-  @IsNotEmpty()
+  @IsMongoId()
+  @Transform((params: TransformFnParams): any => {
+    const { value } = params;
+
+    return value.toString();
+  })
   id: ObjectId;
   @IsNotEmpty()
   title: string;
@@ -15,7 +21,12 @@ export class SystemPayload {
   @IsInt()
   @Min(0)
   variableSymbolCount: number;
-  @IsNotEmpty()
+  @IsMongoId()
+  @Transform((params: TransformFnParams): any => {
+    const { value } = params;
+
+    return value.toString();
+  })
   createdByUserId: ObjectId;
 
   constructor(system: SystemEntity) {
