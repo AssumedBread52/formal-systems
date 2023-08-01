@@ -54,9 +54,9 @@ export class SystemService {
     }
 
     const [results, total] = await this.systemRepository.findAndCount({
-      where,
       skip: (page - 1) * count,
-      take: count
+      take: count,
+      where
     });
 
     return new PaginatedResultsPayload(total, results);
