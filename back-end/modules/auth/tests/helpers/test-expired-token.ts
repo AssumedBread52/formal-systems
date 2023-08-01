@@ -4,7 +4,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
-export const testExpiredToken = async (app: INestApplication, method: 'post', path: string): Promise<void> => {
+export const testExpiredToken = async (app: INestApplication, method: 'get' | 'patch' | 'post', path: string): Promise<void> => {
   const token = await app.get(AuthService).generateToken(new ObjectId());
 
   await new Promise((resolve: (value: unknown) => void): void => {
