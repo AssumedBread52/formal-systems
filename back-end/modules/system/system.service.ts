@@ -38,9 +38,9 @@ export class SystemService {
     return this.systemRepository.save(system);
   }
 
-  readById(id: ObjectId): Promise<SystemEntity | null> {
+  readById(systemId: ObjectId): Promise<SystemEntity | null> {
     return this.systemRepository.findOneBy({
-      _id: new ObjectId(id)
+      _id: systemId
     });
   }
 
