@@ -1,9 +1,15 @@
 import { UserEntity } from '@/user/user.entity';
-import { IsEmail, IsInt, IsNotEmpty, Min } from 'class-validator';
+import { Transform, TransformFnParams } from 'class-transformer';
+import { IsEmail, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
 import { ObjectId } from 'mongodb';
 
 export class UserPayload {
-  @IsNotEmpty()
+  @IsMongoId()
+  @Transform((params: TransformFnParams): any => {
+    const { value } = params;
+
+    return value.toString();
+  })
   id: ObjectId;
   @IsNotEmpty()
   firstName: string;
