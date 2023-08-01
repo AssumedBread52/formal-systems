@@ -21,16 +21,18 @@ export class SystemController {
     const system = await this.systemService.readById(systemId);
 
     if (!system) {
-      return new IdPayload(new ObjectId(systemId));
+      return new IdPayload(systemId);
     }
 
     const { createdByUserId } = system;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new ForbiddenException('You cannot delete entities unless you created them.');
+      throw new ForbiddenException('You cannot delete a system unless you created it.');
     }
 
-    return this.systemService.delete(system);
+    await this.systemService.delete(system);
+
+    return new IdPayload(systemId);
   }
 
   @Get()
