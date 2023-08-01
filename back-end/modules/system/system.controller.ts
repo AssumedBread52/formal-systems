@@ -2,7 +2,7 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
-import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditSystemPayload } from './payloads/edit-system.payload';
 import { NewSystemPayload } from './payloads/new-system.payload';
@@ -69,7 +69,6 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Post()
-  @HttpCode(HttpStatus.NO_CONTENT)
   async postSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Body(ValidationPipe) newSystemPayload: NewSystemPayload): Promise<void> {
     await this.systemService.create(newSystemPayload, sessionUserId);
   }
