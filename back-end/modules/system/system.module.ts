@@ -15,6 +15,10 @@ import { SystemService } from './system.service';
   ],
   providers: [
     SystemService
+  ],
+  exports: [
+    SystemService,
+    TypeOrmModule
   ]
 })
 export class SystemModule {
