@@ -66,9 +66,9 @@ export class SystemController {
       throw new ForbiddenException('You cannot update a system unless you created it.');
     }
 
-    const { _id } = await this.systemService.update(system, editSystemPayload);
+    await this.systemService.update(system, editSystemPayload);
 
-    return new IdPayload(_id);
+    return new IdPayload(systemId);
   }
 
   @UseGuards(JwtGuard)
