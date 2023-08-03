@@ -53,9 +53,9 @@ export class SymbolController {
   }
 
   @UseGuards(JwtGuard)
-  @Patch(':id')
-  async patchSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('id') id: ObjectId, @Body(ValidationPipe) editSymbolPayload: EditSymbolPayload): Promise<IdPayload> {
-    const symbol = await this.symbolService.readById(id);
+  @Patch(':symbolId')
+  async patchSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId, @Body(ValidationPipe) editSymbolPayload: EditSymbolPayload): Promise<IdPayload> {
+    const symbol = await this.symbolService.readById(symbolId);
 
     if (!symbol) {
       throw new NotFoundException('Symbol not found.');
@@ -67,7 +67,9 @@ export class SymbolController {
       throw new ForbiddenException('You cannot update this entity.');
     }
 
-    return this.symbolService.update(symbol, editSymbolPayload);
+    await this.symbolService.update(symbol, editSymbolPayload);
+
+    return new IdPayload(symbolId);
   }
 
   @UseGuards(JwtGuard)
