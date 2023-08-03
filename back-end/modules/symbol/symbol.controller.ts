@@ -28,7 +28,7 @@ export class SymbolController {
     const { createdByUserId } = symbol;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new ForbiddenException('You cannot delete symbols unless you created them.');
+      throw new ForbiddenException('You cannot delete a symbol unless you created it.');
     }
 
     await this.symbolService.delete(symbol);
@@ -64,7 +64,7 @@ export class SymbolController {
     const { createdByUserId } = symbol;
 
     if (sessionUserId.toString() !== createdByUserId.toString()) {
-      throw new ForbiddenException('You cannot update this entity.');
+      throw new ForbiddenException('You cannot update a symbol unless you created it.');
     }
 
     await this.symbolService.update(symbol, editSymbolPayload);
