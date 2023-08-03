@@ -14,7 +14,7 @@ const bootstrap = async (): Promise<void> => {
 
   const configService = app.get(ConfigService);
 
-  const port = configService.getOrThrow<number>('PORT') || 5000;
+  const port = configService.getOrThrow<number>('PORT');
 
   await app.listen(port);
 };
