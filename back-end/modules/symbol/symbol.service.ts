@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ObjectId, RootFilterOperators } from 'mongodb';
-import { MongoRepository } from 'typeorm';
+import { ObjectId } from 'mongodb';
+import { MongoRepository, RootFilterOperators } from 'typeorm';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
 import { NewSymbolPayload } from './payloads/new-symbol.payload';
 import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
@@ -46,10 +46,9 @@ export class SymbolService {
     });
   }
 
-  async readSymbols(systemId: ObjectId, page: number, take: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
-    const skip = (page - 1) * take;
+  async readSymbols(systemId: ObjectId, page: number, count: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
     const where = {
-      systemId: new ObjectId(systemId)
+      systemId
     } as RootFilterOperators<SymbolEntity>;
 
     if (keywords && 0 !== keywords.length) {
@@ -60,9 +59,9 @@ export class SymbolService {
     }
 
     const [results, total] = await this.symbolRepository.findAndCount({
-      where,
-      skip,
-      take
+      skip: (page - 1) * count,
+      take: count,
+      where
     });
 
     return new PaginatedResultsPayload(total, results);
