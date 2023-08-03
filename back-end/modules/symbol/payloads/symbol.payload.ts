@@ -1,10 +1,16 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { IsEnum, IsInt, IsNotEmpty, Min } from 'class-validator';
+import { Transform, TransformFnParams } from 'class-transformer';
+import { IsEnum, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
 import { ObjectId } from 'mongodb';
 
 export class SymbolPayload {
-  @IsNotEmpty()
+  @IsMongoId()
+  @Transform((params: TransformFnParams): any => {
+    const { value } = params;
+
+    return value.toString();
+  })
   id: ObjectId;
   @IsNotEmpty()
   title: string;
@@ -16,13 +22,23 @@ export class SymbolPayload {
   content: string;
   @IsInt()
   @Min(0)
-  axiomaticStatementAppearances: number = 0;
+  axiomaticStatementAppearances: number;
   @IsInt()
   @Min(0)
-  nonAxiomaticStatementAppearances: number = 0;
-  @IsNotEmpty()
+  nonAxiomaticStatementAppearances: number;
+  @IsMongoId()
+  @Transform((params: TransformFnParams): any => {
+    const { value } = params;
+
+    return value.toString();
+  })
   systemId: ObjectId;
-  @IsNotEmpty()
+  @IsMongoId()
+  @Transform((params: TransformFnParams): any => {
+    const { value } = params;
+
+    return value.toString();
+  })
   createdByUserId: ObjectId;
 
   constructor(symbol: SymbolEntity) {
