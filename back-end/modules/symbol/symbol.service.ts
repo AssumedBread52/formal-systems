@@ -1,4 +1,3 @@
-import { IdPayload } from '@/common/payloads/id.payload';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId, RootFilterOperators } from 'mongodb';
@@ -69,8 +68,8 @@ export class SymbolService {
     return new PaginatedResultsPayload(total, results);
   }
 
-  async update(symbol: SymbolEntity, editSymbolPayload: EditSymbolPayload): Promise<IdPayload> {
-    const { _id, content, systemId } = symbol;
+  async update(symbol: SymbolEntity, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
+    const { content, systemId } = symbol;
     const { newTitle, newDescription, newType, newContent } = editSymbolPayload;
 
     if (content !== newContent) {
@@ -82,9 +81,7 @@ export class SymbolService {
     symbol.type = newType;
     symbol.content = newContent;
 
-    await this.symbolRepository.save(symbol);
-
-    return new IdPayload(_id);
+    return this.symbolRepository.save(symbol);
   }
 
   delete(symbol: SymbolEntity): Promise<SymbolEntity> {
