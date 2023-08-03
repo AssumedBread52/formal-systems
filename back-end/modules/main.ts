@@ -10,8 +10,6 @@ const bootstrap = async (): Promise<void> => {
 
   app.use(cookieParser());
 
-  app.enableCors();
-
   const configService = app.get(ConfigService);
 
   const port = configService.getOrThrow<number>('PORT');
