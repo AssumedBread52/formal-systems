@@ -41,9 +41,9 @@ export class SymbolController {
     return this.symbolService.readSymbols(systemId, page, count, keywords);
   }
 
-  @Get(':id')
-  async getById(@ObjectIdDecorator('id') id: ObjectId): Promise<SymbolPayload> {
-    const symbol = await this.symbolService.readById(id);
+  @Get(':symbolId')
+  async getById(@ObjectIdDecorator('symbolId') symbolId: ObjectId): Promise<SymbolPayload> {
+    const symbol = await this.symbolService.readById(symbolId);
 
     if (!symbol) {
       throw new NotFoundException('Symbol not found.');
