@@ -1,26 +1,15 @@
-import { EntityRepositoryMock } from '@/common/tests/mocks/entity-repository.mock';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 
-export class SymbolRepositoryMock extends EntityRepositoryMock<SymbolEntity> {
-  findOneBy = jest.fn((args: Partial<SymbolEntity>): SymbolEntity | null => {
-    const { _id, content, systemId } = args;
+export class SymbolRepositoryMock {
+  findAndCount = jest.fn();
 
-    for (const symbol of this.entities) {
-      if ((!_id || _id.toString() === symbol._id.toString()) && (!content || content === symbol.content) && (!systemId || systemId.toString() === symbol.systemId.toString())) {
-        return symbol;
-      }
-    }
+  findOneBy = jest.fn();
 
-    return null;
+  remove = jest.fn((symbol: SymbolEntity): SymbolEntity => {
+    return symbol;
   });
 
-  remove = jest.fn((args: SymbolEntity): SymbolEntity => {
-    const { _id } = args;
-
-    this.entities = this.entities.filter((system: SymbolEntity): boolean => {
-      return _id.toString() !== system._id.toString();
-    });
-
-    return args;
+  save = jest.fn((symbol: SymbolEntity): SymbolEntity => {
+    return symbol;
   });
 };

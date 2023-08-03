@@ -1,18 +1,14 @@
-import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
-import { AuthModule } from '@/auth/auth.module';
+import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { AuthService } from '@/auth/auth.service';
-import { testExpiredToken } from '@/auth/tests/helpers/testExpiredToken';
-import { testInvalidToken } from '@/auth/tests/helpers/testInvalidToken';
-import { testMissingToken } from '@/auth/tests/helpers/testMissingToken';
+import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
+import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
+import { testMissingToken } from '@/auth/tests/helpers/test-missing-token';
+import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { SystemEntity } from '@/system/system.entity';
-import { SystemModule } from '@/system/system.module';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import * as cookieParser from 'cookie-parser';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { SystemRepositoryMock } from './mocks/system-repository.mock';
@@ -21,46 +17,7 @@ describe('Delete System', (): void => {
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [
-        AuthModule,
-        SystemModule
-      ]
-    }).overrideProvider(ConfigService).useClass(ConfigServiceMock).overrideProvider(getRepositoryToken(SystemEntity)).useClass(SystemRepositoryMock).overrideProvider(getRepositoryToken(UserEntity)).useClass(UserRepositoryMock).compile();
-
-    app = moduleRef.createNestApplication();
-
-    app.use(cookieParser());
-
-    await app.init();
-
-    await request(app.getHttpServer()).post('/auth/sign-up').send({
-      firstName: 'Test1',
-      lastName: 'User1',
-      email: 'test1@test.com',
-      password: '123456'
-    });
-    await request(app.getHttpServer()).post('/auth/sign-up').send({
-      firstName: 'Test2',
-      lastName: 'User2',
-      email: 'test2@test.com',
-      password: '123456'
-    });
-
-    const authService = app.get(AuthService);
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    const { _id } = userRepositoryMock.entities[0];
-
-    const token = await authService.generateToken(_id);
-
-    await request(app.getHttpServer()).post('/system').set('Cookie', [
-      `token=${token}`
-    ]).send({
-      title: 'Test',
-      description: 'This is a test.'
-    });
+    app = await createTestApp();
   });
 
   it('fails without a token', async (): Promise<void> => {
@@ -76,15 +33,11 @@ describe('Delete System', (): void => {
   });
 
   it('succeeds if the system does not exist', async (): Promise<void> => {
-    const authService = app.get(AuthService);
+    const token = await app.get(AuthService).generateToken(new ObjectId());
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-
-    const { _id } = userRepositoryMock.entities[0];
-
-    const token = await authService.generateToken(_id);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
 
     const systemId = new ObjectId();
 
@@ -92,65 +45,56 @@ describe('Delete System', (): void => {
       `token=${token}`
     ]);
 
-    expect(response.statusCode).toBe(HttpStatus.OK);
-    expect(response.body).toEqual({
+    expectCorrectResponse(response, HttpStatus.OK, {
       id: systemId.toString()
     });
   });
 
-  it('fails if the system createdByUserId does not match the user ID in the token', async (): Promise<void> => {
-    const authService = app.get(AuthService);
+  it('fails if the system is not created by the user attempting to delete it', async (): Promise<void> => {
+    const token = await app.get(AuthService).generateToken(new ObjectId());
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    expect(userRepositoryMock.entities.length).toBeGreaterThan(1);
-
-    const { _id: userId } = userRepositoryMock.entities[1];
-
-    const token = await authService.generateToken(userId);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    expect(systemRepositoryMock.entities.length).toBeGreaterThan(0);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(new SystemEntity());
 
-    const { _id } = systemRepositoryMock.entities[0];
-
-    const response = await request(app.getHttpServer()).delete(`/system/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
     ]);
 
-    expect(response.statusCode).toBe(HttpStatus.FORBIDDEN);
-    expect(response.body).toEqual({
+    expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
       error: 'Forbidden',
-      message: 'You cannot delete entities unless you created them.',
+      message: 'You cannot delete a system unless you created it.',
       statusCode: HttpStatus.FORBIDDEN
     });
   });
 
-  it('succeeds if the system createdByUserId matches the user ID in the token', async (): Promise<void> => {
-    const authService = app.get(AuthService);
+  it('succeeds if the system was created by the authenticated user', async (): Promise<void> => {
+    const testUser = new UserEntity();
+
+    const token = await app.get(AuthService).generateToken(new ObjectId());
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
 
-    const { _id: userId } = userRepositoryMock.entities[0];
+    const testSystem = new SystemEntity();
 
-    const token = await authService.generateToken(userId);
+    testSystem.createdByUserId = testUser._id;
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    expect(systemRepositoryMock.entities.length).toBeGreaterThan(0);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
 
-    const { _id } = systemRepositoryMock.entities[0];
-
-    const response = await request(app.getHttpServer()).delete(`/system/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${testSystem._id}`).set('Cookie', [
       `token=${token}`
     ]);
 
-    expect(response.statusCode).toBe(HttpStatus.OK);
-    expect(response.body).toEqual({
-      id: _id.toString()
+    expectCorrectResponse(response, HttpStatus.OK, {
+      id: testSystem._id.toString()
     });
   });
 

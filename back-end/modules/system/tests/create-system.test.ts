@@ -1,18 +1,15 @@
-import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
-import { AuthModule } from '@/auth/auth.module';
+import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { AuthService } from '@/auth/auth.service';
-import { testExpiredToken } from '@/auth/tests/helpers/testExpiredToken';
-import { testInvalidToken } from '@/auth/tests/helpers/testInvalidToken';
-import { testMissingToken } from '@/auth/tests/helpers/testMissingToken';
+import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
+import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
+import { testMissingToken } from '@/auth/tests/helpers/test-missing-token';
+import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { SystemEntity } from '@/system/system.entity';
-import { SystemModule } from '@/system/system.module';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import * as cookieParser from 'cookie-parser';
+import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { SystemRepositoryMock } from './mocks/system-repository.mock';
 
@@ -20,25 +17,7 @@ describe('Create System', (): void => {
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [
-        AuthModule,
-        SystemModule
-      ]
-    }).overrideProvider(ConfigService).useClass(ConfigServiceMock).overrideProvider(getRepositoryToken(SystemEntity)).useClass(SystemRepositoryMock).overrideProvider(getRepositoryToken(UserEntity)).useClass(UserRepositoryMock).compile();
-
-    app = moduleRef.createNestApplication();
-
-    app.use(cookieParser());
-
-    await app.init();
-
-    await request(app.getHttpServer()).post('/auth/sign-up').send({
-      firstName: 'Test',
-      lastName: 'User',
-      email: 'test@test.com',
-      password: '123456'
-    });
+    app = await createTestApp();
   });
 
   it('fails without a token', async (): Promise<void> => {
@@ -54,22 +33,17 @@ describe('Create System', (): void => {
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
-    const authService = app.get(AuthService);
+    const token = await app.get(AuthService).generateToken(new ObjectId());
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-
-    const { _id } = userRepositoryMock.entities[0];
-
-    const token = await authService.generateToken(_id);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
 
     const response = await request(app.getHttpServer()).post('/system').set('Cookie', [
       `token=${token}`
     ]);
 
-    expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
-    expect(response.body).toEqual({
+    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
       error: 'Bad Request',
       message: [
         'title should not be empty',
@@ -79,16 +53,16 @@ describe('Create System', (): void => {
     });
   });
 
-  it('succeeds if the title is unique for this user', async (): Promise<void> => {
-    const authService = app.get(AuthService);
+  it('fails with title collision', async (): Promise<void> => {
+    const token = await app.get(AuthService).generateToken(new ObjectId());
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
 
-    const { _id } = userRepositoryMock.entities[0];
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    const token = await authService.generateToken(_id);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(new SystemEntity());
 
     const response = await request(app.getHttpServer()).post('/system').set('Cookie', [
       `token=${token}`
@@ -97,49 +71,28 @@ describe('Create System', (): void => {
       description: 'System'
     });
 
-    expect(response.statusCode).toBe(HttpStatus.NO_CONTENT);
-    expect(response.body).toEqual({});
-  });
-
-  it('fails if the title is not unique for this user', async (): Promise<void> => {
-    const newSystemPayload = {
-      title: 'Test',
-      description: 'This is a test.'
-    };
-
-    const authService = app.get(AuthService);
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    expect(userRepositoryMock.entities.length).toBeGreaterThan(0);
-
-    const { _id } = userRepositoryMock.entities[0];
-
-    const token = await authService.generateToken(_id);
-
-    const response = await request(app.getHttpServer()).post('/system').set('Cookie', [
-      `token=${token}`
-    ]).send(newSystemPayload);
-
-    expect(response.statusCode).toBe(HttpStatus.NO_CONTENT);
-    expect(response.body).toEqual({});
-
-    const collision = await request(app.getHttpServer()).post('/system').set('Cookie', [
-      `token=${token}`
-    ]).send(newSystemPayload);
-
-    expect(collision.statusCode).toBe(HttpStatus.CONFLICT);
-    expect(collision.body).toEqual({
+    expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
       message: 'Systems created by the same user must have a unique title.',
       statusCode: HttpStatus.CONFLICT
     });
   });
 
-  afterEach((): void => {
-    const systemRepository = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+  it('succeeds if the title is unqiue among systems created by this user', async (): Promise<void> => {
+    const token = await app.get(AuthService).generateToken(new ObjectId());
 
-    systemRepository.entities = [];
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+
+    const response = await request(app.getHttpServer()).post('/system').set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'System'
+    });
+
+    expectCorrectResponse(response, HttpStatus.CREATED, {});
   });
 
   afterAll(async (): Promise<void> => {
