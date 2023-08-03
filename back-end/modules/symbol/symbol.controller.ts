@@ -17,12 +17,12 @@ export class SymbolController {
   }
 
   @UseGuards(JwtGuard)
-  @Delete(':id')
-  async deleteSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('id') id: ObjectId): Promise<IdPayload> {
-    const symbol = await this.symbolService.readById(id);
+  @Delete(':symbolId')
+  async deleteSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId): Promise<IdPayload> {
+    const symbol = await this.symbolService.readById(symbolId);
 
     if (!symbol) {
-      return new IdPayload(new ObjectId(id));
+      return new IdPayload(symbolId);
     }
 
     const { createdByUserId } = symbol;
@@ -31,7 +31,9 @@ export class SymbolController {
       throw new ForbiddenException('You cannot delete symbols unless you created them.');
     }
 
-    return this.symbolService.delete(symbol);
+    await this.symbolService.delete(symbol);
+
+    return new IdPayload(symbolId);
   }
 
   @Get()
