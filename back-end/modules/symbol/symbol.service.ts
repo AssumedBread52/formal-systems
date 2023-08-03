@@ -87,7 +87,7 @@ export class SymbolService {
     return new IdPayload(_id);
   }
 
-  async delete(symbol: SymbolEntity): Promise<SymbolEntity> {
+  delete(symbol: SymbolEntity): Promise<SymbolEntity> {
     return this.symbolRepository.remove(symbol);
   }
 };
