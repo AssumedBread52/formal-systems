@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
+import { ObjectId } from 'mongodb';
 import { Strategy, StrategyOptions } from 'passport-jwt';
 import { BaseStrategy } from './base.strategy';
 
@@ -33,6 +34,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrat
   validate(idPayload: IdPayload): Promise<UserEntity> {
     const { id } = idPayload;
 
-    return this.authService.validateUserById(id);
+    return this.authService.validateUserById(new ObjectId(id));
   }
 };
