@@ -3,7 +3,7 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
 import { NewSymbolPayload } from './payloads/new-symbol.payload';
@@ -70,7 +70,6 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Post()
-  @HttpCode(HttpStatus.NO_CONTENT)
   async postSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(ValidationPipe) newSymbolPayload: NewSymbolPayload): Promise<void> {
     const system = await this.systemService.readById(systemId);
 
