@@ -4,7 +4,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DatabaseType } from 'typeorm';
 import { AppModule } from './app/app.module';
 import { AuthModule } from './auth/auth.module';
-import { CleanUpSubscriber } from './symbol/subscribers/clean-up.subscriber';
+import { CleanUpSystemSymbolsSubscriber } from './symbol/subscribers/clean-up-system-symbols.subscriber';
 import { SymbolModule } from './symbol/symbol.module';
 import { SystemModule } from './system/system.module';
 import { SymbolCountSubscriber } from './user/subscribers/symbol-count.subscriber';
@@ -45,7 +45,7 @@ import { UserModule } from './user/user.module';
         const url = `${scheme}://${username}:${encodeURIComponent(password)}@${host}:${port}/${name}?authSource=admin`;
 
         const subscribers = [
-          CleanUpSubscriber,
+          CleanUpSystemSymbolsSubscriber,
           SymbolCountSubscriber,
           SystemCountSubscriber
         ];
