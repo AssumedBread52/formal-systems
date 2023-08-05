@@ -23,7 +23,7 @@ export class SymbolService {
     }
   }
 
-  async create(newSymbolPayload: NewSymbolPayload, sessionUserId: ObjectId, systemId: ObjectId): Promise<SymbolEntity> {
+  async create(newSymbolPayload: NewSymbolPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<SymbolEntity> {
     const { title, description, type, content } = newSymbolPayload;
 
     await this.checkForConflict(content, systemId);
