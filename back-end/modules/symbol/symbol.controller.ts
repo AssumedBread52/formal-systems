@@ -18,8 +18,8 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Delete(':symbolId')
-  async deleteSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId): Promise<IdPayload> {
-    const symbol = await this.symbolService.readById(symbolId);
+  async deleteSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId): Promise<IdPayload> {
+    const symbol = await this.symbolService.readById(systemId, symbolId);
 
     if (!symbol) {
       return new IdPayload(symbolId);
@@ -42,8 +42,8 @@ export class SymbolController {
   }
 
   @Get(':symbolId')
-  async getById(@ObjectIdDecorator('symbolId') symbolId: ObjectId): Promise<SymbolPayload> {
-    const symbol = await this.symbolService.readById(symbolId);
+  async getById(@ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId): Promise<SymbolPayload> {
+    const symbol = await this.symbolService.readById(systemId, symbolId);
 
     if (!symbol) {
       throw new NotFoundException('Symbol not found.');
@@ -54,8 +54,8 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Patch(':symbolId')
-  async patchSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId, @Body(ValidationPipe) editSymbolPayload: EditSymbolPayload): Promise<IdPayload> {
-    const symbol = await this.symbolService.readById(symbolId);
+  async patchSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId, @Body(ValidationPipe) editSymbolPayload: EditSymbolPayload): Promise<IdPayload> {
+    const symbol = await this.symbolService.readById(systemId, symbolId);
 
     if (!symbol) {
       throw new NotFoundException('Symbol not found.');

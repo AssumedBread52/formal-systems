@@ -40,9 +40,10 @@ export class SymbolService {
     return this.symbolRepository.save(symbol);
   }
 
-  readById(symbolId: ObjectId): Promise<SymbolEntity | null> {
+  readById(systemId: ObjectId, symbolId: ObjectId): Promise<SymbolEntity | null> {
     return this.symbolRepository.findOneBy({
-      _id: symbolId
+      _id: symbolId,
+      systemId
     });
   }
 
