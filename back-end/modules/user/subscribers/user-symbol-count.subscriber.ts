@@ -1,18 +1,19 @@
-import { SystemEntity } from '@/system/system.entity';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { SymbolEntity } from '@/symbol/symbol.entity';
 import { UserEntity } from '@/user/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent } from 'typeorm';
 
 @EventSubscriber()
-export class SystemCountSubscriber implements EntitySubscriberInterface<SystemEntity> {
+export class UserSymbolCountSubscriber implements EntitySubscriberInterface<SymbolEntity> {
   listenTo(): string | Function {
-    return SystemEntity;
+    return SymbolEntity;
   }
 
-  async afterInsert(event: InsertEvent<SystemEntity>): Promise<void> {
+  async afterInsert(event: InsertEvent<SymbolEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    const { createdByUserId } = entity;
+    const { type, createdByUserId } = entity;
 
     const userRepository = connection.getMongoRepository(UserEntity);
 
@@ -24,15 +25,22 @@ export class SystemCountSubscriber implements EntitySubscriberInterface<SystemEn
       throw new NotFoundException('User not found.');
     }
 
-    user.systemCount++;
+    switch (type) {
+      case SymbolType.Constant:
+        user.constantSymbolCount++;
+        break;
+      case SymbolType.Variable:
+        user.variableSymbolCount++;
+        break;
+    }
 
     userRepository.save(user);
   }
 
-  async afterRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
+  async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
-    const { createdByUserId } = databaseEntity;
+    const { type, createdByUserId } = databaseEntity;
 
     const userRepository = connection.getMongoRepository(UserEntity);
 
@@ -44,7 +52,14 @@ export class SystemCountSubscriber implements EntitySubscriberInterface<SystemEn
       throw new NotFoundException('User not found.');
     }
 
-    user.systemCount--;
+    switch (type) {
+      case SymbolType.Constant:
+        user.constantSymbolCount--;
+        break;
+      case SymbolType.Variable:
+        user.variableSymbolCount--;
+        break;
+    }
 
     userRepository.save(user);
   }

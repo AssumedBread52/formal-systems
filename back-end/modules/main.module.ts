@@ -6,9 +6,10 @@ import { AppModule } from './app/app.module';
 import { AuthModule } from './auth/auth.module';
 import { CleanUpSystemSymbolsSubscriber } from './symbol/subscribers/clean-up-system-symbols.subscriber';
 import { SymbolModule } from './symbol/symbol.module';
+import { SystemSymbolCountSubscriber } from './system/subscribers/system-symbol-count.subscriber';
 import { SystemModule } from './system/system.module';
-import { SymbolCountSubscriber } from './user/subscribers/symbol-count.subscriber';
-import { SystemCountSubscriber } from './user/subscribers/system-count.subscriber';
+import { UserSymbolCountSubscriber } from './user/subscribers/user-symbol-count.subscriber';
+import { UserSystemCountSubscriber } from './user/subscribers/user-system-count.subscriber';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -46,8 +47,9 @@ import { UserModule } from './user/user.module';
 
         const subscribers = [
           CleanUpSystemSymbolsSubscriber,
-          SymbolCountSubscriber,
-          SystemCountSubscriber
+          SystemSymbolCountSubscriber,
+          UserSymbolCountSubscriber,
+          UserSystemCountSubscriber
         ];
 
         return {
