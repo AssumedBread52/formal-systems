@@ -1,5 +1,5 @@
 export const Tags = {
-  SessionUserId: 'session-user-id',
+  SessionUser: 'session-user',
   Symbol: 'symbol',
   System: 'system',
   User: 'user'
