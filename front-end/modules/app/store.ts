@@ -10,11 +10,15 @@ export const store = configureStore({
     return getDefaultMiddleware().concat(middleware).concat((_) => {
       return (next) => {
         return (action) => {
-          if (api.endpoints.refreshToken.matchFulfilled(action) || api.endpoints.signIn.matchFulfilled(action) || api.endpoints.signUp.matchFulfilled(action)) {
+          const { endpoints } = api;
+
+          const { refreshToken, signIn, signUp, signOut } = endpoints;
+
+          if (refreshToken.matchFulfilled(action) || signIn.matchFulfilled(action) || signUp.matchFulfilled(action)) {
             refreshTimeout = setTimeout(() => {
               store.dispatch(api.endpoints.refreshToken.initiate());
             }, 45000);
-          } else if (api.endpoints.refreshToken.matchRejected(action) || api.endpoints.signOut.matchFulfilled(action)) {
+          } else if (refreshToken.matchRejected(action) || signOut.matchFulfilled(action)) {
             if (refreshTimeout) {
               clearTimeout(refreshTimeout);
             }
