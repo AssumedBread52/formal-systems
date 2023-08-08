@@ -18,7 +18,9 @@ export const editProfile = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api
         {
           type: Tags.User,
           id
-        }
+        },
+        Tags.SessionUser,
+        Tags.User
       ];
     },
     query: (editProfilePayload: EditProfilePayload): FetchArgs => {

@@ -6,7 +6,10 @@ import { EndpointBuilder, MutationDefinition } from '@reduxjs/toolkit/dist/query
 
 export const signUp = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<SignUpPayload, BaseQueryFn, TagTypes, void, 'api'> => {
   return builder.mutation<void, SignUpPayload>({
-    invalidatesTags: [Tags.SessionUserId],
+    invalidatesTags: [
+      Tags.SessionUser,
+      Tags.User
+    ],
     query: (signUpPayload: SignUpPayload): FetchArgs => {
       return {
         body: signUpPayload,
