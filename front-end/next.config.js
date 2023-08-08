@@ -3,13 +3,18 @@ module.exports = {
   redirects: async () => {
     return [
       {
+        source: '/',
+        destination: '/formal-systems',
+        permanent: true
+      },
+      {
         source: '/edit-profile',
         destination: '/sign-up',
         permanent: false,
         missing: [
           {
             type: 'cookie',
-            key: 'authStatus'
+            key: 'token'
           }
         ]
       },
@@ -20,7 +25,7 @@ module.exports = {
         has: [
           {
             type: 'cookie',
-            key: 'authStatus'
+            key: 'token'
           }
         ]
       },
@@ -31,7 +36,7 @@ module.exports = {
         missing: [
           {
             type: 'cookie',
-            key: 'authStatus'
+            key: 'token'
           }
         ]
       },
@@ -42,7 +47,7 @@ module.exports = {
         has: [
           {
             type: 'cookie',
-            key: 'authStatus'
+            key: 'token'
           }
         ]
       }
