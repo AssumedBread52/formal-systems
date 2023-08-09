@@ -40,7 +40,7 @@ services:
       back-end:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:3000/app/status || exit 1"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:3000/api/app/status || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
