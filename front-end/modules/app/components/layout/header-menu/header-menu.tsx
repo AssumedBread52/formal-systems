@@ -1,13 +1,16 @@
+'use client';
+
+import { useIsAuthenticated } from '@/auth/hooks/use-is-authenticated';
 import { AntdMenu } from '@/common/components/antd-menu/antd-menu';
 import { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
-import { cookies, headers } from 'next/headers';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ReactElement } from 'react';
 
 export const HeaderMenu = (): ReactElement => {
-  const isAuthorized = cookies().get('token');
+  const isAuthenticated = useIsAuthenticated();
 
-  const pathname = headers().get('x-invoke-path') ?? '';
+  const pathname = usePathname();
 
   const items = [
     {
@@ -30,7 +33,7 @@ export const HeaderMenu = (): ReactElement => {
     }
   ] as ItemType<MenuItemType>[];
 
-  if (isAuthorized) {
+  if (isAuthenticated) {
     items.push({
       key: '/sign-out',
       label: (
