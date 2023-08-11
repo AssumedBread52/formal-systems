@@ -121,5 +121,5 @@ export const Info = (): ReactElement => {
 };
 
 export const metadata = {
-  title: 'What are formal systems?'
+  title: 'What are Formal Systems?'
 } as Metadata;
