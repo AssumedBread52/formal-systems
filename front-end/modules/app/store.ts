@@ -12,11 +12,11 @@ export const store = configureStore({
         return (action) => {
           const { endpoints } = api;
 
-          const { refreshToken, signIn, signUp, signOut } = endpoints;
+          const { refreshToken, signIn, signOut, signUp } = endpoints;
 
           if (refreshToken.matchFulfilled(action) || signIn.matchFulfilled(action) || signUp.matchFulfilled(action)) {
             refreshTimeout = setTimeout(() => {
-              store.dispatch(api.endpoints.refreshToken.initiate());
+              store.dispatch(refreshToken.initiate());
             }, 45000);
           } else if (refreshToken.matchRejected(action) || signOut.matchFulfilled(action)) {
             if (refreshTimeout) {
