@@ -1,5 +1,5 @@
 export type AppSearchParams = {
+  page?: string;
   count?: string;
   keywords?: string | string[];
-  page?: string;
 };
