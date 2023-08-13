@@ -16,8 +16,8 @@ export const editProfile = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api
 
       return [
         {
-          type: Tags.User,
-          id
+          id,
+          type: Tags.User
         },
         Tags.SessionUser,
         Tags.User
