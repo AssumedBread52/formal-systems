@@ -9,9 +9,9 @@ export const AppProvider = (props: PropsWithChildren): ReactElement => {
   const { children } = props;
 
   useEffect((): void => {
-    const authenticated = document.cookie.split('; ').includes('authStatus=true');
+    const { cookie } = document;
 
-    if (!authenticated) {
+    if (!cookie.includes('authStatus=true')) {
       return;
     }
 
