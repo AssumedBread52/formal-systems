@@ -2,10 +2,10 @@ import { AntdCol } from '@/common/components/antd-col/antd-col';
 import { AntdRow } from '@/common/components/antd-row/antd-row';
 import { InputPagination } from '@/common/components/input-pagination/input-pagination';
 import { InputSearch } from '@/common/components/input-search/input-search';
-import { PaginationSearchControlsProps } from '@/common/types/pagination-search-controls-props';
+import { PaginatedSearchControlsProps } from '@/common/types/paginated-search-controls-props';
 import { PropsWithChildren, ReactElement } from 'react';
 
-export const PaginationSearchControls = (props: PropsWithChildren<PaginationSearchControlsProps>): ReactElement => {
+export const PaginatedSearchControls = (props: PropsWithChildren<PaginatedSearchControlsProps>): ReactElement => {
   const { children, resultType, total } = props;
 
   return (
