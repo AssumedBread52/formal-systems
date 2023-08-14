@@ -1,7 +1,7 @@
 'use client';
 
 import { AntdInputSearch } from '@/common/components/antd-input-search/antd-input-search';
-import { SearchParameters } from '@/common/types/search-parameters';
+import { PaginatedSearchParams } from '@/common/types/paginated-search-params';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { stringify } from 'querystring';
 import { ReactElement } from 'react';
@@ -21,13 +21,13 @@ export const InputSearch = (): ReactElement => {
       return 0 !== newKeyword.length;
     });
 
-    const searchParameters = { count, page: 1 } as SearchParameters;
+    const paginatedSearchParams = { count, page: 1 } as PaginatedSearchParams;
 
     if (0 < newKeywords.length) {
-      searchParameters.keywords = newKeywords;
+      paginatedSearchParams.keywords = newKeywords;
     }
 
-    push(`${pathname}?${stringify(searchParameters)}`);
+    push(`${pathname}?${stringify(paginatedSearchParams)}`);
   };
 
   return (
