@@ -1,11 +1,18 @@
 import { ServerSideProps } from '@/app/types/server-side-props';
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
-import { SystemItem } from '@/system/components/system-item/system-item';
 import { fetchSystem } from '@/system/fetch-data/fetch-system';
+import { UserSignatureProps } from '@/user/types/user-signature-props';
 import { Metadata } from 'next';
-import { ReactElement } from 'react';
+import dynamic from 'next/dynamic';
+import { ComponentType, ReactElement } from 'react';
 import { SymbolsDescription } from './symbols-description/symbols-description';
+
+const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps>> => {
+  const { UserSignature } = await import('@/user/components/user-signature/user-signature');
+
+  return UserSignature;
+});
 
 export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params } = props;
@@ -16,7 +23,11 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
 
   return (
     <AntdCard title={title}>
-      <SystemItem id={id} title={title} description={description} createdByUserId={createdByUserId} />
+      <AntdCard>
+        {description}
+        <AntdDivider />
+        <UserSignature userId={createdByUserId} />
+      </AntdCard>
       <AntdDivider />
       <SymbolsDescription id={id} title={title} constantSymbolCount={constantSymbolCount} variableSymbolCount={variableSymbolCount} />
     </AntdCard>
