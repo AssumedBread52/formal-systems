@@ -2,7 +2,7 @@
 
 import { AntdPagination } from '@/common/components/antd-pagination/antd-pagination';
 import { InputPaginationProps } from '@/common/types/input-pagination-props';
-import { SearchParameters } from '@/common/types/search-parameters';
+import { PaginatedSearchParams } from '@/common/types/paginated-search-params';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { stringify } from 'querystring';
 import { ReactElement, ReactNode } from 'react';
@@ -16,18 +16,18 @@ export const InputPagination = (props: InputPaginationProps): ReactElement => {
 
   const searchParams = useSearchParams();
 
+  const page = parseInt(searchParams.get('page') ?? '1');
   const count = parseInt(searchParams.get('count') ?? '10');
   const keywords = searchParams.getAll('keywords');
-  const page = parseInt(searchParams.get('page') ?? '1');
 
   const changeHandler = (page: number, pageSize: number): void => {
-    const searchParameters = { count: pageSize, page } as SearchParameters;
+    const paginatedSearchParams = { count: pageSize, page } as PaginatedSearchParams;
 
     if (0 < keywords.length) {
-      searchParameters.keywords = keywords;
+      paginatedSearchParams.keywords = keywords;
     }
 
-    push(`${pathname}?${stringify(searchParameters)}`);
+    push(`${pathname}?${stringify(paginatedSearchParams)}`);
   };
 
   const showTotal = (total: number, range: [number, number]): ReactNode => {
