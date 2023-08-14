@@ -9,15 +9,13 @@ import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { DeleteSystemForm } from './delete-system-form/delete-system-form';
 
-export const DeleteSystemPage = async (props: ServerSideProps): Promise<ReactElement> => {
+export const DeleteSystemPage = (props: ServerSideProps): ReactElement => {
   const { params } = props;
 
   const { 'system-id': systemId = '', 'system-title': systemTitle = '' } = params;
 
-  const title = decodeURIComponent(systemTitle);
-
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${title}`}>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${decodeURIComponent(systemTitle)}`}>
       <DeleteSystemForm id={systemId}>
         <InputHiddenId />
         <AntdFormItem style={{ textAlign: 'center' }}>
