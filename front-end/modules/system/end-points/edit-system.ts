@@ -15,11 +15,11 @@ export const editSystem = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'
       const { id } = result;
 
       return [
-        Tags.System,
         {
-          type: Tags.System,
-          id
-        }
+          id,
+          type: Tags.System
+        },
+        Tags.System
       ];
     },
     query: (editSystemPayload: EditSystemPayload): FetchArgs => {
