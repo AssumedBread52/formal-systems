@@ -5,17 +5,17 @@ import { System } from '@/system/types/system';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
-export const SymbolsDescription = (props: Omit<System, 'description' | 'createdByUserId'>): ReactElement => {
+export const SymbolsDescription = (props: Pick<System, 'id' | 'title' | 'constantSymbolCount' | 'variableSymbolCount'>): ReactElement => {
   const { id, title, constantSymbolCount, variableSymbolCount } = props;
 
-  const exploreLink = (
+  const exploreSymbols = (
     <Link href={`/formal-system/${id}/${title}/symbols`}>
       Explore
     </Link>
   );
 
   return (
-    <AntdCard extra={exploreLink} title='Symbols' type='inner'>
+    <AntdCard extra={exploreSymbols} title='Symbols' type='inner'>
       <AntdDescriptions bordered colon>
         <AntdDescriptionsItem label='Symbol Count'>
           {constantSymbolCount + variableSymbolCount}
