@@ -6,7 +6,9 @@ import { EndpointBuilder, MutationDefinition } from '@reduxjs/toolkit/dist/query
 
 export const createSystem = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<NewSystemPayload, BaseQueryFn, TagTypes, void, 'api'> => {
   return builder.mutation<void, NewSystemPayload>({
-    invalidatesTags: [Tags.System],
+    invalidatesTags: [
+      Tags.System
+    ],
     query: (newSystemPayload: NewSystemPayload): FetchArgs => {
       return {
         body: newSystemPayload,
