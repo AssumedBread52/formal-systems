@@ -1,10 +1,10 @@
 import { AntdCol } from '@/common/components/antd-col/antd-col';
 import { AntdEmpty } from '@/common/components/antd-empty/antd-empty';
 import { AntdRow } from '@/common/components/antd-row/antd-row';
-import { SymbolItem } from '@/symbol/components/symbol-item/symbol-item';
 import { Symbol } from '@/symbol/types/symbol';
 import { SymbolListProps } from '@/symbol/types/symbol-list-props';
 import { ReactElement } from 'react';
+import { SymbolItem } from './symbol-item/symbol-item';
 
 export const SymbolList = (props: SymbolListProps): ReactElement => {
   const { symbols, systemTitle } = props;
