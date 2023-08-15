@@ -15,11 +15,11 @@ export const deleteSymbol = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'ap
       const { id } = result;
 
       return [
-        Tags.Symbol,
         {
-          type: Tags.Symbol,
-          id
-        }
+          id,
+          type: Tags.Symbol
+        },
+        Tags.Symbol
       ];
     },
     query: (deleteSymbolPayload: DeleteSymbolPayload): FetchArgs => {
