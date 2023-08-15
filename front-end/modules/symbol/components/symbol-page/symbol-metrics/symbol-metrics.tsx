@@ -4,7 +4,7 @@ import { AntdDescriptions } from '@/common/components/antd-descriptions/antd-des
 import { Symbol } from '@/symbol/types/symbol';
 import { ReactElement } from 'react';
 
-export const SymbolDescription = (props: Pick<Symbol, 'axiomaticStatementAppearances' | 'nonAxiomaticStatementAppearances'>): ReactElement => {
+export const SymbolMetrics = (props: Pick<Symbol, 'axiomaticStatementAppearances' | 'nonAxiomaticStatementAppearances'>): ReactElement => {
   const { axiomaticStatementAppearances, nonAxiomaticStatementAppearances } = props;
 
   return (
