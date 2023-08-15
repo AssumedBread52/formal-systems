@@ -3,11 +3,6 @@ module.exports = {
   redirects: async () => {
     return [
       {
-        source: '/',
-        destination: '/formal-systems',
-        permanent: true
-      },
-      {
         source: '/edit-profile',
         destination: '/sign-up',
         permanent: false,
