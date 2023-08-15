@@ -15,7 +15,7 @@ import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { EditSymbolForm } from './edit-symbol-form/edit-symbol-form';
 
-export const EditSystemPage = async (props: ServerSideProps): Promise<ReactElement> => {
+export const EditSymbolPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params } = props;
 
   const { 'system-id': systemId = '', 'symbol-id': symbolId = '' } = params;
@@ -47,7 +47,7 @@ export const EditSystemPage = async (props: ServerSideProps): Promise<ReactEleme
   );
 };
 
-export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
+export const generateMetadata = (props: ServerSideProps): Metadata => {
   const { params } = props;
 
   const { 'symbol-title': symbolTitle = '' } = params;
