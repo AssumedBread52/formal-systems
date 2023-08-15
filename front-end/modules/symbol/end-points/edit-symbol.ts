@@ -15,11 +15,11 @@ export const editSymbol = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'
       const { id } = result;
 
       return [
-        Tags.Symbol,
         {
-          type: Tags.Symbol,
-          id
-        }
+          id,
+          type: Tags.Symbol
+        },
+        Tags.Symbol
       ];
     },
     query: (editSymbolPayload: EditSymbolPayload): FetchArgs => {
