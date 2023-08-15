@@ -6,7 +6,9 @@ import { EndpointBuilder, MutationDefinition } from '@reduxjs/toolkit/dist/query
 
 export const createSymbol = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<NewSymbolPayload, BaseQueryFn, TagTypes, void, 'api'> => {
   return builder.mutation<void, NewSymbolPayload>({
-    invalidatesTags: [Tags.Symbol],
+    invalidatesTags: [
+      Tags.Symbol
+    ],
     query: (newSymbolPayload: NewSymbolPayload): FetchArgs => {
       const { title, description, type, content, systemId } = newSymbolPayload;
 
