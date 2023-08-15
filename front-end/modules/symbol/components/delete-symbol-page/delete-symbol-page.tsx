@@ -10,15 +10,13 @@ import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { DeleteSymbolForm } from './delete-symbol-form/delete-symbol-form';
 
-export const DeleteSymbolPage = async (props: ServerSideProps): Promise<ReactElement> => {
+export const DeleteSymbolPage = (props: ServerSideProps): ReactElement => {
   const { params } = props;
 
   const { 'system-id': systemId = '', 'symbol-id': symbolId = '', 'symbol-title': symbolTitle = '' } = params;
 
-  const title = decodeURIComponent(symbolTitle);
-
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${title}`}>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${decodeURIComponent(symbolTitle)}`}>
       <DeleteSymbolForm id={symbolId} systemId={systemId}>
         <InputHiddenId />
         <InputHiddenSystemId />
@@ -35,7 +33,7 @@ export const DeleteSymbolPage = async (props: ServerSideProps): Promise<ReactEle
   );
 };
 
-export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
+export const generateMetadata = (props: ServerSideProps): Metadata => {
   const { params } = props;
 
   const { 'symbol-title': symbolTitle = '' } = params;
