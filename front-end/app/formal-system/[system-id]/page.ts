@@ -7,9 +7,9 @@ const Page = async (props: ServerSideProps): Promise<never> => {
 
   const { 'system-id': systemId = '' } = params;
 
-  const { id, title } = await fetchSystem(systemId);
+  const { title } = await fetchSystem(systemId);
 
-  redirect(`/formal-system/${id}/${title}`);
+  redirect(`/formal-system/${systemId}/${title}`);
 };
 
 export default Page;
