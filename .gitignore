@@ -7,6 +7,8 @@ database/data/
 database/*.cksm
 database/*.env
 front-end/.next/
+front-end/.swc/
+front-end/coverage/
 front-end/node_modules/
 front-end/*.cksm
 front-end/*.env
