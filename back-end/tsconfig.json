@@ -21,6 +21,8 @@
     "**/*.ts"
   ],
   "exclude": [
+    ".nest",
+    "coverage",
     "node_modules"
   ]
 }
