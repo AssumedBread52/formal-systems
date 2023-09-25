@@ -5,14 +5,14 @@ import { mockNextNavigation } from '@/common/tests/mocks/next-navigation';
 import { mockServer } from '@/common/tests/mocks/server';
 import { EditProfilePage, metadata } from '@/user/components/edit-profile-page/edit-profile-page';
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
 
 describe('/edit-profile', (): void => {
   mockMatchMedia();
   const { mockTokenCookie } = mockNextHeaders();
-  mockNextNavigation();
+  const { mockBack } = mockNextNavigation();
   mockServer();
 
   it('fails to render the edit profile page', async (): Promise<void> => {
@@ -59,5 +59,21 @@ describe('/edit-profile', (): void => {
     expect(mockTokenCookie).toHaveBeenCalledTimes(1);
 
     expect(metadata.title).toEqual('Edit Profile');
+  });
+
+  it('attempts to navigate back if cancel clicked', async (): Promise<void> => {
+    const editProfilePage = await EditProfilePage();
+
+    const Component = (): ReactElement => {
+      return editProfilePage;
+    };
+
+    const { getByRole } = render(<Provider store={store}><Component /></Provider>);
+
+    fireEvent.click(getByRole('button', {
+      name: 'Cancel'
+    }));
+
+    expect(mockBack).toHaveBeenCalledTimes(1);
   });
 });
