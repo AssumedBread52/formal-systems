@@ -5,7 +5,7 @@ import { mockNextNavigation } from '@/common/tests/mocks/next-navigation';
 import { mockServer } from '@/common/tests/mocks/server';
 import { EditProfilePage, metadata } from '@/user/components/edit-profile-page/edit-profile-page';
 import '@testing-library/jest-dom';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
 
@@ -75,5 +75,59 @@ describe('/edit-profile', (): void => {
     }));
 
     expect(mockBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('resets input field values if reset clicked', async (): Promise<void> => {
+    const editProfilePage = await EditProfilePage();
+
+    const Component = (): ReactElement => {
+      return editProfilePage;
+    };
+
+    const { getByLabelText, getByRole } = render(<Provider store={store}><Component /></Provider>);
+
+    expect(getByLabelText('First Name')).toHaveValue('Test');
+    expect(getByLabelText('Last Name')).toHaveValue('User');
+    expect(getByLabelText('E-mail')).toHaveValue('test@example.com');
+    expect(getByLabelText('Password')).toHaveValue('');
+
+    fireEvent.change(getByLabelText('First Name'), {
+      target: {
+        value: 'Test1'
+      }
+    });
+    fireEvent.change(getByLabelText('Last Name'), {
+      target: {
+        value: 'User1'
+      }
+    });
+    fireEvent.change(getByLabelText('E-mail'), {
+      target: {
+        value: 'test1@example.com'
+      }
+    });
+    fireEvent.change(getByLabelText('Password'), {
+      target: {
+        value: 'password1'
+      }
+    });
+
+    await waitFor((): void => {
+      expect(getByLabelText('First Name')).toHaveValue('Test1');
+      expect(getByLabelText('Last Name')).toHaveValue('User1');
+      expect(getByLabelText('E-mail')).toHaveValue('test1@example.com');
+      expect(getByLabelText('Password')).toHaveValue('password1');
+    });
+
+    fireEvent.click(getByRole('button', {
+      name: 'Reset'
+    }));
+
+    await waitFor((): void => {
+      expect(getByLabelText('First Name')).toHaveValue('Test');
+      expect(getByLabelText('Last Name')).toHaveValue('User');
+      expect(getByLabelText('E-mail')).toHaveValue('test@example.com');
+      expect(getByLabelText('Password')).toHaveValue('');
+    });
   });
 });
