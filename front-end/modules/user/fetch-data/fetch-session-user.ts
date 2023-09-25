@@ -1,3 +1,4 @@
+/** @jest-environment node */
 import { User } from '@/user/types/user';
 import { cookies } from 'next/headers';
 
@@ -8,6 +9,10 @@ export const fetchSessionUser = async (): Promise<User> => {
       Cookie: cookies().toString()
     }
   });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
 
   return response.json();
 };
