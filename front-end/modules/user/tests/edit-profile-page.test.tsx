@@ -130,4 +130,25 @@ describe('/edit-profile', (): void => {
       expect(getByLabelText('Password')).toHaveValue('');
     });
   });
+
+  it('fails to edit profile with invalid token', async (): Promise<void> => {
+    const editProfilePage = await EditProfilePage();
+
+    const Component = (): ReactElement => {
+      return editProfilePage;
+    };
+
+    const { container, getByRole, getByText } = render(<Provider store={store}><Component /></Provider>);
+
+    container.ownerDocument.cookie = 'token=invalid-token';
+
+    fireEvent.click(getByRole('button', {
+      name: 'Submit'
+    }));
+
+    await waitFor((): void => {
+      expect(getByText('Error')).toBeVisible();
+      expect(getByText('Failed to edit profile.')).toBeVisible();
+    });
+  });
 });
