@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 describe('/edit-profile', (): void => {
   mockMatchMedia();
   const { mockTokenCookie } = mockNextHeaders();
-  const { mockBack } = mockNextNavigation();
+  const { mockBack, mockRefresh } = mockNextNavigation();
   mockServer();
 
   it('fails to render the edit profile page', async (): Promise<void> => {
@@ -149,6 +149,27 @@ describe('/edit-profile', (): void => {
     await waitFor((): void => {
       expect(getByText('Error')).toBeVisible();
       expect(getByText('Failed to edit profile.')).toBeVisible();
+    });
+  });
+
+  it('edits the user profile', async (): Promise<void> => {
+    const editProfilePage = await EditProfilePage();
+
+    const Component = (): ReactElement => {
+      return editProfilePage;
+    };
+
+    const { container, getByRole } = render(<Provider store={store}><Component /></Provider>);
+
+    container.ownerDocument.cookie = 'token=valid-token';
+
+    fireEvent.click(getByRole('button', {
+      name: 'Submit'
+    }));
+
+    await waitFor((): void => {
+      expect(mockBack).toHaveBeenCalledTimes(1);
+      expect(mockRefresh).toHaveBeenCalledTimes(1);
     });
   });
 });
