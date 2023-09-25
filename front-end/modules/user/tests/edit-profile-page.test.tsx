@@ -15,6 +15,18 @@ describe('/edit-profile', (): void => {
   mockNextNavigation();
   mockServer();
 
+  it('fails to render the edit profile page', async (): Promise<void> => {
+    mockTokenCookie.mockReturnValueOnce('invalid-token');
+
+    try {
+      await EditProfilePage();
+
+      expect(1).toEqual(0);
+    } catch {
+      expect(1).toEqual(1);
+    }
+  });
+
   it('renders the edit profile page', async (): Promise<void> => {
     const editProfilePage = await EditProfilePage();
 
