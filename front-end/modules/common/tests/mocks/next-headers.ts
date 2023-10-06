@@ -7,7 +7,6 @@ jest.mock('next/headers', (): {
   cookies: () => ReadonlyRequestCookies;
 } => {
   const requestCookies = new RequestCookies(new Headers({
-    token: 'valid-token'
   }));
 
   return {
