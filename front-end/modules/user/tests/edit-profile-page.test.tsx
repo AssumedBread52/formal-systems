@@ -1,7 +1,6 @@
 import { store } from '@/app/store';
 import { mockMatchMedia } from '@/common/tests/mocks/match-media';
 import { mockNextHeaders } from '@/common/tests/mocks/next-headers';
-import { mockNextNavigation } from '@/common/tests/mocks/next-navigation';
 import { mockServer } from '@/common/tests/mocks/server';
 import { EditProfilePage, metadata } from '@/user/components/edit-profile-page/edit-profile-page';
 import '@testing-library/jest-dom';
@@ -9,10 +8,31 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
 
+const mockBack = jest.fn<void, []>();
+const mockRefresh = jest.fn<void, []>();
+
+jest.mock('next/navigation', (): {
+  useRouter: () => {
+    back: jest.Mock<void, []>;
+    refresh: jest.Mock<void, []>;
+  };
+} => {
+  return {
+    useRouter: (): {
+      back: jest.Mock<void, []>;
+      refresh: jest.Mock<void, []>;
+    } => {
+      return {
+        back: mockBack,
+        refresh: mockRefresh
+      };
+    }
+  };
+});
+
 describe('/edit-profile', (): void => {
   mockMatchMedia();
   const { mockTokenCookie } = mockNextHeaders();
-  const { mockBack, mockRefresh } = mockNextNavigation();
   mockServer();
 
   it('fails to render the edit profile page', async (): Promise<void> => {
@@ -171,5 +191,10 @@ describe('/edit-profile', (): void => {
       expect(mockBack).toHaveBeenCalledTimes(1);
       expect(mockRefresh).toHaveBeenCalledTimes(1);
     });
+  });
+
+  afterEach((): void => {
+    mockBack.mockClear();
+    mockRefresh.mockClear();
   });
 });
