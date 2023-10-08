@@ -1,5 +1,6 @@
 import { UserService } from '@/user/user.service';
 import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { AuthService } from './auth.service';
@@ -10,7 +11,7 @@ import { SignUpPayload } from './payloads/sign-up.payload';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService, private userService: UserService) {
+  constructor(private authService: AuthService, private configService: ConfigService, private userService: UserService) {
   }
 
   @UseGuards(JwtGuard)
@@ -49,13 +50,15 @@ export class AuthController {
   }
 
   private setAuthCookies(response: Response, token: string): void {
+    const maxAge = this.configService.getOrThrow<number>('AUTH_COOKIE_MAX_AGE_MILLISECONDS');
+
     response.cookie('token', token, {
       httpOnly: true,
-      maxAge: 60000,
+      maxAge,
       secure: true
     });
     response.cookie('authStatus', 'true', {
-      maxAge: 60000,
+      maxAge,
       secure: true
     });
   }

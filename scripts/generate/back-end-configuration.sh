@@ -17,3 +17,4 @@ echo "DATABASE_PORT=27017" >> back-end/.env
 echo "DATABASE_NAME=formal-systems" >> back-end/.env
 echo "JSON_WEB_TOKEN_SECRET=$JSON_WEB_TOKEN_SECRET" >> back-end/.env
 echo "JSON_WEB_TOKEN_EXPIRES_IN=60s" >> back-end/.env
+echo "AUTH_COOKIE_MAX_AGE_MILLISECONDS=60000" >> back-end/.env
