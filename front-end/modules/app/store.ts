@@ -17,7 +17,7 @@ export const store = configureStore({
           if (refreshToken.matchFulfilled(action) || signIn.matchFulfilled(action) || signUp.matchFulfilled(action)) {
             refreshTimeout = setTimeout(() => {
               store.dispatch(refreshToken.initiate());
-            }, 45000);
+            }, parseInt(`${process.env.NEXT_PUBLIC_REFRESH_TOKEN_TIMEOUT_MILLISECONDS}`));
           } else if (refreshToken.matchRejected(action) || signOut.matchFulfilled(action)) {
             if (refreshTimeout) {
               clearTimeout(refreshTimeout);
