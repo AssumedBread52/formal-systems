@@ -10,5 +10,5 @@ export const postSignIn = rest.post('http://localhost/api/auth/sign-in', async (
     return responseComposition(restContext.status(401));
   }
 
-  return responseComposition(restContext.status(204));
+  return responseComposition(restContext.status(204), restContext.cookie('token', 'valid-token'));
 });

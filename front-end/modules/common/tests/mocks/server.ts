@@ -1,3 +1,4 @@
+import { postRefreshToken } from '@/auth/tests/mocks/post-refresh-token';
 import { postSignIn } from '@/auth/tests/mocks/post-sign-in';
 import { fetchSessionUser } from '@/user/tests/mocks/fetch-session-user';
 import { patchSessionUser } from '@/user/tests/mocks/patch-session-user';
@@ -7,6 +8,7 @@ export const mockServer = (): void => {
   const handlers = [
     fetchSessionUser,
     patchSessionUser,
+    postRefreshToken,
     postSignIn
   ];
 

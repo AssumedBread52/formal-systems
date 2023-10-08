@@ -2,6 +2,7 @@ import { store } from '@/app/store';
 import { SignInPage, metadata } from '@/auth/components/sign-in-page/sign-in-page';
 import { mockMatchMedia } from '@/common/tests/mocks/match-media';
 import { mockServer } from '@/common/tests/mocks/server';
+import { QueryStatus } from '@reduxjs/toolkit/dist/query';
 import '@testing-library/jest-dom';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -133,6 +134,41 @@ describe('/sign-in', (): void => {
     await waitFor((): void => {
       expect(mockBack).toHaveBeenCalledTimes(1);
       expect(mockRefresh).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('refreshes the token periodically', async (): Promise<void> => {
+    const { getByLabelText, getByRole } = render(<Provider store={store}><SignInPage /></Provider>);
+
+    fireEvent.change(getByLabelText('E-mail'), {
+      target: {
+        value: 'valid@test.com'
+      }
+    });
+    fireEvent.change(getByLabelText('Password'), {
+      target: {
+        value: 'password'
+      }
+    });
+
+    fireEvent.click(getByRole('button', {
+      name: 'Submit'
+    }));
+
+    await waitFor((): void => {
+      const mutationRequests = Object.values(store.getState().api.mutations);
+
+      expect(mutationRequests).toHaveLength(3);
+      expect(mutationRequests).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          endpointName: 'signIn',
+          status: QueryStatus.fulfilled
+        }),
+        expect.objectContaining({
+          endpointName: 'refreshToken',
+          status: QueryStatus.fulfilled
+        })
+      ]));
     });
   });
 
