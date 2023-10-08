@@ -112,6 +112,30 @@ describe('/sign-in', (): void => {
     });
   });
 
+  it('successfully signs in', async (): Promise<void> => {
+    const { getByLabelText, getByRole } = render(<Provider store={store}><SignInPage /></Provider>);
+
+    fireEvent.change(getByLabelText('E-mail'), {
+      target: {
+        value: 'valid@test.com'
+      }
+    });
+    fireEvent.change(getByLabelText('Password'), {
+      target: {
+        value: 'password'
+      }
+    });
+
+    fireEvent.click(getByRole('button', {
+      name: 'Submit'
+    }));
+
+    await waitFor((): void => {
+      expect(mockBack).toHaveBeenCalledTimes(1);
+      expect(mockRefresh).toHaveBeenCalledTimes(1);
+    });
+  });
+
   afterEach((): void => {
     mockBack.mockClear();
     mockRefresh.mockClear();
