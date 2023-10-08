@@ -2,7 +2,7 @@ import { store } from '@/app/store';
 import { SignInPage, metadata } from '@/auth/components/sign-in-page/sign-in-page';
 import { mockMatchMedia } from '@/common/tests/mocks/match-media';
 import '@testing-library/jest-dom';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 const mockBack = jest.fn<void, []>();
@@ -57,6 +57,19 @@ describe('/sign-in', (): void => {
     }));
 
     expect(mockBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails to submit if fields are blank', async (): Promise<void> => {
+    const { getByRole, getByText } = render(<Provider store={store}><SignInPage /></Provider>);
+
+    fireEvent.click(getByRole('button', {
+      name: 'Submit'
+    }));
+
+    await waitFor((): void => {
+      expect(getByText('E-mail is required.')).toBeVisible();
+      expect(getByText('Password is required.')).toBeVisible();
+    });
   });
 
   afterEach((): void => {
