@@ -1,6 +1,7 @@
 import { store } from '@/app/store';
 import { SignInPage, metadata } from '@/auth/components/sign-in-page/sign-in-page';
 import { mockMatchMedia } from '@/common/tests/mocks/match-media';
+import { mockServer } from '@/common/tests/mocks/server';
 import '@testing-library/jest-dom';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -29,6 +30,7 @@ jest.mock('next/navigation', (): {
 
 describe('/sign-in', (): void => {
   mockMatchMedia();
+  mockServer();
 
   it('renders the sign in page', (): void => {
     const { getByLabelText, getByRole, getByText } = render(<Provider store={store}><SignInPage /></Provider>);
@@ -83,6 +85,30 @@ describe('/sign-in', (): void => {
 
     await waitFor((): void => {
       expect(getByText('Invalid format')).toBeVisible();
+    });
+  });
+
+  it('displays an error message if sign in fails', async (): Promise<void> => {
+    const { getByLabelText, getByRole, getByText } = render(<Provider store={store}><SignInPage /></Provider>);
+
+    fireEvent.change(getByLabelText('E-mail'), {
+      target: {
+        value: 'invalid@test.com'
+      }
+    });
+    fireEvent.change(getByLabelText('Password'), {
+      target: {
+        value: 'password'
+      }
+    });
+
+    fireEvent.click(getByRole('button', {
+      name: 'Submit'
+    }));
+
+    await waitFor((): void => {
+      expect(getByText('Error')).toBeVisible();
+      expect(getByText('Failed to sign in.')).toBeVisible();
     });
   });
 
