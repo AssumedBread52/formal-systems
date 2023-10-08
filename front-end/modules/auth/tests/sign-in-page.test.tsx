@@ -1,6 +1,7 @@
 import { store } from '@/app/store';
-import { SignInPage } from '@/auth/components/sign-in-page/sign-in-page';
+import { SignInPage, metadata } from '@/auth/components/sign-in-page/sign-in-page';
 import { mockMatchMedia } from '@/common/tests/mocks/match-media';
+import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
@@ -30,7 +31,22 @@ describe('/sign-in', (): void => {
   mockMatchMedia();
 
   it('renders the sign in page', (): void => {
-    render(<Provider store={store}><SignInPage /></Provider>);
+    const { getByLabelText, getByRole, getByText } = render(<Provider store={store}><SignInPage /></Provider>);
+
+    expect(getByText('Sign In')).toBeVisible();
+    expect(getByText('E-mail')).toBeVisible();
+    expect(getByText('Password')).toBeVisible();
+    expect(getByLabelText('E-mail')).toHaveValue('');
+    expect(getByLabelText('Password')).toHaveValue('');
+
+    expect(getByRole('button', {
+      name: 'Submit'
+    })).toBeEnabled();
+    expect(getByRole('button', {
+      name: 'Cancel'
+    })).toBeEnabled();
+
+    expect(metadata.title).toEqual('Sign In');
   });
 
   afterEach((): void => {
