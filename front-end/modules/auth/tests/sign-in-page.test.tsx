@@ -72,6 +72,20 @@ describe('/sign-in', (): void => {
     });
   });
 
+  it('displays message for invalid e-mail address', async (): Promise<void> => {
+    const { getByLabelText, getByText } = render(<Provider store={store}><SignInPage /></Provider>);
+
+    fireEvent.change(getByLabelText('E-mail'), {
+      target: {
+        value: 'invalid'
+      }
+    });
+
+    await waitFor((): void => {
+      expect(getByText('Invalid format')).toBeVisible();
+    });
+  });
+
   afterEach((): void => {
     mockBack.mockClear();
     mockRefresh.mockClear();
