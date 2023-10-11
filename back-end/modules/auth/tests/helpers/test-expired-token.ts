@@ -8,7 +8,7 @@ export const testExpiredToken = async (app: INestApplication, method: 'delete' |
   const token = await app.get(AuthService).generateToken(new ObjectId());
 
   await new Promise((resolve: (value: unknown) => void): void => {
-    setTimeout(resolve, 1000);
+    setTimeout(resolve, 1100);
   });
 
   const response = await request(app.getHttpServer())[method](path).set('Cookie', [
