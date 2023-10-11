@@ -1,5 +1,6 @@
+import { ClassSerializerInterceptor } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import { MainModule } from './main.module';
 
@@ -9,6 +10,10 @@ const bootstrap = async (): Promise<void> => {
   });
 
   app.use(cookieParser());
+
+  const reflector = app.get(Reflector);
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
 
   const configService = app.get(ConfigService);
 

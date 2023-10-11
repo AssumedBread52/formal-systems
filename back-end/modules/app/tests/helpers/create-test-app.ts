@@ -9,8 +9,9 @@ import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.moc
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { UserModule } from '@/user/user.module';
-import { INestApplication } from '@nestjs/common';
+import { ClassSerializerInterceptor, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
@@ -28,6 +29,10 @@ export const createTestApp = async (): Promise<INestApplication> => {
   const app = testingModule.createNestApplication();
 
   app.use(cookieParser());
+
+  const reflector = app.get(Reflector);
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
 
   await app.init();
 
