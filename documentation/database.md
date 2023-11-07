@@ -11,7 +11,7 @@ MongoDB was chosen for the following reasons:
 
 ### Initialization Scripts
 
-All initialization required by the database needs to exist in a directory mapped to the database container's `/docker-entrypoint-initdb.d` directory. A checksum of this directories contents will indicate if the database needs to be re-initialized.
+All initialization required by the database needs to exist in a directory mapped to the database container's `/docker-entrypoint-initdb.d` directory. A checksum of this directory's contents will indicate if the database needs to be re-initialized.
 
 ### Indexing
 
