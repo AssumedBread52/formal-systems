@@ -140,6 +140,74 @@ describe('Update Symbol', (): void => {
     });
   });
 
+  it('fails if attempting to change the symbol type and the symbol is already in use (axiomatic)', async (): Promise<void> => {
+    const testSymbol = new SymbolEntity();
+    const testUser = new UserEntity();
+
+    const { _id, systemId, createdByUserId } = testSymbol;
+
+    testUser._id = createdByUserId;
+
+    const token = await app.get(AuthService).generateToken(createdByUserId);
+
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    testSymbol.axiomaticStatementAppearances = 1;
+
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${_id}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'Test',
+      newDescription: 'This is a test.',
+      newType: SymbolType.Variable,
+      newContent: '\\beta'
+    });
+
+    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+      error: 'Conflict',
+      message: 'Symbols in use cannot change their symbol type.',
+      statusCode: HttpStatus.CONFLICT
+    });
+  });
+
+  it('fails if attempting to change the symbol type and the symbol is already in use (non-axiomatic)', async (): Promise<void> => {
+    const testSymbol = new SymbolEntity();
+    const testUser = new UserEntity();
+
+    const { _id, systemId, createdByUserId } = testSymbol;
+
+    testUser._id = createdByUserId;
+
+    const token = await app.get(AuthService).generateToken(createdByUserId);
+
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    testSymbol.nonAxiomaticStatementAppearances = 1;
+
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${_id}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'Test',
+      newDescription: 'This is a test.',
+      newType: SymbolType.Variable,
+      newContent: '\\beta'
+    });
+
+    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+      error: 'Conflict',
+      message: 'Symbols in use cannot change their symbol type.',
+      statusCode: HttpStatus.CONFLICT
+    });
+  });
+
   it('succeeds', async (): Promise<void> => {
     const testSymbol = new SymbolEntity();
     const testUser = new UserEntity();

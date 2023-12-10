@@ -69,11 +69,15 @@ export class SymbolService {
   }
 
   async update(symbol: SymbolEntity, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
-    const { content, systemId } = symbol;
+    const { type, content, systemId, axiomaticStatementAppearances, nonAxiomaticStatementAppearances } = symbol;
     const { newTitle, newDescription, newType, newContent } = editSymbolPayload;
 
     if (content !== newContent) {
       await this.checkForConflict(newContent, systemId);
+    }
+
+    if (type !== newType && (axiomaticStatementAppearances > 0 || nonAxiomaticStatementAppearances > 0)) {
+      throw new ConflictException('Symbols in use cannot change their symbol type.');
     }
 
     symbol.title = newTitle;
