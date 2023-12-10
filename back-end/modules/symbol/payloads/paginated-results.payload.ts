@@ -11,7 +11,7 @@ export class PaginatedResultsPayload {
   @ValidateNested({
     each: true
   })
-  @Type(() => {
+  @Type((): typeof SymbolPayload => {
     return SymbolPayload;
   })
   results: SymbolPayload[];
