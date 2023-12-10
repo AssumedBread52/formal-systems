@@ -2,7 +2,7 @@ import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { UserEntity } from '@/user/user.entity';
 import { NotFoundException } from '@nestjs/common';
-import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent } from 'typeorm';
+import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
 @EventSubscriber()
 export class UserSymbolCountSubscriber implements EntitySubscriberInterface<SymbolEntity> {
@@ -31,6 +31,43 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
         break;
       case SymbolType.Variable:
         user.variableSymbolCount++;
+        break;
+    }
+
+    userRepository.save(user);
+  }
+
+  async afterUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
+    const { connection, databaseEntity, entity } = event;
+
+    if (!entity) {
+      return;
+    }
+
+    const { type, createdByUserId } = databaseEntity;
+
+    if (type === entity.type) {
+      return;
+    }
+
+    const userRepository = connection.getMongoRepository(UserEntity);
+
+    const user = await userRepository.findOneBy({
+      _id: createdByUserId
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    switch (type) {
+      case SymbolType.Constant:
+        user.constantSymbolCount--;
+        user.variableSymbolCount++;
+        break;
+      case SymbolType.Variable:
+        user.constantSymbolCount++;
+        user.variableSymbolCount--;
         break;
     }
 
