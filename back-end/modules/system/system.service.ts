@@ -12,7 +12,7 @@ export class SystemService {
   constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
   }
 
-  async checkForConflict(title: string, createdByUserId: ObjectId): Promise<void> {
+  private async checkForConflict(title: string, createdByUserId: ObjectId): Promise<void> {
     const collision = await this.systemRepository.findOneBy({
       title,
       createdByUserId

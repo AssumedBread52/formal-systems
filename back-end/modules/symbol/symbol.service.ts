@@ -12,7 +12,7 @@ export class SymbolService {
   constructor(@InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>) {
   }
 
-  async checkForConflict(content: string, systemId: ObjectId): Promise<void> {
+  private async checkForConflict(content: string, systemId: ObjectId): Promise<void> {
     const collision = await this.symbolRepository.findOneBy({
       content,
       systemId
