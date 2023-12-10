@@ -135,7 +135,7 @@ describe('Update System', (): void => {
     });
   });
 
-  it('succeeds with a valid token, valid payload, and unique title', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const token = await app.get(AuthService).generateToken(new ObjectId());
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;

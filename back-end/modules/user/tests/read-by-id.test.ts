@@ -24,7 +24,7 @@ describe('Read User by ID', (): void => {
     });
   });
 
-  it('succeeds if user is found', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const testUser = new UserEntity();
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;

@@ -54,7 +54,7 @@ describe('Sign In', (): void => {
     });
   });
 
-  it('succeeds when credentials are correct', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const testUser = new UserEntity();
 
     testUser.hashedPassword = await hash('123456', 12);

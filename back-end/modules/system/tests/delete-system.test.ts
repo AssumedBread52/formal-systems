@@ -72,7 +72,7 @@ describe('Delete System', (): void => {
     });
   });
 
-  it('succeeds if the system was created by the authenticated user', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const testUser = new UserEntity();
 
     const token = await app.get(AuthService).generateToken(new ObjectId());

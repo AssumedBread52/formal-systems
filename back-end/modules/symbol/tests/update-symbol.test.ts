@@ -140,7 +140,7 @@ describe('Update Symbol', (): void => {
     });
   });
 
-  it('succeeds with a valid token, valid payload, and unique title', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const testSymbol = new SymbolEntity();
     const testUser = new UserEntity();
 

@@ -24,7 +24,7 @@ describe('Read System by ID', (): void => {
     });
   });
 
-  it('succeeds if system is found', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const testSystem = new SystemEntity();
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;

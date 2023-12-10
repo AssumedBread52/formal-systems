@@ -30,7 +30,7 @@ describe('Sign Out', (): void => {
     await testInvalidToken(app, 'post', '/auth/sign-out');
   });
 
-  it('succeeds with a valid token', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const token = await app.get(AuthService).generateToken(new ObjectId());
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;

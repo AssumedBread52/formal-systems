@@ -78,7 +78,7 @@ describe('Create System', (): void => {
     });
   });
 
-  it('succeeds if the title is unqiue among systems created by this user', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const token = await app.get(AuthService).generateToken(new ObjectId());
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;

@@ -74,7 +74,7 @@ describe('Delete Symbol', (): void => {
     });
   });
 
-  it('succeeds if the authenticated user created the symbol', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const testSymbol = new SymbolEntity();
     const testUser = new UserEntity();
 

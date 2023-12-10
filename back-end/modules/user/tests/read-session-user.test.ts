@@ -30,7 +30,7 @@ describe('Read Session User', (): void => {
     await testInvalidToken(app, 'get', '/user/session-user');
   });
 
-  it('succeeds with a valid token', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const token = await app.get(AuthService).generateToken(new ObjectId());
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;

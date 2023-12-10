@@ -110,7 +110,7 @@ describe('Create Symbol', (): void => {
     });
   });
 
-  it('succeeds if content is unique in the formal system', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const testUser = new UserEntity();
     const testSystem = new SystemEntity();
 

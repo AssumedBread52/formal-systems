@@ -48,7 +48,7 @@ describe('Sign Up', (): void => {
     });
   });
 
-  it('succeeds without an e-mail address collision', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).post('/auth/sign-up').send({
       firstName: 'Test',
       lastName: 'User',

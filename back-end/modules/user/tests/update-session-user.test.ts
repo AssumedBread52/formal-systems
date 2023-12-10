@@ -76,7 +76,7 @@ describe('Update Session User', (): void => {
     });
   });
 
-  it('succeeds with a valid token, valid payload, and unique e-mail address', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const token = await app.get(AuthService).generateToken(new ObjectId());
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;

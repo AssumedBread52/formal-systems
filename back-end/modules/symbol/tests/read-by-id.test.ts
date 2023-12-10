@@ -24,7 +24,7 @@ describe('Read Symbol by ID', (): void => {
     });
   });
 
-  it('succeeds if symbol is found', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const testSymbol = new SymbolEntity();
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
