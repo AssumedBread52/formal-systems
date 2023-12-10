@@ -86,7 +86,7 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
     });
 
     if (!system) {
-      throw new NotFoundException('User not found.');
+      throw new NotFoundException('System not found.');
     }
 
     switch (type) {
