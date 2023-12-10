@@ -110,34 +110,6 @@ describe('Create Symbol', (): void => {
     });
   });
 
-  it('succeeds', async (): Promise<void> => {
-    const testUser = new UserEntity();
-    const testSystem = new SystemEntity();
-
-    const { _id, createdByUserId } = testSystem;
-
-    testUser._id = createdByUserId;
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
-
-    const token = await app.get(AuthService).generateToken(createdByUserId);
-
-    const response = await request(app.getHttpServer()).post(`/system/${_id}/symbol`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      title: 'Test',
-      description: 'This is a test.',
-      type: SymbolType.Constant,
-      content: '\\alpha'
-    });
-
-    expectCorrectResponse(response, HttpStatus.CREATED, {});
-  });
-
   it('fails if content is not unique in the formal system', async (): Promise<void> => {
     const testUser = new UserEntity();
     const testSystem = new SystemEntity();
@@ -170,6 +142,34 @@ describe('Create Symbol', (): void => {
       message: 'Symbols within a formal system must have unique content.',
       statusCode: HttpStatus.CONFLICT
     });
+  });
+
+  it('succeeds', async (): Promise<void> => {
+    const testUser = new UserEntity();
+    const testSystem = new SystemEntity();
+
+    const { _id, createdByUserId } = testSystem;
+
+    testUser._id = createdByUserId;
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
+
+    const token = await app.get(AuthService).generateToken(createdByUserId);
+
+    const response = await request(app.getHttpServer()).post(`/system/${_id}/symbol`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.',
+      type: SymbolType.Constant,
+      content: '\\alpha'
+    });
+
+    expectCorrectResponse(response, HttpStatus.CREATED, {});
   });
 
   afterAll(async (): Promise<void> => {
