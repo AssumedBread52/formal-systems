@@ -69,7 +69,7 @@ export class SymbolService {
   }
 
   async update(symbol: SymbolEntity, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
-    const { type, content, systemId, axiomaticStatementAppearances, nonAxiomaticStatementAppearances } = symbol;
+    const { type, content, axiomaticStatementAppearances, nonAxiomaticStatementAppearances, systemId } = symbol;
     const { newTitle, newDescription, newType, newContent } = editSymbolPayload;
 
     if (content !== newContent) {
