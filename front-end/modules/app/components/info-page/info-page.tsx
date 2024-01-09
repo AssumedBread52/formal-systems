@@ -4,7 +4,7 @@ import { RenderMath } from '@/common/components/render-math/render-math';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
 
-export const Info = (): ReactElement => {
+export const InfoPage = (): ReactElement => {
   return (
     <AntdCard title='The Formal Description'>
       <AntdSpace direction='vertical' size='large'>
