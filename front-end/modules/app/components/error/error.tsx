@@ -6,7 +6,9 @@ import { AntdResult } from '@/common/components/antd-result/antd-result';
 import { ReactElement } from 'react';
 
 export const Error = (props: ErrorProps): ReactElement => {
-  const { reset } = props;
+  const { error, reset } = props;
+
+  const { message } = error;
 
   const actions = [
     <AntdButton key='reset' htmlType='button' type='primary' onClick={reset}>
@@ -15,6 +17,6 @@ export const Error = (props: ErrorProps): ReactElement => {
   ];
 
   return (
-    <AntdResult extra={actions} status='500' subTitle='Something went wrong.' title='Error' />
+    <AntdResult extra={actions} status='500' subTitle={message} title='Error' />
   );
 };
