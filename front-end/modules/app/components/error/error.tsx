@@ -1,5 +1,3 @@
-'use client';
-
 import { ErrorProps } from '@/app/types/error-props';
 import { AntdButton } from '@/common/components/antd-button/antd-button';
 import { AntdResult } from '@/common/components/antd-result/antd-result';
