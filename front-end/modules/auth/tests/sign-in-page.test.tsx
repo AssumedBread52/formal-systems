@@ -2,7 +2,7 @@ import { store } from '@/app/store';
 import { SignInPage, metadata } from '@/auth/components/sign-in-page/sign-in-page';
 import { mockMatchMedia } from '@/common/tests/mocks/match-media';
 import { mockServer } from '@/common/tests/mocks/server';
-import { QueryStatus } from '@reduxjs/toolkit/dist/query';
+import { QueryStatus } from '@reduxjs/toolkit/query';
 import '@testing-library/jest-dom';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';

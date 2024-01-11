@@ -2,8 +2,7 @@ import { Tags } from '@/app/constants/tags';
 import { TagTypes } from '@/app/types/tag-types';
 import { IdPayload } from '@/common/types/id-payload';
 import { EditSymbolPayload } from '@/symbol/types/edit-symbol-payload';
-import { BaseQueryFn, FetchArgs } from '@reduxjs/toolkit/dist/query';
-import { EndpointBuilder, MutationDefinition, TagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
+import { BaseQueryFn, EndpointBuilder, FetchArgs, MutationDefinition, TagDescription } from '@reduxjs/toolkit/query';
 
 export const editSymbol = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<EditSymbolPayload, BaseQueryFn, TagTypes, IdPayload, 'api'> => {
   return builder.mutation<IdPayload, EditSymbolPayload>({

@@ -3,7 +3,7 @@ import { SignInPage } from '@/auth/components/sign-in-page/sign-in-page';
 import { SignOutPage, metadata } from '@/auth/components/sign-out-page/sign-out-page';
 import { mockMatchMedia } from '@/common/tests/mocks/match-media';
 import { mockServer } from '@/common/tests/mocks/server';
-import { QueryStatus } from '@reduxjs/toolkit/dist/query';
+import { QueryStatus } from '@reduxjs/toolkit/query';
 import '@testing-library/jest-dom';
 import { fireEvent, getByRole, render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
