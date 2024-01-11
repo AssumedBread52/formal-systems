@@ -7,7 +7,7 @@ let refreshTimeout: NodeJS.Timeout | null = null;
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) => {
-    return getDefaultMiddleware().concat(middleware).concat((_) => {
+    return getDefaultMiddleware().concat(middleware).concat(() => {
       return (next) => {
         return (action) => {
           const { endpoints } = api;
