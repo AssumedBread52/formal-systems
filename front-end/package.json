@@ -14,7 +14,7 @@
   "author": "Antonio Sanchez",
   "license": "ISC",
   "dependencies": {
-    "@ant-design/icons": "^5.1.4",
+    "@ant-design/icons": "^5.2.6",
     "@reduxjs/toolkit": "^2.0.1",
     "antd": "^5.7.0",
     "katex": "^0.16.8",
