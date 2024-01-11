@@ -1,4 +1,3 @@
-/** @jest-environment node */
 import { User } from '@/user/types/user';
 import { cookies } from 'next/headers';
 
