@@ -32,7 +32,7 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
       </Link>
     </ProtectedContent>,
     <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${id}/delete`}>
+      <Link href={`/formal-system/${id}/remove`}>
         <AntdDeleteOutlined />
       </Link>
     </ProtectedContent>

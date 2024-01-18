@@ -34,7 +34,7 @@ export const SymbolPage = async (props: ServerSideProps): Promise<ReactElement> 
       </Link>
     </ProtectedContent>,
     <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${systemId}/symbol/${id}/delete`}>
+      <Link href={`/formal-system/${systemId}/symbol/${id}/remove`}>
         <AntdDeleteOutlined />
       </Link>
     </ProtectedContent>

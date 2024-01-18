@@ -6,12 +6,12 @@ import { System } from '@/system/types/system';
 import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
 import { BaseQueryFn, MutationDefinition } from '@reduxjs/toolkit/query';
 
-const { useDeleteSystemMutation } = api;
+const { useRemoveSystemMutation } = api;
 
-export const useDeleteSystem = (): [MutationTrigger<MutationDefinition<Pick<System, 'id'>, BaseQueryFn, TagTypes, IdPayload, 'api'>>, boolean, boolean] => {
-  const [deleteSystem, { isError, isLoading, isSuccess }] = useDeleteSystemMutation();
+export const useRemoveSystem = (): [MutationTrigger<MutationDefinition<Pick<System, 'id'>, BaseQueryFn, TagTypes, IdPayload, 'api'>>, boolean, boolean] => {
+  const [removeSystem, { isError, isLoading, isSuccess }] = useRemoveSystemMutation();
 
   useRouteBack(isSuccess);
 
-  return [deleteSystem, isLoading, isError];
+  return [removeSystem, isLoading, isError];
 };

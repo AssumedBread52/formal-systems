@@ -4,7 +4,7 @@ import { IdPayload } from '@/common/types/id-payload';
 import { System } from '@/system/types/system';
 import { BaseQueryFn, EndpointBuilder, FetchArgs, MutationDefinition, TagDescription } from '@reduxjs/toolkit/query';
 
-export const deleteSystem = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<Pick<System, 'id'>, BaseQueryFn, TagTypes, IdPayload, 'api'> => {
+export const removeSystem = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<Pick<System, 'id'>, BaseQueryFn, TagTypes, IdPayload, 'api'> => {
   return builder.mutation<IdPayload, Pick<System, 'id'>>({
     invalidatesTags: (result?: IdPayload): TagDescription<TagTypes>[] => {
       if (!result) {
@@ -21,8 +21,8 @@ export const deleteSystem = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'ap
         Tags.System
       ];
     },
-    query: (deletePayload: Pick<System, 'id'>): FetchArgs => {
-      const { id } = deletePayload;
+    query: (removePayload: Pick<System, 'id'>): FetchArgs => {
+      const { id } = removePayload;
 
       return {
         method: 'DELETE',

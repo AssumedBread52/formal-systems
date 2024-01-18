@@ -25,7 +25,7 @@ export const SystemItem = (props: Pick<System, 'id' | 'title' | 'description' | 
       </Link>
     </ProtectedContent>,
     <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${id}/delete`}>
+      <Link href={`/formal-system/${id}/remove`}>
         <AntdDeleteOutlined />
       </Link>
     </ProtectedContent>

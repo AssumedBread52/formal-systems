@@ -3,11 +3,11 @@ import { signIn } from '@/auth/end-points/sign-in';
 import { signOut } from '@/auth/end-points/sign-out';
 import { signUp } from '@/auth/end-points/sign-up';
 import { createSymbol } from '@/symbol/end-points/create-symbol';
-import { deleteSymbol } from '@/symbol/end-points/delete-symbol';
 import { editSymbol } from '@/symbol/end-points/edit-symbol';
+import { removeSymbol } from '@/symbol/end-points/remove-symbol';
 import { createSystem } from '@/system/end-points/create-system';
-import { deleteSystem } from '@/system/end-points/delete-system';
 import { editSystem } from '@/system/end-points/edit-system';
+import { removeSystem } from '@/system/end-points/remove-system';
 import { editProfile } from '@/user/end-points/edit-profile';
 import { BaseQueryFn, EndpointBuilder, createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Tags } from './constants/tags';
@@ -28,12 +28,12 @@ export const api = createApi({
     signUp: ReturnType<typeof signUp>;
 
     createSymbol: ReturnType<typeof createSymbol>;
-    deleteSymbol: ReturnType<typeof deleteSymbol>;
     editSymbol: ReturnType<typeof editSymbol>;
+    removeSymbol: ReturnType<typeof removeSymbol>;
 
     createSystem: ReturnType<typeof createSystem>;
-    deleteSystem: ReturnType<typeof deleteSystem>;
     editSystem: ReturnType<typeof editSystem>;
+    removeSystem: ReturnType<typeof removeSystem>;
 
     editProfile: ReturnType<typeof editProfile>;
   } => {
@@ -44,12 +44,12 @@ export const api = createApi({
       signUp: signUp(builder),
 
       createSymbol: createSymbol(builder),
-      deleteSymbol: deleteSymbol(builder),
       editSymbol: editSymbol(builder),
+      removeSymbol: removeSymbol(builder),
 
       createSystem: createSystem(builder),
-      deleteSystem: deleteSystem(builder),
       editSystem: editSystem(builder),
+      removeSystem: removeSystem(builder),
 
       editProfile: editProfile(builder)
     };

@@ -5,22 +5,24 @@ import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item'
 import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { CancelButton } from '@/common/components/cancel-button/cancel-button';
 import { InputHiddenId } from '@/common/components/input-hidden-id/input-hidden-id';
-import { fetchSystem } from '@/system/fetch-data/fetch-system';
+import { InputHiddenSystemId } from '@/common/components/input-hidden-system-id/input-hidden-system-id';
+import { fetchSymbol } from '@/symbol/fetch-data/fetch-symbol';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
-import { DeleteSystemForm } from './delete-system-form/delete-system-form';
+import { RemoveSymbolForm } from './remove-symbol-form/remove-symbol-form';
 
-export const DeleteSystemPage = async (props: ServerSideProps): Promise<ReactElement> => {
+export const RemoveSymbolPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params } = props;
 
-  const { 'system-id': systemId = '' } = params;
+  const { 'system-id': systemId = '', 'symbol-id': symbolId = '' } = params;
 
-  const { title } = await fetchSystem(systemId);
+  const { title } = await fetchSymbol(systemId, symbolId);
 
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${title}`}>
-      <DeleteSystemForm id={systemId}>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Remove ${title}`}>
+      <RemoveSymbolForm id={symbolId} systemId={systemId}>
         <InputHiddenId />
+        <InputHiddenSystemId />
         <AntdFormItem style={{ textAlign: 'center' }}>
           <AntdSpace direction='vertical'>
             <AntdButton htmlType='submit' type='primary'>
@@ -29,7 +31,7 @@ export const DeleteSystemPage = async (props: ServerSideProps): Promise<ReactEle
             <CancelButton />
           </AntdSpace>
         </AntdFormItem>
-      </DeleteSystemForm>
+      </RemoveSymbolForm>
     </AntdCard>
   );
 };
@@ -37,11 +39,11 @@ export const DeleteSystemPage = async (props: ServerSideProps): Promise<ReactEle
 export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
   const { params } = props;
 
-  const { 'system-id': systemId = '' } = params;
+  const { 'system-id': systemId = '', 'symbol-id': symbolId = '' } = params;
 
-  const { title } = await fetchSystem(systemId);
+  const { title } = await fetchSymbol(systemId, symbolId);
 
   return {
-    title: `Delete ${title}`
+    title: `Remove ${title}`
   };
 };
