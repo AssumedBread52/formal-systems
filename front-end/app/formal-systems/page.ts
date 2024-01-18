@@ -1,1 +1,1 @@
-export { SearchSystems as default } from '@/system/components/search-systems/search-systems';
+export { SearchSystemsPage as default } from '@/system/components/search-systems-page/search-systems-page';

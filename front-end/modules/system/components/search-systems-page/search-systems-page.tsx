@@ -6,7 +6,7 @@ import { ReactElement } from 'react';
 import { AddLink } from './add-link/add-link';
 import { SystemList } from './system-list/system-list';
 
-export const SearchSystems = async (props: ServerSideProps): Promise<ReactElement> => {
+export const SearchSystemsPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { searchParams } = props;
 
   if (!searchParams.page) {

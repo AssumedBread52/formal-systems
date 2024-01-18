@@ -8,7 +8,7 @@ import { ReactElement } from 'react';
 import { AddLink } from './add-link/add-link';
 import { SymbolList } from './symbol-list/symbol-list';
 
-export const SearchSymbols = async (props: ServerSideProps): Promise<ReactElement> => {
+export const SearchSymbolsPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params, searchParams } = props;
 
   if (!searchParams.page) {
