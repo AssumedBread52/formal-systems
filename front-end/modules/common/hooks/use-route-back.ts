@@ -7,7 +7,8 @@ export const useRouteBack = (goBack: boolean): void => {
   useEffect((): void => {
     if (goBack) {
       refresh();
+
       back();
     }
-  }, [back, goBack]);
+  }, [back, refresh, goBack]);
 };
