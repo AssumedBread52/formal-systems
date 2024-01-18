@@ -3,7 +3,7 @@ import { TagTypes } from '@/app/types/tag-types';
 import { NewSystemPayload } from '@/system/types/new-system-payload';
 import { BaseQueryFn, EndpointBuilder, FetchArgs, MutationDefinition } from '@reduxjs/toolkit/query';
 
-export const createSystem = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<NewSystemPayload, BaseQueryFn, TagTypes, void, 'api'> => {
+export const addSystem = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): MutationDefinition<NewSystemPayload, BaseQueryFn, TagTypes, void, 'api'> => {
   return builder.mutation<void, NewSystemPayload>({
     invalidatesTags: [
       Tags.System

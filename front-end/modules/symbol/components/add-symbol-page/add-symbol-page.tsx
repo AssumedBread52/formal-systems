@@ -11,16 +11,16 @@ import { InputSymbolType } from '@/common/components/input-symbol-type/input-sym
 import { InputTitle } from '@/common/components/input-title/input-title';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
-import { CreateSymbolForm } from './create-symbol-form/create-symbol-form';
+import { AddSymbolForm } from './add-symbol-form/add-symbol-form';
 
-export const CreateSymbolPage = (props: ServerSideProps): ReactElement => {
+export const AddSymbolPage = (props: ServerSideProps): ReactElement => {
   const { params } = props;
 
   const { 'system-id': systemId = '' } = params;
 
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Create Symbol'>
-      <CreateSymbolForm id={systemId}>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Add Symbol'>
+      <AddSymbolForm id={systemId}>
         <InputTitle name='title' />
         <InputDescription name='description' />
         <InputSymbolType name='type' />
@@ -34,11 +34,11 @@ export const CreateSymbolPage = (props: ServerSideProps): ReactElement => {
             <CancelButton />
           </AntdSpace>
         </AntdFormItem>
-      </CreateSymbolForm>
+      </AddSymbolForm>
     </AntdCard>
   );
 };
 
 export const metadata = {
-  title: 'Create Symbol'
+  title: 'Add Symbol'
 } as Metadata;

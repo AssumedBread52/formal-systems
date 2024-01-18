@@ -2,10 +2,10 @@ import { refreshToken } from '@/auth/end-points/refresh-token';
 import { signIn } from '@/auth/end-points/sign-in';
 import { signOut } from '@/auth/end-points/sign-out';
 import { signUp } from '@/auth/end-points/sign-up';
-import { createSymbol } from '@/symbol/end-points/create-symbol';
+import { addSymbol } from '@/symbol/end-points/add-symbol';
 import { editSymbol } from '@/symbol/end-points/edit-symbol';
 import { removeSymbol } from '@/symbol/end-points/remove-symbol';
-import { createSystem } from '@/system/end-points/create-system';
+import { addSystem } from '@/system/end-points/add-system';
 import { editSystem } from '@/system/end-points/edit-system';
 import { removeSystem } from '@/system/end-points/remove-system';
 import { editProfile } from '@/user/end-points/edit-profile';
@@ -27,11 +27,11 @@ export const api = createApi({
     signOut: ReturnType<typeof signOut>;
     signUp: ReturnType<typeof signUp>;
 
-    createSymbol: ReturnType<typeof createSymbol>;
+    addSymbol: ReturnType<typeof addSymbol>;
     editSymbol: ReturnType<typeof editSymbol>;
     removeSymbol: ReturnType<typeof removeSymbol>;
 
-    createSystem: ReturnType<typeof createSystem>;
+    addSystem: ReturnType<typeof addSystem>;
     editSystem: ReturnType<typeof editSystem>;
     removeSystem: ReturnType<typeof removeSystem>;
 
@@ -43,11 +43,11 @@ export const api = createApi({
       signOut: signOut(builder),
       signUp: signUp(builder),
 
-      createSymbol: createSymbol(builder),
+      addSymbol: addSymbol(builder),
       editSymbol: editSymbol(builder),
       removeSymbol: removeSymbol(builder),
 
-      createSystem: createSystem(builder),
+      addSystem: addSystem(builder),
       editSystem: editSystem(builder),
       removeSystem: removeSystem(builder),
 

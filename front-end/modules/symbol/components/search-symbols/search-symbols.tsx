@@ -5,7 +5,7 @@ import { fetchSymbolsSearch } from '@/symbol/fetch-data/fetch-symbols-search';
 import { fetchSystem } from '@/system/fetch-data/fetch-system';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
-import { CreateLink } from './create-link/create-link';
+import { AddLink } from './add-link/add-link';
 import { SymbolList } from './symbol-list/symbol-list';
 
 export const SearchSymbols = async (props: ServerSideProps): Promise<ReactElement> => {
@@ -26,7 +26,7 @@ export const SearchSymbols = async (props: ServerSideProps): Promise<ReactElemen
   const { results, total } = await fetchSymbolsSearch(systemId, searchParams);
 
   return (
-    <AntdCard extra={<CreateLink id={systemId} />} title={`${title} Symbols`}>
+    <AntdCard extra={<AddLink id={systemId} />} title={`${title} Symbols`}>
       <PaginatedSearchControls resultType='Symbols' total={total}>
         <SymbolList symbols={results} />
       </PaginatedSearchControls>

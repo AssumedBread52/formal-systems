@@ -7,12 +7,12 @@ import { InputDescription } from '@/common/components/input-description/input-de
 import { InputTitle } from '@/common/components/input-title/input-title';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
-import { CreateSystemForm } from './create-system-form/create-system-form';
+import { AddSystemForm } from './add-system-form/add-system-form';
 
-export const CreateSystemPage = (): ReactElement => {
+export const AddSystemPage = (): ReactElement => {
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Create Formal System'>
-      <CreateSystemForm>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Add Formal System'>
+      <AddSystemForm>
         <InputTitle name='title' />
         <InputDescription name='description' />
         <AntdFormItem wrapperCol={{ xs: { span: 24 }, sm: { offset: 8 } }}>
@@ -23,11 +23,11 @@ export const CreateSystemPage = (): ReactElement => {
             <CancelButton />
           </AntdSpace>
         </AntdFormItem>
-      </CreateSystemForm>
+      </AddSystemForm>
     </AntdCard>
   );
 };
 
 export const metadata = {
-  title: 'Create Formal System'
+  title: 'Add Formal System'
 } as Metadata;
