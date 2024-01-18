@@ -1,7 +1,7 @@
 import { AppParams } from './app-params';
-import { AppSearchParams } from './app-search-params';
+import { QueryParams } from './query-params';
 
 export type ServerSideProps = {
   params: AppParams;
-  searchParams: AppSearchParams;
+  searchParams: QueryParams;
 };
