@@ -6,17 +6,20 @@ import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { CancelButton } from '@/common/components/cancel-button/cancel-button';
 import { InputHiddenId } from '@/common/components/input-hidden-id/input-hidden-id';
 import { InputHiddenSystemId } from '@/common/components/input-hidden-system-id/input-hidden-system-id';
+import { fetchSymbol } from '@/symbol/fetch-data/fetch-symbol';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { DeleteSymbolForm } from './delete-symbol-form/delete-symbol-form';
 
-export const DeleteSymbolPage = (props: ServerSideProps): ReactElement => {
+export const DeleteSymbolPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params } = props;
 
-  const { 'system-id': systemId = '', 'symbol-id': symbolId = '', 'symbol-title': symbolTitle = '' } = params;
+  const { 'system-id': systemId = '', 'symbol-id': symbolId = '' } = params;
+
+  const { title } = await fetchSymbol(systemId, symbolId);
 
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${decodeURIComponent(symbolTitle)}`}>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${title}`}>
       <DeleteSymbolForm id={symbolId} systemId={systemId}>
         <InputHiddenId />
         <InputHiddenSystemId />
@@ -33,12 +36,14 @@ export const DeleteSymbolPage = (props: ServerSideProps): ReactElement => {
   );
 };
 
-export const generateMetadata = (props: ServerSideProps): Metadata => {
+export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
   const { params } = props;
 
-  const { 'symbol-title': symbolTitle = '' } = params;
+  const { 'system-id': systemId = '', 'symbol-id': symbolId = '' } = params;
+
+  const { title } = await fetchSymbol(systemId, symbolId);
 
   return {
-    title: `Delete ${decodeURIComponent(symbolTitle)}`
+    title: `Delete ${title}`
   };
 };

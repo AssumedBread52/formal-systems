@@ -5,17 +5,20 @@ import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item'
 import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { CancelButton } from '@/common/components/cancel-button/cancel-button';
 import { InputHiddenId } from '@/common/components/input-hidden-id/input-hidden-id';
+import { fetchSystem } from '@/system/fetch-data/fetch-system';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { DeleteSystemForm } from './delete-system-form/delete-system-form';
 
-export const DeleteSystemPage = (props: ServerSideProps): ReactElement => {
+export const DeleteSystemPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params } = props;
 
-  const { 'system-id': systemId = '', 'system-title': systemTitle = '' } = params;
+  const { 'system-id': systemId = '' } = params;
+
+  const { title } = await fetchSystem(systemId);
 
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${decodeURIComponent(systemTitle)}`}>
+    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title={`Delete ${title}`}>
       <DeleteSystemForm id={systemId}>
         <InputHiddenId />
         <AntdFormItem style={{ textAlign: 'center' }}>
@@ -34,9 +37,11 @@ export const DeleteSystemPage = (props: ServerSideProps): ReactElement => {
 export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
   const { params } = props;
 
-  const { 'system-title': systemTitle = '' } = params;
+  const { 'system-id': systemId = '' } = params;
+
+  const { title } = await fetchSystem(systemId);
 
   return {
-    title: `Delete ${decodeURIComponent(systemTitle)}`
+    title: `Delete ${title}`
   };
 };

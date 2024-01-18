@@ -2,6 +2,7 @@ import { ServerSideProps } from '@/app/types/server-side-props';
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { PaginatedSearchControls } from '@/common/components/paginated-search-controls/paginated-search-controls';
 import { fetchSymbolsSearch } from '@/symbol/fetch-data/fetch-symbols-search';
+import { fetchSystem } from '@/system/fetch-data/fetch-system';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { CreateLink } from './create-link/create-link';
@@ -18,25 +19,29 @@ export const SearchSymbols = async (props: ServerSideProps): Promise<ReactElemen
     searchParams.count = '10';
   }
 
-  const { 'system-id': systemId = '', 'system-title': systemTitle = '' } = params;
+  const { 'system-id': systemId = '' } = params;
+
+  const { title } = await fetchSystem(systemId);
 
   const { results, total } = await fetchSymbolsSearch(systemId, searchParams);
 
   return (
-    <AntdCard extra={<CreateLink id={systemId} title={systemTitle} />} title={`${decodeURIComponent(systemTitle)} Symbols`}>
+    <AntdCard extra={<CreateLink id={systemId} />} title={`${title} Symbols`}>
       <PaginatedSearchControls resultType='Symbols' total={total}>
-        <SymbolList symbols={results} systemTitle={systemTitle} />
+        <SymbolList symbols={results} />
       </PaginatedSearchControls>
     </AntdCard>
   );
 };
 
-export const generateMetadata = (props: ServerSideProps): Metadata => {
+export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
   const { params } = props;
 
-  const { 'system-title': systemTitle = '' } = params;
+  const { 'system-id': systemId = '' } = params;
+
+  const { title } = await fetchSystem(systemId);
 
   return {
-    title: `${decodeURIComponent(systemTitle)} Symbols`
+    title: `${title} Symbols`
   };
 };

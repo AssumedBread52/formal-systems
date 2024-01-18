@@ -27,12 +27,12 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
 
   const actions = [
     <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${id}/${title}/edit`}>
+      <Link href={`/formal-system/${id}/edit`}>
         <AntdEditOutlined />
       </Link>
     </ProtectedContent>,
     <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${id}/${title}/delete`}>
+      <Link href={`/formal-system/${id}/delete`}>
         <AntdDeleteOutlined />
       </Link>
     </ProtectedContent>
@@ -46,7 +46,7 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
         <UserSignature userId={createdByUserId} />
       </AntdCard>
       <AntdDivider />
-      <SymbolsDescription id={id} title={title} constantSymbolCount={constantSymbolCount} variableSymbolCount={variableSymbolCount} />
+      <SymbolsDescription id={id} constantSymbolCount={constantSymbolCount} variableSymbolCount={variableSymbolCount} />
     </AntdCard>
   );
 };
@@ -54,9 +54,11 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
 export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
   const { params } = props;
 
-  const { 'system-title': systemTitle = '' } = params;
+  const { 'system-id': systemId = '' } = params;
+
+  const { title } = await fetchSystem(systemId);
 
   return {
-    title: decodeURIComponent(systemTitle)
+    title
   };
 };

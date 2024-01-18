@@ -47,12 +47,14 @@ export const EditSymbolPage = async (props: ServerSideProps): Promise<ReactEleme
   );
 };
 
-export const generateMetadata = (props: ServerSideProps): Metadata => {
+export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
   const { params } = props;
 
-  const { 'symbol-title': symbolTitle = '' } = params;
+  const { 'system-id': systemId = '', 'symbol-id': symbolId = '' } = params;
+
+  const { title } = await fetchSymbol(systemId, symbolId);
 
   return {
-    title: `Edit ${decodeURIComponent(symbolTitle)}`
+    title: `Edit ${title}`
   };
 };

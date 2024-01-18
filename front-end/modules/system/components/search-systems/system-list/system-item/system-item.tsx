@@ -20,19 +20,19 @@ export const SystemItem = (props: Pick<System, 'id' | 'title' | 'description' | 
 
   const actions = [
     <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${id}/${title}/edit`}>
+      <Link href={`/formal-system/${id}/edit`}>
         <AntdEditOutlined />
       </Link>
     </ProtectedContent>,
     <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${id}/${title}/delete`}>
+      <Link href={`/formal-system/${id}/delete`}>
         <AntdDeleteOutlined />
       </Link>
     </ProtectedContent>
   ] as ReactNode[];
 
   const exploreLink = (
-    <Link href={`/formal-system/${id}/${title}`}>
+    <Link href={`/formal-system/${id}`}>
       Explore
     </Link>
   );

@@ -23,18 +23,18 @@ const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps
 export const SymbolPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params } = props;
 
-  const { 'system-id': systemId = '', 'system-title': systemTitle = '', 'symbol-id': symbolId = '' } = params;
+  const { 'system-id': systemId = '', 'symbol-id': symbolId = '' } = params;
 
   const { id, title, description, type, content, axiomaticStatementAppearances, nonAxiomaticStatementAppearances, createdByUserId } = await fetchSymbol(systemId, symbolId);
 
   const actions = [
     <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${systemId}/${systemTitle}/symbol/${id}/${title}/edit`}>
+      <Link href={`/formal-system/${systemId}/symbol/${id}/edit`}>
         <AntdEditOutlined />
       </Link>
     </ProtectedContent>,
     <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${systemId}/${systemTitle}/symbol/${id}/${title}/delete`}>
+      <Link href={`/formal-system/${systemId}/symbol/${id}/delete`}>
         <AntdDeleteOutlined />
       </Link>
     </ProtectedContent>
@@ -57,12 +57,14 @@ export const SymbolPage = async (props: ServerSideProps): Promise<ReactElement> 
   );
 };
 
-export const generateMetadata = (props: ServerSideProps): Metadata => {
+export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
   const { params } = props;
 
-  const { 'symbol-title': symbolTitle = '' } = params;
+  const { 'system-id': systemId = '', 'symbol-id': symbolId = '' } = params;
+
+  const { title } = await fetchSymbol(systemId, symbolId);
 
   return {
-    title: decodeURIComponent(symbolTitle)
+    title
   };
 };

@@ -7,7 +7,7 @@ import { ReactElement } from 'react';
 import { SymbolItem } from './symbol-item/symbol-item';
 
 export const SymbolList = (props: SymbolListProps): ReactElement => {
-  const { symbols, systemTitle } = props;
+  const { symbols } = props;
 
   if (0 === symbols.length) {
     return (
@@ -24,7 +24,7 @@ export const SymbolList = (props: SymbolListProps): ReactElement => {
 
         return (
           <AntdCol key={id} span={24}>
-            <SymbolItem id={id} title={title} description={description} type={type} content={content} systemId={systemId} createdByUserId={createdByUserId} systemTitle={systemTitle} />
+            <SymbolItem id={id} title={title} description={description} type={type} content={content} systemId={systemId} createdByUserId={createdByUserId} />
           </AntdCol>
         );
       })}

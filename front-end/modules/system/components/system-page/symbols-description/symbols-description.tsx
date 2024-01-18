@@ -5,11 +5,11 @@ import { System } from '@/system/types/system';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
-export const SymbolsDescription = (props: Pick<System, 'id' | 'title' | 'constantSymbolCount' | 'variableSymbolCount'>): ReactElement => {
-  const { id, title, constantSymbolCount, variableSymbolCount } = props;
+export const SymbolsDescription = (props: Pick<System, 'id' | 'constantSymbolCount' | 'variableSymbolCount'>): ReactElement => {
+  const { id, constantSymbolCount, variableSymbolCount } = props;
 
   const exploreSymbols = (
-    <Link href={`/formal-system/${id}/${title}/symbols`}>
+    <Link href={`/formal-system/${id}/symbols`}>
       Explore
     </Link>
   );

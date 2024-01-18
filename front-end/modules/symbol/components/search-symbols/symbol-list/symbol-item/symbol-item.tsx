@@ -6,7 +6,6 @@ import { AntdEditOutlined } from '@/common/components/antd-edit-outlined/antd-ed
 import { RenderMath } from '@/common/components/render-math/render-math';
 import { SymbolType } from '@/symbol/enums/symbol-type';
 import { Symbol } from '@/symbol/types/symbol';
-import { SystemTitle } from '@/system/types/system-title';
 import { UserSignatureProps } from '@/user/types/user-signature-props';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -18,24 +17,24 @@ const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps
   return UserSignature;
 });
 
-export const SymbolItem = (props: Pick<Symbol, 'id' | 'title' | 'description' | 'type' | 'content' | 'systemId' | 'createdByUserId'> & SystemTitle): ReactElement => {
-  const { id, title, description, type, content, systemTitle, systemId, createdByUserId } = props;
+export const SymbolItem = (props: Pick<Symbol, 'id' | 'title' | 'description' | 'type' | 'content' | 'systemId' | 'createdByUserId'>): ReactElement => {
+  const { id, title, description, type, content, systemId, createdByUserId } = props;
 
   const actions = [
     <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${systemId}/${systemTitle}/symbol/${id}/${title}/edit`}>
+      <Link href={`/formal-system/${systemId}/symbol/${id}/edit`}>
         <AntdEditOutlined />
       </Link>
     </ProtectedContent>,
     <ProtectedContent userId={createdByUserId}>
-    <Link href={`/formal-system/${systemId}/${systemTitle}/symbol/${id}/${title}/delete`}>
+    <Link href={`/formal-system/${systemId}/symbol/${id}/delete`}>
       <AntdDeleteOutlined />
     </Link>
   </ProtectedContent>
   ] as ReactNode[];
 
   const exploreLink = (
-    <Link href={`/formal-system/${systemId}/${systemTitle}/symbol/${id}/${title}`}>
+    <Link href={`/formal-system/${systemId}/symbol/${id}`}>
       Explore
     </Link>
   );

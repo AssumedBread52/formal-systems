@@ -44,9 +44,11 @@ export const EditSystemPage = async (props: ServerSideProps): Promise<ReactEleme
 export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
   const { params } = props;
 
-  const { 'system-title': systemTitle = '' } = params;
+  const { 'system-id': systemId = '' } = params;
+
+  const { title } = await fetchSystem(systemId);
 
   return {
-    title: `Edit ${decodeURIComponent(systemTitle)}`
+    title: `Edit ${title}`
   };
 };
