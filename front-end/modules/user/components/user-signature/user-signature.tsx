@@ -20,7 +20,7 @@ export const UserSignature = async (props: UserSignatureProps): Promise<ReactEle
 
   const signature = (
     <AntdTypographyText italic>
-      {`${firstName} ${lastName}`}
+      {firstName} {lastName}
       <br />
       {email}
     </AntdTypographyText>
