@@ -20,7 +20,7 @@ export const AddSymbolPage = (props: ServerSideProps): ReactElement => {
 
   return (
     <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Add Symbol'>
-      <AddSymbolForm id={systemId}>
+      <AddSymbolForm systemId={systemId}>
         <InputTitle name='title' />
         <InputDescription name='description' />
         <InputSymbolType name='type' />
