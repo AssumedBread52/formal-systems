@@ -27,10 +27,10 @@ export const SymbolItem = (props: Pick<Symbol, 'id' | 'title' | 'description' | 
       </Link>
     </ProtectedContent>,
     <ProtectedContent userId={createdByUserId}>
-    <Link href={`/formal-system/${systemId}/symbol/${id}/remove`}>
-      <AntdDeleteOutlined />
-    </Link>
-  </ProtectedContent>
+      <Link href={`/formal-system/${systemId}/symbol/${id}/remove`}>
+        <AntdDeleteOutlined />
+      </Link>
+    </ProtectedContent>
   ] as ReactNode[];
 
   const exploreSymbolLink = (
