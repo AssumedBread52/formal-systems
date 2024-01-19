@@ -13,13 +13,9 @@ import { BaseQueryFn, EndpointBuilder, createApi, fetchBaseQuery } from '@reduxj
 import { Tags } from './constants/tags';
 import { TagTypes } from './types/tag-types';
 
-const { location } = window;
-
-const { origin } = location;
-
 export const api = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: `${origin}/api`
+    baseUrl: '/api'
   }),
   endpoints: (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): {
     refreshToken: ReturnType<typeof refreshToken>;
