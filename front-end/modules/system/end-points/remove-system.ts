@@ -21,8 +21,8 @@ export const removeSystem = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'ap
         Tags.System
       ];
     },
-    query: (removePayload: Pick<System, 'id'>): FetchArgs => {
-      const { id } = removePayload;
+    query: (removeSystemPayload: Pick<System, 'id'>): FetchArgs => {
+      const { id } = removeSystemPayload;
 
       return {
         method: 'DELETE',
