@@ -5,14 +5,14 @@ import { ReactElement } from 'react';
 export const DependencyItem = (props: DependencyItemProps): ReactElement => {
   const { packageName, version } = props;
 
-  const exploreLink = (
+  const explorePackageLink = (
     <a href={`https://www.npmjs.com/package/${packageName}`} target='_blank'>
       Explore
     </a>
   );
 
   return (
-    <AntdCard bodyStyle={{ textAlign: 'center' }} extra={exploreLink} title={packageName} type='inner'>
+    <AntdCard bodyStyle={{ textAlign: 'center' }} extra={explorePackageLink} title={packageName} type='inner'>
       version: {version.substring(1)}
     </AntdCard>
   );

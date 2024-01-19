@@ -31,14 +31,14 @@ export const SystemItem = (props: Pick<System, 'id' | 'title' | 'description' | 
     </ProtectedContent>
   ] as ReactNode[];
 
-  const exploreLink = (
+  const exploreSystemLink = (
     <Link href={`/formal-system/${id}`}>
       Explore
     </Link>
   );
 
   return (
-    <AntdCard actions={actions} extra={exploreLink} title={title} type='inner'>
+    <AntdCard actions={actions} extra={exploreSystemLink} title={title} type='inner'>
       {description}
       <AntdDivider />
       <UserSignature userId={createdByUserId} />

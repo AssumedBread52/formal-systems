@@ -33,14 +33,14 @@ export const SymbolItem = (props: Pick<Symbol, 'id' | 'title' | 'description' | 
   </ProtectedContent>
   ] as ReactNode[];
 
-  const exploreLink = (
+  const exploreSymbolLink = (
     <Link href={`/formal-system/${systemId}/symbol/${id}`}>
       Explore
     </Link>
   );
 
   return (
-    <AntdCard actions={actions} extra={exploreLink} title={title} type='inner'>
+    <AntdCard actions={actions} extra={exploreSymbolLink} title={title} type='inner'>
       {description}
       <AntdDivider />
       {SymbolType[type]}

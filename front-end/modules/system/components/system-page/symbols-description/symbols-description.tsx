@@ -8,14 +8,14 @@ import { ReactElement } from 'react';
 export const SymbolsDescription = (props: Pick<System, 'id' | 'constantSymbolCount' | 'variableSymbolCount'>): ReactElement => {
   const { id, constantSymbolCount, variableSymbolCount } = props;
 
-  const exploreSymbols = (
+  const exploreSymbolsLink = (
     <Link href={`/formal-system/${id}/symbols`}>
       Explore
     </Link>
   );
 
   return (
-    <AntdCard extra={exploreSymbols} title='Symbols' type='inner'>
+    <AntdCard extra={exploreSymbolsLink} title='Symbols' type='inner'>
       <AntdDescriptions bordered>
         <AntdDescriptionsItem label='Symbol Count'>
           {constantSymbolCount + variableSymbolCount}
