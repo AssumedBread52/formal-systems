@@ -1,14 +1,14 @@
 'use client';
 
 import { AntdPagination } from '@/common/components/antd-pagination/antd-pagination';
-import { InputPaginationProps } from '@/common/types/input-pagination-props';
 import { PaginatedSearchParams } from '@/common/types/paginated-search-params';
+import { PaginatedSearchResults } from '@/common/types/paginated-search-results';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { stringify } from 'querystring';
 import { ReactElement, ReactNode } from 'react';
 
-export const InputPagination = (props: InputPaginationProps): ReactElement => {
-  const { resultType, total } = props;
+export const InputPagination = (props: Pick<PaginatedSearchResults<any>, 'total'>): ReactElement => {
+  const { total } = props;
 
   const pathname = usePathname();
 
@@ -33,7 +33,7 @@ export const InputPagination = (props: InputPaginationProps): ReactElement => {
   const showTotal = (total: number, range: [number, number]): ReactNode => {
     const [min, max] = range;
 
-    return `${min} - ${max} of ${total} ${resultType}`;
+    return `${min} - ${max} of ${total} results`;
   };
 
   return (

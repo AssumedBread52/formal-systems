@@ -27,7 +27,7 @@ export const SearchSymbolsPage = async (props: ServerSideProps): Promise<ReactEl
 
   return (
     <AntdCard extra={<AddLink id={systemId} />} title={`${title} Symbols`}>
-      <PaginatedSearchControls resultType='Symbols' total={total}>
+      <PaginatedSearchControls total={total}>
         <SymbolList symbols={results} />
       </PaginatedSearchControls>
     </AntdCard>
