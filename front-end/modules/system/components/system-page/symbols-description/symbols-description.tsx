@@ -16,7 +16,7 @@ export const SymbolsDescription = (props: Pick<System, 'id' | 'constantSymbolCou
 
   return (
     <AntdCard extra={exploreSymbols} title='Symbols' type='inner'>
-      <AntdDescriptions bordered colon>
+      <AntdDescriptions bordered>
         <AntdDescriptionsItem label='Symbol Count'>
           {constantSymbolCount + variableSymbolCount}
         </AntdDescriptionsItem>

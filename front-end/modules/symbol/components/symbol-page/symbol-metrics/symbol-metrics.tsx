@@ -9,7 +9,7 @@ export const SymbolMetrics = (props: Pick<Symbol, 'axiomaticStatementAppearances
 
   return (
     <AntdCard title='Symbol Metrics' type='inner'>
-      <AntdDescriptions bordered colon>
+      <AntdDescriptions bordered>
         <AntdDescriptionsItem label='Count of appearances'>
           {axiomaticStatementAppearances + nonAxiomaticStatementAppearances}
         </AntdDescriptionsItem>
