@@ -28,11 +28,13 @@ export const AddButton = (): ReactElement => {
   const { refresh } = useRouter();
 
   useEffect((): void => {
-    if (isSuccess) {
-      setOpen(false);
-
-      refresh();
+    if (!isSuccess) {
+      return;
     }
+
+    setOpen(false);
+
+    refresh();
   }, [refresh, isSuccess]);
 
   const cancelHandler = (): void => {
