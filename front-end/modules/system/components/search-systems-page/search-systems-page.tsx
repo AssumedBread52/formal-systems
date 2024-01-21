@@ -3,7 +3,7 @@ import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { PaginatedSearchControls } from '@/common/components/paginated-search-controls/paginated-search-controls';
 import { fetchSystemsSearch } from '@/system/fetch-data/fetch-systems-search';
 import { ReactElement } from 'react';
-import { AddLink } from './add-link/add-link';
+import { AddSystem } from './add-system/add-system';
 import { SystemList } from './system-list/system-list';
 
 export const SearchSystemsPage = async (props: ServerSideProps): Promise<ReactElement> => {
@@ -20,7 +20,7 @@ export const SearchSystemsPage = async (props: ServerSideProps): Promise<ReactEl
   const { results, total } = await fetchSystemsSearch(searchParams);
 
   return (
-    <AntdCard extra={<AddLink />} title='Formal Systems'>
+    <AntdCard extra={<AddSystem />} title='Formal Systems'>
       <PaginatedSearchControls total={total}>
         <SystemList systems={results} />
       </PaginatedSearchControls>

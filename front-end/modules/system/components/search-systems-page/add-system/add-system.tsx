@@ -1,13 +1,11 @@
 import { ProtectedContent } from '@/auth/components/protected-content/protected-content';
-import Link from 'next/link';
 import { ReactElement } from 'react';
+import { AddButton } from './add-button/add-button';
 
-export const AddLink = (): ReactElement => {
+export const AddSystem = (): ReactElement => {
   return (
     <ProtectedContent>
-      <Link href='/formal-system/add'>
-        Add Formal System
-      </Link>
+      <AddButton />
     </ProtectedContent>
   );
 };
