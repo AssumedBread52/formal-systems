@@ -21,7 +21,7 @@ const { useAddSystemMutation } = api;
 const TypedAntdForm = AntdForm<NewSystemPayload>;
 
 export const AddButton = (): ReactElement => {
-  const [open, setOpen] = useState<boolean>();
+  const [open, setOpen] = useState<boolean>(false);
 
   const [addSystem, { isError, isLoading, isSuccess }] = useAddSystemMutation();
 
