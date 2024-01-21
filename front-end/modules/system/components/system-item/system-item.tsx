@@ -8,6 +8,7 @@ import { UserSignatureProps } from '@/user/types/user-signature-props';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { ComponentType, ReactElement, ReactNode } from 'react';
+import { ExploreSystemLink } from './explore-system/explore-system';
 
 const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps>> => {
   const { UserSignature } = await import('@/user/components/user-signature/user-signature');
@@ -31,14 +32,8 @@ export const SystemItem = (props: Pick<System, 'id' | 'title' | 'description' | 
     </ProtectedContent>
   ] as ReactNode[];
 
-  const exploreSystemLink = (
-    <Link href={`/formal-system/${id}`}>
-      Explore
-    </Link>
-  );
-
   return (
-    <AntdCard actions={actions} extra={exploreSystemLink} title={title} type='inner'>
+    <AntdCard actions={actions} extra={<ExploreSystemLink id={id} />} title={title} type='inner'>
       {description}
       <AntdDivider />
       <UserSignature userId={createdByUserId} />
