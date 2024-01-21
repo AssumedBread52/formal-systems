@@ -19,6 +19,14 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
     </Link>
   );
 
+  const exploreStatementsLink = (
+    <Link href={`/formal-system/${id}/statements`}>
+      Explore
+    </Link>
+  );
+
+  const [axiomCount, theoremCount, deductionCount] = [0,0,0];
+
   return (
     <AntdCard title='Metrics'>
       <AntdCard extra={exploreSymbolsLink} title='Symbols' type='inner'>
@@ -31,6 +39,22 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
           </AntdDescriptionsItem>
           <AntdDescriptionsItem label='Variable Symbol Count'>
             {variableSymbolCount}
+          </AntdDescriptionsItem>
+        </AntdDescriptions>
+      </AntdCard>
+      <AntdCard extra={exploreStatementsLink} title='Statements' type='inner'>
+        <AntdDescriptions bordered>
+          <AntdDescriptionsItem label='Axiom Count'>
+            {axiomCount}
+          </AntdDescriptionsItem>
+          <AntdDescriptionsItem label='Provable Statements Count'>
+            {theoremCount + deductionCount}
+          </AntdDescriptionsItem>
+          <AntdDescriptionsItem label='Theorem Count'>
+            {theoremCount}
+          </AntdDescriptionsItem>
+          <AntdDescriptionsItem label='Deduction Count'>
+            {deductionCount}
           </AntdDescriptionsItem>
         </AntdDescriptions>
       </AntdCard>
