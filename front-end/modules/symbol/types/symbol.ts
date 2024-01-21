@@ -6,7 +6,7 @@ export type Symbol = {
   description: string;
   type: SymbolType;
   content: string;
-  axiomaticStatementAppearances: number;
+  axiomAppearances: number;
   nonAxiomaticStatementAppearances: number;
   systemId: string;
   createdByUserId: string;

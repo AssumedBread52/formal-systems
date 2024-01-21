@@ -153,7 +153,7 @@ describe('Update Symbol', (): void => {
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    testSymbol.axiomaticStatementAppearances = 1;
+    testSymbol.axiomAppearances = 1;
 
     symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
     userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);

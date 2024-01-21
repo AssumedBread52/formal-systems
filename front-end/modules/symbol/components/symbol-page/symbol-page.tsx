@@ -25,7 +25,7 @@ export const SymbolPage = async (props: ServerSideProps): Promise<ReactElement> 
 
   const { 'system-id': systemId = '', 'symbol-id': symbolId = '' } = params;
 
-  const { id, title, description, type, content, axiomaticStatementAppearances, nonAxiomaticStatementAppearances, createdByUserId } = await fetchSymbol(systemId, symbolId);
+  const { id, title, description, type, content, axiomAppearances, nonAxiomaticStatementAppearances, createdByUserId } = await fetchSymbol(systemId, symbolId);
 
   const actions = [
     <ProtectedContent userId={createdByUserId}>
@@ -52,7 +52,7 @@ export const SymbolPage = async (props: ServerSideProps): Promise<ReactElement> 
         <UserSignature userId={createdByUserId} />
       </AntdCard>
       <AntdDivider />
-      <SymbolMetrics axiomaticStatementAppearances={axiomaticStatementAppearances} nonAxiomaticStatementAppearances={nonAxiomaticStatementAppearances} />
+      <SymbolMetrics axiomAppearances={axiomAppearances} nonAxiomaticStatementAppearances={nonAxiomaticStatementAppearances} />
     </AntdCard>
   );
 };

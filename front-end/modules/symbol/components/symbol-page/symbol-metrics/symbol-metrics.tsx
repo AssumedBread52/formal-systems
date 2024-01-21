@@ -4,17 +4,17 @@ import { AntdDescriptions } from '@/common/components/antd-descriptions/antd-des
 import { Symbol } from '@/symbol/types/symbol';
 import { ReactElement } from 'react';
 
-export const SymbolMetrics = (props: Pick<Symbol, 'axiomaticStatementAppearances' | 'nonAxiomaticStatementAppearances'>): ReactElement => {
-  const { axiomaticStatementAppearances, nonAxiomaticStatementAppearances } = props;
+export const SymbolMetrics = (props: Pick<Symbol, 'axiomAppearances' | 'nonAxiomaticStatementAppearances'>): ReactElement => {
+  const { axiomAppearances, nonAxiomaticStatementAppearances } = props;
 
   return (
     <AntdCard title='Symbol Metrics' type='inner'>
       <AntdDescriptions bordered>
         <AntdDescriptionsItem label='Count of appearances'>
-          {axiomaticStatementAppearances + nonAxiomaticStatementAppearances}
+          {axiomAppearances + nonAxiomaticStatementAppearances}
         </AntdDescriptionsItem>
         <AntdDescriptionsItem label='Count of appearances in axiomatic statements'>
-          {axiomaticStatementAppearances}
+          {axiomAppearances}
         </AntdDescriptionsItem>
         <AntdDescriptionsItem label='Count of appearances in non-axiomatic statements'>
           {nonAxiomaticStatementAppearances}

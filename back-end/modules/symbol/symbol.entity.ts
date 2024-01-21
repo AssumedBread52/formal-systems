@@ -18,7 +18,7 @@ export class SymbolEntity {
   @Column()
   content: string = '';
   @Column()
-  axiomaticStatementAppearances: number = 0;
+  axiomAppearances: number = 0;
   @Column()
   nonAxiomaticStatementAppearances: number = 0;
   @Column()
