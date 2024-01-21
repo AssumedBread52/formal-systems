@@ -20,7 +20,9 @@ export class SymbolEntity {
   @Column()
   axiomAppearances: number = 0;
   @Column()
-  nonAxiomaticStatementAppearances: number = 0;
+  theoremAppearances: number = 0;
+  @Column()
+  deductionAppearances: number = 0;
   @Column()
   systemId: ObjectId = new ObjectId();
   @Column()

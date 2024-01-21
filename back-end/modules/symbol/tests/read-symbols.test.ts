@@ -41,7 +41,7 @@ describe('Read Symbols', (): void => {
 
     symbolRepositoryMock.findAndCount.mockReturnValueOnce([[testSymbol], 1]);
 
-    const { _id, title, description, type, content, axiomAppearances, nonAxiomaticStatementAppearances, systemId, createdByUserId } = testSymbol;
+    const { _id, title, description, type, content, axiomAppearances, theoremAppearances, deductionAppearances, systemId, createdByUserId } = testSymbol;
 
     const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol?page=1&count=10`);
 
@@ -54,7 +54,8 @@ describe('Read Symbols', (): void => {
           type,
           content,
           axiomAppearances,
-          nonAxiomaticStatementAppearances,
+          theoremAppearances,
+          deductionAppearances,
           systemId: systemId.toString(),
           createdByUserId: createdByUserId.toString()
         }
@@ -70,7 +71,7 @@ describe('Read Symbols', (): void => {
 
     symbolRepositoryMock.findAndCount.mockReturnValueOnce([[testSymbol], 1]);
 
-    const { _id, title, description, type, content, axiomAppearances, nonAxiomaticStatementAppearances, systemId, createdByUserId } = testSymbol;
+    const { _id, title, description, type, content, axiomAppearances, theoremAppearances, deductionAppearances, systemId, createdByUserId } = testSymbol;
 
     const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol?page=1&count=10&keywords=test`);
 
@@ -83,7 +84,8 @@ describe('Read Symbols', (): void => {
           type,
           content,
           axiomAppearances,
-          nonAxiomaticStatementAppearances,
+          theoremAppearances,
+          deductionAppearances,
           systemId: systemId.toString(),
           createdByUserId: createdByUserId.toString()
         }
@@ -99,7 +101,7 @@ describe('Read Symbols', (): void => {
 
     symbolRepositoryMock.findAndCount.mockReturnValueOnce([[testSymbol], 1]);
 
-    const { _id, title, description, type, content, axiomAppearances, nonAxiomaticStatementAppearances, systemId, createdByUserId } = testSymbol;
+    const { _id, title, description, type, content, axiomAppearances, theoremAppearances, deductionAppearances, systemId, createdByUserId } = testSymbol;
 
     const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol?page=1&count=10&keywords=test&keywords=user`);
 
@@ -112,7 +114,8 @@ describe('Read Symbols', (): void => {
           type,
           content,
           axiomAppearances,
-          nonAxiomaticStatementAppearances,
+          theoremAppearances,
+          deductionAppearances,
           systemId: systemId.toString(),
           createdByUserId: createdByUserId.toString()
         }

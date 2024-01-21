@@ -31,7 +31,7 @@ describe('Read Symbol by ID', (): void => {
 
     symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
 
-    const { _id, title, description, type, content, axiomAppearances, nonAxiomaticStatementAppearances, systemId, createdByUserId } = testSymbol;
+    const { _id, title, description, type, content, axiomAppearances, theoremAppearances, deductionAppearances, systemId, createdByUserId } = testSymbol;
 
     const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol/${_id}`);
 
@@ -42,7 +42,8 @@ describe('Read Symbol by ID', (): void => {
       type,
       content,
       axiomAppearances,
-      nonAxiomaticStatementAppearances,
+      theoremAppearances,
+      deductionAppearances,
       systemId: systemId.toString(),
       createdByUserId: createdByUserId.toString()
     });

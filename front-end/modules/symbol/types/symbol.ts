@@ -7,7 +7,8 @@ export type Symbol = {
   type: SymbolType;
   content: string;
   axiomAppearances: number;
-  nonAxiomaticStatementAppearances: number;
+  theoremAppearances: number;
+  deductionAppearances: number;
   systemId: string;
   createdByUserId: string;
 };

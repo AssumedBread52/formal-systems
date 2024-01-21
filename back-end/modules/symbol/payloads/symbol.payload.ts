@@ -25,7 +25,10 @@ export class SymbolPayload {
   axiomAppearances: number;
   @IsInt()
   @Min(0)
-  nonAxiomaticStatementAppearances: number;
+  theoremAppearances: number;
+  @IsInt()
+  @Min(0)
+  deductionAppearances: number;
   @IsMongoId()
   @Transform((params: TransformFnParams): any => {
     const { value } = params;
@@ -42,7 +45,7 @@ export class SymbolPayload {
   createdByUserId: ObjectId;
 
   constructor(symbol: SymbolEntity) {
-    const { _id, title, description, type, content, axiomAppearances, nonAxiomaticStatementAppearances, systemId, createdByUserId } = symbol;
+    const { _id, title, description, type, content, axiomAppearances, theoremAppearances, deductionAppearances, systemId, createdByUserId } = symbol;
 
     this.id = _id;
     this.title = title;
@@ -50,7 +53,8 @@ export class SymbolPayload {
     this.type = type;
     this.content = content;
     this.axiomAppearances = axiomAppearances;
-    this.nonAxiomaticStatementAppearances = nonAxiomaticStatementAppearances;
+    this.theoremAppearances = theoremAppearances;
+    this.deductionAppearances = deductionAppearances;
     this.systemId = systemId;
     this.createdByUserId = createdByUserId;
   }
