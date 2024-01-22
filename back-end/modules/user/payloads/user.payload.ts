@@ -26,9 +26,18 @@ export class UserPayload {
   @IsInt()
   @Min(0)
   variableSymbolCount: number;
+  @IsInt()
+  @Min(0)
+  axiomCount: number = 0;
+  @IsInt()
+  @Min(0)
+  theoremCount: number = 0;
+  @IsInt()
+  @Min(0)
+  deductionCount: number = 0;
 
   constructor(user: UserEntity) {
-    const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount } = user;
+    const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount } = user;
 
     this.id = _id;
     this.firstName = firstName;
@@ -37,5 +46,8 @@ export class UserPayload {
     this.systemCount = systemCount;
     this.constantSymbolCount = constantSymbolCount;
     this.variableSymbolCount = variableSymbolCount;
+    this.axiomCount = axiomCount;
+    this.theoremCount = theoremCount;
+    this.deductionCount = deductionCount;
   }
 };

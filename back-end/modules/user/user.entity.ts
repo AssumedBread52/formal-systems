@@ -19,4 +19,10 @@ export class UserEntity {
   constantSymbolCount: number = 0;
   @Column()
   variableSymbolCount: number = 0;
+  @Column()
+  axiomCount: number = 0;
+  @Column()
+  theoremCount: number = 0;
+  @Column()
+  deductionCount: number = 0;
 };
