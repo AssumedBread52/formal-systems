@@ -28,13 +28,13 @@ export class UserPayload {
   variableSymbolCount: number;
   @IsInt()
   @Min(0)
-  axiomCount: number = 0;
+  axiomCount: number;
   @IsInt()
   @Min(0)
-  theoremCount: number = 0;
+  theoremCount: number;
   @IsInt()
   @Min(0)
-  deductionCount: number = 0;
+  deductionCount: number;
 
   constructor(user: UserEntity) {
     const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount } = user;
