@@ -47,7 +47,7 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
           <AntdDescriptionsItem label='Axiom Count'>
             {axiomCount}
           </AntdDescriptionsItem>
-          <AntdDescriptionsItem label='Provable Statements Count'>
+          <AntdDescriptionsItem label='Proven Statements Count'>
             {theoremCount + deductionCount}
           </AntdDescriptionsItem>
           <AntdDescriptionsItem label='Theorem Count'>
