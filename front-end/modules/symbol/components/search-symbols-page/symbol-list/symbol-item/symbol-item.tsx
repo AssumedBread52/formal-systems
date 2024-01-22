@@ -6,16 +6,8 @@ import { AntdEditOutlined } from '@/common/components/antd-edit-outlined/antd-ed
 import { RenderMath } from '@/common/components/render-math/render-math';
 import { SymbolType } from '@/symbol/enums/symbol-type';
 import { Symbol } from '@/symbol/types/symbol';
-import { UserSignatureProps } from '@/user/types/user-signature-props';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { ComponentType, ReactElement, ReactNode } from 'react';
-
-const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps>> => {
-  const { UserSignature } = await import('@/user/components/user-signature/user-signature');
-
-  return UserSignature;
-});
+import { ReactElement, ReactNode } from 'react';
 
 export const SymbolItem = (props: Pick<Symbol, 'id' | 'title' | 'description' | 'type' | 'content' | 'systemId' | 'createdByUserId'>): ReactElement => {
   const { id, title, description, type, content, systemId, createdByUserId } = props;
@@ -46,8 +38,6 @@ export const SymbolItem = (props: Pick<Symbol, 'id' | 'title' | 'description' | 
       {SymbolType[type]}
       <AntdDivider />
       <RenderMath content={content} />
-      <AntdDivider />
-      <UserSignature userId={createdByUserId} />
     </AntdCard>
   );
 };
