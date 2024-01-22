@@ -12,7 +12,7 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
 
   const { 'system-id': systemId = '' } = params;
 
-  const { id, constantSymbolCount, variableSymbolCount } = await fetchSystem(systemId);
+  const { id, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount } = await fetchSystem(systemId);
 
   const exploreSymbolsLink = (
     <Link href={`/formal-system/${id}/symbols`}>
@@ -25,8 +25,6 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
       Explore
     </Link>
   );
-
-  const [axiomCount, theoremCount, deductionCount] = [0,0,0];
 
   return (
     <AntdCard title='Metrics'>
@@ -46,6 +44,9 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
       <AntdDivider />
       <AntdCard extra={exploreStatementsLink} title='Statements' type='inner'>
         <AntdDescriptions bordered>
+          <AntdDescriptionsItem label='Statements Count'>
+            {axiomCount + theoremCount + deductionCount}
+          </AntdDescriptionsItem>
           <AntdDescriptionsItem label='Axiom Count'>
             {axiomCount}
           </AntdDescriptionsItem>

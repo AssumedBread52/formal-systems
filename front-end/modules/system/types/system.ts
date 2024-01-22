@@ -4,5 +4,8 @@ export type System = {
   description: string;
   constantSymbolCount: number;
   variableSymbolCount: number;
+  axiomCount: number;
+  theoremCount: number;
+  deductionCount: number;
   createdByUserId: string;
 };
