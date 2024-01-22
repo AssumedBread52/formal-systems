@@ -2,6 +2,7 @@ import { ServerSideProps } from '@/app/types/server-side-props';
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdDescriptionsItem } from '@/common/components/antd-descriptions-item/antd-descriptions-item';
 import { AntdDescriptions } from '@/common/components/antd-descriptions/antd-descriptions';
+import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
 import { fetchSystem } from '@/system/fetch-data/fetch-system';
 import Link from 'next/link';
 import { ReactElement } from 'react';
@@ -42,6 +43,7 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
           </AntdDescriptionsItem>
         </AntdDescriptions>
       </AntdCard>
+      <AntdDivider />
       <AntdCard extra={exploreStatementsLink} title='Statements' type='inner'>
         <AntdDescriptions bordered>
           <AntdDescriptionsItem label='Axiom Count'>
