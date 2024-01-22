@@ -27,7 +27,7 @@ export const RemoveButton = (props: Pick<System, 'id'>): ReactElement => {
 
   const [removeSystem, { isError, isLoading, isSuccess }] = useRemoveSystemMutation();
 
-  const { refresh, replace } = useRouter();
+  const { push, refresh } = useRouter();
 
   useEffect((): void => {
     if (!isSuccess) {
@@ -39,9 +39,9 @@ export const RemoveButton = (props: Pick<System, 'id'>): ReactElement => {
     if ('/formal-systems' === pathname) {
       refresh();
     } else {
-      replace('/formal-systems');
+      push('/formal-systems');
     }
-  }, [refresh, replace, isSuccess, pathname]);
+  }, [push, refresh, isSuccess, pathname]);
 
   const cancelHandler = (): void => {
     setOpen(false);
