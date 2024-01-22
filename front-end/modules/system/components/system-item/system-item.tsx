@@ -5,7 +5,7 @@ import { UserSignatureProps } from '@/user/types/user-signature-props';
 import dynamic from 'next/dynamic';
 import { ComponentType, ReactElement, ReactNode } from 'react';
 import { EditSystem } from './edit-system/edit-system';
-import { ExploreSystemLink } from './explore-system/explore-system';
+import { ExploreSystemLink } from './explore-system-link/explore-system-link';
 import { RemoveSystem } from './remove-system/remove-system';
 
 const UserSignature = dynamic(async (): Promise<ComponentType<UserSignatureProps>> => {
