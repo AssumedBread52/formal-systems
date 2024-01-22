@@ -14,5 +14,11 @@ export class SystemEntity {
   @Column()
   variableSymbolCount: number = 0;
   @Column()
+  axiomCount: number = 0;
+  @Column()
+  theoremCount: number = 0;
+  @Column()
+  deductionCount: number = 0;
+  @Column()
   createdByUserId: ObjectId = new ObjectId();
 };
