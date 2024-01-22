@@ -6,4 +6,7 @@ export type User = {
   systemCount: number;
   constantSymbolCount: number;
   variableSymbolCount: number;
+  axiomCount: number;
+  theoremCount: number;
+  deductionCount: number;
 };

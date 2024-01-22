@@ -10,10 +10,10 @@ import { ReactElement } from 'react';
 export const UserSignature = async (props: UserSignatureProps): Promise<ReactElement> => {
   const { userId } = props;
 
-  const { firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount } = await fetchUser(userId);
+  const { firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount } = await fetchUser(userId);
 
   const userAvatar = (
-    <AntdBadge count={systemCount + constantSymbolCount + variableSymbolCount} title='Entities created'>
+    <AntdBadge count={systemCount + constantSymbolCount + variableSymbolCount + axiomCount + theoremCount + deductionCount} title='Entities created'>
       <AntdAvatar icon={<AntdUserOutlined />} size='large' />
     </AntdBadge>
   );
