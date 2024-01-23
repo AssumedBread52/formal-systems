@@ -5,5 +5,11 @@ export const fetchUser = async (userId: string): Promise<User> => {
     cache: 'no-store'
   });
 
+  const { ok, statusText } = response;
+
+  if (!ok) {
+    throw new Error(statusText);
+  }
+
   return response.json();
 };

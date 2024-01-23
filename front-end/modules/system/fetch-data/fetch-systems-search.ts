@@ -8,5 +8,11 @@ export const fetchSystemsSearch = async (queryParams: QueryParams): Promise<Pagi
     cache: 'no-store'
   });
 
+  const { ok, statusText } = response;
+
+  if (!ok) {
+    throw new Error(statusText);
+  }
+
   return response.json();
 };

@@ -5,5 +5,11 @@ export const fetchSymbol = async (systemId: string, symbolId: string): Promise<S
     cache: 'no-store'
   });
 
+  const { ok, statusText } = response;
+
+  if (!ok) {
+    throw new Error(statusText);
+  }
+
   return response.json();
 };

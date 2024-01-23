@@ -5,5 +5,11 @@ export const fetchSystem = async (systemId: string): Promise<System> => {
     cache: 'no-store'
   });
 
+  const { ok, statusText } = response;
+
+  if (!ok) {
+    throw new Error(statusText);
+  }
+
   return response.json();
 };

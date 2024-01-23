@@ -9,8 +9,10 @@ export const fetchSessionUser = async (): Promise<User> => {
     }
   });
 
-  if (!response.ok) {
-    throw new Error(response.statusText);
+  const { ok, statusText } = response;
+
+  if (!ok) {
+    throw new Error(statusText);
   }
 
   return response.json();
