@@ -13,7 +13,7 @@ import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { AntdSpin } from '@/common/components/antd-spin/antd-spin';
 import { InputHiddenId } from '@/common/components/input-hidden-id/input-hidden-id';
 import { System } from '@/system/types/system';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Fragment, ReactElement, useEffect, useState } from 'react';
 
 const { useRemoveSystemMutation } = api;
@@ -23,11 +23,9 @@ const TypedAntdForm = AntdForm<Pick<System, 'id'>>;
 export const RemoveButton = (props: Pick<System, 'id'>): ReactElement => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const pathname = usePathname();
-
   const [removeSystem, { isError, isLoading, isSuccess }] = useRemoveSystemMutation();
 
-  const { push, refresh } = useRouter();
+  const { refresh } = useRouter();
 
   useEffect((): void => {
     if (!isSuccess) {
@@ -36,12 +34,8 @@ export const RemoveButton = (props: Pick<System, 'id'>): ReactElement => {
 
     setOpen(false);
 
-    if ('/formal-systems' === pathname) {
-      refresh();
-    } else {
-      push('/formal-systems');
-    }
-  }, [push, refresh, isSuccess, pathname]);
+    refresh();
+  }, [refresh, isSuccess]);
 
   const cancelHandler = (): void => {
     setOpen(false);
