@@ -1,28 +1,19 @@
-import { ProtectedContent } from '@/auth/components/protected-content/protected-content';
 import { AntdCard } from '@/common/components/antd-card/antd-card';
-import { AntdDeleteOutlined } from '@/common/components/antd-delete-outlined/antd-delete-outlined';
 import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
-import { AntdEditOutlined } from '@/common/components/antd-edit-outlined/antd-edit-outlined';
 import { RenderMath } from '@/common/components/render-math/render-math';
 import { SymbolType } from '@/symbol/enums/symbol-type';
 import { Symbol } from '@/symbol/types/symbol';
 import Link from 'next/link';
 import { ReactElement, ReactNode } from 'react';
+import { EditSymbol } from './edit-symbol/edit-symbol';
+import { RemoveSymbol } from './remove-symbol/remove-symbol';
 
 export const SymbolItem = (props: Pick<Symbol, 'id' | 'title' | 'description' | 'type' | 'content' | 'systemId' | 'createdByUserId'>): ReactElement => {
   const { id, title, description, type, content, systemId, createdByUserId } = props;
 
   const actions = [
-    <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${systemId}/symbol/${id}/edit`}>
-        <AntdEditOutlined />
-      </Link>
-    </ProtectedContent>,
-    <ProtectedContent userId={createdByUserId}>
-      <Link href={`/formal-system/${systemId}/symbol/${id}/remove`}>
-        <AntdDeleteOutlined />
-      </Link>
-    </ProtectedContent>
+    <EditSymbol id={id} title={title} description={description} type={type} content={content} systemId={systemId} createdByUserId={createdByUserId} />,
+    <RemoveSymbol id={id} systemId={systemId} createdByUserId={createdByUserId} />
   ] as ReactNode[];
 
   const exploreSymbolLink = (
