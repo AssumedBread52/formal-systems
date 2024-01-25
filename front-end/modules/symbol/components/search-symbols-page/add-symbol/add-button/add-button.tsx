@@ -27,7 +27,7 @@ const TypedAntdForm = AntdForm<NewSymbolPayload>;
 export const AddButton = (): ReactElement => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const [addSymbol, { isError, isLoading, isSuccess }] = useAddSymbolMutation();
+  const [addSymbol, { isError, isLoading, isSuccess, reset }] = useAddSymbolMutation();
 
   const { 'system-id': systemId = '' } = useParams<RouteParams>();
 
@@ -44,6 +44,8 @@ export const AddButton = (): ReactElement => {
   }, [refresh, isSuccess]);
 
   const cancelHandler = (): void => {
+    reset();
+
     setOpen(false);
   };
 

@@ -28,7 +28,7 @@ const TypedAntdForm = AntdForm<EditSymbolPayload>;
 export const EditButton = (props: EditSymbolPayload): ReactElement => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const [editSymbol, { isError, isLoading, isSuccess }] = useEditSymbolMutation();
+  const [editSymbol, { isError, isLoading, isSuccess, reset }] = useEditSymbolMutation();
 
   const { refresh } = useRouter();
 
@@ -43,6 +43,8 @@ export const EditButton = (props: EditSymbolPayload): ReactElement => {
   }, [refresh, isSuccess]);
 
   const cancelHandler = (): void => {
+    reset();
+
     setOpen(false);
   };
 

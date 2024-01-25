@@ -23,7 +23,7 @@ const TypedAntdForm = AntdForm<Pick<System, 'id'>>;
 export const RemoveButton = (props: Pick<System, 'id'>): ReactElement => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const [removeSystem, { isError, isLoading, isSuccess }] = useRemoveSystemMutation();
+  const [removeSystem, { isError, isLoading, isSuccess, reset }] = useRemoveSystemMutation();
 
   const { refresh } = useRouter();
 
@@ -38,6 +38,8 @@ export const RemoveButton = (props: Pick<System, 'id'>): ReactElement => {
   }, [refresh, isSuccess]);
 
   const cancelHandler = (): void => {
+    reset();
+
     setOpen(false);
   };
 

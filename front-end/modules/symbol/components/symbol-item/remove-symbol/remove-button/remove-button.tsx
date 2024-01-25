@@ -24,7 +24,7 @@ const TypedAntdForm = AntdForm<Pick<Symbol, 'id' | 'systemId'>>;
 export const RemoveButton = (props: Pick<Symbol, 'id' | 'systemId'>): ReactElement => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const [removeSymbol, { isError, isLoading, isSuccess }] = useRemoveSymbolMutation();
+  const [removeSymbol, { isError, isLoading, isSuccess, reset }] = useRemoveSymbolMutation();
 
   const { refresh } = useRouter();
 
@@ -39,6 +39,8 @@ export const RemoveButton = (props: Pick<Symbol, 'id' | 'systemId'>): ReactEleme
   }, [refresh, isSuccess]);
 
   const cancelHandler = (): void => {
+    reset();
+
     setOpen(false);
   };
 

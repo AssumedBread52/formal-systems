@@ -25,7 +25,7 @@ const TypedAntdForm = AntdForm<EditSystemPayload>;
 export const EditButton = (props: EditSystemPayload): ReactElement => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const [editSystem, { isError, isLoading, isSuccess }] = useEditSystemMutation();
+  const [editSystem, { isError, isLoading, isSuccess, reset }] = useEditSystemMutation();
 
   const { refresh } = useRouter();
 
@@ -40,6 +40,8 @@ export const EditButton = (props: EditSystemPayload): ReactElement => {
   }, [refresh, isSuccess]);
 
   const cancelHandler = (): void => {
+    reset();
+
     setOpen(false);
   };
 

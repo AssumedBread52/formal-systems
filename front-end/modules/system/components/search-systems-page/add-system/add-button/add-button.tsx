@@ -23,7 +23,7 @@ const TypedAntdForm = AntdForm<NewSystemPayload>;
 export const AddButton = (): ReactElement => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const [addSystem, { isError, isLoading, isSuccess }] = useAddSystemMutation();
+  const [addSystem, { isError, isLoading, isSuccess, reset }] = useAddSystemMutation();
 
   const { refresh } = useRouter();
 
@@ -38,6 +38,8 @@ export const AddButton = (): ReactElement => {
   }, [refresh, isSuccess]);
 
   const cancelHandler = (): void => {
+    reset();
+
     setOpen(false);
   };
 
