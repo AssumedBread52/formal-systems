@@ -31,7 +31,7 @@ describe('Read System by ID', (): void => {
 
     systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
 
-    const { _id, title, description, constantSymbolCount, variableSymbolCount, createdByUserId } = testSystem;
+    const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = testSystem;
 
     const response = await request(app.getHttpServer()).get(`/system/${_id}`);
 
@@ -41,6 +41,9 @@ describe('Read System by ID', (): void => {
       description,
       constantSymbolCount,
       variableSymbolCount,
+      axiomCount,
+      theoremCount,
+      deductionCount,
       createdByUserId: createdByUserId.toString()
     });
   });

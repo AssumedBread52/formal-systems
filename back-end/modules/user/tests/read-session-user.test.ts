@@ -39,7 +39,7 @@ describe('Read Session User', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
 
-    const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount } = testUser;
+    const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount } = testUser;
 
     const response = await request(app.getHttpServer()).get('/user/session-user').set('Cookie', [
       `token=${token}`
@@ -52,7 +52,10 @@ describe('Read Session User', (): void => {
       email,
       systemCount,
       constantSymbolCount,
-      variableSymbolCount
+      variableSymbolCount,
+      axiomCount,
+      theoremCount,
+      deductionCount
     });
   });
 

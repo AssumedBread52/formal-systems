@@ -31,7 +31,7 @@ describe('Read User by ID', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
 
-    const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount } = testUser;
+    const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount } = testUser;
 
     const response = await request(app.getHttpServer()).get(`/user/${_id}`);
 
@@ -42,7 +42,10 @@ describe('Read User by ID', (): void => {
       email,
       systemCount,
       constantSymbolCount,
-      variableSymbolCount
+      variableSymbolCount,
+      axiomCount,
+      theoremCount,
+      deductionCount
     });
   });
 

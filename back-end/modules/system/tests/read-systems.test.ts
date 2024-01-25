@@ -40,7 +40,7 @@ describe('Read Systems', (): void => {
 
     systemRepositoryMock.findAndCount.mockReturnValueOnce([[testSystem], 1]);
 
-    const { _id, title, description, constantSymbolCount, variableSymbolCount, createdByUserId } = testSystem;
+    const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = testSystem;
 
     const response = await request(app.getHttpServer()).get('/system?page=1&count=10');
 
@@ -52,6 +52,9 @@ describe('Read Systems', (): void => {
           description,
           constantSymbolCount,
           variableSymbolCount,
+          axiomCount,
+          theoremCount,
+          deductionCount,
           createdByUserId: createdByUserId.toString()
         }
       ],
@@ -66,7 +69,7 @@ describe('Read Systems', (): void => {
 
     systemRepositoryMock.findAndCount.mockReturnValueOnce([[testSystem], 1]);
 
-    const { _id, title, description, constantSymbolCount, variableSymbolCount, createdByUserId } = testSystem;
+    const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = testSystem;
 
     const response = await request(app.getHttpServer()).get('/system?page=1&count=10&keywords=test');
 
@@ -78,6 +81,9 @@ describe('Read Systems', (): void => {
           description,
           constantSymbolCount,
           variableSymbolCount,
+          axiomCount,
+          theoremCount,
+          deductionCount,
           createdByUserId: createdByUserId.toString()
         }
       ],
@@ -92,7 +98,7 @@ describe('Read Systems', (): void => {
 
     systemRepositoryMock.findAndCount.mockReturnValueOnce([[testSystem], 1]);
 
-    const { _id, title, description, constantSymbolCount, variableSymbolCount, createdByUserId } = testSystem;
+    const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = testSystem;
 
     const response = await request(app.getHttpServer()).get('/system?page=1&count=10&keywords=test&keywords=user');
 
@@ -104,6 +110,9 @@ describe('Read Systems', (): void => {
           description,
           constantSymbolCount,
           variableSymbolCount,
+          axiomCount,
+          theoremCount,
+          deductionCount,
           createdByUserId: createdByUserId.toString()
         }
       ],
