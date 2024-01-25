@@ -1,10 +1,11 @@
 import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item';
 import { AntdInput } from '@/common/components/antd-input/antd-input';
-import { InputProps } from '@/common/types/input-props';
+import { InputProps as InputFieldProps } from '@/common/types/input-props';
 import { Rule } from 'antd/es/form';
-import { ReactElement } from 'react';
+import { Fragment, ReactElement } from 'react';
+import { DisplayContent } from './display-content/display-content';
 
-export const InputContent = (props: InputProps): ReactElement => {
+export const InputContent = (props: InputFieldProps): ReactElement => {
   const { name, optional } = props;
 
   const rules = [
@@ -12,8 +13,13 @@ export const InputContent = (props: InputProps): ReactElement => {
   ] as Rule[];
 
   return (
-    <AntdFormItem label='Content' name={name} rules={rules}>
-      <AntdInput />
-    </AntdFormItem>
+    <Fragment>
+      <AntdFormItem label='Content' name={name} rules={rules}>
+        <AntdInput />
+      </AntdFormItem>
+      <AntdFormItem name={name}>
+        <DisplayContent />
+      </AntdFormItem>
+    </Fragment>
   );
 };
