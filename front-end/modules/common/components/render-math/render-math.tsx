@@ -1,17 +1,15 @@
+import { pickClientServer } from '@/common/helpers/pick-client-server';
 import { RenderMathProps } from '@/common/types/render-math-props';
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
 import { ReactElement } from 'react';
+import { DisplayClient } from './display-client/display-client';
+import { DisplayServer } from './display-server/display-server';
 
 export const RenderMath = (props: RenderMathProps): ReactElement => {
   const { content } = props;
 
-  const __html = katex.renderToString(content, {
-    displayMode: true,
-    throwOnError: false
-  });
+  const Display = pickClientServer(DisplayClient, DisplayServer);
 
   return (
-    <div dangerouslySetInnerHTML={{ __html }} />
+    <Display content={content} />
   );
 };
