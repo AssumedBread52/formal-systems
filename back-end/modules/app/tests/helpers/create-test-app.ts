@@ -1,5 +1,8 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
+import { GroupingEntity } from '@/grouping/grouping.entity';
+import { GroupingModule } from '@/grouping/grouping.module';
+import { GroupingRepositoryMock } from '@/grouping/tests/mocks/grouping-repository.mock';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
 import { SymbolRepositoryMock } from '@/symbol/tests/mocks/symbol-repository.mock';
@@ -20,11 +23,12 @@ export const createTestApp = async (): Promise<INestApplication> => {
   const testingModule = await Test.createTestingModule({
     imports: [
       AuthModule,
+      GroupingModule,
       SymbolModule,
       SystemModule,
       UserModule
     ]
-  }).overrideProvider(ConfigService).useClass(ConfigServiceMock).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(SymbolRepositoryMock).overrideProvider(getRepositoryToken(SystemEntity)).useClass(SystemRepositoryMock).overrideProvider(getRepositoryToken(UserEntity)).useClass(UserRepositoryMock).compile();
+  }).overrideProvider(ConfigService).useClass(ConfigServiceMock).overrideProvider(getRepositoryToken(GroupingEntity)).useClass(GroupingRepositoryMock).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(SymbolRepositoryMock).overrideProvider(getRepositoryToken(SystemEntity)).useClass(SystemRepositoryMock).overrideProvider(getRepositoryToken(UserEntity)).useClass(UserRepositoryMock).compile();
 
   const app = testingModule.createNestApplication();
 
