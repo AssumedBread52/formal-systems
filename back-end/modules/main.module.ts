@@ -4,6 +4,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DatabaseType } from 'typeorm';
 import { AppModule } from './app/app.module';
 import { AuthModule } from './auth/auth.module';
+import { GroupingModule } from './grouping/grouping.module';
 import { CleanUpSystemSymbolsSubscriber } from './symbol/subscribers/clean-up-system-symbols.subscriber';
 import { SymbolModule } from './symbol/symbol.module';
 import { SystemSymbolCountSubscriber } from './system/subscribers/system-symbol-count.subscriber';
@@ -23,6 +24,7 @@ import { UserModule } from './user/user.module';
         'database-credentials.env'
       ]
     }),
+    GroupingModule,
     SymbolModule,
     SystemModule,
     TypeOrmModule.forRootAsync({
