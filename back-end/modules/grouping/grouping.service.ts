@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
@@ -10,8 +10,23 @@ export class GroupingService {
   constructor(@InjectRepository(GroupingEntity) private groupingRepository: MongoRepository<GroupingEntity>) {
   }
 
+  private async checkForConflict(title: string, parentId: ObjectId): Promise<void> {
+    const collision = await this.groupingRepository.findOneBy({
+      title,
+      parentId
+    });
+
+    if (collision) {
+      throw new ConflictException('Groupings under the same parent must have unique titles.');
+    }
+  }
+
   async create(newGroupingPayload: NewGroupingPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<GroupingEntity> {
     const { title, description, parentId } = newGroupingPayload;
+
+    if (parentId) {
+      await this.checkForConflict(title, parentId);
+    }
 
     const grouping = new GroupingEntity();
 

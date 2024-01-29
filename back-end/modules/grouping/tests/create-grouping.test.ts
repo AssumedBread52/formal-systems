@@ -130,6 +130,39 @@ describe('Create Grouping', (): void => {
     });
   });
 
+  it('fails with a title conflict', async (): Promise<void> => {
+    const testUser = new UserEntity();
+    const testSystem = new SystemEntity();
+
+    const { _id, createdByUserId } = testSystem;
+
+    testUser._id = createdByUserId;
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
+
+    const token = await app.get(AuthService).generateToken(createdByUserId);
+
+    const response = await request(app.getHttpServer()).post(`/system/${_id}/grouping`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.',
+      parentId: new ObjectId()
+    });
+
+    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+      error: 'Conflict',
+      message: 'Groupings under the same parent must have unique titles.',
+      statusCode: HttpStatus.CONFLICT
+    });
+  });
+
   it('fails with a missing parent', async (): Promise<void> => {
     const testUser = new UserEntity();
     const testSystem = new SystemEntity();
@@ -175,7 +208,7 @@ describe('Create Grouping', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
     systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null).mockReturnValueOnce(new GroupingEntity());
 
     const token = await app.get(AuthService).generateToken(createdByUserId);
 
