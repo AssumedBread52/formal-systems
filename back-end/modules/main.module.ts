@@ -5,7 +5,9 @@ import { DatabaseType } from 'typeorm';
 import { AppModule } from './app/app.module';
 import { AuthModule } from './auth/auth.module';
 import { GroupingModule } from './grouping/grouping.module';
+import { CleanUpSystemGroupingsSubscriber } from './grouping/subscribers/clean-up-system-groupings.subscriber';
 import { StatementModule } from './statement/statement.module';
+import { CleanUpSystemStatementsSubscriber } from './statement/subscribers/clean-up-system-statements.subscriber';
 import { CleanUpSystemSymbolsSubscriber } from './symbol/subscribers/clean-up-system-symbols.subscriber';
 import { SymbolModule } from './symbol/symbol.module';
 import { SystemSymbolCountSubscriber } from './system/subscribers/system-symbol-count.subscriber';
@@ -50,6 +52,8 @@ import { UserModule } from './user/user.module';
         const url = `${scheme}://${username}:${encodeURIComponent(password)}@${host}:${port}/${name}?authSource=admin`;
 
         const subscribers = [
+          CleanUpSystemGroupingsSubscriber,
+          CleanUpSystemStatementsSubscriber,
           CleanUpSystemSymbolsSubscriber,
           SystemSymbolCountSubscriber,
           UserSymbolCountSubscriber,
