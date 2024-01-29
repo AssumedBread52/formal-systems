@@ -10,8 +10,10 @@ import { StatementModule } from './statement/statement.module';
 import { CleanUpSystemStatementsSubscriber } from './statement/subscribers/clean-up-system-statements.subscriber';
 import { CleanUpSystemSymbolsSubscriber } from './symbol/subscribers/clean-up-system-symbols.subscriber';
 import { SymbolModule } from './symbol/symbol.module';
+import { SystemStatementCountSubscriber } from './system/subscribers/system-statement-count.subscriber';
 import { SystemSymbolCountSubscriber } from './system/subscribers/system-symbol-count.subscriber';
 import { SystemModule } from './system/system.module';
+import { UserStatementCountSubscriber } from './user/subscribers/user-statement-count.subscriber';
 import { UserSymbolCountSubscriber } from './user/subscribers/user-symbol-count.subscriber';
 import { UserSystemCountSubscriber } from './user/subscribers/user-system-count.subscriber';
 import { UserModule } from './user/user.module';
@@ -55,7 +57,9 @@ import { UserModule } from './user/user.module';
           CleanUpSystemGroupingsSubscriber,
           CleanUpSystemStatementsSubscriber,
           CleanUpSystemSymbolsSubscriber,
+          SystemStatementCountSubscriber,
           SystemSymbolCountSubscriber,
+          UserStatementCountSubscriber,
           UserSymbolCountSubscriber,
           UserSystemCountSubscriber
         ];
