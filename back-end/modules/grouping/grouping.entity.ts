@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
-@Entity('statement')
+@Entity('grouping')
 export class GroupingEntity {
   @ObjectIdColumn()
   _id: ObjectId = new ObjectId();
