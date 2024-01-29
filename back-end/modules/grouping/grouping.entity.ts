@@ -10,7 +10,7 @@ export class GroupingEntity {
   @Column()
   description: string = '';
   @Column()
-  groupingId: ObjectId | null = null;
+  parentId: ObjectId | null = null;
   @Column()
   ancestorIds: ObjectId[] = [];
   @Column()
