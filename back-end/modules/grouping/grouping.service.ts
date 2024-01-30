@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 import { GroupingEntity } from './grouping.entity';
+import { EditGroupingPayload } from './payloads/edit-grouping.payload';
 import { NewGroupingPayload } from './payloads/new-grouping.payload';
 
 @Injectable()
@@ -22,9 +23,9 @@ export class GroupingService {
   }
 
   async create(newGroupingPayload: NewGroupingPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<GroupingEntity> {
-    const { title, description, parentId } = newGroupingPayload;
+    const { title, description, parentId: parentId = null } = newGroupingPayload;
 
-    await this.checkForConflict(title, parentId ?? null);
+    await this.checkForConflict(title, parentId);
 
     const grouping = new GroupingEntity();
 
@@ -39,11 +40,42 @@ export class GroupingService {
       if (!parent) {
         throw new NotFoundException('Parent not found within the formal system.');
       }
-
-      grouping.parentId = parentId;
     }
+    grouping.parentId = parentId;
     grouping.systemId = systemId;
     grouping.createdByUserId = sessionUserId;
+
+    return this.groupingRepository.save(grouping);
+  }
+
+  readById(systemId: ObjectId, groupingId: ObjectId): Promise<GroupingEntity | null> {
+    return this.groupingRepository.findOneBy({
+      _id: groupingId,
+      systemId
+    });
+  }
+
+  async update(grouping: GroupingEntity, editGroupingPayload: EditGroupingPayload): Promise<GroupingEntity> {
+    const { newTitle, newDescription, newParentId: newParentId = null } = editGroupingPayload;
+    const { title, parentId, systemId } = grouping;
+
+    if (title !== newTitle || parentId !== newParentId) {
+      await this.checkForConflict(newTitle, newParentId);
+    }
+
+    grouping.title = newTitle;
+    grouping.description = newDescription;
+    if (newParentId) {
+      const newParent = await this.groupingRepository.findOneBy({
+        _id: newParentId,
+        systemId
+      });
+
+      if (!newParent) {
+        throw new NotFoundException('New parent not found within the formal system.');
+      }
+    }
+    grouping.parentId = newParentId;
 
     return this.groupingRepository.save(grouping);
   }
