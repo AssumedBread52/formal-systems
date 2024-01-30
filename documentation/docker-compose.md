@@ -2,7 +2,7 @@
 
 This is a tool that comes installed with Docker Desktop for Windows. This greatly simplifies management of docker containers. Many commonly used docker commands require a considerable number of arguments dictating port exposure, volumes, etc. A docker-compose.yaml file allows up to put all that in a file as a part of the project. NOTE: docker-compose isn't really used for production.
 
-## Environment Variables
+## Environment variables
 
 Environment variable files will be used over putting the environment variables in the docker compose configuration file. This puts environment variables near where they are used which is more cohesive.
 
