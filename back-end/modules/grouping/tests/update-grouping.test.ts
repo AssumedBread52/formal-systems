@@ -201,6 +201,41 @@ describe('Update Grouping', (): void => {
     });
   });
 
+  it('fails when changing parent to itself', async (): Promise<void> => {
+    const parentGrouping = new GroupingEntity();
+    const testGrouping = new GroupingEntity();
+    const testUser = new UserEntity();
+
+    const { _id, systemId, createdByUserId } = testGrouping;
+
+    parentGrouping.ancestorIds = [_id];
+    testUser._id = createdByUserId;
+
+    const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(testGrouping);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(parentGrouping);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+
+    const token = await app.get(AuthService).generateToken(createdByUserId);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/grouping/${_id}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'Test',
+      newDescription: 'This is a test.',
+      newParentId: new ObjectId()
+    });
+
+    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+      error: 'Conflict',
+      message: 'Groupings cannot be included in their own groupings or subgroupings.',
+      statusCode: HttpStatus.CONFLICT
+    });
+  });
+
   it('succeeds', async (): Promise<void> => {
     const testGrouping = new GroupingEntity();
     const testUser = new UserEntity();
