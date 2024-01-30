@@ -91,4 +91,34 @@ export class GroupingService {
 
     return this.groupingRepository.save(grouping);
   }
+
+  async delete(grouping: GroupingEntity): Promise<GroupingEntity> {
+    const { _id } = grouping;
+
+    const subgroupings = await this.groupingRepository.findBy({
+      ancestorIds: _id
+    });
+
+    const newSubgroupings = subgroupings.map((subgrouping: GroupingEntity): GroupingEntity => {
+      subgrouping.ancestorIds = subgrouping.ancestorIds.filter((ancestorId: ObjectId): boolean => {
+        return _id !== ancestorId;
+      });
+
+      if (subgrouping.parentId === _id) {
+        if (subgrouping.ancestorIds.length > 0) {
+          subgrouping.parentId = subgrouping.ancestorIds[subgrouping.ancestorIds.length - 1];
+        } else {
+          subgrouping.parentId = null;
+        }
+      }
+
+      return subgrouping;
+    });
+
+    if (newSubgroupings.length > 0) {
+      await this.groupingRepository.save(newSubgroupings);
+    }
+
+    return this.groupingRepository.remove(grouping);
+  }
 };

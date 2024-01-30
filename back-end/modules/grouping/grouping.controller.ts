@@ -3,7 +3,7 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, ForbiddenException, NotFoundException, Patch, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, NotFoundException, Patch, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { GroupingService } from './grouping.service';
 import { EditGroupingPayload } from './payloads/edit-grouping.payload';
@@ -12,6 +12,26 @@ import { NewGroupingPayload } from './payloads/new-grouping.payload';
 @Controller('system/:systemId/grouping')
 export class GroupingController {
   constructor(private groupingService: GroupingService, private systemService: SystemService) {
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete(':groupingId')
+  async deleteStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('groupingId') groupingId: ObjectId): Promise<IdPayload> {
+    const grouping = await this.groupingService.readById(systemId, groupingId);
+
+    if (!grouping) {
+      return new IdPayload(groupingId);
+    }
+
+    const { createdByUserId } = grouping;
+
+    if (createdByUserId.toString() !== sessionUserId.toString()) {
+      throw new ForbiddenException('You cannot delete a grouping unless you created it.');
+    }
+
+    await this.groupingService.delete(grouping);
+
+    return new IdPayload(groupingId);
   }
 
   @UseGuards(JwtGuard)
