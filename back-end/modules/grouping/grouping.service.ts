@@ -84,6 +84,8 @@ export class GroupingService {
       }
 
       grouping.ancestorIds = newAncestorIds;
+    } else {
+      grouping.ancestorIds = [];
     }
     grouping.parentId = newParentId;
 
