@@ -34,45 +34,24 @@ describe('Create Grouping', (): void => {
     await testInvalidToken(app, 'post', `/system/${new ObjectId()}/grouping`);
   });
 
-  it('fails with an invalid payload (missing data)', async (): Promise<void> => {
-    const token = await app.get(AuthService).generateToken(new ObjectId());
-
+  it('fails with an invalid payload', async (): Promise<void> => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
 
-    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/grouping`).set('Cookie', [
-      `token=${token}`
-    ]);
-
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
-      error: 'Bad Request',
-      message: [
-        'title should not be empty',
-        'description should not be empty'
-      ],
-      statusCode: HttpStatus.BAD_REQUEST
-    });
-  });
-
-  it('fails with an invalid payload (bad parent id)', async (): Promise<void> => {
     const token = await app.get(AuthService).generateToken(new ObjectId());
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
 
     const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/grouping`).set('Cookie', [
       `token=${token}`
     ]).send({
-      title: 'Test',
-      description: 'This is a test',
       parentId: ''
     });
 
     expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
       error: 'Bad Request',
       message: [
+        'title should not be empty',
+        'description should not be empty',
         'parentId must be a mongodb id'
       ],
       statusCode: HttpStatus.BAD_REQUEST
@@ -80,11 +59,11 @@ describe('Create Grouping', (): void => {
   });
 
   it('fails if system does not exist', async (): Promise<void> => {
-    const token = await app.get(AuthService).generateToken(new ObjectId());
-
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+
+    const token = await app.get(AuthService).generateToken(new ObjectId());
 
     const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/grouping`).set('Cookie', [
       `token=${token}`
@@ -208,7 +187,8 @@ describe('Create Grouping', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
     systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null).mockReturnValueOnce(new GroupingEntity());
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
 
     const token = await app.get(AuthService).generateToken(createdByUserId);
 
