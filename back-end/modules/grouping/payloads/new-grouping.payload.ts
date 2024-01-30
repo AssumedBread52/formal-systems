@@ -6,7 +6,7 @@ export class NewGroupingPayload {
   title: string = '';
   @IsNotEmpty()
   description: string = '';
-  @IsOptional()
   @IsMongoId()
+  @IsOptional()
   parentId?: ObjectId;
 };
