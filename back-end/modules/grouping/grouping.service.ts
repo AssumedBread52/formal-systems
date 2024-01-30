@@ -40,6 +40,8 @@ export class GroupingService {
       if (!parent) {
         throw new NotFoundException('Parent not found within the formal system.');
       }
+
+      grouping.ancestorIds = parent.ancestorIds.concat([parentId]);
     }
     grouping.parentId = parentId;
     grouping.systemId = systemId;
