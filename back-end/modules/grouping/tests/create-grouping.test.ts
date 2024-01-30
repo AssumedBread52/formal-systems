@@ -203,6 +203,35 @@ describe('Create Grouping', (): void => {
     expectCorrectResponse(response, HttpStatus.CREATED, {});
   });
 
+  it('succeeds (without a parent ID)', async (): Promise<void> => {
+    const testUser = new UserEntity();
+    const testSystem = new SystemEntity();
+
+    const { _id, createdByUserId } = testSystem;
+
+    testUser._id = createdByUserId;
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
+
+    const token = await app.get(AuthService).generateToken(createdByUserId);
+
+    const response = await request(app.getHttpServer()).post(`/system/${_id}/grouping`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.'
+    });
+
+    expectCorrectResponse(response, HttpStatus.CREATED, {});
+  });
+
   afterAll(async (): Promise<void> => {
     await app.close();
   });
