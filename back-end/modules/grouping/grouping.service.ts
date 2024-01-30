@@ -10,7 +10,7 @@ export class GroupingService {
   constructor(@InjectRepository(GroupingEntity) private groupingRepository: MongoRepository<GroupingEntity>) {
   }
 
-  private async checkForConflict(title: string, parentId: ObjectId): Promise<void> {
+  private async checkForConflict(title: string, parentId: ObjectId | null): Promise<void> {
     const collision = await this.groupingRepository.findOneBy({
       title,
       parentId
@@ -24,9 +24,7 @@ export class GroupingService {
   async create(newGroupingPayload: NewGroupingPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<GroupingEntity> {
     const { title, description, parentId } = newGroupingPayload;
 
-    if (parentId) {
-      await this.checkForConflict(title, parentId);
-    }
+    await this.checkForConflict(title, parentId ?? null);
 
     const grouping = new GroupingEntity();
 
