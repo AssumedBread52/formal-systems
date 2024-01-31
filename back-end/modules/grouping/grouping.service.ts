@@ -18,7 +18,7 @@ export class GroupingService {
     });
 
     if (collision) {
-      throw new ConflictException('Groupings under the same parent must have unique titles.');
+      throw new ConflictException('Groupings within a formal system must have unique titles.');
     }
   }
 
