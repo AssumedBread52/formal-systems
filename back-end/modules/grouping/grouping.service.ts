@@ -23,7 +23,7 @@ export class GroupingService {
   }
 
   async create(newGroupingPayload: NewGroupingPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<GroupingEntity> {
-    const { title, description, parentId: parentId = null } = newGroupingPayload;
+    const { title, description, parentId = null } = newGroupingPayload;
 
     await this.checkForConflict(title, systemId);
 
@@ -58,7 +58,7 @@ export class GroupingService {
   }
 
   async update(grouping: GroupingEntity, editGroupingPayload: EditGroupingPayload): Promise<GroupingEntity> {
-    const { newTitle, newDescription, newParentId: newParentId = null } = editGroupingPayload;
+    const { newTitle, newDescription, newParentId = null } = editGroupingPayload;
     const { _id, title, systemId } = grouping;
 
     if (title !== newTitle) {
