@@ -11,10 +11,10 @@ export class GroupingService {
   constructor(@InjectRepository(GroupingEntity) private groupingRepository: MongoRepository<GroupingEntity>) {
   }
 
-  private async checkForConflict(title: string, parentId: ObjectId | null): Promise<void> {
+  private async checkForConflict(title: string, systemId: ObjectId): Promise<void> {
     const collision = await this.groupingRepository.findOneBy({
       title,
-      parentId
+      systemId
     });
 
     if (collision) {
@@ -25,7 +25,7 @@ export class GroupingService {
   async create(newGroupingPayload: NewGroupingPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<GroupingEntity> {
     const { title, description, parentId: parentId = null } = newGroupingPayload;
 
-    await this.checkForConflict(title, parentId);
+    await this.checkForConflict(title, systemId);
 
     const grouping = new GroupingEntity();
 
@@ -59,10 +59,10 @@ export class GroupingService {
 
   async update(grouping: GroupingEntity, editGroupingPayload: EditGroupingPayload): Promise<GroupingEntity> {
     const { newTitle, newDescription, newParentId: newParentId = null } = editGroupingPayload;
-    const { _id, title, parentId, systemId } = grouping;
+    const { _id, title, systemId } = grouping;
 
-    if (title !== newTitle || parentId !== newParentId) {
-      await this.checkForConflict(newTitle, newParentId);
+    if (title !== newTitle) {
+      await this.checkForConflict(newTitle, systemId);
     }
 
     grouping.title = newTitle;
