@@ -26,7 +26,7 @@ export class SystemController {
 
     const { createdByUserId } = system;
 
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
+    if (sessionUserId.toString() !== createdByUserId.toString()) {
       throw new ForbiddenException('You cannot delete a system unless you created it.');
     }
 
