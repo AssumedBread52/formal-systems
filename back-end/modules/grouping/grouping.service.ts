@@ -88,6 +88,24 @@ export class GroupingService {
       } else {
         grouping.ancestorIds = [];
       }
+
+      const subgroupings = await this.groupingRepository.findBy({
+        ancestorIds: _id
+      });
+
+      if (subgroupings.length > 0) {
+        const newSubgroupings = subgroupings.map((subgrouping: GroupingEntity): GroupingEntity => {
+          const groupingIndex = subgrouping.ancestorIds.findIndex((ancestorId: ObjectId): boolean => {
+            return _id === ancestorId;
+          });
+
+          subgrouping.ancestorIds.splice(0, groupingIndex, ...grouping.ancestorIds);
+
+          return subgrouping;
+        });
+
+        await this.groupingRepository.save(newSubgroupings);
+      }
     }
     grouping.parentId = newParentId;
 
