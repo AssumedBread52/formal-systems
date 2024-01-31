@@ -99,23 +99,23 @@ export class GroupingService {
       ancestorIds: _id
     });
 
-    const newSubgroupings = subgroupings.map((subgrouping: GroupingEntity): GroupingEntity => {
-      subgrouping.ancestorIds = subgrouping.ancestorIds.filter((ancestorId: ObjectId): boolean => {
-        return _id !== ancestorId;
+    if (subgroupings.length > 0) {
+      const newSubgroupings = subgroupings.map((subgrouping: GroupingEntity): GroupingEntity => {
+        subgrouping.ancestorIds = subgrouping.ancestorIds.filter((ancestorId: ObjectId): boolean => {
+          return _id !== ancestorId;
+        });
+
+        if (subgrouping.parentId === _id) {
+          if (subgrouping.ancestorIds.length > 0) {
+            subgrouping.parentId = subgrouping.ancestorIds[subgrouping.ancestorIds.length - 1];
+          } else {
+            subgrouping.parentId = null;
+          }
+        }
+
+        return subgrouping;
       });
 
-      if (subgrouping.parentId === _id) {
-        if (subgrouping.ancestorIds.length > 0) {
-          subgrouping.parentId = subgrouping.ancestorIds[subgrouping.ancestorIds.length - 1];
-        } else {
-          subgrouping.parentId = null;
-        }
-      }
-
-      return subgrouping;
-    });
-
-    if (newSubgroupings.length > 0) {
       await this.groupingRepository.save(newSubgroupings);
     }
 
