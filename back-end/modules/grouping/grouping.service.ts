@@ -81,7 +81,7 @@ export class GroupingService {
         const newAncestorIds = newParent.ancestorIds.concat([newParentId]);
 
         if (newAncestorIds.includes(_id)) {
-          throw new ConflictException('Groupings cannot be included in their own groupings or subgroupings.');
+          throw new ConflictException('Groupings cannot be their own descendants.');
         }
 
         grouping.ancestorIds = newAncestorIds;
