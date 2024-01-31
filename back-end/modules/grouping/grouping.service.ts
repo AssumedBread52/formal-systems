@@ -59,7 +59,7 @@ export class GroupingService {
 
   async update(grouping: GroupingEntity, editGroupingPayload: EditGroupingPayload): Promise<GroupingEntity> {
     const { newTitle, newDescription, newParentId = null } = editGroupingPayload;
-    const { _id, title, systemId } = grouping;
+    const { _id, title, parentId, systemId } = grouping;
 
     if (title !== newTitle) {
       await this.checkForConflict(newTitle, systemId);
@@ -67,25 +67,27 @@ export class GroupingService {
 
     grouping.title = newTitle;
     grouping.description = newDescription;
-    if (newParentId) {
-      const newParent = await this.groupingRepository.findOneBy({
-        _id: newParentId,
-        systemId
-      });
+    if (newParentId !== parentId) {
+      if (newParentId) {
+        const newParent = await this.groupingRepository.findOneBy({
+          _id: newParentId,
+          systemId
+        });
 
-      if (!newParent) {
-        throw new NotFoundException('New parent not found within the formal system.');
+        if (!newParent) {
+          throw new NotFoundException('New parent not found within the formal system.');
+        }
+
+        const newAncestorIds = newParent.ancestorIds.concat([newParentId]);
+
+        if (newAncestorIds.includes(_id)) {
+          throw new ConflictException('Groupings cannot be included in their own groupings or subgroupings.');
+        }
+
+        grouping.ancestorIds = newAncestorIds;
+      } else {
+        grouping.ancestorIds = [];
       }
-
-      const newAncestorIds = newParent.ancestorIds.concat([newParentId]);
-
-      if (newAncestorIds.includes(_id)) {
-        throw new ConflictException('Groupings cannot be included in their own groupings or subgroupings.');
-      }
-
-      grouping.ancestorIds = newAncestorIds;
-    } else {
-      grouping.ancestorIds = [];
     }
     grouping.parentId = newParentId;
 
