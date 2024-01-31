@@ -16,7 +16,7 @@ export class GroupingController {
 
   @UseGuards(JwtGuard)
   @Delete(':groupingId')
-  async deleteStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('groupingId') groupingId: ObjectId): Promise<IdPayload> {
+  async deleteGrouping(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('groupingId') groupingId: ObjectId): Promise<IdPayload> {
     const grouping = await this.groupingService.readById(systemId, groupingId);
 
     if (!grouping) {
@@ -25,7 +25,7 @@ export class GroupingController {
 
     const { createdByUserId } = grouping;
 
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
+    if (sessionUserId.toString() !== createdByUserId.toString()) {
       throw new ForbiddenException('You cannot delete a grouping unless you created it.');
     }
 
@@ -36,7 +36,7 @@ export class GroupingController {
 
   @UseGuards(JwtGuard)
   @Patch(':groupingId')
-  async patchStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('groupingId') groupingId: ObjectId, @Body(ValidationPipe) editGroupingPayload: EditGroupingPayload): Promise<IdPayload> {
+  async patchGrouping(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('groupingId') groupingId: ObjectId, @Body(ValidationPipe) editGroupingPayload: EditGroupingPayload): Promise<IdPayload> {
     const grouping = await this.groupingService.readById(systemId, groupingId);
 
     if (!grouping) {
@@ -63,12 +63,12 @@ export class GroupingController {
       throw new NotFoundException('Groupings cannot be added to formal systems that do not exist.');
     }
 
-    const { _id, createdByUserId } = system;
+    const { createdByUserId } = system;
 
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
+    if (sessionUserId.toString() !== createdByUserId.toString()) {
       throw new ForbiddenException('Groupings cannot be added to formal systems unless you created them.');
     }
 
-    await this.groupingService.create(newGroupingPayload, _id, sessionUserId);
+    await this.groupingService.create(newGroupingPayload, systemId, sessionUserId);
   }
 };
