@@ -60,19 +60,22 @@ describe('Create Grouping', (): void => {
     });
   });
 
-  it('fails if system does not exist', async (): Promise<void> => {
+  it('fails if the system does not exist', async (): Promise<void> => {
+    const user = new UserEntity();
+
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/grouping`).set('Cookie', [
       `token=${token}`
     ]).send({
       title: 'Test',
-      description: 'This is a test.',
-      parentId: new ObjectId()
+      description: 'This is a test.'
     });
 
     expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
@@ -82,26 +85,23 @@ describe('Create Grouping', (): void => {
     });
   });
 
-  it('fails if user did not create the system', async (): Promise<void> => {
-    const testUser = new UserEntity();
-    const testSystem = new SystemEntity();
+  it('fails if the user did not create the system', async (): Promise<void> => {
+    const system = new SystemEntity();
+    const user = new UserEntity();
 
-    const { _id, createdByUserId } = testSystem;
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).post(`/system/${_id}/grouping`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/grouping`).set('Cookie', [
       `token=${token}`
     ]).send({
       title: 'Test',
-      description: 'This is a test.',
-      parentId: new ObjectId()
+      description: 'This is a test.'
     });
 
     expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
@@ -111,35 +111,35 @@ describe('Create Grouping', (): void => {
     });
   });
 
-  it('fails with a title conflict', async (): Promise<void> => {
-    const testUser = new UserEntity();
-    const testSystem = new SystemEntity();
+  it('fails if the title is not unqiue', async (): Promise<void> => {
+    const grouping = new GroupingEntity();
+    const system = new SystemEntity();
+    const user = new UserEntity();
 
-    const { _id, createdByUserId } = testSystem;
+    grouping.createdByUserId = user._id;
+    grouping.systemId = system._id;
+    system.createdByUserId = user._id;
 
-    testUser._id = createdByUserId;
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).post(`/system/${_id}/grouping`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/grouping`).set('Cookie', [
       `token=${token}`
     ]).send({
       title: 'Test',
-      description: 'This is a test.',
-      parentId: new ObjectId()
+      description: 'This is a test.'
     });
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Groupings under the same parent must have unique titles.',
+      message: 'Groupings within a formal system must have unique titles.',
       statusCode: HttpStatus.CONFLICT
     });
   });
