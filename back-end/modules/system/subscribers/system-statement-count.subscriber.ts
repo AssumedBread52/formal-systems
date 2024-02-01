@@ -21,7 +21,7 @@ export class SystemStatementCountSubscriber implements EntitySubscriberInterface
     });
 
     if (!system) {
-      throw new NotFoundException('Formal system not found.');
+      throw new NotFoundException('System not found.');
     }
 
     system.axiomCount++;
@@ -41,7 +41,7 @@ export class SystemStatementCountSubscriber implements EntitySubscriberInterface
     });
 
     if (!system) {
-      throw new NotFoundException('Formal system not found.');
+      throw new NotFoundException('System not found.');
     }
 
     system.axiomCount--;
