@@ -171,22 +171,23 @@ describe('Create Grouping', (): void => {
   });
 
   it('fails with a missing parent', async (): Promise<void> => {
-    const testUser = new UserEntity();
-    const testSystem = new SystemEntity();
+    const system = new SystemEntity();
+    const user = new UserEntity();
 
-    const { _id, createdByUserId } = testSystem;
+    system.createdByUserId = user._id;
 
-    testUser._id = createdByUserId;
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).post(`/system/${_id}/grouping`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/grouping`).set('Cookie', [
       `token=${token}`
     ]).send({
       title: 'Test',
@@ -202,25 +203,26 @@ describe('Create Grouping', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const testUser = new UserEntity();
-    const testSystem = new SystemEntity();
+    const grouping = new GroupingEntity();
+    const system = new SystemEntity();
+    const user = new UserEntity();
 
-    const { _id, createdByUserId } = testSystem;
+    grouping.systemId = system._id;
+    grouping.createdByUserId = user._id;
+    system.createdByUserId = user._id;
 
-    testUser._id = createdByUserId;
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
     groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).post(`/system/${_id}/grouping`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/grouping`).set('Cookie', [
       `token=${token}`
     ]).send({
       title: 'Test',
