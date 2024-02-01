@@ -1,5 +1,3 @@
-// import { StatementRepositoryMock } from './mocks/statement-repository.mock';
-
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { AuthService } from '@/auth/auth.service';
 import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
@@ -35,11 +33,13 @@ describe('Update Grouping', (): void => {
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
+    const user = new UserEntity();
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/grouping/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
@@ -58,19 +58,22 @@ describe('Update Grouping', (): void => {
     });
   });
 
-  it('fails when updating a grouping that does not exist', async (): Promise<void> => {
+  it('fails when attempting to update a grouping that does not exist', async (): Promise<void> => {
+    const user = new UserEntity();
+
+    const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/grouping/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
     ]).send({
       newTitle: 'Test',
-      newDescription: 'This is a test.',
-      newParentId: new ObjectId()
+      newDescription: 'This is a test.'
     });
 
     expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
@@ -80,21 +83,23 @@ describe('Update Grouping', (): void => {
     });
   });
 
-  it('fails when updating a grouping the user did not create', async (): Promise<void> => {
+  it('fails when attempting to update a grouping the user did not create', async (): Promise<void> => {
+    const grouping = new GroupingEntity();
+    const user = new UserEntity();
+
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/grouping/${new ObjectId()}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
       newTitle: 'Test',
-      newDescription: 'This is a test.',
-      newParentId: new ObjectId()
+      newDescription: 'This is a test.'
     });
 
     expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
@@ -104,89 +109,83 @@ describe('Update Grouping', (): void => {
     });
   });
 
-  it('fails when a title change conflicts', async (): Promise<void> => {
-    const testGrouping = new GroupingEntity();
-    const testUser = new UserEntity();
+  it('fails when new title conflicts with an existing title', async (): Promise<void> => {
+    const conflictGrouping = new GroupingEntity();
+    const grouping = new GroupingEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testGrouping;
-
-    testUser._id = createdByUserId;
+    conflictGrouping.title = 'Test';
+    conflictGrouping.createdByUserId = user._id;
+    grouping.systemId = conflictGrouping.systemId;
+    grouping.createdByUserId = user._id;
 
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(testGrouping);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(conflictGrouping);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/grouping/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
       newTitle: 'Test',
-      newDescription: 'This is a test.',
-      newParentId: new ObjectId()
+      newDescription: 'This is a test.'
     });
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Groupings under the same parent must have unique titles.',
+      message: 'Groupings within a formal system must have unique titles.',
       statusCode: HttpStatus.CONFLICT
     });
   });
 
-  it('fails when a parent change conflicts', async (): Promise<void> => {
-    const testGrouping = new GroupingEntity();
-    const testUser = new UserEntity();
+  it('succeeds without a parent ID change', async (): Promise<void> => {
+    const grouping = new GroupingEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testGrouping;
-
-    testGrouping.title = 'Test';
-    testUser._id = createdByUserId;
+    grouping.createdByUserId = user._id;
 
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(testGrouping);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
-
-    const token = await app.get(AuthService).generateToken(createdByUserId);
-
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/grouping/${_id}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newTitle: 'Test',
-      newDescription: 'This is a test.',
-      newParentId: new ObjectId()
-    });
-
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
-      error: 'Conflict',
-      message: 'Groupings under the same parent must have unique titles.',
-      statusCode: HttpStatus.CONFLICT
-    });
-  });
-
-  it('fails when new parent does not exist', async (): Promise<void> => {
-    const testGrouping = new GroupingEntity();
-    const testUser = new UserEntity();
-
-    const { _id, systemId, createdByUserId } = testGrouping;
-
-    testUser._id = createdByUserId;
-
-    const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(testGrouping);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
     groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/grouping/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'Test',
+      newDescription: 'This is a test.'
+    });
+
+    expectCorrectResponse(response, HttpStatus.OK, {
+      id: grouping._id.toString()
+    });
+  });
+
+  it('fails with a missing parent', async (): Promise<void> => {
+    const grouping = new GroupingEntity();
+    const user = new UserEntity();
+
+    grouping.createdByUserId = user._id;
+
+    const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
       newTitle: 'Test',
@@ -201,91 +200,107 @@ describe('Update Grouping', (): void => {
     });
   });
 
-  it('fails when changing parent to itself', async (): Promise<void> => {
-    const parentGrouping = new GroupingEntity();
-    const testGrouping = new GroupingEntity();
-    const testUser = new UserEntity();
+  it('fails if new parent is a subgrouping of current grouping', async (): Promise<void> => {
+    const grouping = new GroupingEntity();
+    const subGrouping = new GroupingEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testGrouping;
-
-    parentGrouping.ancestorIds = [_id];
-    testUser._id = createdByUserId;
+    grouping.createdByUserId = user._id;
+    subGrouping.parentId = grouping._id;
+    subGrouping.ancestorIds = [grouping._id];
+    subGrouping.systemId = grouping.systemId;
+    subGrouping.createdByUserId = user._id;
 
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(testGrouping);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
     groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(parentGrouping);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(subGrouping);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/grouping/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
       newTitle: 'Test',
       newDescription: 'This is a test.',
-      newParentId: new ObjectId()
+      newParentId: subGrouping._id
     });
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Groupings cannot be included in their own groupings or subgroupings.',
+      message: 'Groupings cannot be their own descendants.',
       statusCode: HttpStatus.CONFLICT
     });
   });
 
-  it('succeeds', async (): Promise<void> => {
-    const testGrouping = new GroupingEntity();
-    const testUser = new UserEntity();
+  it('succeeds when going from root grouping to subgrouping', async (): Promise<void> => {
+    const newParentGrouping = new GroupingEntity();
+    const grouping = new GroupingEntity();
+    const subGrouping = new GroupingEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testGrouping;
-
-    testUser._id = createdByUserId;
+    newParentGrouping.createdByUserId = user._id;
+    grouping.systemId = newParentGrouping.systemId;
+    grouping.createdByUserId = user._id;
+    subGrouping.parentId = grouping._id;
+    subGrouping.ancestorIds = [grouping._id];
+    subGrouping.systemId = grouping.systemId;
+    subGrouping.createdByUserId = user._id;
 
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(testGrouping);
+    groupingRepositoryMock.findBy.mockReturnValueOnce([subGrouping]);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
     groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(newParentGrouping);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/grouping/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
       newTitle: 'Test',
       newDescription: 'This is a test.',
-      newParentId: new ObjectId()
+      newParentId: newParentGrouping._id
     });
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: _id.toString()
+      id: grouping._id.toString()
     });
   });
 
-  it('succeeds (without a new parent ID)', async (): Promise<void> => {
-    const testGrouping = new GroupingEntity();
-    const testUser = new UserEntity();
+  it('succeeds when going from subgrouping to root grouping', async (): Promise<void> => {
+    const parentGrouping = new GroupingEntity();
+    const grouping = new GroupingEntity();
+    const subGrouping = new GroupingEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testGrouping;
-
-    testUser._id = createdByUserId;
+    parentGrouping.createdByUserId = user._id;
+    grouping.parentId = parentGrouping._id;
+    grouping.ancestorIds = [parentGrouping._id];
+    grouping.systemId = parentGrouping.systemId;
+    grouping.createdByUserId = user._id;
+    subGrouping.parentId = grouping._id;
+    subGrouping.ancestorIds = [parentGrouping._id, grouping._id];
+    subGrouping.systemId = grouping.systemId;
+    subGrouping.createdByUserId = user._id;
 
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(testGrouping);
+    groupingRepositoryMock.findBy.mockReturnValueOnce([subGrouping]);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
     groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/grouping/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
       newTitle: 'Test',
@@ -293,7 +308,7 @@ describe('Update Grouping', (): void => {
     });
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: _id.toString()
+      id: grouping._id.toString()
     });
   });
 
