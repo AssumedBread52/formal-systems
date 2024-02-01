@@ -35,11 +35,13 @@ describe('Create Grouping', (): void => {
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
+    const user = new UserEntity();
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/grouping`).set('Cookie', [
       `token=${token}`
