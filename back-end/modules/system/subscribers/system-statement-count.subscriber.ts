@@ -41,7 +41,7 @@ export class SystemStatementCountSubscriber implements EntitySubscriberInterface
     });
 
     if (!system) {
-      throw new NotFoundException('System not found.');
+      return;
     }
 
     system.axiomCount--;
