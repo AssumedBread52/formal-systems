@@ -144,6 +144,32 @@ describe('Create Grouping', (): void => {
     });
   });
 
+  it('succeeds (with no parent ID)', async (): Promise<void> => {
+    const system = new SystemEntity();
+    const user = new UserEntity();
+
+    system.createdByUserId = user._id;
+
+    const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/grouping`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.'
+    });
+
+    expectCorrectResponse(response, HttpStatus.CREATED, {});
+  });
+
   it('fails with a missing parent', async (): Promise<void> => {
     const testUser = new UserEntity();
     const testSystem = new SystemEntity();
@@ -200,35 +226,6 @@ describe('Create Grouping', (): void => {
       title: 'Test',
       description: 'This is a test.',
       parentId: new ObjectId()
-    });
-
-    expectCorrectResponse(response, HttpStatus.CREATED, {});
-  });
-
-  it('succeeds (without a parent ID)', async (): Promise<void> => {
-    const testUser = new UserEntity();
-    const testSystem = new SystemEntity();
-
-    const { _id, createdByUserId } = testSystem;
-
-    testUser._id = createdByUserId;
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(new GroupingEntity());
-
-    const token = await app.get(AuthService).generateToken(createdByUserId);
-
-    const response = await request(app.getHttpServer()).post(`/system/${_id}/grouping`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      title: 'Test',
-      description: 'This is a test.'
     });
 
     expectCorrectResponse(response, HttpStatus.CREATED, {});
