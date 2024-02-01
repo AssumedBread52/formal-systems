@@ -125,7 +125,7 @@ export class GroupingService {
           return _id.toString() !== ancestorId.toString();
         });
 
-        if (subgrouping.parentId?.toString() === _id.toString()) {
+        if (subgrouping.parentId!.toString() === _id.toString()) {
           if (subgrouping.ancestorIds.length > 0) {
             subgrouping.parentId = subgrouping.ancestorIds[subgrouping.ancestorIds.length - 1];
           } else {
