@@ -67,7 +67,7 @@ export class GroupingService {
 
     grouping.title = newTitle;
     grouping.description = newDescription;
-    if (newParentId !== parentId) {
+    if (newParentId?.toString() !== parentId?.toString()) {
       if (newParentId) {
         const newParent = await this.groupingRepository.findOneBy({
           _id: newParentId,
@@ -96,10 +96,10 @@ export class GroupingService {
       if (subgroupings.length > 0) {
         const newSubgroupings = subgroupings.map((subgrouping: GroupingEntity): GroupingEntity => {
           const groupingIndex = subgrouping.ancestorIds.findIndex((ancestorId: ObjectId): boolean => {
-            return _id === ancestorId;
+            return _id.toString() === ancestorId.toString();
           });
 
-          subgrouping.ancestorIds.splice(0, groupingIndex, ...grouping.ancestorIds);
+          subgrouping.ancestorIds = grouping.ancestorIds.concat(subgrouping.ancestorIds.slice(groupingIndex));
 
           return subgrouping;
         });
@@ -122,7 +122,7 @@ export class GroupingService {
     if (subgroupings.length > 0) {
       const newSubgroupings = subgroupings.map((subgrouping: GroupingEntity): GroupingEntity => {
         subgrouping.ancestorIds = subgrouping.ancestorIds.filter((ancestorId: ObjectId): boolean => {
-          return _id !== ancestorId;
+          return _id.toString() !== ancestorId.toString();
         });
 
         if (subgrouping.parentId?.toString() === _id.toString()) {
