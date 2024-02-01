@@ -1,6 +1,3 @@
-// import { StatementEntity } from '@/statement/statement.entity';
-// import { StatementRepositoryMock } from './mocks/statement-repository.mock';
-
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { AuthService } from '@/auth/auth.service';
 import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
@@ -37,12 +34,13 @@ describe('Delete Grouping', (): void => {
 
   it('succeeds if the grouping does not exist', async (): Promise<void> => {
     const groupingId = new ObjectId();
+    const user = new UserEntity();
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).delete(`/system/${new ObjectId()}/grouping/${groupingId}`).set('Cookie', [
       `token=${token}`
@@ -53,20 +51,19 @@ describe('Delete Grouping', (): void => {
     });
   });
 
-  it('fails if the authenticated user did not create the grouping', async (): Promise<void> => {
-    const testGrouping = new GroupingEntity();
-
-    const { _id, systemId } = testGrouping;
+  it('fails if the user did not create the grouping', async (): Promise<void> => {
+    const grouping = new GroupingEntity();
+    const user = new UserEntity();
 
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(testGrouping);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/grouping/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
       `token=${token}`
     ]);
 
@@ -77,90 +74,90 @@ describe('Delete Grouping', (): void => {
     });
   });
 
-  it('succeeds (with no subgroupings)', async (): Promise<void> => {
-    const testGrouping = new GroupingEntity();
-    const testUser = new UserEntity();
+  it('succeeds with no subgroupings', async (): Promise<void> => {
+    const grouping = new GroupingEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testGrouping;
-
-    testUser._id = createdByUserId;
+    grouping.createdByUserId = user._id;
 
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
     groupingRepositoryMock.findBy.mockReturnValueOnce([]);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(testGrouping);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/grouping/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
       `token=${token}`
     ]);
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: _id.toString()
+      id: grouping._id.toString()
     });
   });
 
-  it('succeeds (with subgroupings)', async (): Promise<void> => {
-    const testGrouping = new GroupingEntity();
-    const testSubgrouping = new GroupingEntity();
-    const testUser = new UserEntity();
+  it('succeeds with subgrouping', async (): Promise<void> => {
+    const grouping = new GroupingEntity();
+    const subgrouping = new GroupingEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testGrouping;
-
-    testSubgrouping.ancestorIds = [_id];
-    testSubgrouping.parentId = _id;
-    testUser._id = createdByUserId;
+    grouping.createdByUserId = user._id;
+    subgrouping.parentId = grouping._id;
+    subgrouping.ancestorIds = [grouping._id];
+    subgrouping.systemId = grouping.systemId;
+    subgrouping.createdByUserId = user._id;
 
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    groupingRepositoryMock.findBy.mockReturnValueOnce([testSubgrouping]);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(testGrouping);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
+    groupingRepositoryMock.findBy.mockReturnValueOnce([subgrouping]);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/grouping/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
       `token=${token}`
     ]);
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: _id.toString()
+      id: grouping._id.toString()
     });
   });
 
-  it('succeeds (with subgrouping and supergrouping)', async (): Promise<void> => {
-    const testGrouping = new GroupingEntity();
-    const testSubgrouping = new GroupingEntity();
-    const testSupergrouping = new GroupingEntity();
-    const testUser = new UserEntity();
+  it('succeeds with subgrouping and supergrouping', async (): Promise<void> => {
+    const supergrouping = new GroupingEntity();
+    const grouping = new GroupingEntity();
+    const subgrouping = new GroupingEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testGrouping;
-
-    testGrouping.parentId = testSupergrouping._id;
-    testGrouping.ancestorIds = [testSupergrouping._id];
-    testSubgrouping.parentId = _id;
-    testSubgrouping.ancestorIds = [testSupergrouping._id, _id];
-    testUser._id = createdByUserId;
+    supergrouping.createdByUserId = user._id;
+    grouping.parentId = supergrouping._id;
+    grouping.ancestorIds = [supergrouping._id];
+    grouping.systemId = supergrouping.systemId;
+    grouping.createdByUserId = user._id;
+    subgrouping.parentId = grouping._id;
+    subgrouping.ancestorIds = [supergrouping._id, grouping._id];
+    subgrouping.systemId = supergrouping.systemId;
+    subgrouping.createdByUserId = user._id;
 
     const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    groupingRepositoryMock.findBy.mockReturnValueOnce([testSubgrouping]);
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(testGrouping);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
+    groupingRepositoryMock.findBy.mockReturnValueOnce([subgrouping]);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/grouping/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
       `token=${token}`
     ]);
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: _id.toString()
+      id: grouping._id.toString()
     });
   });
 
