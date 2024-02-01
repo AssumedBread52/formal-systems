@@ -2,7 +2,7 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
-import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditSystemPayload } from './payloads/edit-system.payload';
 import { NewSystemPayload } from './payloads/new-system.payload';
@@ -53,7 +53,7 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Patch(':systemId')
-  async patchSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(ValidationPipe) editSystemPayload: EditSystemPayload): Promise<IdPayload> {
+  async patchSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body() editSystemPayload: EditSystemPayload): Promise<IdPayload> {
     const system = await this.systemService.readById(systemId);
 
     if (!system) {
@@ -73,7 +73,7 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async postSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Body(ValidationPipe) newSystemPayload: NewSystemPayload): Promise<void> {
+  async postSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Body() newSystemPayload: NewSystemPayload): Promise<void> {
     await this.systemService.create(newSystemPayload, sessionUserId);
   }
 };

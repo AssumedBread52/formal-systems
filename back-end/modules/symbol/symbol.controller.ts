@@ -3,7 +3,7 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
 import { NewSymbolPayload } from './payloads/new-symbol.payload';
@@ -54,7 +54,7 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Patch(':symbolId')
-  async patchSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId, @Body(ValidationPipe) editSymbolPayload: EditSymbolPayload): Promise<IdPayload> {
+  async patchSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId, @Body() editSymbolPayload: EditSymbolPayload): Promise<IdPayload> {
     const symbol = await this.symbolService.readById(systemId, symbolId);
 
     if (!symbol) {
@@ -74,7 +74,7 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async postSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(ValidationPipe) newSymbolPayload: NewSymbolPayload): Promise<void> {
+  async postSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body() newSymbolPayload: NewSymbolPayload): Promise<void> {
     const system = await this.systemService.readById(systemId);
 
     if (!system) {
