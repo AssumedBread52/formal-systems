@@ -12,8 +12,6 @@ export class StatementEntity {
   @Column()
   parentId: ObjectId | null = null;
   @Column()
-  ancestorIds: ObjectId[] = [];
-  @Column()
   systemId: ObjectId = new ObjectId();
   @Column()
   createdByUserId: ObjectId = new ObjectId();
