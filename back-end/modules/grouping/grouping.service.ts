@@ -113,7 +113,7 @@ export class GroupingService {
   }
 
   async delete(grouping: GroupingEntity): Promise<GroupingEntity> {
-    const { _id } = grouping;
+    const { _id, parentId } = grouping;
 
     const subgroupings = await this.groupingRepository.findBy({
       ancestorIds: _id
@@ -126,11 +126,7 @@ export class GroupingService {
         });
 
         if (subgrouping.parentId!.toString() === _id.toString()) {
-          if (subgrouping.ancestorIds.length > 0) {
-            subgrouping.parentId = subgrouping.ancestorIds[subgrouping.ancestorIds.length - 1];
-          } else {
-            subgrouping.parentId = null;
-          }
+          subgrouping.parentId = parentId;
         }
 
         return subgrouping;

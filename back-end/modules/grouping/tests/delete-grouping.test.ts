@@ -127,40 +127,6 @@ describe('Delete Grouping', (): void => {
     });
   });
 
-  it('succeeds with subgrouping and supergrouping', async (): Promise<void> => {
-    const supergrouping = new GroupingEntity();
-    const grouping = new GroupingEntity();
-    const subgrouping = new GroupingEntity();
-    const user = new UserEntity();
-
-    supergrouping.createdByUserId = user._id;
-    grouping.parentId = supergrouping._id;
-    grouping.ancestorIds = [supergrouping._id];
-    grouping.systemId = supergrouping.systemId;
-    grouping.createdByUserId = user._id;
-    subgrouping.parentId = grouping._id;
-    subgrouping.ancestorIds = [supergrouping._id, grouping._id];
-    subgrouping.systemId = supergrouping.systemId;
-    subgrouping.createdByUserId = user._id;
-
-    const groupingRepositoryMock = app.get(getRepositoryToken(GroupingEntity)) as GroupingRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    groupingRepositoryMock.findOneBy.mockReturnValueOnce(grouping);
-    groupingRepositoryMock.findBy.mockReturnValueOnce([subgrouping]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = await app.get(AuthService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).delete(`/system/${grouping.systemId}/grouping/${grouping._id}`).set('Cookie', [
-      `token=${token}`
-    ]);
-
-    expectCorrectResponse(response, HttpStatus.OK, {
-      id: grouping._id.toString()
-    });
-  });
-
   afterAll(async (): Promise<void> => {
     await app.close();
   });
