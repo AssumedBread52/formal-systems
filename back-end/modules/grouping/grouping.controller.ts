@@ -3,7 +3,7 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, Delete, ForbiddenException, NotFoundException, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, NotFoundException, Patch, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { GroupingService } from './grouping.service';
 import { EditGroupingPayload } from './payloads/edit-grouping.payload';
@@ -36,7 +36,7 @@ export class GroupingController {
 
   @UseGuards(JwtGuard)
   @Patch(':groupingId')
-  async patchGrouping(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('groupingId') groupingId: ObjectId, @Body() editGroupingPayload: EditGroupingPayload): Promise<IdPayload> {
+  async patchGrouping(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('groupingId') groupingId: ObjectId, @Body(ValidationPipe) editGroupingPayload: EditGroupingPayload): Promise<IdPayload> {
     const grouping = await this.groupingService.readById(systemId, groupingId);
 
     if (!grouping) {
@@ -56,7 +56,7 @@ export class GroupingController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async postGrouping(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body() newGroupingPayload: NewGroupingPayload): Promise<void> {
+  async postGrouping(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(ValidationPipe) newGroupingPayload: NewGroupingPayload): Promise<void> {
     const system = await this.systemService.readById(systemId);
 
     if (!system) {

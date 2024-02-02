@@ -1,5 +1,5 @@
 import { UserService } from '@/user/user.service';
-import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { ObjectId } from 'mongodb';
@@ -41,7 +41,7 @@ export class AuthController {
   }
 
   @Post('sign-up')
-  async signUp(@Body() signUpPayload: SignUpPayload, @Res({ passthrough: true }) response: Response): Promise<void> {
+  async signUp(@Body(ValidationPipe) signUpPayload: SignUpPayload, @Res({ passthrough: true }) response: Response): Promise<void> {
     const { _id } = await this.userService.create(signUpPayload);
 
     const token = await this.authService.generateToken(_id);

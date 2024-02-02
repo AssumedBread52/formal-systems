@@ -2,7 +2,7 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
-import { Body, Controller, Get, NotFoundException, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Patch, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditProfilePayload } from './payloads/edit-profile.payload';
 import { UserPayload } from './payloads/user.payload';
@@ -33,7 +33,7 @@ export class UserController {
 
   @UseGuards(JwtGuard)
   @Patch('session-user')
-  async patchSessionUser(@SessionUserDecorator() sessionUser: UserEntity, @Body() editProfilePayload: EditProfilePayload): Promise<IdPayload> {
+  async patchSessionUser(@SessionUserDecorator() sessionUser: UserEntity, @Body(ValidationPipe) editProfilePayload: EditProfilePayload): Promise<IdPayload> {
     const { _id } = await this.userService.update(sessionUser, editProfilePayload);
 
     return new IdPayload(_id);
