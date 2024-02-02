@@ -37,6 +37,12 @@ export class GroupingController {
   @UseGuards(JwtGuard)
   @Patch(':groupingId')
   async patchGrouping(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('groupingId') groupingId: ObjectId, @Body(ValidationPipe) editGroupingPayload: EditGroupingPayload): Promise<IdPayload> {
+    const { newParentId } = editGroupingPayload;
+
+    if (newParentId) {
+      editGroupingPayload.newParentId = new ObjectId(newParentId);
+    }
+
     const grouping = await this.groupingService.readById(systemId, groupingId);
 
     if (!grouping) {
@@ -57,6 +63,12 @@ export class GroupingController {
   @UseGuards(JwtGuard)
   @Post()
   async postGrouping(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(ValidationPipe) newGroupingPayload: NewGroupingPayload): Promise<void> {
+    const { parentId } = newGroupingPayload;
+
+    if (parentId) {
+      newGroupingPayload.parentId = new ObjectId(parentId);
+    }
+
     const system = await this.systemService.readById(systemId);
 
     if (!system) {
