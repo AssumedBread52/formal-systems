@@ -8,6 +8,7 @@ import { ObjectId } from 'mongodb';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
 import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
+import { StatementPayload } from './payloads/statement.payload';
 import { StatementService } from './statement.service';
 
 @Controller('system/:systemId/statement')
@@ -38,6 +39,17 @@ export class StatementController {
   @Get()
   getStatements(@ObjectIdDecorator('systemId') systemId: ObjectId, @Query('page', ParseIntPipe) page: number, @Query('count', ParseIntPipe) count: number, @Query('keywords') keywords?: string | string[]): Promise<PaginatedResultsPayload> {
     return this.statementService.readStatements(systemId, page, count, keywords);
+  }
+
+  @Get(':statementId')
+  async getById(@ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('statementId') statementId: ObjectId): Promise<StatementPayload> {
+    const statement = await this.statementService.readById(systemId, statementId);
+
+    if (!statement) {
+      throw new NotFoundException('Statement not found.');
+    }
+
+    return new StatementPayload(statement);
   }
 
   @UseGuards(JwtGuard)
