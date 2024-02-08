@@ -1,8 +1,5 @@
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
-import { GroupingEntity } from '@/grouping/grouping.entity';
-import { GroupingModule } from '@/grouping/grouping.module';
-import { GroupingRepositoryMock } from '@/grouping/tests/mocks/grouping-repository.mock';
 import { StatementEntity } from '@/statement/statement.entity';
 import { StatementModule } from '@/statement/statement.module';
 import { StatementRepositoryMock } from '@/statement/tests/mocks/statement-repository.mock';
@@ -26,13 +23,12 @@ export const createTestApp = async (): Promise<INestApplication> => {
   const testingModule = await Test.createTestingModule({
     imports: [
       AuthModule,
-      GroupingModule,
       StatementModule,
       SymbolModule,
       SystemModule,
       UserModule
     ]
-  }).overrideProvider(ConfigService).useClass(ConfigServiceMock).overrideProvider(getRepositoryToken(GroupingEntity)).useClass(GroupingRepositoryMock).overrideProvider(getRepositoryToken(StatementEntity)).useClass(StatementRepositoryMock).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(SymbolRepositoryMock).overrideProvider(getRepositoryToken(SystemEntity)).useClass(SystemRepositoryMock).overrideProvider(getRepositoryToken(UserEntity)).useClass(UserRepositoryMock).compile();
+  }).overrideProvider(ConfigService).useClass(ConfigServiceMock).overrideProvider(getRepositoryToken(StatementEntity)).useClass(StatementRepositoryMock).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(SymbolRepositoryMock).overrideProvider(getRepositoryToken(SystemEntity)).useClass(SystemRepositoryMock).overrideProvider(getRepositoryToken(UserEntity)).useClass(UserRepositoryMock).compile();
 
   const app = testingModule.createNestApplication();
 
