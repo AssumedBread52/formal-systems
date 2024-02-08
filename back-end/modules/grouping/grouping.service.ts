@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 import { GroupingEntity } from './grouping.entity';
-import { EditGroupingPayload } from './payloads/edit-grouping.payload';
 import { NewGroupingPayload } from './payloads/new-grouping.payload';
 
 @Injectable()
@@ -55,60 +54,5 @@ export class GroupingService {
       _id: groupingId,
       systemId
     });
-  }
-
-  async update(grouping: GroupingEntity, editGroupingPayload: EditGroupingPayload): Promise<GroupingEntity> {
-    const { newTitle, newDescription, newParentId = null } = editGroupingPayload;
-    const { _id, title, parentId, systemId } = grouping;
-
-    if (title !== newTitle) {
-      await this.checkForConflict(newTitle, systemId);
-    }
-
-    grouping.title = newTitle;
-    grouping.description = newDescription;
-    if (newParentId?.toString() !== parentId?.toString()) {
-      if (newParentId) {
-        const newParent = await this.groupingRepository.findOneBy({
-          _id: newParentId,
-          systemId
-        });
-
-        if (!newParent) {
-          throw new NotFoundException('New parent not found within the formal system.');
-        }
-
-        const newAncestorIds = newParent.ancestorIds.concat([newParentId]);
-
-        if (newAncestorIds.includes(_id)) {
-          throw new ConflictException('Groupings cannot be their own descendants.');
-        }
-
-        grouping.ancestorIds = newAncestorIds;
-      } else {
-        grouping.ancestorIds = [];
-      }
-
-      const subgroupings = await this.groupingRepository.findBy({
-        ancestorIds: _id
-      });
-
-      if (subgroupings.length > 0) {
-        const newSubgroupings = subgroupings.map((subgrouping: GroupingEntity): GroupingEntity => {
-          const groupingIndex = subgrouping.ancestorIds.findIndex((ancestorId: ObjectId): boolean => {
-            return _id.toString() === ancestorId.toString();
-          });
-
-          subgrouping.ancestorIds = grouping.ancestorIds.concat(subgrouping.ancestorIds.slice(groupingIndex));
-
-          return subgrouping;
-        });
-
-        await this.groupingRepository.save(newSubgroupings);
-      }
-    }
-    grouping.parentId = newParentId;
-
-    return this.groupingRepository.save(grouping);
   }
 };

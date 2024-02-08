@@ -1,43 +1,15 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
-import { IdPayload } from '@/common/payloads/id.payload';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, ForbiddenException, NotFoundException, Patch, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, NotFoundException, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { GroupingService } from './grouping.service';
-import { EditGroupingPayload } from './payloads/edit-grouping.payload';
 import { NewGroupingPayload } from './payloads/new-grouping.payload';
 
 @Controller('system/:systemId/grouping')
 export class GroupingController {
   constructor(private groupingService: GroupingService, private systemService: SystemService) {
-  }
-
-  @UseGuards(JwtGuard)
-  @Patch(':groupingId')
-  async patchGrouping(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('groupingId') groupingId: ObjectId, @Body(ValidationPipe) editGroupingPayload: EditGroupingPayload): Promise<IdPayload> {
-    const { newParentId } = editGroupingPayload;
-
-    if (newParentId) {
-      editGroupingPayload.newParentId = new ObjectId(newParentId);
-    }
-
-    const grouping = await this.groupingService.readById(systemId, groupingId);
-
-    if (!grouping) {
-      throw new NotFoundException('Grouping not found.');
-    }
-
-    const { createdByUserId } = grouping;
-
-    if (sessionUserId.toString() !== createdByUserId.toString()) {
-      throw new ForbiddenException('You cannot update a grouping unless you created it.');
-    }
-
-    await this.groupingService.update(grouping, editGroupingPayload);
-
-    return new IdPayload(groupingId);
   }
 
   @UseGuards(JwtGuard)
