@@ -24,6 +24,13 @@ export class StatementService {
     return this.statementRepository.save(statement);
   }
 
+  readById(systemId: ObjectId, statementId: ObjectId): Promise<StatementEntity | null> {
+    return this.statementRepository.findOneBy({
+      _id: statementId,
+      systemId
+    });
+  }
+
   async readStatements(systemId: ObjectId, page: number, count: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
     const where = {
       systemId
@@ -43,5 +50,9 @@ export class StatementService {
     });
 
     return new PaginatedResultsPayload(total, results);
+  }
+
+  delete(statement: StatementEntity): Promise<StatementEntity> {
+    return this.statementRepository.remove(statement);
   }
 };
