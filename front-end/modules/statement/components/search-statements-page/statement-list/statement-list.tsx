@@ -24,8 +24,7 @@ export const StatementList = (props: StatementListProps): ReactElement => {
 
         return (
           <AntdCol key={id} span={24}>
-            <StatementItem id={id} />
-            {title}
+            <StatementItem id={id} title={title} />
             {description}
             {systemId}
             {createdByUserId}
