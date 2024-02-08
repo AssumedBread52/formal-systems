@@ -1,14 +1,20 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
-import { Body, Controller, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
+import { Body, Controller, Get, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { NewStatementPayload } from './payloads/new-statement.payload';
+import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
 import { StatementService } from './statement.service';
-import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
   constructor(private statementService: StatementService) {
+  }
+
+  @Get()
+  getSystems(@Query('page', ParseIntPipe) page: number, @Query('count', ParseIntPipe) count: number, @Query('keywords') keywords?: string | string[]): Promise<PaginatedResultsPayload> {
+    return this.statementService.readStatements(page, count, keywords);
   }
 
   @UseGuards(JwtGuard)
