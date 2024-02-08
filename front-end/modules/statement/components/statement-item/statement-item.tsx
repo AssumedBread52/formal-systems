@@ -1,8 +1,8 @@
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { Statement } from '@/statement/types/statement';
-import Link from 'next/link';
 import { ReactElement, ReactNode } from 'react';
 import { EditStatement } from './edit-statement/edit-statement';
+import { ExploreStatementLink } from './explore-statement-link/explore-statement-link';
 import { RemoveStatement } from './remove-statement/remove-statement';
 
 export const StatementItem = (props: Pick<Statement, 'id' | 'title' | 'description' | 'systemId' | 'createdByUserId'>): ReactElement => {
@@ -13,14 +13,8 @@ export const StatementItem = (props: Pick<Statement, 'id' | 'title' | 'descripti
     <RemoveStatement id={id} systemId={systemId} createdByUserId={createdByUserId} />
   ] as ReactNode[];
 
-  const exploreStatementLink = (
-    <Link href={`/formal-system/${systemId}/statement/${id}`}>
-      Explore
-    </Link>
-  );
-
   return (
-    <AntdCard actions={actions} extra={exploreStatementLink} title={title} type='inner'>
+    <AntdCard actions={actions} extra={<ExploreStatementLink id={id} systemId={systemId} />} title={title} type='inner'>
       {description}
     </AntdCard>
   );
