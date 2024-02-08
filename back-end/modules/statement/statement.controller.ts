@@ -1,12 +1,13 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
-import { Body, Controller, Delete, ForbiddenException, Get, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { IdPayload } from '@/common/payloads/id.payload';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
+import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
 import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
 import { StatementService } from './statement.service';
-import { IdPayload } from '@/common/payloads/id.payload';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
@@ -36,6 +37,26 @@ export class StatementController {
   @Get()
   getSystems(@ObjectIdDecorator('systemId') systemId: ObjectId, @Query('page', ParseIntPipe) page: number, @Query('count', ParseIntPipe) count: number, @Query('keywords') keywords?: string | string[]): Promise<PaginatedResultsPayload> {
     return this.statementService.readStatements(systemId, page, count, keywords);
+  }
+
+  @UseGuards(JwtGuard)
+  @Patch(':statementId')
+  async patchStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('statementId') statementId: ObjectId, @Body(ValidationPipe) editStatementPayload: EditStatementPayload): Promise<IdPayload> {
+    const statement = await this.statementService.readById(systemId, statementId);
+
+    if (!statement) {
+      throw new NotFoundException('Statement not found.');
+    }
+
+    const { createdByUserId } = statement;
+
+    if (sessionUserId.toString() !== createdByUserId.toString()) {
+      throw new ForbiddenException('You cannot update a statement unless you created it.');
+    }
+
+    await this.statementService.update(statement, editStatementPayload);
+
+    return new IdPayload(statementId);
   }
 
   @UseGuards(JwtGuard)

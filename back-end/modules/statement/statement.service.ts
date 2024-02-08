@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
+import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
 import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
 import { StatementEntity } from './statement.entity';
@@ -11,7 +12,7 @@ export class StatementService {
   constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>) {
   }
 
-  async create(newStatementPayload: NewStatementPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<StatementEntity> {
+  create(newStatementPayload: NewStatementPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<StatementEntity> {
     const { title, description } = newStatementPayload;
 
     const statement = new StatementEntity();
@@ -50,6 +51,15 @@ export class StatementService {
     });
 
     return new PaginatedResultsPayload(total, results);
+  }
+
+  update(statement: StatementEntity, editStatementPayload: EditStatementPayload): Promise<StatementEntity> {
+    const { newTitle, newDescription } = editStatementPayload;
+
+    statement.title = newTitle;
+    statement.description = newDescription;
+
+    return this.statementRepository.save(statement);
   }
 
   delete(statement: StatementEntity): Promise<StatementEntity> {
