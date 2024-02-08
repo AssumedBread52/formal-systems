@@ -66,13 +66,13 @@ export class StatementController {
     const system = await this.systemService.readById(systemId);
 
     if (!system) {
-      throw new NotFoundException('Symbols cannot be added to formal systems that do not exist.');
+      throw new NotFoundException('Statements cannot be added to formal systems that do not exist.');
     }
 
     const { createdByUserId } = system;
 
     if (sessionUserId.toString() !== createdByUserId.toString()) {
-      throw new ForbiddenException('Symbols cannot be added to formal systems unless you created them.');
+      throw new ForbiddenException('Statements cannot be added to formal systems unless you created them.');
     }
 
     await this.statementService.create(newStatementPayload, systemId, sessionUserId);
