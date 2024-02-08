@@ -6,6 +6,7 @@ import { fetchSystem } from '@/system/fetch-data/fetch-system';
 import { Metadata } from 'next';
 import { ReactElement } from 'react';
 import { AddStatement } from './add-statement/add-statement';
+import { StatementList } from './statement-list/statement-list';
 
 export const SearchStatementsPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params, searchParams } = props;
@@ -27,7 +28,7 @@ export const SearchStatementsPage = async (props: ServerSideProps): Promise<Reac
   return (
     <AntdCard extra={<AddStatement createdByUserId={createdByUserId} />} title={`${title} Statements`}>
       <PaginatedSearchControls total={total}>
-        {results.length}
+        <StatementList statements={results} />
       </PaginatedSearchControls>
     </AntdCard>
   );
