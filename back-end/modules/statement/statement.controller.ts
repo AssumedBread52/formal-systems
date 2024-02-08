@@ -2,6 +2,7 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
+import { SystemService } from '@/system/system.service';
 import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
@@ -11,7 +12,7 @@ import { StatementService } from './statement.service';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
-  constructor(private statementService: StatementService) {
+  constructor(private statementService: StatementService, private systemService: SystemService) {
   }
 
   @UseGuards(JwtGuard)
@@ -62,6 +63,18 @@ export class StatementController {
   @UseGuards(JwtGuard)
   @Post()
   async postStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(ValidationPipe) newStatementPayload: NewStatementPayload): Promise<void> {
+    const system = await this.systemService.readById(systemId);
+
+    if (!system) {
+      throw new NotFoundException('Symbols cannot be added to formal systems that do not exist.');
+    }
+
+    const { createdByUserId } = system;
+
+    if (sessionUserId.toString() !== createdByUserId.toString()) {
+      throw new ForbiddenException('Symbols cannot be added to formal systems unless you created them.');
+    }
+
     await this.statementService.create(newStatementPayload, systemId, sessionUserId);
   }
 };
