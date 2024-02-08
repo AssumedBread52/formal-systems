@@ -111,30 +111,4 @@ export class GroupingService {
 
     return this.groupingRepository.save(grouping);
   }
-
-  async delete(grouping: GroupingEntity): Promise<GroupingEntity> {
-    const { _id, parentId } = grouping;
-
-    const subgroupings = await this.groupingRepository.findBy({
-      ancestorIds: _id
-    });
-
-    if (subgroupings.length > 0) {
-      const newSubgroupings = subgroupings.map((subgrouping: GroupingEntity): GroupingEntity => {
-        subgrouping.ancestorIds = subgrouping.ancestorIds.filter((ancestorId: ObjectId): boolean => {
-          return _id.toString() !== ancestorId.toString();
-        });
-
-        if (subgrouping.parentId!.toString() === _id.toString()) {
-          subgrouping.parentId = parentId;
-        }
-
-        return subgrouping;
-      });
-
-      await this.groupingRepository.save(newSubgroupings);
-    }
-
-    return this.groupingRepository.remove(grouping);
-  }
 };
