@@ -24,8 +24,10 @@ export class StatementService {
     return this.statementRepository.save(statement);
   }
 
-  async readStatements(page: number, count: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
-    const where = {} as RootFilterOperators<StatementEntity>;
+  async readStatements(systemId: ObjectId, page: number, count: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
+    const where = {
+      systemId
+    } as RootFilterOperators<StatementEntity>;
 
     if (keywords && 0 !== keywords.length) {
       where.$text = {

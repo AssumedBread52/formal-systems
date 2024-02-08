@@ -13,8 +13,8 @@ export class StatementController {
   }
 
   @Get()
-  getSystems(@Query('page', ParseIntPipe) page: number, @Query('count', ParseIntPipe) count: number, @Query('keywords') keywords?: string | string[]): Promise<PaginatedResultsPayload> {
-    return this.statementService.readStatements(page, count, keywords);
+  getSystems(@ObjectIdDecorator('systemId') systemId: ObjectId, @Query('page', ParseIntPipe) page: number, @Query('count', ParseIntPipe) count: number, @Query('keywords') keywords?: string | string[]): Promise<PaginatedResultsPayload> {
+    return this.statementService.readStatements(systemId, page, count, keywords);
   }
 
   @UseGuards(JwtGuard)
