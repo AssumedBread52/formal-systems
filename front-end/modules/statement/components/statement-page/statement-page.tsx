@@ -19,7 +19,14 @@ export const StatementPage = async (props: ServerSideProps): Promise<ReactElemen
   );
 };
 
-export const generateMetadata = (): Metadata => {
+export const generateMetadata = async (props: ServerSideProps): Promise<Metadata> => {
+  const { params } = props;
+
+  const { 'system-id': systemId = '', 'statement-id': statementId = '' } = params;
+
+  const { title } = await fetchStatement(systemId, statementId);
+
   return {
+    title
   };
 };
