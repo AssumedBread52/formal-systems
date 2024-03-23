@@ -45,8 +45,10 @@ describe('Sign Out', (): void => {
 
     expectCorrectResponse(response, HttpStatus.NO_CONTENT, {});
     expect(cookies).toHaveLength(2);
-    expect(cookies[0]).toBe('token=; Path=\/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
-    expect(cookies[1]).toBe('authStatus=; Path=\/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
+    if (cookies) {
+      expect(cookies[0]).toBe('token=; Path=\/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
+      expect(cookies[1]).toBe('authStatus=; Path=\/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
+    }
   });
 
   afterAll(async (): Promise<void> => {
