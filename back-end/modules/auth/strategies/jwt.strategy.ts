@@ -31,8 +31,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrat
     return token;
   }
 
-  validate(idPayload: IdPayload): Promise<UserEntity> {
-    const { id } = idPayload;
+  validate(tokenPayload: IdPayload): Promise<UserEntity> {
+    const { id } = tokenPayload;
 
     return this.authService.validateUserById(new ObjectId(id));
   }
