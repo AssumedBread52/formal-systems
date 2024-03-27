@@ -1,5 +1,5 @@
 export class ConfigServiceMock {
-  getOrThrow = jest.fn((key: 'AUTH_COOKIE_MAX_AGE_MILLISECONDS' | 'JSON_WEB_TOKEN_EXPIRES_IN' | 'JSON_WEB_TOKEN_SECRET'): string => {
+  getOrThrow = jest.fn((key: 'AUTH_COOKIE_MAX_AGE_MILLISECONDS' | 'JSON_WEB_TOKEN_EXPIRES_IN' | 'JSON_WEB_TOKEN_SECRET' | 'npm_package_json'): string => {
     switch (key) {
       case 'AUTH_COOKIE_MAX_AGE_MILLISECONDS':
         return '1000';
@@ -7,6 +7,8 @@ export class ConfigServiceMock {
         return '1s';
       case 'JSON_WEB_TOKEN_SECRET':
         return 'secret test token';
+      case 'npm_package_json':
+        return '/app/package.json';
     }
   });
 };

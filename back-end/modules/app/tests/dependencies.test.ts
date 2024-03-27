@@ -1,23 +1,14 @@
-import { AppModule } from '@/app/app.module';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import { readFileSync } from 'fs';
 import * as request from 'supertest';
+import { createTestApp } from './helpers/create-test-app';
 
 describe('Dependencies', (): void => {
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [
-        AppModule
-      ]
-    }).compile();
-
-    app = moduleRef.createNestApplication();
-
-    await app.init();
+    app = await createTestApp();
   });
 
   it('succeeds in returning the dependencies with their respective versions', async (): Promise<void> => {

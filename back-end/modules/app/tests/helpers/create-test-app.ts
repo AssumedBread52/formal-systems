@@ -1,3 +1,4 @@
+import { AppModule } from '@/app/app.module';
 import { ConfigServiceMock } from '@/app/tests/mocks/config-service.mock';
 import { AuthModule } from '@/auth/auth.module';
 import { StatementEntity } from '@/statement/statement.entity';
@@ -22,6 +23,7 @@ import * as cookieParser from 'cookie-parser';
 export const createTestApp = async (): Promise<INestApplication> => {
   const testingModule = await Test.createTestingModule({
     imports: [
+      AppModule,
       AuthModule,
       StatementModule,
       SymbolModule,
