@@ -5,7 +5,6 @@ import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { expectAuthCookies } from './helpers/expect-auth-cookies';
 import { testExpiredToken } from './helpers/test-expired-token';
@@ -32,11 +31,13 @@ describe('Refresh Token', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const testUser = new UserEntity();
+
+    const token = await app.get(AuthService).generateToken(testUser._id);
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
 
     const response = await request(app.getHttpServer()).post('/auth/refresh-token').set('Cookie', [
       `token=${token}`

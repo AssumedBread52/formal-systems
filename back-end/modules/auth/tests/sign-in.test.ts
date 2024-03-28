@@ -55,9 +55,11 @@ describe('Sign In', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
+    const password = '123456';
+
     const testUser = new UserEntity();
 
-    testUser.hashedPassword = await hash('123456', 12);
+    testUser.hashedPassword = await hash(password, 12);
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
@@ -65,7 +67,7 @@ describe('Sign In', (): void => {
 
     const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
       email: 'test@test.com',
-      password: '123456'
+      password
     });
 
     expectCorrectResponse(response, HttpStatus.NO_CONTENT, {});
