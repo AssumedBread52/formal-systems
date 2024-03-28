@@ -49,6 +49,10 @@ describe('Sign Up', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(null);
+
     const response = await request(app.getHttpServer()).post('/auth/sign-up').send({
       firstName: 'Test',
       lastName: 'User',
