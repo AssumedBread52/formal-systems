@@ -1,16 +1,9 @@
 import { SystemEntity } from '@/system/system.entity';
-import { Transform, TransformFnParams } from 'class-transformer';
 import { IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
-import { ObjectId } from 'mongodb';
 
 export class SystemPayload {
   @IsMongoId()
-  @Transform((params: TransformFnParams): any => {
-    const { value } = params;
-
-    return value.toString();
-  })
-  id: ObjectId;
+  id: string;
   @IsNotEmpty()
   title: string;
   @IsNotEmpty()
@@ -31,17 +24,12 @@ export class SystemPayload {
   @Min(0)
   deductionCount: number;
   @IsMongoId()
-  @Transform((params: TransformFnParams): any => {
-    const { value } = params;
-
-    return value.toString();
-  })
-  createdByUserId: ObjectId;
+  createdByUserId: string;
 
   constructor(system: SystemEntity) {
     const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = system;
 
-    this.id = _id;
+    this.id = _id.toString();
     this.title = title;
     this.description = description;
     this.constantSymbolCount = constantSymbolCount;
@@ -49,6 +37,6 @@ export class SystemPayload {
     this.axiomCount = axiomCount;
     this.theoremCount = theoremCount;
     this.deductionCount = deductionCount;
-    this.createdByUserId = createdByUserId;
+    this.createdByUserId = createdByUserId.toString();
   }
 };
