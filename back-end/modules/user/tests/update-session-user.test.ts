@@ -7,7 +7,6 @@ import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-res
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { UserRepositoryMock } from './mocks/user-repository.mock';
 
@@ -31,11 +30,13 @@ describe('Update Session User', (): void => {
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const testUser = new UserEntity();
+
+    const token = await app.get(AuthService).generateToken(testUser._id);
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
 
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
@@ -53,12 +54,17 @@ describe('Update Session User', (): void => {
   });
 
   it('fails if new e-mail address is already in use', async (): Promise<void> => {
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const conflictUser = new UserEntity();
+    const testUser = new UserEntity();
+
+    conflictUser.email = 'test@test.com';
+
+    const token = await app.get(AuthService).generateToken(testUser._id);
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(conflictUser);
 
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
@@ -77,13 +83,14 @@ describe('Update Session User', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const testUser = new UserEntity();
+
+    const token = await app.get(AuthService).generateToken(testUser._id);
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    const testUser = new UserEntity();
-
     userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(null);
 
     const { _id } = testUser;
 

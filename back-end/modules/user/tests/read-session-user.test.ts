@@ -7,7 +7,6 @@ import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-res
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { UserRepositoryMock } from './mocks/user-repository.mock';
 
@@ -31,11 +30,11 @@ describe('Read Session User', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const testUser = new UserEntity();
+
+    const token = await app.get(AuthService).generateToken(testUser._id);
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    const testUser = new UserEntity();
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
 
