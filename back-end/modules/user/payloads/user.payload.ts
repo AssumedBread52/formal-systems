@@ -1,16 +1,9 @@
 import { UserEntity } from '@/user/user.entity';
-import { Transform, TransformFnParams } from 'class-transformer';
 import { IsEmail, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
-import { ObjectId } from 'mongodb';
 
 export class UserPayload {
   @IsMongoId()
-  @Transform((params: TransformFnParams): any => {
-    const { value } = params;
-
-    return value.toString();
-  })
-  id: ObjectId;
+  id: string;
   @IsNotEmpty()
   firstName: string;
   @IsNotEmpty()
@@ -39,7 +32,7 @@ export class UserPayload {
   constructor(user: UserEntity) {
     const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount } = user;
 
-    this.id = _id;
+    this.id = _id.toString();
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
