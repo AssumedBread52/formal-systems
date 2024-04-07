@@ -15,6 +15,10 @@ describe('Read User by ID', (): void => {
   });
 
   it('fails if user is not found', async (): Promise<void> => {
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(null);
+
     const response = await request(app.getHttpServer()).get(`/user/${new ObjectId()}`);
 
     expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
