@@ -17,6 +17,9 @@ import { SymbolService } from './symbol.service';
   ],
   providers: [
     SymbolService
+  ],
+  exports: [
+    SymbolService
   ]
 })
 export class SymbolModule {

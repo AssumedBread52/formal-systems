@@ -1,3 +1,4 @@
+import { SymbolModule } from '@/symbol/symbol.module';
 import { SystemModule } from '@/system/system.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,6 +8,7 @@ import { StatementService } from './statement.service';
 
 @Module({
   imports: [
+    SymbolModule,
     SystemModule,
     TypeOrmModule.forFeature([
       StatementEntity

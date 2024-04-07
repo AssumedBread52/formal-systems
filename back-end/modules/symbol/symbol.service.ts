@@ -47,6 +47,15 @@ export class SymbolService {
     });
   }
 
+  readByIds(systemId: ObjectId, symbolIds: ObjectId[]): Promise<SymbolEntity[]> {
+    return this.symbolRepository.find({
+      _id: {
+        $in: symbolIds
+      },
+      systemId
+    });
+  }
+
   readSymbols(page: number, count: number, keywords: string[], types: SymbolType[], systemId: ObjectId): Promise<[SymbolEntity[], number]> {
     const where = {
       systemId

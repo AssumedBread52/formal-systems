@@ -2,8 +2,11 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { SymbolEntity } from '@/symbol/symbol.entity';
+import { SymbolService } from '@/symbol/symbol.service';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
@@ -13,7 +16,7 @@ import { StatementService } from './statement.service';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
-  constructor(private statementService: StatementService, private systemService: SystemService) {
+  constructor(private statementService: StatementService, private symbolService: SymbolService, private systemService: SystemService) {
   }
 
   @UseGuards(JwtGuard)
@@ -74,7 +77,7 @@ export class StatementController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async postStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(ValidationPipe) newStatementPayload: NewStatementPayload): Promise<void> {
+  async postStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(new ValidationPipe({ transform: true })) newStatementPayload: NewStatementPayload): Promise<void> {
     const system = await this.systemService.readById(systemId);
 
     if (!system) {
@@ -83,8 +86,70 @@ export class StatementController {
 
     const { createdByUserId } = system;
 
-    if (sessionUserId.toString() !== createdByUserId.toString()) {
+    if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new ForbiddenException('Statements cannot be added to formal systems unless you created them.');
+    }
+
+    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = newStatementPayload;
+
+    const symbolIds = assertion.concat(...logicalHypotheses, ...variableTypeHypotheses, ...distinctVariableRestrictions);
+
+    const symbols = await this.symbolService.readByIds(systemId, symbolIds);
+    const symbolDictionary = symbols.reduce((dictionary: Record<string, SymbolEntity>, symbol: SymbolEntity): Record<string, SymbolEntity> => {
+      const { _id } = symbol;
+
+      const id = _id.toString();
+
+      if (!dictionary[id]) {
+        dictionary[id] = symbol;
+      }
+
+      return dictionary;
+    }, {});
+
+    symbolIds.forEach((symbolId: ObjectId): void => {
+      if (!symbolDictionary[symbolId.toString()]) {
+        throw new BadRequestException([
+          'All symbols used in a statement must exist in the formal system.'
+        ]);
+      }
+    });
+
+    distinctVariableRestrictions.forEach((distinctVariableRestriction: [ObjectId, ObjectId]): void => {
+      if (symbolDictionary[distinctVariableRestriction[0].toString()].type !== SymbolType.Variable) {
+        throw new BadRequestException([
+          'all variable type hypotheses must start with a variable symbol'
+        ]);
+      }
+      if (symbolDictionary[distinctVariableRestriction[1].toString()].type !== SymbolType.Variable) {
+        throw new BadRequestException([
+          'all variable type hypotheses must end with a variable symbol'
+        ]);
+      }
+    });
+    variableTypeHypotheses.forEach((variableTypeHypothesis: [ObjectId, ObjectId]): void => {
+      if (symbolDictionary[variableTypeHypothesis[0].toString()].type !== SymbolType.Constant) {
+        throw new BadRequestException([
+          'all variable type hypotheses must start with a constant symbol'
+        ]);
+      }
+      if (symbolDictionary[variableTypeHypothesis[1].toString()].type !== SymbolType.Variable) {
+        throw new BadRequestException([
+          'all variable type hypotheses must end with a variable symbol'
+        ]);
+      }
+    });
+    logicalHypotheses.forEach((logicalHypothesis: ObjectId[]): void => {
+      if (symbolDictionary[logicalHypothesis[0].toString()].type !== SymbolType.Constant) {
+        throw new BadRequestException([
+          'all logical hypotheses must start with a constant symbol'
+        ]);
+      }
+    });
+    if (symbolDictionary[assertion[0].toString()].type !== SymbolType.Constant) {
+      throw new BadRequestException([
+        'expressions must start with a constant symbol'
+      ]);
     }
 
     await this.statementService.create(newStatementPayload, systemId, sessionUserId);
