@@ -1,4 +1,4 @@
 export enum SymbolType {
-  Constant,
-  Variable
+  Constant = 'CONSTANT',
+  Variable = 'VARIABLE'
 };
