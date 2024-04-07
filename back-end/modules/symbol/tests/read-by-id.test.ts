@@ -15,6 +15,10 @@ describe('Read Symbol by ID', (): void => {
   });
 
   it('fails if symbol is not found', async (): Promise<void> => {
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(null);
+
     const response = await request(app.getHttpServer()).get(`/system/${new ObjectId()}/symbol/${new ObjectId()}`);
 
     expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
