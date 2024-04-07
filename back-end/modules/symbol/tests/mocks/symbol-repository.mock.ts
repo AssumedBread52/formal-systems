@@ -1,6 +1,8 @@
 import { SymbolEntity } from '@/symbol/symbol.entity';
 
 export class SymbolRepositoryMock {
+  find = jest.fn();
+
   findAndCount = jest.fn();
 
   findOneBy = jest.fn();
