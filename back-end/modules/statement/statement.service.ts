@@ -13,12 +13,16 @@ export class StatementService {
   }
 
   create(newStatementPayload: NewStatementPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<StatementEntity> {
-    const { title, description } = newStatementPayload;
+    const { title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = newStatementPayload;
 
     const statement = new StatementEntity();
 
     statement.title = title;
     statement.description = description;
+    statement.distinctVariableRestrictions = distinctVariableRestrictions;
+    statement.variableTypeHypotheses = variableTypeHypotheses;
+    statement.logicalHypotheses = logicalHypotheses;
+    statement.assertion = assertion;
     statement.systemId = systemId;
     statement.createdByUserId = sessionUserId;
 
