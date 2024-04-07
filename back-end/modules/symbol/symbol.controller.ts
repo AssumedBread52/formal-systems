@@ -29,7 +29,7 @@ export class SymbolController {
 
     const { createdByUserId } = symbol;
 
-    if (createdByUserId !== sessionUserId) {
+    if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new ForbiddenException('You cannot delete a symbol unless you created it.');
     }
 
@@ -69,7 +69,7 @@ export class SymbolController {
 
     const { createdByUserId } = symbol;
 
-    if (createdByUserId !== sessionUserId) {
+    if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new ForbiddenException('You cannot update a symbol unless you created it.');
     }
 
@@ -89,7 +89,7 @@ export class SymbolController {
 
     const { _id, createdByUserId } = system;
 
-    if (createdByUserId !== sessionUserId) {
+    if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new ForbiddenException('Symbols cannot be added to formal systems unless you created them.');
     }
 
