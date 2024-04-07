@@ -1,7 +1,6 @@
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
 import { RenderMath } from '@/common/components/render-math/render-math';
-import { SymbolType } from '@/symbol/enums/symbol-type';
 import { Symbol } from '@/symbol/types/symbol';
 import { ReactElement, ReactNode } from 'react';
 import { EditSymbol } from './edit-symbol/edit-symbol';
@@ -20,7 +19,7 @@ export const SymbolItem = (props: Pick<Symbol, 'id' | 'title' | 'description' | 
     <AntdCard actions={actions} extra={<ExploreSymbolLink id={id} systemId={systemId} />} title={title} type='inner'>
       {description}
       <AntdDivider />
-      {SymbolType[type]}
+      {type}
       <AntdDivider />
       <RenderMath content={content} />
     </AntdCard>
