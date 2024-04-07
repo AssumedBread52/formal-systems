@@ -73,7 +73,7 @@ describe('Create System', (): void => {
       `token=${token}`
     ]).send({
       title: 'Test',
-      description: 'System'
+      description: 'This is a test.'
     });
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
@@ -98,7 +98,7 @@ describe('Create System', (): void => {
       `token=${token}`
     ]).send({
       title: 'Test',
-      description: 'System'
+      description: 'This is a test.'
     });
 
     expectCorrectResponse(response, HttpStatus.CREATED, {});
