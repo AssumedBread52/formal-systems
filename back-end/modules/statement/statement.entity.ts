@@ -10,6 +10,14 @@ export class StatementEntity {
   @Column()
   description: string = '';
   @Column()
+  distinctVariableRestrictions: [ObjectId, ObjectId][] = [];
+  @Column()
+  variableTypeHypotheses: [ObjectId, ObjectId][] = [];
+  @Column()
+  logicalHypotheses: ObjectId[][] = [];
+  @Column()
+  assertion: ObjectId[] = [];
+  @Column()
   systemId: ObjectId = new ObjectId();
   @Column()
   createdByUserId: ObjectId = new ObjectId();
