@@ -3,37 +3,49 @@ import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-res
 import { SystemEntity } from '@/system/system.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { SystemRepositoryMock } from './mocks/system-repository.mock';
 
 describe('Read Systems', (): void => {
   let app: INestApplication;
+  const badQueries = [
+    ['?page=a', 'page must not be less than 1', 'page must be an integer number'],
+    ['?page=5.4', 'page must be an integer number'],
+    ['?page=-2', 'page must not be less than 1'],
+    ['?count=a', 'count must not be less than 1', 'count must be an integer number'],
+    ['?count=5.4', 'count must be an integer number'],
+    ['?count=-2', 'count must not be less than 1'],
+    ['?keywords=', 'each value in keywords should not be empty', 'keywords must be an array'],
+    ['?keywords[]=', 'each value in keywords should not be empty'],
+    ['?userIds=', 'each value in userIds must be a mongodb id', 'userIds must be an array'],
+    ['?userIds[]=', 'each value in userIds must be a mongodb id']
+  ];
+  const goodQueries = [
+    '',
+    '?page=2',
+    '?count=20',
+    '?keywords[]=test',
+    '?keywords[]=test&keywords[]=word',
+    `?userIds[]=${new ObjectId()}`,
+    `?userIds[]=${new ObjectId()}&userIds[]=${new ObjectId()}`
+  ];
 
   beforeAll(async (): Promise<void> => {
     app = await createTestApp();
   });
 
-  it('fails with a bad page query parameter', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).get('/system');
+  it.each(badQueries)('fails %s', async (badQuery: string, ...message: string[]): Promise<void> => {
+    const response = await request(app.getHttpServer()).get(`/system${badQuery}`);
 
     expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
       error: 'Bad Request',
-      message: 'Validation failed (numeric string is expected)',
+      message,
       statusCode: HttpStatus.BAD_REQUEST
     });
   });
 
-  it('fails with a bad count query parameter', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).get('/system?page=1');
-
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
-      error: 'Bad Request',
-      message: 'Validation failed (numeric string is expected)',
-      statusCode: HttpStatus.BAD_REQUEST
-    });
-  });
-
-  it('succeeds without a keywords query parameter', async (): Promise<void> => {
+  it.each(goodQueries)('succeeds %s', async (goodQuery: string): Promise<void> => {
     const testSystem = new SystemEntity();
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
@@ -42,65 +54,7 @@ describe('Read Systems', (): void => {
 
     const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = testSystem;
 
-    const response = await request(app.getHttpServer()).get('/system?page=1&count=10');
-
-    expectCorrectResponse(response, HttpStatus.OK, {
-      results: [
-        {
-          id: _id.toString(),
-          title,
-          description,
-          constantSymbolCount,
-          variableSymbolCount,
-          axiomCount,
-          theoremCount,
-          deductionCount,
-          createdByUserId: createdByUserId.toString()
-        }
-      ],
-      total: 1
-    });
-  });
-
-  it('succeeds with a single keywords query parameter', async (): Promise<void> => {
-    const testSystem = new SystemEntity();
-
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-
-    systemRepositoryMock.findAndCount.mockReturnValueOnce([[testSystem], 1]);
-
-    const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = testSystem;
-
-    const response = await request(app.getHttpServer()).get('/system?page=1&count=10&keywords=test');
-
-    expectCorrectResponse(response, HttpStatus.OK, {
-      results: [
-        {
-          id: _id.toString(),
-          title,
-          description,
-          constantSymbolCount,
-          variableSymbolCount,
-          axiomCount,
-          theoremCount,
-          deductionCount,
-          createdByUserId: createdByUserId.toString()
-        }
-      ],
-      total: 1
-    });
-  });
-
-  it('succeeds with multiple keywords query parameter', async (): Promise<void> => {
-    const testSystem = new SystemEntity();
-
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-
-    systemRepositoryMock.findAndCount.mockReturnValueOnce([[testSystem], 1]);
-
-    const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = testSystem;
-
-    const response = await request(app.getHttpServer()).get('/system?page=1&count=10&keywords=test&keywords=user');
+    const response = await request(app.getHttpServer()).get(`/system${goodQuery}`);
 
     expectCorrectResponse(response, HttpStatus.OK, {
       results: [

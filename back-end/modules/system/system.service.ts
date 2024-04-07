@@ -4,7 +4,6 @@ import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
 import { EditSystemPayload } from './payloads/edit-system.payload';
 import { NewSystemPayload } from './payloads/new-system.payload';
-import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
 import { SystemEntity } from './system.entity';
 
 @Injectable()
@@ -43,23 +42,27 @@ export class SystemService {
     });
   }
 
-  async readSystems(page: number, count: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
+  readSystems(page: number, count: number, keywords: string[], userIds: ObjectId[]): Promise<[SystemEntity[], number]> {
     const where = {} as RootFilterOperators<SystemEntity>;
 
-    if (keywords && 0 !== keywords.length) {
+    if (0 !== keywords.length) {
       where.$text = {
         $caseSensitive: false,
-        $search: Array.isArray(keywords) ? keywords.join(',') : keywords
+        $search: keywords.join(',')
       };
     }
 
-    const [results, total] = await this.systemRepository.findAndCount({
+    if (0 !== userIds.length) {
+      where.createdByUserId = {
+        $in: userIds
+      };
+    }
+
+    return this.systemRepository.findAndCount({
       skip: (page - 1) * count,
       take: count,
       where
     });
-
-    return new PaginatedResultsPayload(total, results);
   }
 
   async update(system: SystemEntity, editSystemPayload: EditSystemPayload): Promise<SystemEntity> {

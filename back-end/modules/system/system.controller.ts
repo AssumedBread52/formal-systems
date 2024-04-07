@@ -2,12 +2,14 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
-import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditSystemPayload } from './payloads/edit-system.payload';
 import { NewSystemPayload } from './payloads/new-system.payload';
-import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
+import { SearchPayload } from './payloads/search.payload';
 import { SystemPayload } from './payloads/system.payload';
+import { SystemEntity } from './system.entity';
 import { SystemService } from './system.service';
 
 @Controller('system')
@@ -26,7 +28,7 @@ export class SystemController {
 
     const { createdByUserId } = system;
 
-    if (sessionUserId.toString() !== createdByUserId.toString()) {
+    if (createdByUserId !== sessionUserId) {
       throw new ForbiddenException('You cannot delete a system unless you created it.');
     }
 
@@ -36,8 +38,12 @@ export class SystemController {
   }
 
   @Get()
-  getSystems(@Query('page', ParseIntPipe) page: number, @Query('count', ParseIntPipe) count: number, @Query('keywords') keywords?: string | string[]): Promise<PaginatedResultsPayload> {
-    return this.systemService.readSystems(page, count, keywords);
+  async getSystems(@Query(new ValidationPipe({ transform: true })) searchPayload: SearchPayload): Promise<PaginatedResultsPayload<SystemEntity, SystemPayload>> {
+    const { page, count, keywords, userIds } = searchPayload;
+
+    const [results, total] = await this.systemService.readSystems(page, count, keywords, userIds);
+
+    return new PaginatedResultsPayload(SystemPayload, results, total);
   }
 
   @Get(':systemId')
@@ -62,7 +68,7 @@ export class SystemController {
 
     const { createdByUserId } = system;
 
-    if (sessionUserId.toString() !== createdByUserId.toString()) {
+    if (createdByUserId !== sessionUserId) {
       throw new ForbiddenException('You cannot update a system unless you created it.');
     }
 
