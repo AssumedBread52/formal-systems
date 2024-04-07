@@ -2,13 +2,15 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
+import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
 import { NewSymbolPayload } from './payloads/new-symbol.payload';
-import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
+import { SearchPayload } from './payloads/search.payload';
 import { SymbolPayload } from './payloads/symbol.payload';
+import { SymbolEntity } from './symbol.entity';
 import { SymbolService } from './symbol.service';
 
 @Controller('system/:systemId/symbol')
@@ -27,7 +29,7 @@ export class SymbolController {
 
     const { createdByUserId } = symbol;
 
-    if (sessionUserId.toString() !== createdByUserId.toString()) {
+    if (createdByUserId !== sessionUserId) {
       throw new ForbiddenException('You cannot delete a symbol unless you created it.');
     }
 
@@ -37,8 +39,12 @@ export class SymbolController {
   }
 
   @Get()
-  getSymbols(@ObjectIdDecorator('systemId') systemId: ObjectId, @Query('page', ParseIntPipe) page: number, @Query('count', ParseIntPipe) count: number, @Query('keywords') keywords?: string | string[]): Promise<PaginatedResultsPayload> {
-    return this.symbolService.readSymbols(systemId, page, count, keywords);
+  async getSymbols(@ObjectIdDecorator('systemId') systemId: ObjectId, @Query(new ValidationPipe({ transform: true })) queryParameters: SearchPayload): Promise<PaginatedResultsPayload<SymbolEntity, SymbolPayload>> {
+    const { page, count, keywords, types } = queryParameters;
+
+    const [results, total] = await this.symbolService.readSymbols(page, count, keywords, types, systemId);
+
+    return new PaginatedResultsPayload(SymbolPayload, results, total);
   }
 
   @Get(':symbolId')
@@ -63,7 +69,7 @@ export class SymbolController {
 
     const { createdByUserId } = symbol;
 
-    if (sessionUserId.toString() !== createdByUserId.toString()) {
+    if (createdByUserId !== sessionUserId) {
       throw new ForbiddenException('You cannot update a symbol unless you created it.');
     }
 
@@ -83,7 +89,7 @@ export class SymbolController {
 
     const { _id, createdByUserId } = system;
 
-    if (sessionUserId.toString() !== createdByUserId.toString()) {
+    if (createdByUserId !== sessionUserId) {
       throw new ForbiddenException('Symbols cannot be added to formal systems unless you created them.');
     }
 

@@ -2,9 +2,9 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
+import { SymbolType } from './enums/symbol-type.enum';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
 import { NewSymbolPayload } from './payloads/new-symbol.payload';
-import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
 import { SymbolEntity } from './symbol.entity';
 
 @Injectable()
@@ -47,25 +47,29 @@ export class SymbolService {
     });
   }
 
-  async readSymbols(systemId: ObjectId, page: number, count: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
+  readSymbols(page: number, count: number, keywords: string[], types: SymbolType[], systemId: ObjectId): Promise<[SymbolEntity[], number]> {
     const where = {
       systemId
     } as RootFilterOperators<SymbolEntity>;
 
-    if (keywords && 0 !== keywords.length) {
+    if (0 !== keywords.length) {
       where.$text = {
         $caseSensitive: false,
-        $search: Array.isArray(keywords) ? keywords.join(',') : keywords
+        $search: keywords.join(',')
       };
     }
 
-    const [results, total] = await this.symbolRepository.findAndCount({
+    if (0 !== types.length) {
+      where.type = {
+        $in: types
+      };
+    }
+
+    return this.symbolRepository.findAndCount({
       skip: (page - 1) * count,
       take: count,
       where
     });
-
-    return new PaginatedResultsPayload(total, results);
   }
 
   async update(symbol: SymbolEntity, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {

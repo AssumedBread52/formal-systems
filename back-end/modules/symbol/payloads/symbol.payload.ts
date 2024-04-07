@@ -1,17 +1,10 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { Transform, TransformFnParams } from 'class-transformer';
 import { IsEnum, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
-import { ObjectId } from 'mongodb';
 
 export class SymbolPayload {
   @IsMongoId()
-  @Transform((params: TransformFnParams): any => {
-    const { value } = params;
-
-    return value.toString();
-  })
-  id: ObjectId;
+  id: string;
   @IsNotEmpty()
   title: string;
   @IsNotEmpty()
@@ -30,24 +23,14 @@ export class SymbolPayload {
   @Min(0)
   deductionAppearances: number;
   @IsMongoId()
-  @Transform((params: TransformFnParams): any => {
-    const { value } = params;
-
-    return value.toString();
-  })
-  systemId: ObjectId;
+  systemId: string;
   @IsMongoId()
-  @Transform((params: TransformFnParams): any => {
-    const { value } = params;
-
-    return value.toString();
-  })
-  createdByUserId: ObjectId;
+  createdByUserId: string;
 
   constructor(symbol: SymbolEntity) {
     const { _id, title, description, type, content, axiomAppearances, theoremAppearances, deductionAppearances, systemId, createdByUserId } = symbol;
 
-    this.id = _id;
+    this.id = _id.toString();
     this.title = title;
     this.description = description;
     this.type = type;
@@ -55,7 +38,7 @@ export class SymbolPayload {
     this.axiomAppearances = axiomAppearances;
     this.theoremAppearances = theoremAppearances;
     this.deductionAppearances = deductionAppearances;
-    this.systemId = systemId;
-    this.createdByUserId = createdByUserId;
+    this.systemId = systemId.toString();
+    this.createdByUserId = createdByUserId.toString();
   }
 };
