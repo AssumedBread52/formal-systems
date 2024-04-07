@@ -15,6 +15,10 @@ describe('Read System by ID', (): void => {
   });
 
   it('fails if system is not found', async (): Promise<void> => {
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(null);
+
     const response = await request(app.getHttpServer()).get(`/system/${new ObjectId()}`);
 
     expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
