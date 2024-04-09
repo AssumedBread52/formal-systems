@@ -118,6 +118,7 @@ export class StatementController {
     distinctVariableRestrictions.reduce((restrictions: Record<string, string>, distinctVariableRestriction: [ObjectId, ObjectId]): Record<string, string> => {
       const first = distinctVariableRestriction[0].toString();
       const second = distinctVariableRestriction[1].toString();
+
       if (symbolDictionary[first].type !== SymbolType.Variable || symbolDictionary[second].type !== SymbolType.Variable) {
         throw new BadRequestException([
           'all distinct variable restrictions must be a pair of variable symbols'
@@ -136,18 +137,27 @@ export class StatementController {
       return restrictions;
     }, {});
 
-    variableTypeHypotheses.forEach((variableTypeHypothesis: [ObjectId, ObjectId]): void => {
-      if (symbolDictionary[variableTypeHypothesis[0].toString()].type !== SymbolType.Constant) {
+    variableTypeHypotheses.reduce((types: Record<string, string>, variableTypeHypothesis: [ObjectId, ObjectId]): Record<string, string> => {
+      const constant = variableTypeHypothesis[0].toString();
+      const variable = variableTypeHypothesis[1].toString();
+
+      if (symbolDictionary[constant].type !== SymbolType.Constant || symbolDictionary[variable].type !== SymbolType.Variable) {
         throw new BadRequestException([
-          'all variable type hypotheses must start with a constant symbol'
+          'all variable type hypotheses must start with a constant symbol and end with a variable symbol'
         ]);
       }
-      if (symbolDictionary[variableTypeHypothesis[1].toString()].type !== SymbolType.Variable) {
+
+      if (types[variable]) {
         throw new BadRequestException([
-          'all variable type hypotheses must end with a variable symbol'
+          'variables can only be assigned one type'
         ]);
       }
-    });
+
+      types[variable] = constant;
+
+      return types;
+    }, {});
+
     logicalHypotheses.forEach((logicalHypothesis: ObjectId[]): void => {
       if (symbolDictionary[logicalHypothesis[0].toString()].type !== SymbolType.Constant) {
         throw new BadRequestException([
