@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { IsMongoIdDecorator } from '@/common/decorators/is-mongo-id.decorator';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { IsArray, IsInt, IsNotEmpty, Min, isArray, isMongoId } from 'class-validator';
 import { ObjectId } from 'mongodb';
@@ -21,21 +21,20 @@ export class SearchPayload {
     each: true
   })
   keywords: string[] = [];
+  @IsArray()
+  @IsMongoIdDecorator({
+    each: true
+  })
   @Transform((params: TransformFnParams): ObjectId[] => {
     if (!isArray(params.value)) {
-      throw new BadRequestException([
-        'each value in userIds must be a mongodb id',
-        'userIds must be an array'
-      ]);
+      return params.value;
     }
 
-    params.value.forEach((item: any): void => {
+    for (let item of params.value) {
       if (!isMongoId(item)) {
-        throw new BadRequestException([
-          'each value in userIds must be a mongodb id'
-        ]);
+        return params.value;
       }
-    });
+    }
 
     return params.value.map((userId: string): ObjectId => {
       return new ObjectId(userId);
