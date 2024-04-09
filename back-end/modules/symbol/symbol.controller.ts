@@ -39,8 +39,8 @@ export class SymbolController {
   }
 
   @Get()
-  async getSymbols(@ObjectIdDecorator('systemId') systemId: ObjectId, @Query(new ValidationPipe({ transform: true })) queryParameters: SearchPayload): Promise<PaginatedResultsPayload<SymbolEntity, SymbolPayload>> {
-    const { page, count, keywords, types } = queryParameters;
+  async getSymbols(@ObjectIdDecorator('systemId') systemId: ObjectId, @Query(new ValidationPipe({ transform: true })) searchPayload: SearchPayload): Promise<PaginatedResultsPayload<SymbolEntity, SymbolPayload>> {
+    const { page, count, keywords, types } = searchPayload;
 
     const [results, total] = await this.symbolService.readSymbols(page, count, keywords, types, systemId);
 
