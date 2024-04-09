@@ -6,7 +6,7 @@ import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolService } from '@/symbol/symbol.service';
 import { SystemService } from '@/system/system.service';
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
@@ -115,18 +115,27 @@ export class StatementController {
       }
     });
 
-    distinctVariableRestrictions.forEach((distinctVariableRestriction: [ObjectId, ObjectId]): void => {
-      if (symbolDictionary[distinctVariableRestriction[0].toString()].type !== SymbolType.Variable) {
+    distinctVariableRestrictions.reduce((restrictions: Record<string, string>, distinctVariableRestriction: [ObjectId, ObjectId]): Record<string, string> => {
+      const first = distinctVariableRestriction[0].toString();
+      const second = distinctVariableRestriction[1].toString();
+      if (symbolDictionary[first].type !== SymbolType.Variable || symbolDictionary[second].type !== SymbolType.Variable) {
         throw new BadRequestException([
-          'all variable type hypotheses must start with a variable symbol'
+          'all distinct variable restrictions must be a pair of variable symbols'
         ]);
       }
-      if (symbolDictionary[distinctVariableRestriction[1].toString()].type !== SymbolType.Variable) {
+
+      if (restrictions[first]) {
         throw new BadRequestException([
-          'all variable type hypotheses must end with a variable symbol'
+          'all distinct variable restrictions must be distinct'
         ]);
       }
-    });
+
+      restrictions[first] = second;
+      restrictions[second] = first;
+
+      return restrictions;
+    }, {});
+
     variableTypeHypotheses.forEach((variableTypeHypothesis: [ObjectId, ObjectId]): void => {
       if (symbolDictionary[variableTypeHypothesis[0].toString()].type !== SymbolType.Constant) {
         throw new BadRequestException([
