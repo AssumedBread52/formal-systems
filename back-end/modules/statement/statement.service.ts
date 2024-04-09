@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
@@ -12,8 +12,21 @@ export class StatementService {
   constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>) {
   }
 
-  create(newStatementPayload: NewStatementPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<StatementEntity> {
+  private async checkForConflict(assertion: ObjectId[], systemId: ObjectId): Promise<void> {
+    const collision = await this.statementRepository.findOneBy({
+      assertion,
+      systemId
+    });
+
+    if (collision) {
+      throw new ConflictException('Statements within a formal system must have a unqiue assertion.');
+    }
+  }
+
+  async create(newStatementPayload: NewStatementPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<StatementEntity> {
     const { title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = newStatementPayload;
+
+    await this.checkForConflict(assertion, systemId);
 
     const statement = new StatementEntity();
 
