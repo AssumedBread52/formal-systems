@@ -178,9 +178,19 @@ export class StatementController {
 
     if (symbolDictionary[assertion[0].toString()].type !== SymbolType.Constant) {
       throw new BadRequestException([
-        'expressions must start with a constant symbol'
+        'assertion must start with a constant symbol'
       ]);
     }
+
+    assertion.forEach((symbol: ObjectId): void => {
+      const id = symbol.toString();
+
+      if (symbolDictionary[id].type === SymbolType.Variable && !types[id]) {
+        throw new BadRequestException([
+          'all variable symbols in the assertion must have a corresponding variable type hypothesis'
+        ]);
+      }
+    });
 
     await this.statementService.create(newStatementPayload, systemId, sessionUserId);
   }
