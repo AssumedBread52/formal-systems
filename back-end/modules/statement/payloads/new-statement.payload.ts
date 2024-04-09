@@ -1,6 +1,7 @@
+import { IsExpressionDecorator } from '@/common/decorators/is-expression.decorator';
 import { BadRequestException } from '@nestjs/common';
 import { Transform, TransformFnParams } from 'class-transformer';
-import { IsNotEmpty, arrayMaxSize, arrayMinSize, arrayNotEmpty, isArray, isMongoId } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsNotEmpty, arrayMaxSize, arrayMinSize, arrayNotEmpty, isArray, isMongoId } from 'class-validator';
 import { ObjectId } from 'mongodb';
 
 export class NewStatementPayload {
@@ -88,33 +89,29 @@ export class NewStatementPayload {
     });
   })
   variableTypeHypotheses: [ObjectId, ObjectId][] = [];
+  @IsArray()
+  @ArrayNotEmpty({
+    each: true
+  })
+  @IsExpressionDecorator({
+    each: true
+  })
   @Transform((params: TransformFnParams): ObjectId[][] => {
     if (!isArray(params.value)) {
-      throw new BadRequestException([
-        'each value in each value in logicalHypotheses must be a mongodb id',
-        'each value in logicalHypotheses should not be empty',
-        'logicalHypotheses must be an array'
-      ]);
+      return params.value;
     }
 
-    params.value.forEach((item: any): void => {
+    for (let item of params.value) {
       if (!arrayNotEmpty(item)) {
-        throw new BadRequestException([
-          'each value in each value in logicalHypotheses must be a mongodb id',
-          'each value in logicalHypotheses should not be empty'
-        ]);
+        return params.value;
       }
-    });
 
-    params.value.forEach((item: any[]): void => {
-      item.forEach((id: any): void => {
+      for (let id of item) {
         if (!isMongoId(id)) {
-          throw new BadRequestException([
-            'each value in each value in logicalHypotheses must be a mongodb id'
-          ]);
+          return params.value;
         }
-      });
-    });
+      }
+    }
 
     return params.value.map((expression: string[]): ObjectId[] => {
       return expression.map((id: string): ObjectId => {
@@ -123,21 +120,18 @@ export class NewStatementPayload {
     });
   })
   logicalHypotheses: ObjectId[][] = [];
+  @ArrayNotEmpty()
+  @IsExpressionDecorator()
   @Transform((params: TransformFnParams): ObjectId[] => {
     if (!arrayNotEmpty(params.value)) {
-      throw new BadRequestException([
-        'each value in assertion must be a mongodb id',
-        'assertion should not be empty'
-      ]);
+      return params.value;
     }
 
-    params.value.forEach((item: any): void => {
+    for (let item of params.value) {
       if (!isMongoId(item)) {
-        throw new BadRequestException([
-          'each value in assertion must be a mongodb id'
-        ]);
+        return params.value;
       }
-    });
+    }
 
     return params.value.map((symbolId: string): ObjectId => {
       return new ObjectId(symbolId);
