@@ -4,6 +4,7 @@ import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
 import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
 import { testMissingToken } from '@/auth/tests/helpers/test-missing-token';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
+import { StatementEntity } from '@/statement/statement.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolRepositoryMock } from '@/symbol/tests/mocks/symbol-repository.mock';
@@ -15,6 +16,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
+import { StatementRepositoryMock } from './mocks/statement-repository.mock';
 
 describe('Create Statement', (): void => {
   let app: INestApplication;
@@ -36,27 +38,67 @@ describe('Create Statement', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const testSymbol = new SymbolEntity();
-    const testSymbol2 = new SymbolEntity();
-    const testSymbol3 = new SymbolEntity();
-    const testSystem = new SystemEntity();
     const testUser = new UserEntity();
+    const testSystem = new SystemEntity();
+    const turnstile = new SymbolEntity();
+    const wff = new SymbolEntity();
+    const setvar = new SymbolEntity();
+    const openParenthesis = new SymbolEntity();
+    const closeParenthesis = new SymbolEntity();
+    const implication = new SymbolEntity();
+    const forAll = new SymbolEntity();
+    const phi = new SymbolEntity();
+    const psi = new SymbolEntity();
+    const chi = new SymbolEntity();
+    const x = new SymbolEntity();
 
-    testSymbol.createdByUserId = testUser._id;
-    testSymbol.systemId = testSymbol._id;
-    testSymbol2.type = SymbolType.Variable;
-    testSymbol2.createdByUserId = testUser._id;
-    testSymbol2.systemId = testSymbol._id;
-    testSymbol3.type = SymbolType.Variable;
-    testSymbol3.createdByUserId = testUser._id;
-    testSymbol3.systemId = testSymbol._id;
     testSystem.createdByUserId = testUser._id;
+    turnstile.systemId = testSystem._id;
+    turnstile.createdByUserId = testUser._id;
+    wff.systemId = testSystem._id;
+    wff.createdByUserId = testUser._id;
+    setvar.systemId = testSystem._id;
+    setvar.createdByUserId = testUser._id;
+    openParenthesis.systemId = testSystem._id;
+    openParenthesis.createdByUserId = testUser._id;
+    closeParenthesis.systemId = testSystem._id;
+    closeParenthesis.createdByUserId = testSystem._id;
+    implication.systemId = testSystem._id;
+    implication.createdByUserId = testSystem._id;
+    forAll.systemId = testSystem._id;
+    forAll.createdByUserId = testSystem._id;
+    phi.type = SymbolType.Variable;
+    phi.systemId = testSystem._id;
+    phi.createdByUserId = testSystem._id;
+    psi.type = SymbolType.Variable;
+    psi.systemId = testSystem._id;
+    psi.createdByUserId = testSystem._id;
+    chi.type = SymbolType.Variable;
+    chi.systemId = testSystem._id;
+    chi.createdByUserId = testSystem._id;
+    x.type = SymbolType.Variable;
+    x.systemId = testSystem._id;
+    x.createdByUserId = testSystem._id;
 
+    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    symbolRepositoryMock.find.mockReturnValueOnce([testSymbol, testSymbol2, testSymbol3]);
+    statementRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    symbolRepositoryMock.find.mockReturnValueOnce([
+      turnstile,
+      wff,
+      setvar,
+      openParenthesis,
+      closeParenthesis,
+      implication,
+      forAll,
+      phi,
+      psi,
+      chi,
+      x
+    ]);
     systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
     userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
 
@@ -67,12 +109,44 @@ describe('Create Statement', (): void => {
     ]).send({
       title: 'Test',
       description: 'This is a test.',
-      distinctVariableRestrictions: [[testSymbol2._id, testSymbol3._id]],
-      variableTypeHypotheses: [[testSymbol._id, testSymbol2._id]],
-      logicalHypotheses: [[testSymbol._id]],
+      distinctVariableRestrictions: [
+        [phi._id, x._id]
+      ],
+      variableTypeHypotheses: [
+        [wff._id, phi._id],
+        [wff._id, psi._id],
+        [wff._id, chi._id],
+        [setvar._id, x._id]
+      ],
+      logicalHypotheses: [
+        [
+          turnstile._id,
+          openParenthesis._id,
+          phi._id,
+          implication._id,
+          openParenthesis._id,
+          psi._id,
+          implication._id,
+          chi._id,
+          closeParenthesis._id,
+          closeParenthesis._id
+        ]
+      ],
       assertion: [
-        testSymbol._id,
-        testSymbol._id
+        turnstile._id,
+        openParenthesis._id,
+        phi._id,
+        implication._id,
+        openParenthesis._id,
+        forAll._id,
+        x._id,
+        psi._id,
+        implication._id,
+        forAll._id,
+        x._id,
+        chi._id,
+        closeParenthesis._id,
+        closeParenthesis._id
       ]
     });
 
