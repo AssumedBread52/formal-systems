@@ -137,7 +137,7 @@ export class StatementController {
       return restrictions;
     }, {});
 
-    variableTypeHypotheses.reduce((types: Record<string, string>, variableTypeHypothesis: [ObjectId, ObjectId]): Record<string, string> => {
+    const types = variableTypeHypotheses.reduce((types: Record<string, string>, variableTypeHypothesis: [ObjectId, ObjectId]): Record<string, string> => {
       const constant = variableTypeHypothesis[0].toString();
       const variable = variableTypeHypothesis[1].toString();
 
@@ -164,7 +164,18 @@ export class StatementController {
           'all logical hypotheses must start with a constant symbol'
         ]);
       }
+
+      logicalHypothesis.forEach((symbol: ObjectId): void => {
+        const id = symbol.toString();
+
+        if (symbolDictionary[id].type === SymbolType.Variable && !types[id]) {
+          throw new BadRequestException([
+            'all variable symbols in any logical hypothesis must have a corresponding variable type hypothesis'
+          ]);
+        }
+      });
     });
+
     if (symbolDictionary[assertion[0].toString()].type !== SymbolType.Constant) {
       throw new BadRequestException([
         'expressions must start with a constant symbol'
