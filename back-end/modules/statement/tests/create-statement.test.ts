@@ -150,7 +150,6 @@ describe('Create Statement', (): void => {
       ]
     });
 
-    expect(response.body).toEqual({});
     expectCorrectResponse(response, HttpStatus.CREATED, {});
   });
 
