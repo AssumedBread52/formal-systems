@@ -6,7 +6,7 @@ import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolService } from '@/symbol/symbol.service';
 import { SystemService } from '@/system/system.service';
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UnprocessableEntityException, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
@@ -109,7 +109,7 @@ export class StatementController {
 
     symbolIds.forEach((symbolId: ObjectId): void => {
       if (!symbolDictionary[symbolId.toString()]) {
-        throw new BadRequestException([
+        throw new UnprocessableEntityException([
           'All symbols used in a statement must exist in the formal system.'
         ]);
       }
@@ -117,7 +117,7 @@ export class StatementController {
 
     distinctVariableRestrictions.forEach((distinctVariableRestriction: [ObjectId, ObjectId]): void => {
       if (symbolDictionary[distinctVariableRestriction[0].toString()].type !== SymbolType.Variable || symbolDictionary[distinctVariableRestriction[1].toString()].type !== SymbolType.Variable) {
-        throw new BadRequestException([
+        throw new UnprocessableEntityException([
           'all distinct variable restrictions must be a pair of variable symbols'
         ]);
       }
@@ -128,7 +128,7 @@ export class StatementController {
       const variable = variableTypeHypothesis[1].toString();
 
       if (symbolDictionary[constant].type !== SymbolType.Constant || symbolDictionary[variable].type !== SymbolType.Variable) {
-        throw new BadRequestException([
+        throw new UnprocessableEntityException([
           'all variable type hypotheses must start with a constant symbol and end with a variable symbol'
         ]);
       }
@@ -140,7 +140,7 @@ export class StatementController {
 
     [...logicalHypotheses, assertion].forEach((expression: ObjectId[]): void => {
       if (symbolDictionary[expression[0].toString()].type !== SymbolType.Constant) {
-        throw new BadRequestException([
+        throw new UnprocessableEntityException([
           'all logical hypotheses and the assertion must start with a constant symbol'
         ]);
       }
@@ -149,7 +149,7 @@ export class StatementController {
         const id = symbolId.toString();
 
         if (symbolDictionary[id].type === SymbolType.Variable && !types[id]) {
-          throw new BadRequestException([
+          throw new UnprocessableEntityException([
             'all variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis'
           ]);
         }
