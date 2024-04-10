@@ -158,38 +158,22 @@ export class StatementController {
       return types;
     }, {});
 
-    logicalHypotheses.forEach((logicalHypothesis: ObjectId[]): void => {
-      if (symbolDictionary[logicalHypothesis[0].toString()].type !== SymbolType.Constant) {
+    [...logicalHypotheses, assertion].forEach((expression: ObjectId[]): void => {
+      if (symbolDictionary[expression[0].toString()].type !== SymbolType.Constant) {
         throw new BadRequestException([
-          'all logical hypotheses must start with a constant symbol'
+          'all logical hypotheses and the assertion must start with a constant symbol'
         ]);
       }
 
-      logicalHypothesis.forEach((symbol: ObjectId): void => {
-        const id = symbol.toString();
+      expression.forEach((symbolId: ObjectId): void => {
+        const id = symbolId.toString();
 
         if (symbolDictionary[id].type === SymbolType.Variable && !types[id]) {
           throw new BadRequestException([
-            'all variable symbols in any logical hypothesis must have a corresponding variable type hypothesis'
+            'all variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis'
           ]);
         }
       });
-    });
-
-    if (symbolDictionary[assertion[0].toString()].type !== SymbolType.Constant) {
-      throw new BadRequestException([
-        'assertion must start with a constant symbol'
-      ]);
-    }
-
-    assertion.forEach((symbol: ObjectId): void => {
-      const id = symbol.toString();
-
-      if (symbolDictionary[id].type === SymbolType.Variable && !types[id]) {
-        throw new BadRequestException([
-          'all variable symbols in the assertion must have a corresponding variable type hypothesis'
-        ]);
-      }
     });
 
     await this.statementService.create(newStatementPayload, systemId, sessionUserId);
