@@ -1,7 +1,7 @@
+import { IsDistinctPairDecorator } from '@/common/decorators/is-distinct-pair.decorator';
 import { IsExpressionDecorator } from '@/common/decorators/is-expression.decorator';
-import { BadRequestException } from '@nestjs/common';
 import { Transform, TransformFnParams } from 'class-transformer';
-import { ArrayNotEmpty, IsArray, IsNotEmpty, arrayMaxSize, arrayMinSize, arrayNotEmpty, isArray, isMongoId } from 'class-validator';
+import { ArrayMinSize, ArrayUnique, IsArray, IsNotEmpty, isArray, isMongoId } from 'class-validator';
 import { ObjectId } from 'mongodb';
 
 export class NewStatementPayload {
@@ -9,132 +9,138 @@ export class NewStatementPayload {
   title: string = '';
   @IsNotEmpty()
   description: string = '';
-  @Transform((params: TransformFnParams): [ObjectId, ObjectId][] => {
-    if (!isArray(params.value)) {
-      throw new BadRequestException([
-        'variableTypeHypotheses must be an array',
-        'each value in variableTypeHypotheses must contain exactly 2 elements',
-        'each value in each value in variableTypeHypotheses must be a mongodb id'
-      ]);
+  @ArrayUnique((element: any): string => {
+    if (!isArray(element) || 2 !== element.length) {
+      return '';
     }
 
-    params.value.forEach((item: any): void => {
-      if (!arrayMaxSize(item, 2) || !arrayMinSize(item, 2)) {
-        throw new BadRequestException([
-          'each value in variableTypeHypotheses must contain exactly 2 elements',
-          'each value in each value in variableTypeHypotheses must be a mongodb id'
-        ]);
-      }
-    });
+    const first = `${element[0]}`;
+    const second = `${element[1]}`;
 
-    params.value.forEach((item: [any, any]): void => {
-      item.forEach((id: any): void => {
-        if (!isMongoId(id)) {
-          throw new BadRequestException([
-            'each value in each value in variableTypeHypotheses must be a mongodb id'
-          ]);
-        }
-      });
-    });
-
-    params.value.forEach((item: [any, any]): void => {
-      if (item[0] === item[1]) {
-        throw new BadRequestException([
-          'each value in variableTypeHypotheses must contain 2 unique elements'
-        ]);
-      }
-    });
-
-    return params.value.map((item: [string, string]): [ObjectId, ObjectId] => {
-      return [
-        new ObjectId(item[0]),
-        new ObjectId(item[1])
-      ];
-    });
-  })
-  distinctVariableRestrictions: [ObjectId, ObjectId][] = [];
-  @Transform((params: TransformFnParams): [ObjectId, ObjectId][] => {
-    if (!isArray(params.value)) {
-      throw new BadRequestException([
-        'variableTypeHypotheses must be an array',
-        'each value in variableTypeHypotheses must contain exactly 2 elements',
-        'each value in each value in variableTypeHypotheses must be a mongodb id'
-      ]);
+    if (first.localeCompare(second) < 0) {
+      return `${first}${second}`;
+    } else {
+      return `${second}${first}`;
     }
-
-    params.value.forEach((item: any): void => {
-      if (!arrayMaxSize(item, 2) || !arrayMinSize(item, 2)) {
-        throw new BadRequestException([
-          'each value in variableTypeHypotheses must contain exactly 2 elements',
-          'each value in each value in variableTypeHypotheses must be a mongodb id'
-        ]);
-      }
-    });
-
-    params.value.forEach((item: [any, any]): void => {
-      item.forEach((id: any): void => {
-        if (!isMongoId(id)) {
-          throw new BadRequestException([
-            'each value in each value in variableTypeHypotheses must be a mongodb id'
-          ]);
-        }
-      });
-    });
-
-    return params.value.map((item: [string, string]): [ObjectId, ObjectId] => {
-      return [
-        new ObjectId(item[0]),
-        new ObjectId(item[1])
-      ];
-    });
   })
-  variableTypeHypotheses: [ObjectId, ObjectId][] = [];
   @IsArray()
-  @ArrayNotEmpty({
+  @IsDistinctPairDecorator({
     each: true
   })
-  @IsExpressionDecorator({
-    each: true
-  })
-  @Transform((params: TransformFnParams): ObjectId[][] => {
+  @Transform((params: TransformFnParams): any => {
     if (!isArray(params.value)) {
       return params.value;
     }
 
-    for (let item of params.value) {
-      if (!arrayNotEmpty(item)) {
+    for (let element of params.value) {
+      if (!isArray(element)) {
         return params.value;
       }
 
-      for (let id of item) {
-        if (!isMongoId(id)) {
+      for (let item of element) {
+        if (!isMongoId(item)) {
           return params.value;
         }
       }
     }
 
-    return params.value.map((expression: string[]): ObjectId[] => {
-      return expression.map((id: string): ObjectId => {
+    return params.value.map((item: string[]): ObjectId[] => {
+      return item.map((id: string): ObjectId => {
+        return new ObjectId(id);
+      });
+    });
+  })
+  distinctVariableRestrictions: [ObjectId, ObjectId][] = [];
+  @ArrayUnique((element: any) => {
+    if (!isArray(element) || 2 !== element.length) {
+      return '';
+    }
+
+    return `${element[1]}`;
+  })
+  @IsArray()
+  @IsDistinctPairDecorator({
+    each: true
+  })
+  @Transform((params: TransformFnParams): any => {
+    if (!isArray(params.value)) {
+      return params.value;
+    }
+
+    for (let element of params.value) {
+      if (!isArray(element)) {
+        return params.value;
+      }
+
+      for (let item of element) {
+        if (!isMongoId(item)) {
+          return params.value;
+        }
+      }
+    }
+
+    return params.value.map((item: string[]): ObjectId[] => {
+      return item.map((id: string): ObjectId => {
+        return new ObjectId(id);
+      });
+    });
+  })
+  variableTypeHypotheses: [ObjectId, ObjectId][] = [];
+  @ArrayMinSize(1, {
+    each: true
+  })
+  @ArrayUnique((element: any): string => {
+    if (!isArray(element)) {
+      return '';
+    }
+
+    return element.map((id: any): string => {
+      return `${id}`;
+    }).join(',');
+  })
+  @IsArray()
+  @IsExpressionDecorator({
+    each: true
+  })
+  @Transform((params: TransformFnParams): any => {
+    if (!isArray(params.value)) {
+      return params.value;
+    }
+
+    for (let element of params.value) {
+      if (!isArray(element)) {
+        return params.value;
+      }
+
+      for (let item of element) {
+        if (!isMongoId(item)) {
+          return params.value;
+        }
+      }
+    }
+
+    return params.value.map((item: string[]): ObjectId[] => {
+      return item.map((id: string): ObjectId => {
         return new ObjectId(id);
       });
     });
   })
   logicalHypotheses: ObjectId[][] = [];
-  @ArrayNotEmpty()
+  @ArrayMinSize(1)
   @IsExpressionDecorator()
-  @Transform((params: TransformFnParams): ObjectId[] => {
-    if (!arrayNotEmpty(params.value)) {
+  @Transform((params: TransformFnParams): any => {
+    if (!isArray(params.value)) {
       return params.value;
     }
 
-    for (let item of params.value) {
-      if (!isMongoId(item)) {
+    for (let element of params.value) {
+      if (!isMongoId(element)) {
         return params.value;
       }
     }
 
-    return params.value.map((symbolId: string): ObjectId => {
-      return new ObjectId(symbolId);
+    return params.value.map((element: string): ObjectId => {
+      return new ObjectId(element);
     });
   })
   assertion: ObjectId[] = [];
