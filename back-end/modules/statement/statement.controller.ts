@@ -115,27 +115,13 @@ export class StatementController {
       }
     });
 
-    distinctVariableRestrictions.reduce((restrictions: Record<string, string>, distinctVariableRestriction: [ObjectId, ObjectId]): Record<string, string> => {
-      const first = distinctVariableRestriction[0].toString();
-      const second = distinctVariableRestriction[1].toString();
-
-      if (symbolDictionary[first].type !== SymbolType.Variable || symbolDictionary[second].type !== SymbolType.Variable) {
+    distinctVariableRestrictions.forEach((distinctVariableRestriction: [ObjectId, ObjectId]): void => {
+      if (symbolDictionary[distinctVariableRestriction[0].toString()].type !== SymbolType.Variable || symbolDictionary[distinctVariableRestriction[1].toString()].type !== SymbolType.Variable) {
         throw new BadRequestException([
           'all distinct variable restrictions must be a pair of variable symbols'
         ]);
       }
-
-      if (restrictions[first]) {
-        throw new BadRequestException([
-          'all distinct variable restrictions must be distinct'
-        ]);
-      }
-
-      restrictions[first] = second;
-      restrictions[second] = first;
-
-      return restrictions;
-    }, {});
+    });
 
     const types = variableTypeHypotheses.reduce((types: Record<string, string>, variableTypeHypothesis: [ObjectId, ObjectId]): Record<string, string> => {
       const constant = variableTypeHypothesis[0].toString();
