@@ -51,7 +51,7 @@ export class NewStatementPayload {
     });
   })
   distinctVariableRestrictions: [ObjectId, ObjectId][] = [];
-  @ArrayUnique((element: any) => {
+  @ArrayUnique((element: any): string => {
     if (!isArray(element) || 2 !== element.length) {
       return '';
     }
