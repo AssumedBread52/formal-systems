@@ -133,12 +133,6 @@ export class StatementController {
         ]);
       }
 
-      if (types[variable]) {
-        throw new BadRequestException([
-          'variables can only be assigned one type'
-        ]);
-      }
-
       types[variable] = constant;
 
       return types;
