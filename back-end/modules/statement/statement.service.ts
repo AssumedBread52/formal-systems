@@ -19,7 +19,7 @@ export class StatementService {
     });
 
     if (collision) {
-      throw new ConflictException('Statements within a formal system must have a unqiue assertion.');
+      throw new ConflictException('Statements within a formal system must have a unique assertion.');
     }
   }
 
