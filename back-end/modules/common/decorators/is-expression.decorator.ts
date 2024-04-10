@@ -10,7 +10,7 @@ export const IsExpressionDecorator = (validationOptions?: ValidationOptions): Pr
         }
 
         for (let item of value) {
-          if (!isMongoId(item) && (typeof value !== 'object' || !isMongoId(item.toString()))) {
+          if (!isMongoId(`${item}`)) {
             return false;
           }
         }

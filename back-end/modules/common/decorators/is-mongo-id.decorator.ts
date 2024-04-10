@@ -5,7 +5,7 @@ export const IsMongoIdDecorator = (validationOptions?: ValidationOptions): Prope
     name: 'is-mongo-id',
     validator: {
       validate: (value: any): boolean => {
-        return isMongoId(value) || (typeof value === 'object' && isMongoId(value.toString()));
+        return isMongoId(`${value}`);
       },
       defaultMessage: buildMessage((eachPrefix: string): string => {
         return `${eachPrefix}$property must be a mongodb id`;
