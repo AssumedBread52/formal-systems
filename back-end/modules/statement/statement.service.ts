@@ -14,7 +14,7 @@ export class StatementService {
   constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>) {
   }
 
-  private async checkForConflict(assertion: ObjectId[], systemId: ObjectId): Promise<void> {
+  private async conflictCheck(assertion: ObjectId[], systemId: ObjectId): Promise<void> {
     const collision = await this.statementRepository.findOneBy({
       assertion,
       systemId
@@ -61,7 +61,7 @@ export class StatementService {
       });
     });
 
-    await this.checkForConflict(assertion, systemId);
+    await this.conflictCheck(assertion, systemId);
 
     const statement = new StatementEntity();
 

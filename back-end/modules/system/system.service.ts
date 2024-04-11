@@ -11,7 +11,7 @@ export class SystemService {
   constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
   }
 
-  private async checkForConflict(title: string, createdByUserId: ObjectId): Promise<void> {
+  private async conflictCheck(title: string, createdByUserId: ObjectId): Promise<void> {
     const collision = await this.systemRepository.findOneBy({
       title,
       createdByUserId
@@ -25,7 +25,7 @@ export class SystemService {
   async create(newSystemPayload: NewSystemPayload, sessionUserId: ObjectId): Promise<SystemEntity> {
     const { title, description } = newSystemPayload;
 
-    await this.checkForConflict(title, sessionUserId);
+    await this.conflictCheck(title, sessionUserId);
 
     const system = new SystemEntity();
 
@@ -70,7 +70,7 @@ export class SystemService {
     const { newTitle, newDescription } = editSystemPayload;
 
     if (title !== newTitle) {
-      await this.checkForConflict(newTitle, createdByUserId);
+      await this.conflictCheck(newTitle, createdByUserId);
     }
 
     system.title = newTitle;

@@ -12,7 +12,7 @@ export class UserService {
   constructor(@InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>) {
   }
 
-  private async checkForConflict(email: string): Promise<void> {
+  private async conflictCheck(email: string): Promise<void> {
     const collision = await this.userRepository.findOneBy({
       email
     });
@@ -25,7 +25,7 @@ export class UserService {
   async create(signUpPayload: SignUpPayload): Promise<UserEntity> {
     const { firstName, lastName, email, password } = signUpPayload;
 
-    await this.checkForConflict(email);
+    await this.conflictCheck(email);
 
     const user = new UserEntity();
 
@@ -54,7 +54,7 @@ export class UserService {
     const { newFirstName, newLastName, newEmail, newPassword } = editProfilePayload;
 
     if (email !== newEmail) {
-      await this.checkForConflict(newEmail);
+      await this.conflictCheck(newEmail);
     }
 
     sessionUser.firstName = newFirstName;

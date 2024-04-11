@@ -12,7 +12,7 @@ export class SymbolService {
   constructor(@InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>) {
   }
 
-  private async checkForConflict(content: string, systemId: ObjectId): Promise<void> {
+  private async conflictCheck(content: string, systemId: ObjectId): Promise<void> {
     const collision = await this.symbolRepository.findOneBy({
       content,
       systemId
@@ -26,7 +26,7 @@ export class SymbolService {
   async create(newSymbolPayload: NewSymbolPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<SymbolEntity> {
     const { title, description, type, content } = newSymbolPayload;
 
-    await this.checkForConflict(content, systemId);
+    await this.conflictCheck(content, systemId);
 
     const symbol = new SymbolEntity();
 
@@ -86,7 +86,7 @@ export class SymbolService {
     const { newTitle, newDescription, newType, newContent } = editSymbolPayload;
 
     if (content !== newContent) {
-      await this.checkForConflict(newContent, systemId);
+      await this.conflictCheck(newContent, systemId);
     }
 
     if (type !== newType && (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0)) {
