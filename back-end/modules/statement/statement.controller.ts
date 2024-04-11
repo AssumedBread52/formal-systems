@@ -89,11 +89,17 @@ export class StatementController {
 
     const { createdByUserId } = statement;
 
-    if (sessionUserId.toString() !== createdByUserId.toString()) {
+    if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new ForbiddenException('You cannot update a statement unless you created it.');
     }
 
-    await this.statementService.update(statement, editStatementPayload);
+    const { newDistinctVariableRestrictions } = editStatementPayload;
+
+    const symbolIds = ([] as ObjectId[]).concat(...newDistinctVariableRestrictions);
+
+    const symbolDictionary = await this.fetchSymbolDictionary(systemId, symbolIds);
+
+    await this.statementService.update(statement, editStatementPayload, symbolDictionary);
 
     return new IdPayload(statementId);
   }

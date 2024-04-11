@@ -105,8 +105,14 @@ export class StatementService {
     return new PaginatedResultsPayload(total, results);
   }
 
-  update(statement: StatementEntity, editStatementPayload: EditStatementPayload): Promise<StatementEntity> {
-    const { newTitle, newDescription } = editStatementPayload;
+  update(statement: StatementEntity, editStatementPayload: EditStatementPayload, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
+    const { newTitle, newDescription, newDistinctVariableRestrictions } = editStatementPayload;
+
+    newDistinctVariableRestrictions.forEach((newDistinctVariableRestriction: [ObjectId, ObjectId]): void => {
+      if (SymbolType.Variable !== symbolDictionary[newDistinctVariableRestriction[0].toString()].type || SymbolType.Variable !== symbolDictionary[newDistinctVariableRestriction[1].toString()].type) {
+        throw new UnprocessableEntityException('All distinct variable restrictions must a pair of variable symbols.');
+      }
+    });
 
     statement.title = newTitle;
     statement.description = newDescription;
