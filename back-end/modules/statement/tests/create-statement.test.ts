@@ -313,6 +313,111 @@ describe('Create Statement', (): void => {
     });
   });
 
+  it('fails elements that are too long', async (): Promise<void> => {
+    const testUser = new UserEntity();
+    const testSystem = new SystemEntity();
+    const turnstile = new SymbolEntity();
+    const wff = new SymbolEntity();
+    const setvar = new SymbolEntity();
+    const openParenthesis = new SymbolEntity();
+    const closeParenthesis = new SymbolEntity();
+    const implication = new SymbolEntity();
+    const forAll = new SymbolEntity();
+    const phi = new SymbolEntity();
+    const psi = new SymbolEntity();
+    const chi = new SymbolEntity();
+    const x = new SymbolEntity();
+
+    testSystem.createdByUserId = testUser._id;
+    turnstile.systemId = testSystem._id;
+    turnstile.createdByUserId = testUser._id;
+    wff.systemId = testSystem._id;
+    wff.createdByUserId = testUser._id;
+    setvar.systemId = testSystem._id;
+    setvar.createdByUserId = testUser._id;
+    openParenthesis.systemId = testSystem._id;
+    openParenthesis.createdByUserId = testUser._id;
+    closeParenthesis.systemId = testSystem._id;
+    closeParenthesis.createdByUserId = testUser._id;
+    implication.systemId = testSystem._id;
+    implication.createdByUserId = testUser._id;
+    forAll.systemId = testSystem._id;
+    forAll.createdByUserId = testUser._id;
+    phi.type = SymbolType.Variable;
+    phi.systemId = testSystem._id;
+    phi.createdByUserId = testUser._id;
+    psi.type = SymbolType.Variable;
+    psi.systemId = testSystem._id;
+    psi.createdByUserId = testUser._id;
+    chi.type = SymbolType.Variable;
+    chi.systemId = testSystem._id;
+    chi.createdByUserId = testUser._id;
+    x.type = SymbolType.Variable;
+    x.systemId = testSystem._id;
+    x.createdByUserId = testUser._id;
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+
+    const token = await app.get(AuthService).generateToken(testUser._id);
+
+    const response = await request(app.getHttpServer()).post(`/system/${testSystem._id}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [phi._id, x._id],
+        ['invalid', 'invalid', 'invalid']
+      ],
+      variableTypeHypotheses: [
+        [wff._id, phi._id],
+        [wff._id, psi._id],
+        [wff._id, chi._id],
+        [setvar._id, x._id]
+      ],
+      logicalHypotheses: [
+        [
+          turnstile._id,
+          openParenthesis._id,
+          phi._id,
+          implication._id,
+          openParenthesis._id,
+          psi._id,
+          implication._id,
+          chi._id,
+          closeParenthesis._id,
+          closeParenthesis._id
+        ]
+      ],
+      assertion: [
+        turnstile._id,
+        openParenthesis._id,
+        phi._id,
+        implication._id,
+        openParenthesis._id,
+        forAll._id,
+        x._id,
+        psi._id,
+        implication._id,
+        forAll._id,
+        x._id,
+        chi._id,
+        closeParenthesis._id,
+        closeParenthesis._id
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+      error: 'Bad Request',
+      message: [
+        'each value in distinctVariableRestrictions must be a distinct pair of mongodb ids'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
   it('fails with a non mongodb id', async (): Promise<void> => {
     const testUser = new UserEntity();
     const testSystem = new SystemEntity();
