@@ -62,9 +62,7 @@ export class StatementService {
         const id = symbolId.toString();
 
         if (SymbolType.Variable === symbolDictionary[id].type && !types[id]) {
-          throw new UnprocessableEntityException([
-            'all variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis'
-          ]);
+          throw new UnprocessableEntityException('All variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis.');
         }
       });
     });
