@@ -41,9 +41,7 @@ export class StatementService {
       const variable = variableTypeHypothesis[1].toString();
 
       if (SymbolType.Constant !== symbolDictionary[constant].type || SymbolType.Variable !== symbolDictionary[variable].type) {
-        throw new UnprocessableEntityException([
-          'all variable type hypotheses must start with a constant symbol and end with a variable symbol'
-        ]);
+        throw new UnprocessableEntityException('All variable type hypotheses must be a constant variable pair.');
       }
 
       types[variable] = constant;
