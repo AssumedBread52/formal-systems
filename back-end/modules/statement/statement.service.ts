@@ -30,9 +30,7 @@ export class StatementService {
 
     distinctVariableRestrictions.forEach((distinctVariableRestriction: [ObjectId, ObjectId]): void => {
       if (SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[0].toString()].type || SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[1].toString()].type) {
-        throw new UnprocessableEntityException([
-          'all distinct variable restrictions must be a pair of variable symbols'
-        ]);
+        throw new UnprocessableEntityException('All distinct variable restrictions must a pair of variable symbols.');
       }
     });
 
