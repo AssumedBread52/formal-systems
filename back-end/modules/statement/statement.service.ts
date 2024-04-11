@@ -1,4 +1,6 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { SymbolEntity } from '@/symbol/symbol.entity';
+import { ConflictException, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
@@ -23,8 +25,49 @@ export class StatementService {
     }
   }
 
-  async create(newStatementPayload: NewStatementPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<StatementEntity> {
+  async create(newStatementPayload: NewStatementPayload, systemId: ObjectId, sessionUserId: ObjectId, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
     const { title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = newStatementPayload;
+
+    distinctVariableRestrictions.forEach((distinctVariableRestriction: [ObjectId, ObjectId]): void => {
+      if (SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[0].toString()].type || SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[1].toString()].type) {
+        throw new UnprocessableEntityException([
+          'all distinct variable restrictions must be a pair of variable symbols'
+        ]);
+      }
+    });
+
+    const types = variableTypeHypotheses.reduce((types: Record<string, string>, variableTypeHypothesis: [ObjectId, ObjectId]): Record<string, string> => {
+      const constant = variableTypeHypothesis[0].toString();
+      const variable = variableTypeHypothesis[1].toString();
+
+      if (SymbolType.Constant !== symbolDictionary[constant].type || SymbolType.Variable !== symbolDictionary[variable].type) {
+        throw new UnprocessableEntityException([
+          'all variable type hypotheses must start with a constant symbol and end with a variable symbol'
+        ]);
+      }
+
+      types[variable] = constant;
+
+      return types;
+    }, {});
+
+    [...logicalHypotheses, assertion].forEach((expression: ObjectId[]): void => {
+      if (symbolDictionary[expression[0].toString()].type !== SymbolType.Constant) {
+        throw new UnprocessableEntityException([
+          'all logical hypotheses and the assertion must start with a constant symbol'
+        ]);
+      }
+
+      expression.forEach((symbolId: ObjectId): void => {
+        const id = symbolId.toString();
+
+        if (SymbolType.Variable === symbolDictionary[id].type && !types[id]) {
+          throw new UnprocessableEntityException([
+            'all variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis'
+          ]);
+        }
+      });
+    });
 
     await this.checkForConflict(assertion, systemId);
 
