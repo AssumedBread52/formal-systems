@@ -106,7 +106,7 @@ export class StatementService {
   }
 
   update(statement: StatementEntity, editStatementPayload: EditStatementPayload, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
-    const { newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses } = editStatementPayload;
+    const { newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses } = editStatementPayload;
 
     newDistinctVariableRestrictions.forEach((newDistinctVariableRestriction: [ObjectId, ObjectId]): void => {
       if (SymbolType.Variable !== symbolDictionary[newDistinctVariableRestriction[0].toString()].type || SymbolType.Variable !== symbolDictionary[newDistinctVariableRestriction[1].toString()].type) {
@@ -114,16 +114,38 @@ export class StatementService {
       }
     });
 
-    newVariableTypeHypotheses.forEach((newVariableTypeHypothesis: [ObjectId, ObjectId]): void => {
-      if (SymbolType.Constant !== symbolDictionary[newVariableTypeHypothesis[0].toString()].type || SymbolType.Variable !== symbolDictionary[newVariableTypeHypothesis[1].toString()].type) {
+    const types = newVariableTypeHypotheses.reduce((types: Record<string, string>, newVariableTypeHypothesis: [ObjectId, ObjectId]): Record<string, string> => {
+      const constant = newVariableTypeHypothesis[0].toString();
+      const variable = newVariableTypeHypothesis[1].toString();
+
+      if (SymbolType.Constant !== symbolDictionary[constant].type || SymbolType.Variable !== symbolDictionary[variable].type) {
         throw new UnprocessableEntityException('All variable type hypotheses must be a constant variable pair.');
       }
+
+      types[variable] = constant;
+
+      return types;
+    }, {});
+
+    newLogicalHypotheses.forEach((expression: ObjectId[]): void => {
+      if (symbolDictionary[expression[0].toString()].type !== SymbolType.Constant) {
+        throw new UnprocessableEntityException('All logical hypothesis and the assertion must start with a constant symbol.');
+      }
+
+      expression.forEach((symbolId: ObjectId): void => {
+        const id = symbolId.toString();
+
+        if (SymbolType.Variable === symbolDictionary[id].type && !types[id]) {
+          throw new UnprocessableEntityException('All variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis.');
+        }
+      });
     });
 
     statement.title = newTitle;
     statement.description = newDescription;
     statement.distinctVariableRestrictions = newDistinctVariableRestrictions;
     statement.variableTypeHypotheses = newVariableTypeHypotheses;
+    statement.logicalHypotheses = newLogicalHypotheses;
 
     return this.statementRepository.save(statement);
   }

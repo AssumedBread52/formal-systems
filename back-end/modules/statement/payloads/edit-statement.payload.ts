@@ -1,6 +1,7 @@
 import { IsDistinctPairDecorator } from '@/common/decorators/is-distinct-pair.decorator';
+import { IsExpressionDecorator } from '@/common/decorators/is-expression.decorator';
 import { Transform, TransformFnParams } from 'class-transformer';
-import { ArrayUnique, IsArray, IsNotEmpty, isArray, isMongoId } from 'class-validator';
+import { ArrayMinSize, ArrayUnique, IsArray, IsNotEmpty, isArray, isMongoId } from 'class-validator';
 import { ObjectId } from 'mongodb';
 
 export class EditStatementPayload {
@@ -85,4 +86,44 @@ export class EditStatementPayload {
     });
   })
   newVariableTypeHypotheses: [ObjectId, ObjectId][] = [];
+  @ArrayMinSize(1, {
+    each: true
+  })
+  @ArrayUnique((element: any): string => {
+    if (!isArray(element)) {
+      return '';
+    }
+
+    return element.map((id: any): string => {
+      return `${id}`;
+    }).join(',');
+  })
+  @IsArray()
+  @IsExpressionDecorator({
+    each: true
+  })
+  @Transform((params: TransformFnParams): any => {
+    if (!isArray(params.value)) {
+      return params.value;
+    }
+
+    for (let element of params.value) {
+      if (!isArray(element)) {
+        return params.value;
+      }
+
+      for (let item of element) {
+        if (!isMongoId(item)) {
+          return params.value;
+        }
+      }
+    }
+
+    return params.value.map((item: string[]): ObjectId[] => {
+      return item.map((id: string): ObjectId => {
+        return new ObjectId(id);
+      });
+    });
+  })
+  newLogicalHypotheses: ObjectId[][] = [];
 };
