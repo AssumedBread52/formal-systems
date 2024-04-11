@@ -109,10 +109,17 @@ export class StatementService {
     return new PaginatedResultsPayload(total, results);
   }
 
-  update(statement: StatementEntity, editStatementPayload: EditStatementPayload, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
+  async update(statement: StatementEntity, editStatementPayload: EditStatementPayload, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
+    const { assertion, systemId } = statement;
     const { newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion } = editStatementPayload;
 
     this.processabilityCheck(newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion, symbolDictionary);
+
+    if (assertion.length !== newAssertion.length || assertion.reduce((check: boolean, symbolId: ObjectId, currentIndex: number): boolean => {
+      return check || newAssertion[currentIndex].toString() !== symbolId.toString();
+    }, false)) {
+      await this.conflictCheck(newAssertion, systemId);
+    }
 
     statement.title = newTitle;
     statement.description = newDescription;
