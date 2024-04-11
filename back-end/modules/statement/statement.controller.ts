@@ -104,7 +104,7 @@ export class StatementController {
     const system = await this.systemService.readById(systemId);
 
     if (!system) {
-      throw new NotFoundException('SStatements cannot be added to a formal system that does not exist.');
+      throw new NotFoundException('Statements cannot be added to a formal system that does not exist.');
     }
 
     const { createdByUserId } = system;
