@@ -106,7 +106,7 @@ export class StatementService {
   }
 
   update(statement: StatementEntity, editStatementPayload: EditStatementPayload, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
-    const { newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses } = editStatementPayload;
+    const { newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion } = editStatementPayload;
 
     newDistinctVariableRestrictions.forEach((newDistinctVariableRestriction: [ObjectId, ObjectId]): void => {
       if (SymbolType.Variable !== symbolDictionary[newDistinctVariableRestriction[0].toString()].type || SymbolType.Variable !== symbolDictionary[newDistinctVariableRestriction[1].toString()].type) {
@@ -127,7 +127,7 @@ export class StatementService {
       return types;
     }, {});
 
-    newLogicalHypotheses.forEach((expression: ObjectId[]): void => {
+    [...newLogicalHypotheses, newAssertion].forEach((expression: ObjectId[]): void => {
       if (symbolDictionary[expression[0].toString()].type !== SymbolType.Constant) {
         throw new UnprocessableEntityException('All logical hypothesis and the assertion must start with a constant symbol.');
       }
@@ -146,6 +146,7 @@ export class StatementService {
     statement.distinctVariableRestrictions = newDistinctVariableRestrictions;
     statement.variableTypeHypotheses = newVariableTypeHypotheses;
     statement.logicalHypotheses = newLogicalHypotheses;
+    statement.assertion = newAssertion;
 
     return this.statementRepository.save(statement);
   }

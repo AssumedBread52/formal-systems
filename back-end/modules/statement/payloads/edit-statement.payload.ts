@@ -126,4 +126,22 @@ export class EditStatementPayload {
     });
   })
   newLogicalHypotheses: ObjectId[][] = [];
+  @ArrayMinSize(1)
+  @IsExpressionDecorator()
+  @Transform((params: TransformFnParams): any => {
+    if (!isArray(params.value)) {
+      return params.value;
+    }
+
+    for (let element of params.value) {
+      if (!isMongoId(element)) {
+        return params.value;
+      }
+    }
+
+    return params.value.map((element: string): ObjectId => {
+      return new ObjectId(element);
+    });
+  })
+  newAssertion: ObjectId[] = [];
 };
