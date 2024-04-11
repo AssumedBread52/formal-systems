@@ -80,7 +80,7 @@ export class StatementController {
 
   @UseGuards(JwtGuard)
   @Patch(':statementId')
-  async patchStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('statementId') statementId: ObjectId, @Body(ValidationPipe) editStatementPayload: EditStatementPayload): Promise<IdPayload> {
+  async patchStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('statementId') statementId: ObjectId, @Body(new ValidationPipe({ transform: true })) editStatementPayload: EditStatementPayload): Promise<IdPayload> {
     const statement = await this.statementService.readById(systemId, statementId);
 
     if (!statement) {
