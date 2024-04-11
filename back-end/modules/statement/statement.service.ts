@@ -106,7 +106,7 @@ export class StatementService {
   }
 
   update(statement: StatementEntity, editStatementPayload: EditStatementPayload, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
-    const { newTitle, newDescription, newDistinctVariableRestrictions } = editStatementPayload;
+    const { newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses } = editStatementPayload;
 
     newDistinctVariableRestrictions.forEach((newDistinctVariableRestriction: [ObjectId, ObjectId]): void => {
       if (SymbolType.Variable !== symbolDictionary[newDistinctVariableRestriction[0].toString()].type || SymbolType.Variable !== symbolDictionary[newDistinctVariableRestriction[1].toString()].type) {
@@ -114,8 +114,16 @@ export class StatementService {
       }
     });
 
+    newVariableTypeHypotheses.forEach((newVariableTypeHypothesis: [ObjectId, ObjectId]): void => {
+      if (SymbolType.Constant !== symbolDictionary[newVariableTypeHypothesis[0].toString()].type || SymbolType.Variable !== symbolDictionary[newVariableTypeHypothesis[1].toString()].type) {
+        throw new UnprocessableEntityException('All variable type hypotheses must be a constant variable pair.');
+      }
+    });
+
     statement.title = newTitle;
     statement.description = newDescription;
+    statement.distinctVariableRestrictions = newDistinctVariableRestrictions;
+    statement.variableTypeHypotheses = newVariableTypeHypotheses;
 
     return this.statementRepository.save(statement);
   }

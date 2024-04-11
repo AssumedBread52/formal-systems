@@ -93,9 +93,9 @@ export class StatementController {
       throw new ForbiddenException('You cannot update a statement unless you created it.');
     }
 
-    const { newDistinctVariableRestrictions } = editStatementPayload;
+    const { newDistinctVariableRestrictions, newVariableTypeHypotheses } = editStatementPayload;
 
-    const symbolIds = ([] as ObjectId[]).concat(...newDistinctVariableRestrictions);
+    const symbolIds = ([] as ObjectId[]).concat(...newDistinctVariableRestrictions, ...newVariableTypeHypotheses);
 
     const symbolDictionary = await this.fetchSymbolDictionary(systemId, symbolIds);
 
