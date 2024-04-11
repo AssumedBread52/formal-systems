@@ -35,9 +35,7 @@ export class StatementController {
 
     symbolIds.forEach((symbolId: ObjectId): void => {
       if (!symbolDictionary[symbolId.toString()]) {
-        throw new UnprocessableEntityException([
-          'All symbols used in a statement must exist in the formal system.'
-        ]);
+        throw new UnprocessableEntityException('All symbols must exist within the formal system.');
       }
     });
 
