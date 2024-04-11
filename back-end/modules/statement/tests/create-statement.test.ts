@@ -117,7 +117,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with a non mongodb id', async (): Promise<void> => {
+  it('fails with elements that are not arrays', async (): Promise<void> => {
     const testUser = new UserEntity();
     const testSystem = new SystemEntity();
     const turnstile = new SymbolEntity();
