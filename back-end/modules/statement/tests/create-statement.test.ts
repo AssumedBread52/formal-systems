@@ -37,6 +37,86 @@ describe('Create Statement', (): void => {
     await testInvalidToken(app, 'post', `/system/${new ObjectId()}/statement`);
   });
 
+  it('fails with non arrays', async (): Promise<void> => {
+    const testUser = new UserEntity();
+    const testSystem = new SystemEntity();
+    const turnstile = new SymbolEntity();
+    const wff = new SymbolEntity();
+    const setvar = new SymbolEntity();
+    const openParenthesis = new SymbolEntity();
+    const closeParenthesis = new SymbolEntity();
+    const implication = new SymbolEntity();
+    const forAll = new SymbolEntity();
+    const phi = new SymbolEntity();
+    const psi = new SymbolEntity();
+    const chi = new SymbolEntity();
+    const x = new SymbolEntity();
+
+    testSystem.createdByUserId = testUser._id;
+    turnstile.systemId = testSystem._id;
+    turnstile.createdByUserId = testUser._id;
+    wff.systemId = testSystem._id;
+    wff.createdByUserId = testUser._id;
+    setvar.systemId = testSystem._id;
+    setvar.createdByUserId = testUser._id;
+    openParenthesis.systemId = testSystem._id;
+    openParenthesis.createdByUserId = testUser._id;
+    closeParenthesis.systemId = testSystem._id;
+    closeParenthesis.createdByUserId = testUser._id;
+    implication.systemId = testSystem._id;
+    implication.createdByUserId = testUser._id;
+    forAll.systemId = testSystem._id;
+    forAll.createdByUserId = testUser._id;
+    phi.type = SymbolType.Variable;
+    phi.systemId = testSystem._id;
+    phi.createdByUserId = testUser._id;
+    psi.type = SymbolType.Variable;
+    psi.systemId = testSystem._id;
+    psi.createdByUserId = testUser._id;
+    chi.type = SymbolType.Variable;
+    chi.systemId = testSystem._id;
+    chi.createdByUserId = testUser._id;
+    x.type = SymbolType.Variable;
+    x.systemId = testSystem._id;
+    x.createdByUserId = testUser._id;
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+
+    const token = await app.get(AuthService).generateToken(testUser._id);
+
+    const response = await request(app.getHttpServer()).post(`/system/${testSystem._id}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.',
+      distinctVariableRestrictions: 'invalid',
+      variableTypeHypotheses: 'invalid',
+      logicalHypotheses: 'invalid',
+      assertion: 'invalid'
+    });
+
+    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+      error: 'Bad Request',
+      message: [
+        'each value in distinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'distinctVariableRestrictions must be an array',
+        'All distinctVariableRestrictions\'s elements must be unique',
+        'each value in variableTypeHypotheses must be a distinct pair of mongodb ids',
+        'variableTypeHypotheses must be an array',
+        'All variableTypeHypotheses\'s elements must be unique',
+        'each value in each value in logicalHypotheses must be a mongodb id',
+        'logicalHypotheses must be an array',
+        'All logicalHypotheses\'s elements must be unique',
+        'each value in logicalHypotheses must contain at least 1 elements',
+        'each value in assertion must be a mongodb id',
+        'assertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
   it('fails with a non mongodb id', async (): Promise<void> => {
     const testUser = new UserEntity();
     const testSystem = new SystemEntity();
