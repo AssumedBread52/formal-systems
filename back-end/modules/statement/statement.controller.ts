@@ -121,7 +121,7 @@ export class StatementController {
 
     const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = newStatementPayload;
 
-    const symbolIds = assertion.concat(...logicalHypotheses, ...variableTypeHypotheses, ...distinctVariableRestrictions);
+    const symbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
 
     const symbolDictionary = await this.fetchSymbolDictionary(systemId, symbolIds);
 
