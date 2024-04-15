@@ -47,7 +47,7 @@ export class StatementService {
 
     [...logicalHypotheses, assertion].forEach((expression: ObjectId[]): void => {
       if (symbolDictionary[expression[0].toString()].type !== SymbolType.Constant) {
-        throw new UnprocessableEntityException('All logical hypothesis and the assertion must start with a constant symbol.');
+        throw new UnprocessableEntityException('All logical hypotheses and the assertion must start with a constant symbol.');
       }
 
       expression.forEach((symbolId: ObjectId): void => {
