@@ -55,7 +55,7 @@ export class StatementController {
 
     const { createdByUserId } = statement;
 
-    if (sessionUserId.toString() !== createdByUserId.toString()) {
+    if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new ForbiddenException('You cannot delete a statement unless you created it.');
     }
 
