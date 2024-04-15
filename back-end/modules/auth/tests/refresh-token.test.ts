@@ -33,11 +33,11 @@ describe('Refresh Token', (): void => {
   it('succeeds', async (): Promise<void> => {
     const testUser = new UserEntity();
 
-    const token = await app.get(AuthService).generateToken(testUser._id);
-
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+
+    const token = await app.get(AuthService).generateToken(testUser._id);
 
     const response = await request(app.getHttpServer()).post('/auth/refresh-token').set('Cookie', [
       `token=${token}`
