@@ -2,15 +2,17 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
+import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolService } from '@/symbol/symbol.service';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, ParseIntPipe, Patch, Post, Query, UnprocessableEntityException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Patch, Post, Query, UnprocessableEntityException, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
-import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
+import { SearchPayload } from './payloads/search.payload';
 import { StatementPayload } from './payloads/statement.payload';
+import { StatementEntity } from './statement.entity';
 import { StatementService } from './statement.service';
 
 @Controller('system/:systemId/statement')
@@ -63,8 +65,12 @@ export class StatementController {
   }
 
   @Get()
-  getStatements(@ObjectIdDecorator('systemId') systemId: ObjectId, @Query('page', ParseIntPipe) page: number, @Query('count', ParseIntPipe) count: number, @Query('keywords') keywords?: string | string[]): Promise<PaginatedResultsPayload> {
-    return this.statementService.readStatements(systemId, page, count, keywords);
+  async getStatements(@ObjectIdDecorator('systemId') systemId: ObjectId, @Query(new ValidationPipe({ transform: true })) searchPayload: SearchPayload): Promise<PaginatedResultsPayload<StatementEntity, StatementPayload>> {
+    const { page, count, keywords } = searchPayload;
+
+    const [results, total] = await this.statementService.readStatements(page, count, keywords, systemId);
+
+    return new PaginatedResultsPayload(StatementPayload, results, total);
   }
 
   @Get(':statementId')

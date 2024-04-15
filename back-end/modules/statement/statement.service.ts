@@ -6,7 +6,6 @@ import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
-import { PaginatedResultsPayload } from './payloads/paginated-results.payload';
 import { StatementEntity } from './statement.entity';
 
 @Injectable()
@@ -88,25 +87,23 @@ export class StatementService {
     });
   }
 
-  async readStatements(systemId: ObjectId, page: number, count: number, keywords?: string | string[]): Promise<PaginatedResultsPayload> {
+  readStatements(page: number, count: number, keywords: string[], systemId: ObjectId): Promise<[StatementEntity[], number]> {
     const where = {
       systemId
     } as RootFilterOperators<StatementEntity>;
 
-    if (keywords && 0 !== keywords.length) {
+    if (0 !== keywords.length) {
       where.$text = {
         $caseSensitive: false,
-        $search: Array.isArray(keywords) ? keywords.join(',') : keywords
+        $search: keywords.join(',')
       };
     }
 
-    const [results, total] = await this.statementRepository.findAndCount({
+    return this.statementRepository.findAndCount({
       skip: (page - 1) * count,
       take: count,
       where
     });
-
-    return new PaginatedResultsPayload(total, results);
   }
 
   async update(statement: StatementEntity, editStatementPayload: EditStatementPayload, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
