@@ -10,7 +10,7 @@ describe('Status Check', (): void => {
     app = await createTestApp();
   });
 
-  it('succeeds in indicating the server is up and running', async (): Promise<void> => {
+  it('succeeds', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).get('/app/status');
 
     expectCorrectResponse(response, HttpStatus.NO_CONTENT, {});
