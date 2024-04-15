@@ -102,6 +102,12 @@ export class SymbolService {
   }
 
   delete(symbol: SymbolEntity): Promise<SymbolEntity> {
+    const { axiomAppearances, theoremAppearances, deductionAppearances } = symbol;
+
+    if (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0) {
+      throw new ConflictException('Symbols in use cannot be deleted.');
+    }
+
     return this.symbolRepository.remove(symbol);
   }
 };
