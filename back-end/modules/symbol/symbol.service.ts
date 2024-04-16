@@ -90,7 +90,7 @@ export class SymbolService {
     }
 
     if (type !== newType && (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0)) {
-      throw new ConflictException('Symbols in use cannot change their symbol type.');
+      throw new ConflictException('Symbols in use cannot change their type.');
     }
 
     symbol.title = newTitle;
