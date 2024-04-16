@@ -30,31 +30,29 @@ describe('Read Session User', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const testUser = new UserEntity();
-
-    const token = await app.get(AuthService).generateToken(testUser._id);
+    const user = new UserEntity();
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount } = testUser;
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).get('/user/session-user').set('Cookie', [
       `token=${token}`
     ]);
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: _id.toString(),
-      firstName,
-      lastName,
-      email,
-      systemCount,
-      constantSymbolCount,
-      variableSymbolCount,
-      axiomCount,
-      theoremCount,
-      deductionCount
+      id: user._id.toString(),
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      systemCount: user.systemCount,
+      constantSymbolCount: user.constantSymbolCount,
+      variableSymbolCount: user.variableSymbolCount,
+      axiomCount: user.axiomCount,
+      theoremCount: user.theoremCount,
+      deductionCount: user.deductionCount
     });
   });
 
