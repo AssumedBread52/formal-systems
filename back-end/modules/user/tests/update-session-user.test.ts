@@ -30,13 +30,13 @@ describe('Update Session User', (): void => {
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
-    const testUser = new UserEntity();
-
-    const token = await app.get(AuthService).generateToken(testUser._id);
+    const user = new UserEntity();
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
@@ -54,25 +54,27 @@ describe('Update Session User', (): void => {
   });
 
   it('fails if new e-mail address is already in use', async (): Promise<void> => {
+    const newEmail = 'test@example.com';
+
     const conflictUser = new UserEntity();
-    const testUser = new UserEntity();
+    const user = new UserEntity();
 
-    conflictUser.email = 'test@test.com';
-
-    const token = await app.get(AuthService).generateToken(testUser._id);
+    conflictUser.email = newEmail;
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
     userRepositoryMock.findOneBy.mockReturnValueOnce(conflictUser);
+
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
     ]).send({
-      newFirstName: 'Example',
-      newLastName: 'Case',
-      newEmail: 'test@test.com',
-      newPassword: 'qwerty'
+      newFirstName: 'Test',
+      newLastName: 'User',
+      newEmail,
+      newPassword: '123456'
     });
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
@@ -83,28 +85,26 @@ describe('Update Session User', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const testUser = new UserEntity();
-
-    const token = await app.get(AuthService).generateToken(testUser._id);
+    const user = new UserEntity();
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
     userRepositoryMock.findOneBy.mockReturnValueOnce(null);
 
-    const { _id } = testUser;
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
     ]).send({
-      newFirstName: 'Example',
-      newLastName: 'Case',
-      newEmail: 'test@test.com',
-      newPassword: 'qwerty'
+      newFirstName: 'Test',
+      newLastName: 'User',
+      newEmail: 'test@example.com',
+      newPassword: '123456'
     });
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: _id.toString()
+      id: user._id.toString()
     });
   });
 
