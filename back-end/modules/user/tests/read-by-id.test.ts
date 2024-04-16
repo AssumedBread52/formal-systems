@@ -14,6 +14,16 @@ describe('Read User by ID', (): void => {
     app = await createTestApp();
   });
 
+  it('fails with an invalid route parameter', async (): Promise<void> => {
+    const response = await request(app.getHttpServer()).get('/user/1');
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'userId should be a mongodb id',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
   it('fails if user is not found', async (): Promise<void> => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
