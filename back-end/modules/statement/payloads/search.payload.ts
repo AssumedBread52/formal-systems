@@ -16,7 +16,7 @@ export class SearchPayload {
   count: number = 10;
   @IsArray()
   @IsNotEmpty({
-    each : true
+    each: true
   })
   keywords: string[] = [];
 };
