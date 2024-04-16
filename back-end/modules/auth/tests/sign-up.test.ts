@@ -14,7 +14,7 @@ describe('Sign Up', (): void => {
     app = await createTestApp();
   });
 
-  it('fails with invalid payload', async (): Promise<void> => {
+  it('fails with an invalid payload', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).post('/auth/sign-up');
 
     expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
@@ -30,14 +30,20 @@ describe('Sign Up', (): void => {
   });
 
   it('fails with e-mail address collision', async (): Promise<void> => {
+    const email = 'test@example.com';
+
+    const conflictUser = new UserEntity();
+
+    conflictUser.email = email;
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    userRepositoryMock.findOneBy.mockReturnValueOnce(conflictUser);
 
     const response = await request(app.getHttpServer()).post('/auth/sign-up').send({
       firstName: 'Test',
       lastName: 'User',
-      email: 'test@test.com',
+      email,
       password: '123456'
     });
 
@@ -56,7 +62,7 @@ describe('Sign Up', (): void => {
     const response = await request(app.getHttpServer()).post('/auth/sign-up').send({
       firstName: 'Test',
       lastName: 'User',
-      email: 'test@test.com',
+      email: 'test@example.com',
       password: '123456'
     });
 
