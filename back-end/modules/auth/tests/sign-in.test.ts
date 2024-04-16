@@ -26,7 +26,7 @@ describe('Sign In', (): void => {
 
   it('fails when the e-mail address does not match a user', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
-      email: 'test@test.com',
+      email: 'test@example.com',
       password: '123456'
     });
 
@@ -38,12 +38,16 @@ describe('Sign In', (): void => {
   });
 
   it('fails with an incorrect password', async (): Promise<void> => {
+    const user = new UserEntity();
+
+    user.email = 'test@example.com';
+
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
-      email: 'test@test.com',
+      email: user.email,
       password: '123456'
     });
 
@@ -57,16 +61,17 @@ describe('Sign In', (): void => {
   it('succeeds', async (): Promise<void> => {
     const password = '123456';
 
-    const testUser = new UserEntity();
+    const user = new UserEntity();
 
-    testUser.hashedPassword = await hash(password, 12);
+    user.email = 'test@example.com';
+    user.hashedPassword = await hash(password, 12);
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
-      email: 'test@test.com',
+      email: user.email,
       password
     });
 
