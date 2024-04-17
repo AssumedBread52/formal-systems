@@ -1427,12 +1427,113 @@ describe('Create Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Unprocessable Entity',
-      message: 'All logical hypothesis and the assertion must start with a constant symbol.',
+      message: 'All logical hypotheses and the assertion must start with a constant symbol.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
-  it('fails if a variable symbol does not have a corresponding varible type hypothesis', async (): Promise<void> => {
+  it('fails if a variable symbol in any logical hypothesis does not have a corresponding varible type hypothesis', async (): Promise<void> => {
+    const turnstile = new SymbolEntity();
+    const wff = new SymbolEntity();
+    const setvar = new SymbolEntity();
+    const openParenthesis = new SymbolEntity();
+    const closeParenthesis = new SymbolEntity();
+    const implication = new SymbolEntity();
+    const forAll = new SymbolEntity();
+    const phi = new SymbolEntity();
+    const psi = new SymbolEntity();
+    const x = new SymbolEntity();
+    const system = new SystemEntity();
+    const user = new UserEntity();
+
+    turnstile.systemId = system._id;
+    turnstile.createdByUserId = user._id;
+    wff.systemId = system._id;
+    wff.createdByUserId = user._id;
+    setvar.systemId = system._id;
+    setvar.createdByUserId = user._id;
+    openParenthesis.systemId = system._id;
+    openParenthesis.createdByUserId = user._id;
+    closeParenthesis.systemId = system._id;
+    closeParenthesis.createdByUserId = user._id;
+    implication.systemId = system._id;
+    implication.createdByUserId = user._id;
+    forAll.systemId = system._id;
+    forAll.createdByUserId = user._id;
+    phi.type = SymbolType.Variable;
+    phi.systemId = system._id;
+    phi.createdByUserId = user._id;
+    psi.type = SymbolType.Variable;
+    psi.systemId = system._id;
+    psi.createdByUserId = user._id;
+    x.type = SymbolType.Variable;
+    x.systemId = system._id;
+    x.createdByUserId = user._id;
+    system.createdByUserId = user._id;
+
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    symbolRepositoryMock.find.mockReturnValueOnce([
+      turnstile,
+      wff,
+      setvar,
+      openParenthesis,
+      closeParenthesis,
+      implication,
+      forAll,
+      phi,
+      psi,
+      x
+    ]);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [phi._id, x._id]
+      ],
+      variableTypeHypotheses: [
+        [wff._id, psi._id],
+        [setvar._id, x._id]
+      ],
+      logicalHypotheses: [
+        [
+          turnstile._id,
+          openParenthesis._id,
+          phi._id,
+          implication._id,
+          psi._id,
+          closeParenthesis._id
+        ]
+      ],
+      assertion: [
+        turnstile._id,
+        openParenthesis._id,
+        phi._id,
+        implication._id,
+        forAll._id,
+        x._id,
+        psi._id,
+        closeParenthesis._id
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'All variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails if a variable symbol in the assertion does not have a corresponding varible type hypothesis', async (): Promise<void> => {
     const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
     const openParenthesis = new SymbolEntity();
