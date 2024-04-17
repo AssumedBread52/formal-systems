@@ -14,7 +14,6 @@ import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { StatementRepositoryMock } from './mocks/statement-repository.mock';
 
@@ -26,15 +25,35 @@ describe('Create Statement', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testMissingToken(app, 'post', `/system/${new ObjectId()}/statement`);
+    await testMissingToken(app, 'post', '/system/1/statement');
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testExpiredToken(app, 'post', `/system/${new ObjectId()}/statement`);
+    await testExpiredToken(app, 'post', '/system/1/statement');
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testInvalidToken(app, 'post', `/system/${new ObjectId()}/statement`);
+    await testInvalidToken(app, 'post', '/system/1/statement');
+  });
+
+  it('fails with an invalid system ID', async (): Promise<void> => {
+    const user = new UserEntity();
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).post('/system/1/statement').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'systemId should be a mongodb id',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
   });
 
   it('fails with non arrays', async (): Promise<void> => {
@@ -1691,8 +1710,6 @@ describe('Create Statement', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const testUser = new UserEntity();
-    const testSystem = new SystemEntity();
     const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
     const setvar = new SymbolEntity();
@@ -1702,36 +1719,34 @@ describe('Create Statement', (): void => {
     const forAll = new SymbolEntity();
     const phi = new SymbolEntity();
     const psi = new SymbolEntity();
-    const chi = new SymbolEntity();
     const x = new SymbolEntity();
+    const system = new SystemEntity();
+    const user = new UserEntity();
 
-    testSystem.createdByUserId = testUser._id;
-    turnstile.systemId = testSystem._id;
-    turnstile.createdByUserId = testUser._id;
-    wff.systemId = testSystem._id;
-    wff.createdByUserId = testUser._id;
-    setvar.systemId = testSystem._id;
-    setvar.createdByUserId = testUser._id;
-    openParenthesis.systemId = testSystem._id;
-    openParenthesis.createdByUserId = testUser._id;
-    closeParenthesis.systemId = testSystem._id;
-    closeParenthesis.createdByUserId = testUser._id;
-    implication.systemId = testSystem._id;
-    implication.createdByUserId = testUser._id;
-    forAll.systemId = testSystem._id;
-    forAll.createdByUserId = testUser._id;
+    turnstile.systemId = system._id;
+    turnstile.createdByUserId = user._id;
+    wff.systemId = system._id;
+    wff.createdByUserId = user._id;
+    setvar.systemId = system._id;
+    setvar.createdByUserId = user._id;
+    openParenthesis.systemId = system._id;
+    openParenthesis.createdByUserId = user._id;
+    closeParenthesis.systemId = system._id;
+    closeParenthesis.createdByUserId = user._id;
+    implication.systemId = system._id;
+    implication.createdByUserId = user._id;
+    forAll.systemId = system._id;
+    forAll.createdByUserId = user._id;
     phi.type = SymbolType.Variable;
-    phi.systemId = testSystem._id;
-    phi.createdByUserId = testUser._id;
+    phi.systemId = system._id;
+    phi.createdByUserId = user._id;
     psi.type = SymbolType.Variable;
-    psi.systemId = testSystem._id;
-    psi.createdByUserId = testUser._id;
-    chi.type = SymbolType.Variable;
-    chi.systemId = testSystem._id;
-    chi.createdByUserId = testUser._id;
+    psi.systemId = system._id;
+    psi.createdByUserId = user._id;
     x.type = SymbolType.Variable;
-    x.systemId = testSystem._id;
-    x.createdByUserId = testUser._id;
+    x.systemId = system._id;
+    x.createdByUserId = user._id;
+    system.createdByUserId = user._id;
 
     const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
@@ -1749,15 +1764,14 @@ describe('Create Statement', (): void => {
       forAll,
       phi,
       psi,
-      chi,
       x
     ]);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(testUser._id);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).post(`/system/${testSystem._id}/statement`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
       `token=${token}`
     ]).send({
       title: 'Test',
@@ -1768,7 +1782,6 @@ describe('Create Statement', (): void => {
       variableTypeHypotheses: [
         [wff._id, phi._id],
         [wff._id, psi._id],
-        [wff._id, chi._id],
         [setvar._id, x._id]
       ],
       logicalHypotheses: [
@@ -1777,11 +1790,7 @@ describe('Create Statement', (): void => {
           openParenthesis._id,
           phi._id,
           implication._id,
-          openParenthesis._id,
           psi._id,
-          implication._id,
-          chi._id,
-          closeParenthesis._id,
           closeParenthesis._id
         ]
       ],
@@ -1790,15 +1799,9 @@ describe('Create Statement', (): void => {
         openParenthesis._id,
         phi._id,
         implication._id,
-        openParenthesis._id,
         forAll._id,
         x._id,
         psi._id,
-        implication._id,
-        forAll._id,
-        x._id,
-        chi._id,
-        closeParenthesis._id,
         closeParenthesis._id
       ]
     });
