@@ -32,14 +32,58 @@ describe('Delete Symbol', (): void => {
     await testInvalidToken(app, 'delete', `/system/${new ObjectId()}/symbol/${new ObjectId()}`);
   });
 
-  it('succeeds if the symbol does not exist', async (): Promise<void> => {
-    const symbolId = new ObjectId();
+  it('fails with an invalid route parameter', async (): Promise<void> => {
+    const user = new UserEntity();
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).delete('/system/1/symbol/1').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'symbolId should be a mongodb id',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails with an invalid route parameter', async (): Promise<void> => {
+    const user = new UserEntity();
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).delete(`/system/1/symbol/${new ObjectId()}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'systemId should be a mongodb id',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('succeeds if the symbol does not exist', async (): Promise<void> => {
+    const symbolId = new ObjectId();
+
+    const user = new UserEntity();
+
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).delete(`/system/${new ObjectId()}/symbol/${symbolId}`).set('Cookie', [
       `token=${token}`
@@ -50,20 +94,19 @@ describe('Delete Symbol', (): void => {
     });
   });
 
-  it('fails if the authenticated user did not create the symbol', async (): Promise<void> => {
-    const testSymbol = new SymbolEntity();
-
-    const { _id, systemId } = testSymbol;
+  it('fails if the user did not create the symbol', async (): Promise<void> => {
+    const symbol = new SymbolEntity();
+    const user = new UserEntity();
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/symbol/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]);
 
@@ -75,27 +118,25 @@ describe('Delete Symbol', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const testSymbol = new SymbolEntity();
-    const testUser = new UserEntity();
+    const symbol = new SymbolEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testSymbol;
-
-    testUser._id = createdByUserId;
+    symbol.createdByUserId = user._id;
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/symbol/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]);
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: _id.toString()
+      id: symbol._id.toString()
     });
   });
 
