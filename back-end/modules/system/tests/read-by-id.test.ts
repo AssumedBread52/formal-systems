@@ -14,11 +14,17 @@ describe('Read System by ID', (): void => {
     app = await createTestApp();
   });
 
-  it('fails if system is not found', async (): Promise<void> => {
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+  it('fails with an invalid route parameter', async (): Promise<void> => {
+    const response = await request(app.getHttpServer()).get('/system/1');
 
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'systemId should be a mongodb id',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
 
+  it('fails if the system is not found', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).get(`/system/${new ObjectId()}`);
 
     expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
@@ -29,26 +35,24 @@ describe('Read System by ID', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const testSystem = new SystemEntity();
+    const system = new SystemEntity();
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
 
-    const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = testSystem;
-
-    const response = await request(app.getHttpServer()).get(`/system/${_id}`);
+    const response = await request(app.getHttpServer()).get(`/system/${system._id}`);
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: _id.toString(),
-      title,
-      description,
-      constantSymbolCount,
-      variableSymbolCount,
-      axiomCount,
-      theoremCount,
-      deductionCount,
-      createdByUserId: createdByUserId.toString()
+      id: system._id.toString(),
+      title: system.title,
+      description: system.description,
+      constantSymbolCount: system.constantSymbolCount,
+      variableSymbolCount: system.variableSymbolCount,
+      axiomCount: system.axiomCount,
+      theoremCount: system.theoremCount,
+      deductionCount: system.deductionCount,
+      createdByUserId: system.createdByUserId.toString()
     });
   });
 
