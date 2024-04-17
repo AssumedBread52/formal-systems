@@ -117,6 +117,84 @@ describe('Delete Symbol', (): void => {
     });
   });
 
+  it('fails if the symbol is used in any axioms', async (): Promise<void> => {
+    const symbol = new SymbolEntity();
+    const user = new UserEntity();
+
+    symbol.axiomAppearances = 1;
+    symbol.createdByUserId = user._id;
+
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).delete(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+      error: 'Conflict',
+      message: 'Symbols in use cannot be deleted.',
+      statusCode: HttpStatus.CONFLICT
+    });
+  });
+
+  it('fails if the symbol is used in any theorems', async (): Promise<void> => {
+    const symbol = new SymbolEntity();
+    const user = new UserEntity();
+
+    symbol.theoremAppearances = 1;
+    symbol.createdByUserId = user._id;
+
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).delete(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+      error: 'Conflict',
+      message: 'Symbols in use cannot be deleted.',
+      statusCode: HttpStatus.CONFLICT
+    });
+  });
+
+  it('fails if the symbol is used in any deductions', async (): Promise<void> => {
+    const symbol = new SymbolEntity();
+    const user = new UserEntity();
+
+    symbol.deductionAppearances = 1;
+    symbol.createdByUserId = user._id;
+
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).delete(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+      error: 'Conflict',
+      message: 'Symbols in use cannot be deleted.',
+      statusCode: HttpStatus.CONFLICT
+    });
+  });
+
   it('succeeds', async (): Promise<void> => {
     const symbol = new SymbolEntity();
     const user = new UserEntity();
