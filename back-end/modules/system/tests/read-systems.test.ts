@@ -8,7 +8,6 @@ import * as request from 'supertest';
 import { SystemRepositoryMock } from './mocks/system-repository.mock';
 
 describe('Read Systems', (): void => {
-  let app: INestApplication;
   const badQueries = [
     ['?page=a', 'page must not be less than 1', 'page must be an integer number'],
     ['?page=5.4', 'page must be an integer number'],
@@ -30,6 +29,7 @@ describe('Read Systems', (): void => {
     `?userIds[]=${new ObjectId()}`,
     `?userIds[]=${new ObjectId()}&userIds[]=${new ObjectId()}`
   ];
+  let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
     app = await createTestApp();
@@ -46,28 +46,26 @@ describe('Read Systems', (): void => {
   });
 
   it.each(goodQueries)('succeeds %s', async (goodQuery: string): Promise<void> => {
-    const testSystem = new SystemEntity();
+    const system = new SystemEntity();
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
 
-    systemRepositoryMock.findAndCount.mockReturnValueOnce([[testSystem], 1]);
-
-    const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = testSystem;
+    systemRepositoryMock.findAndCount.mockReturnValueOnce([[system], 1]);
 
     const response = await request(app.getHttpServer()).get(`/system${goodQuery}`);
 
     expectCorrectResponse(response, HttpStatus.OK, {
       results: [
         {
-          id: _id.toString(),
-          title,
-          description,
-          constantSymbolCount,
-          variableSymbolCount,
-          axiomCount,
-          theoremCount,
-          deductionCount,
-          createdByUserId: createdByUserId.toString()
+          id: system._id.toString(),
+          title: system.title,
+          description: system.description,
+          constantSymbolCount: system.constantSymbolCount,
+          variableSymbolCount: system.variableSymbolCount,
+          axiomCount: system.axiomCount,
+          theoremCount: system.theoremCount,
+          deductionCount: system.deductionCount,
+          createdByUserId: system.createdByUserId.toString()
         }
       ],
       total: 1
