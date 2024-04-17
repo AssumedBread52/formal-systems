@@ -12,21 +12,21 @@ export class SymbolService {
   constructor(@InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>) {
   }
 
-  private async conflictCheck(content: string, systemId: ObjectId): Promise<void> {
+  private async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
     const collision = await this.symbolRepository.findOneBy({
-      content,
+      title,
       systemId
     });
 
     if (collision) {
-      throw new ConflictException('Symbols within a formal system must have unique content.');
+      throw new ConflictException('Symbols within a formal system must have a unique title.');
     }
   }
 
   async create(newSymbolPayload: NewSymbolPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<SymbolEntity> {
     const { title, description, type, content } = newSymbolPayload;
 
-    await this.conflictCheck(content, systemId);
+    await this.conflictCheck(title, systemId);
 
     const symbol = new SymbolEntity();
 
@@ -82,11 +82,11 @@ export class SymbolService {
   }
 
   async update(symbol: SymbolEntity, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
-    const { type, content, axiomAppearances, theoremAppearances, deductionAppearances, systemId } = symbol;
+    const { title, type, axiomAppearances, theoremAppearances, deductionAppearances, systemId } = symbol;
     const { newTitle, newDescription, newType, newContent } = editSymbolPayload;
 
-    if (content !== newContent) {
-      await this.conflictCheck(newContent, systemId);
+    if (title !== newTitle) {
+      await this.conflictCheck(newTitle, systemId);
     }
 
     if (type !== newType && (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0)) {
