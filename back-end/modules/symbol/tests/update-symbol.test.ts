@@ -22,52 +22,101 @@ describe('Update Symbol', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testMissingToken(app, 'patch', `/system/${new ObjectId()}/symbol/${new ObjectId()}`);
+    await testMissingToken(app, 'patch', '/system/1/symbol/1');
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testExpiredToken(app, 'patch', `/system/${new ObjectId()}/symbol/${new ObjectId()}`);
+    await testExpiredToken(app, 'patch', '/system/1/symbol/1');
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testInvalidToken(app, 'patch', `/system/${new ObjectId()}/symbol/${new ObjectId()}`);
+    await testInvalidToken(app, 'patch', '/system/1/symbol/1');
   });
 
-  it('fails with an invalid payload', async (): Promise<void> => {
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+  it('fails with an invalid symbol ID', async (): Promise<void> => {
+    const user = new UserEntity();
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch('/system/1/symbol/1').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'symbolId should be a mongodb id',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails with an invalid system ID', async (): Promise<void> => {
+    const user = new UserEntity();
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/1/symbol/${new ObjectId()}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'systemId should be a mongodb id',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails with an invalid payload', async (): Promise<void> => {
+    const user = new UserEntity();
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/symbol/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
-    ]);
+    ]).send({
+      newType: 'invalid'
+    });
 
     expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
       error: 'Bad Request',
       message: [
         'newTitle should not be empty',
         'newDescription should not be empty',
+        'newType must be one of the following values: CONSTANT, VARIABLE',
         'newContent should not be empty'
       ],
       statusCode: HttpStatus.BAD_REQUEST
     });
   });
 
-  it('fails with an invalid symbol ID', async (): Promise<void> => {
-    const token = await app.get(AuthService).generateToken(new ObjectId());
+  it('fails if the symbol does not exist', async (): Promise<void> => {
+    const user = new UserEntity();
 
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/symbol/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'Test',
-      newDescription: 'This is a test.',
-      newType: SymbolType.Constant,
+      newTitle: 'New Title',
+      newDescription: 'This is a new test.',
+      newType: SymbolType.Variable,
       newContent: '\\alpha'
     });
 
@@ -78,26 +127,25 @@ describe('Update Symbol', (): void => {
     });
   });
 
-  it('fails when updating a symbol the user did not create', async (): Promise<void> => {
-    const testSymbol = new SymbolEntity();
-
-    const { _id, systemId, createdByUserId } = testSymbol;
+  it('fails if the user did not create the symbol', async (): Promise<void> => {
+    const symbol = new SymbolEntity();
+    const user = new UserEntity();
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(new UserEntity());
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'Test',
-      newDescription: 'This is a test.',
-      newType: SymbolType.Constant,
-      newContent: '\\beta'
+      newTitle: 'New Title',
+      newDescription: 'This is a new test.',
+      newType: SymbolType.Variable,
+      newContent: '\\alpha'
     });
 
     expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
@@ -107,168 +155,165 @@ describe('Update Symbol', (): void => {
     });
   });
 
-  it('fails if content already exists in the formal system', async (): Promise<void> => {
-    const testSymbol = new SymbolEntity();
-    const testUser = new UserEntity();
+  it('fails if the title is already in use within the system', async (): Promise<void> => {
+    const newTitle = 'New Title';
 
-    const { _id, systemId, createdByUserId } = testSymbol;
+    const conflictSymbol = new SymbolEntity();
+    const symbol = new SymbolEntity();
+    const user = new UserEntity();
 
-    testUser._id = createdByUserId;
-
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    conflictSymbol.title = newTitle;
+    conflictSymbol.createdByUserId = user._id;
+    symbol.systemId = conflictSymbol.systemId;
+    symbol.createdByUserId = user._id;
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(new SymbolEntity());
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(conflictSymbol);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${_id}`).set('Cookie', [
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'Test',
-      newDescription: 'This is a test.',
-      newType: SymbolType.Constant,
-      newContent: '\\beta'
+      newTitle,
+      newDescription: 'This is a new test.',
+      newType: SymbolType.Variable,
+      newContent: '\\alpha'
     });
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Symbols within a formal system must have unique content.',
+      message: 'Symbols within a formal system must have a unique title.',
       statusCode: HttpStatus.CONFLICT
     });
   });
 
-  it('fails if attempting to change the symbol type and the symbol is already in use (in an axiom)', async (): Promise<void> => {
-    const testSymbol = new SymbolEntity();
-    const testUser = new UserEntity();
+  it('fails if changing the type and the symbol is used by any axiom', async (): Promise<void> => {
+    const symbol = new SymbolEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testSymbol;
-
-    testUser._id = createdByUserId;
-
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    symbol.axiomAppearances = 1;
+    symbol.createdByUserId = user._id;
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    testSymbol.axiomAppearances = 1;
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'Test',
-      newDescription: 'This is a test.',
+      newTitle: 'New Title',
+      newDescription: 'This is a new test.',
       newType: SymbolType.Variable,
-      newContent: '\\beta'
+      newContent: '\\alpha'
     });
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Symbols in use cannot change their symbol type.',
+      message: 'Symbols in use cannot change their type.',
       statusCode: HttpStatus.CONFLICT
     });
   });
 
-  it('fails if attempting to change the symbol type and the symbol is already in use (in a theorem)', async (): Promise<void> => {
-    const testSymbol = new SymbolEntity();
-    const testUser = new UserEntity();
+  it('fails if changing the type and the symbol is used by any theorem', async (): Promise<void> => {
+    const symbol = new SymbolEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testSymbol;
-
-    testUser._id = createdByUserId;
-
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    symbol.theoremAppearances = 1;
+    symbol.createdByUserId = user._id;
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    testSymbol.theoremAppearances = 1;
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'Test',
-      newDescription: 'This is a test.',
+      newTitle: 'New Title',
+      newDescription: 'This is a new test.',
       newType: SymbolType.Variable,
-      newContent: '\\beta'
+      newContent: '\\alpha'
     });
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Symbols in use cannot change their symbol type.',
+      message: 'Symbols in use cannot change their type.',
       statusCode: HttpStatus.CONFLICT
     });
   });
 
-  it('fails if attempting to change the symbol type and the symbol is already in use (in a deduction)', async (): Promise<void> => {
-    const testSymbol = new SymbolEntity();
-    const testUser = new UserEntity();
+  it('fails if changing the type and the symbol is used by any deduction', async (): Promise<void> => {
+    const symbol = new SymbolEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testSymbol;
-
-    testUser._id = createdByUserId;
-
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    symbol.deductionAppearances = 1;
+    symbol.createdByUserId = user._id;
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    testSymbol.deductionAppearances = 1;
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${_id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'Test',
-      newDescription: 'This is a test.',
+      newTitle: 'New Title',
+      newDescription: 'This is a new test.',
       newType: SymbolType.Variable,
-      newContent: '\\beta'
+      newContent: '\\alpha'
     });
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Symbols in use cannot change their symbol type.',
+      message: 'Symbols in use cannot change their type.',
       statusCode: HttpStatus.CONFLICT
     });
   });
 
   it('succeeds', async (): Promise<void> => {
-    const testSymbol = new SymbolEntity();
-    const testUser = new UserEntity();
+    const symbol = new SymbolEntity();
+    const user = new UserEntity();
 
-    const { _id, systemId, createdByUserId } = testSymbol;
-
-    testUser._id = createdByUserId;
-
-    const token = await app.get(AuthService).generateToken(createdByUserId);
+    symbol.createdByUserId = user._id;
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${_id}`).set('Cookie', [
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'Test',
-      newDescription: 'This is a test.',
-      newType: SymbolType.Constant,
-      newContent: '\\beta'
+      newTitle: 'New Title',
+      newDescription: 'This is a new test.',
+      newType: SymbolType.Variable,
+      newContent: '\\alpha'
     });
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: _id.toString()
+      id: symbol._id.toString()
     });
   });
 
