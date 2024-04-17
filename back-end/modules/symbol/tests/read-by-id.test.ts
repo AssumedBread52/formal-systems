@@ -14,7 +14,27 @@ describe('Read Symbol by ID', (): void => {
     app = await createTestApp();
   });
 
-  it('fails if symbol is not found', async (): Promise<void> => {
+  it('fails with in invalid symbol ID', async (): Promise<void> => {
+    const response = await request(app.getHttpServer()).get('/system/1/symbol/1');
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'symbolId should be a mongodb id',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails with in invalid system ID', async (): Promise<void> => {
+    const response = await request(app.getHttpServer()).get(`/system/1/symbol/${new ObjectId()}`);
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'systemId should be a mongodb id',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails if the symbol does not exist', async (): Promise<void> => {
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
 
     symbolRepositoryMock.findOneBy.mockReturnValueOnce(null);
@@ -29,27 +49,25 @@ describe('Read Symbol by ID', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const testSymbol = new SymbolEntity();
+    const symbol = new SymbolEntity();
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(testSymbol);
+    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
 
-    const { _id, title, description, type, content, axiomAppearances, theoremAppearances, deductionAppearances, systemId, createdByUserId } = testSymbol;
-
-    const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol/${_id}`);
+    const response = await request(app.getHttpServer()).get(`/system/${symbol.systemId}/symbol/${symbol._id}`);
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: _id.toString(),
-      title,
-      description,
-      type,
-      content,
-      axiomAppearances,
-      theoremAppearances,
-      deductionAppearances,
-      systemId: systemId.toString(),
-      createdByUserId: createdByUserId.toString()
+      id: symbol._id.toString(),
+      title: symbol.title,
+      description: symbol.description,
+      type: symbol.type,
+      content: symbol.content,
+      axiomAppearances: symbol.axiomAppearances,
+      theoremAppearances: symbol.theoremAppearances,
+      deductionAppearances: symbol.deductionAppearances,
+      systemId: symbol.systemId.toString(),
+      createdByUserId: symbol.createdByUserId.toString()
     });
   });
 
