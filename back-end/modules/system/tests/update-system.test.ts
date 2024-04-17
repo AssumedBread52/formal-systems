@@ -21,15 +21,15 @@ describe('Update System', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testMissingToken(app, 'patch', `/system/${new ObjectId()}`);
+    await testMissingToken(app, 'patch', '/system/1');
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testExpiredToken(app, 'patch', `/system/${new ObjectId()}`);
+    await testExpiredToken(app, 'patch', '/system/1');
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testInvalidToken(app, 'patch', `/system/${new ObjectId()}`);
+    await testInvalidToken(app, 'patch', '/system/1');
   });
 
   it('fails with an invalid route parameter', async (): Promise<void> => {

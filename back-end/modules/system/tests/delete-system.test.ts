@@ -21,15 +21,15 @@ describe('Delete System', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testMissingToken(app, 'delete', `/system/${new ObjectId()}`);
+    await testMissingToken(app, 'delete', '/system/1');
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testExpiredToken(app, 'delete', `/system/${new ObjectId()}`);
+    await testExpiredToken(app, 'delete', '/system/1');
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testInvalidToken(app, 'delete', `/system/${new ObjectId()}`);
+    await testInvalidToken(app, 'delete', '/system/1');
   });
 
   it('fails with an invalid system id', async (): Promise<void> => {

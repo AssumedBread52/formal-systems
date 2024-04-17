@@ -24,15 +24,15 @@ describe('Create Symbol', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testMissingToken(app, 'post', `/system/${new ObjectId()}/symbol`);
+    await testMissingToken(app, 'post', '/system/1/symbol');
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testExpiredToken(app, 'post', `/system/${new ObjectId()}/symbol`);
+    await testExpiredToken(app, 'post', '/system/1/symbol');
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testInvalidToken(app, 'post', `/system/${new ObjectId()}/symbol`);
+    await testInvalidToken(app, 'post', '/system/1/symbol');
   });
 
   it('fails with an invalid route parameter', async (): Promise<void> => {

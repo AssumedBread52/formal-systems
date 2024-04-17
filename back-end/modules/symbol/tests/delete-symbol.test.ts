@@ -21,15 +21,15 @@ describe('Delete Symbol', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testMissingToken(app, 'delete', `/system/${new ObjectId()}/symbol/${new ObjectId()}`);
+    await testMissingToken(app, 'delete', '/system/1/symbol/1');
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testExpiredToken(app, 'delete', `/system/${new ObjectId()}/symbol/${new ObjectId()}`);
+    await testExpiredToken(app, 'delete', '/system/1/symbol/1');
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testInvalidToken(app, 'delete', `/system/${new ObjectId()}/symbol/${new ObjectId()}`);
+    await testInvalidToken(app, 'delete', '/system/1/symbol/1');
   });
 
   it('fails with an invalid route parameter', async (): Promise<void> => {
