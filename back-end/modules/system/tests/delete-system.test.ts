@@ -32,40 +32,61 @@ describe('Delete System', (): void => {
     await testInvalidToken(app, 'delete', `/system/${new ObjectId()}`);
   });
 
-  it('succeeds if the system does not exist', async (): Promise<void> => {
-    const testSystemId = new ObjectId();
-    const testUser = new UserEntity();
+  it('fails with an invalid system id', async (): Promise<void> => {
+    const user = new UserEntity();
 
-    const token = await app.get(AuthService).generateToken(testUser._id);
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).delete('/system/1').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'systemId should be a mongodb id',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('succeeds if the system does not exist', async (): Promise<void> => {
+    const systemId = new ObjectId();
+
+    const user = new UserEntity();
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     systemRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const response = await request(app.getHttpServer()).delete(`/system/${testSystemId}`).set('Cookie', [
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}`).set('Cookie', [
       `token=${token}`
     ]);
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: testSystemId.toString()
+      id: systemId.toString()
     });
   });
 
-  it('fails if the system is not created by the user attempting to delete it', async (): Promise<void> => {
-    const testSystem = new SystemEntity();
-    const testUser = new UserEntity();
-
-    const token = await app.get(AuthService).generateToken(testUser._id);
+  it('fails if the system was not created by the user attempting to delete it', async (): Promise<void> => {
+    const system = new SystemEntity();
+    const user = new UserEntity();
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const response = await request(app.getHttpServer()).delete(`/system/${testSystem._id}`).set('Cookie', [
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).delete(`/system/${system._id}`).set('Cookie', [
       `token=${token}`
     ]);
 
@@ -77,25 +98,25 @@ describe('Delete System', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const testSystem = new SystemEntity();
-    const testUser = new UserEntity();
+    const system = new SystemEntity();
+    const user = new UserEntity();
 
-    testSystem.createdByUserId = testUser._id;
-
-    const token = await app.get(AuthService).generateToken(testUser._id);
+    system.createdByUserId = user._id;
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const response = await request(app.getHttpServer()).delete(`/system/${testSystem._id}`).set('Cookie', [
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).delete(`/system/${system._id}`).set('Cookie', [
       `token=${token}`
     ]);
 
     expectCorrectResponse(response, HttpStatus.OK, {
-      id: testSystem._id.toString()
+      id: system._id.toString()
     });
   });
 
