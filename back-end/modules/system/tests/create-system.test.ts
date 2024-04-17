@@ -32,13 +32,13 @@ describe('Create System', (): void => {
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
-    const testUser = new UserEntity();
-
-    const token = await app.get(AuthService).generateToken(testUser._id);
+    const user = new UserEntity();
 
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).post('/system').set('Cookie', [
       `token=${token}`
@@ -54,25 +54,27 @@ describe('Create System', (): void => {
     });
   });
 
-  it('fails with title collision', async (): Promise<void> => {
+  it('fails with a title collision', async (): Promise<void> => {
+    const title = 'Test';
+
     const conflictSystem = new SystemEntity();
-    const testUser = new UserEntity();
+    const user = new UserEntity();
 
-    conflictSystem.title = 'Test';
-    conflictSystem.createdByUserId = testUser._id;
-
-    const token = await app.get(AuthService).generateToken(testUser._id);
+    conflictSystem.title = title;
+    conflictSystem.createdByUserId = user._id;
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     systemRepositoryMock.findOneBy.mockReturnValueOnce(conflictSystem);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).post('/system').set('Cookie', [
       `token=${token}`
     ]).send({
-      title: 'Test',
+      title,
       description: 'This is a test.'
     });
 
@@ -84,15 +86,15 @@ describe('Create System', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const testUser = new UserEntity();
-
-    const token = await app.get(AuthService).generateToken(testUser._id);
+    const user = new UserEntity();
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     systemRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).post('/system').set('Cookie', [
       `token=${token}`
