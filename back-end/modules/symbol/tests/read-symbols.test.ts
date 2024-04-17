@@ -9,7 +9,6 @@ import * as request from 'supertest';
 import { SymbolRepositoryMock } from './mocks/symbol-repository.mock';
 
 describe('Read Symbols', (): void => {
-  let app: INestApplication;
   const badQueries = [
     ['?page=a', 'page must not be less than 1', 'page must be an integer number'],
     ['?page=5.4', 'page must be an integer number'],
@@ -31,9 +30,20 @@ describe('Read Symbols', (): void => {
     `?types[]=${SymbolType.Constant}`,
     `?types[]=${SymbolType.Constant}&userIds[]=${SymbolType.Variable}`
   ];
+  let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
     app = await createTestApp();
+  });
+
+  it('fails with an invalid system id', async (): Promise<void> => {
+    const response = await request(app.getHttpServer()).get('/system/1/symbol');
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'systemId should be a mongodb id',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
   });
 
   it.each(badQueries)('fails %s', async (badQuery: string, ...message: string[]): Promise<void> => {
@@ -47,29 +57,27 @@ describe('Read Symbols', (): void => {
   });
 
   it.each(goodQueries)('succeeds %s', async (goodQuery: string): Promise<void> => {
-    const testSymbol = new SymbolEntity();
+    const symbol = new SymbolEntity();
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
 
-    symbolRepositoryMock.findAndCount.mockReturnValueOnce([[testSymbol], 1]);
+    symbolRepositoryMock.findAndCount.mockReturnValueOnce([[symbol], 1]);
 
-    const { _id, title, description, type, content, axiomAppearances, theoremAppearances, deductionAppearances, systemId, createdByUserId } = testSymbol;
-
-    const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol${goodQuery}`);
+    const response = await request(app.getHttpServer()).get(`/system/${symbol.systemId}/symbol${goodQuery}`);
 
     expectCorrectResponse(response, HttpStatus.OK, {
       results: [
         {
-          id: _id.toString(),
-          title,
-          description,
-          type,
-          content,
-          axiomAppearances,
-          theoremAppearances,
-          deductionAppearances,
-          systemId: systemId.toString(),
-          createdByUserId: createdByUserId.toString()
+          id: symbol._id.toString(),
+          title: symbol.title,
+          description: symbol.description,
+          type: symbol.type,
+          content: symbol.content,
+          axiomAppearances: symbol.axiomAppearances,
+          theoremAppearances: symbol.theoremAppearances,
+          deductionAppearances: symbol.deductionAppearances,
+          systemId: symbol.systemId.toString(),
+          createdByUserId: symbol.createdByUserId.toString()
         }
       ],
       total: 1
