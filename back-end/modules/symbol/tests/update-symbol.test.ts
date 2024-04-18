@@ -114,7 +114,7 @@ describe('Update Symbol', (): void => {
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/symbol/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Title',
+      newTitle: 'New Test',
       newDescription: 'This is a new test.',
       newType: SymbolType.Variable,
       newContent: '\\alpha'
@@ -142,7 +142,7 @@ describe('Update Symbol', (): void => {
     const response = await request(app.getHttpServer()).patch(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Title',
+      newTitle: 'New Test',
       newDescription: 'This is a new test.',
       newType: SymbolType.Variable,
       newContent: '\\alpha'
@@ -156,7 +156,7 @@ describe('Update Symbol', (): void => {
   });
 
   it('fails if the title is already in use within the system', async (): Promise<void> => {
-    const newTitle = 'New Title';
+    const newTitle = 'New Test';
 
     const conflictSymbol = new SymbolEntity();
     const symbol = new SymbolEntity();
@@ -211,7 +211,7 @@ describe('Update Symbol', (): void => {
     const response = await request(app.getHttpServer()).patch(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Title',
+      newTitle: 'New Test',
       newDescription: 'This is a new test.',
       newType: SymbolType.Variable,
       newContent: '\\alpha'
@@ -243,7 +243,7 @@ describe('Update Symbol', (): void => {
     const response = await request(app.getHttpServer()).patch(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Title',
+      newTitle: 'New Test',
       newDescription: 'This is a new test.',
       newType: SymbolType.Variable,
       newContent: '\\alpha'
@@ -275,7 +275,7 @@ describe('Update Symbol', (): void => {
     const response = await request(app.getHttpServer()).patch(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Title',
+      newTitle: 'New Test',
       newDescription: 'This is a new test.',
       newType: SymbolType.Variable,
       newContent: '\\alpha'
@@ -306,7 +306,7 @@ describe('Update Symbol', (): void => {
     const response = await request(app.getHttpServer()).patch(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Title',
+      newTitle: 'New Test',
       newDescription: 'This is a new test.',
       newType: SymbolType.Variable,
       newContent: '\\alpha'
