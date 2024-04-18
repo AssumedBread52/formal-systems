@@ -59,7 +59,6 @@ describe('Create Statement', (): void => {
   it('fails if any variable type hypothesis has a first element that is a variable symbol', async (): Promise<void> => {
     const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
     const alpha = new SymbolEntity();
     const a = new SymbolEntity();
     const system = new SystemEntity();
@@ -69,8 +68,6 @@ describe('Create Statement', (): void => {
     turnstile.createdByUserId = user._id;
     wff.systemId = system._id;
     wff.createdByUserId = user._id;
-    setvar.systemId = system._id;
-    setvar.createdByUserId = user._id;
     alpha.type = SymbolType.Variable;
     alpha.systemId = system._id;
     alpha.createdByUserId = user._id;
@@ -86,7 +83,6 @@ describe('Create Statement', (): void => {
     symbolRepositoryMock.find.mockReturnValueOnce([
       turnstile,
       wff,
-      setvar,
       alpha,
       a
     ]);
@@ -336,7 +332,6 @@ describe('Create Statement', (): void => {
 
   it('fails if a variable symbol in any logical hypothesis does not have a corresponding variable type hypothesis', async (): Promise<void> => {
     const turnstile = new SymbolEntity();
-    const wff = new SymbolEntity();
     const setvar = new SymbolEntity();
     const alpha = new SymbolEntity();
     const a = new SymbolEntity();
@@ -345,8 +340,6 @@ describe('Create Statement', (): void => {
 
     turnstile.systemId = system._id;
     turnstile.createdByUserId = user._id;
-    wff.systemId = system._id;
-    wff.createdByUserId = user._id;
     setvar.systemId = system._id;
     setvar.createdByUserId = user._id;
     alpha.type = SymbolType.Variable;
@@ -405,7 +398,6 @@ describe('Create Statement', (): void => {
   it('fails if a variable symbol in the assertion does not have a corresponding variable type hypothesis', async (): Promise<void> => {
     const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
     const alpha = new SymbolEntity();
     const a = new SymbolEntity();
     const system = new SystemEntity();
@@ -415,8 +407,6 @@ describe('Create Statement', (): void => {
     turnstile.createdByUserId = user._id;
     wff.systemId = system._id;
     wff.createdByUserId = user._id;
-    setvar.systemId = system._id;
-    setvar.createdByUserId = user._id;
     alpha.type = SymbolType.Variable;
     alpha.systemId = system._id;
     alpha.createdByUserId = user._id;
