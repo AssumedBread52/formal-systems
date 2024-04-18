@@ -60,13 +60,8 @@ describe('Create Statement', (): void => {
     const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
     const setvar = new SymbolEntity();
-    const openParenthesis = new SymbolEntity();
-    const closeParenthesis = new SymbolEntity();
-    const implication = new SymbolEntity();
-    const forAll = new SymbolEntity();
-    const phi = new SymbolEntity();
-    const psi = new SymbolEntity();
-    const x = new SymbolEntity();
+    const alpha = new SymbolEntity();
+    const a = new SymbolEntity();
     const system = new SystemEntity();
     const user = new UserEntity();
 
@@ -76,23 +71,12 @@ describe('Create Statement', (): void => {
     wff.createdByUserId = user._id;
     setvar.systemId = system._id;
     setvar.createdByUserId = user._id;
-    openParenthesis.systemId = system._id;
-    openParenthesis.createdByUserId = user._id;
-    closeParenthesis.systemId = system._id;
-    closeParenthesis.createdByUserId = user._id;
-    implication.systemId = system._id;
-    implication.createdByUserId = user._id;
-    forAll.systemId = system._id;
-    forAll.createdByUserId = user._id;
-    phi.type = SymbolType.Variable;
-    phi.systemId = system._id;
-    phi.createdByUserId = user._id;
-    psi.type = SymbolType.Variable;
-    psi.systemId = system._id;
-    psi.createdByUserId = user._id;
-    x.type = SymbolType.Variable;
-    x.systemId = system._id;
-    x.createdByUserId = user._id;
+    alpha.type = SymbolType.Variable;
+    alpha.systemId = system._id;
+    alpha.createdByUserId = user._id;
+    a.type = SymbolType.Variable;
+    a.systemId = system._id;
+    a.createdByUserId = user._id;
     system.createdByUserId = user._id;
 
     const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
@@ -105,13 +89,8 @@ describe('Create Statement', (): void => {
       turnstile,
       wff,
       setvar,
-      openParenthesis,
-      closeParenthesis,
-      implication,
-      forAll,
-      phi,
-      psi,
-      x
+      alpha,
+      a
     ]);
     systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
@@ -124,32 +103,21 @@ describe('Create Statement', (): void => {
       title: 'Test',
       description: 'This is a test.',
       distinctVariableRestrictions: [
-        [phi._id, x._id]
+        [alpha._id, a._id]
       ],
       variableTypeHypotheses: [
-        [wff._id, phi._id],
-        [wff._id, psi._id],
-        [setvar._id, x._id]
+        [wff._id, alpha._id],
+        [setvar._id, a._id]
       ],
       logicalHypotheses: [
         [
           turnstile._id,
-          openParenthesis._id,
-          phi._id,
-          implication._id,
-          psi._id,
-          closeParenthesis._id
+          alpha._id
         ]
       ],
       assertion: [
         turnstile._id,
-        openParenthesis._id,
-        phi._id,
-        implication._id,
-        forAll._id,
-        x._id,
-        psi._id,
-        closeParenthesis._id
+        a._id
       ]
     });
 
