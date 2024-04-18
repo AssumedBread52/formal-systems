@@ -1,11 +1,11 @@
-import { ValidateBy, ValidationOptions, buildMessage, isMongoId } from 'class-validator';
+import { ValidateBy, ValidationOptions, buildMessage, isArray, isMongoId } from 'class-validator';
 
 export const IsExpressionDecorator = (validationOptions?: ValidationOptions): PropertyDecorator => {
   return ValidateBy({
     name: 'is-expression',
     validator: {
       validate: (value: any): boolean => {
-        if (!Array.isArray(value)) {
+        if (!isArray(value)) {
           return false;
         }
 
