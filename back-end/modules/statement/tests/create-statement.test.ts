@@ -248,27 +248,9 @@ describe('Create Statement', (): void => {
   });
 
   it('fails if the system does not exist', async (): Promise<void> => {
-    const systemId = new ObjectId();
+    const symbolId = new ObjectId();
 
-    const turnstile = new SymbolEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
     const user = new UserEntity();
-
-    turnstile.systemId = systemId;
-    turnstile.createdByUserId = user._id;
-    wff.systemId = systemId;
-    wff.createdByUserId = user._id;
-    setvar.systemId = systemId;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = systemId;
-    a.createdByUserId = user._id;
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
@@ -278,27 +260,13 @@ describe('Create Statement', (): void => {
 
     const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`).set('Cookie', [
       `token=${token}`
     ]).send({
       title: 'Test',
       description: 'This is a test.',
-      distinctVariableRestrictions: [
-        [alpha._id, a._id]
-      ],
-      variableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [setvar._id, a._id]
-      ],
-      logicalHypotheses: [
-        [
-          turnstile._id,
-          alpha._id
-        ]
-      ],
       assertion: [
-        turnstile._id,
-        a._id
+        symbolId
       ]
     });
 
