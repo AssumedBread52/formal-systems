@@ -117,6 +117,62 @@ describe('Create Statement', (): void => {
     });
   });
 
+  it('fails with an invalid payload', async (): Promise<void> => {
+    const turnstile = new SymbolEntity();
+    const wff = new SymbolEntity();
+    const setvar = new SymbolEntity();
+    const alpha = new SymbolEntity();
+    const a = new SymbolEntity();
+    const system = new SystemEntity();
+    const user = new UserEntity();
+
+    turnstile.systemId = system._id;
+    turnstile.createdByUserId = user._id;
+    wff.systemId = system._id;
+    wff.createdByUserId = user._id;
+    setvar.systemId = system._id;
+    setvar.createdByUserId = user._id;
+    alpha.type = SymbolType.Variable;
+    alpha.systemId = system._id;
+    alpha.createdByUserId = user._id;
+    a.type = SymbolType.Variable;
+    a.systemId = system._id;
+    a.createdByUserId = user._id;
+    system.createdByUserId = user._id;
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.',
+      distinctVariableRestrictions: ['invalid', ['invalid', 'invalid', 'invalid'], ['invalid'], [new ObjectId().toString(), 'invalid'], ['invalid', new ObjectId().toString], [alpha._id, alpha._id]],
+      variableTypeHypotheses: ['invalid', ['invalid', 'invalid', 'invalid'], ['invalid'], [new ObjectId().toString(), 'invalid'], ['invalid', new ObjectId().toString], [alpha._id, alpha._id]],
+      logicalHypotheses: ['invalid', ['invalid'], ['invalid']],
+      assertion: ['invalid']
+    });
+
+    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+      error: 'Bad Request',
+      message: [
+        'each value in distinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'All distinctVariableRestrictions\'s elements must be unique',
+        'each value in variableTypeHypotheses must be a distinct pair of mongodb ids',
+        'All variableTypeHypotheses\'s elements must be unique',
+        'each value in each value in logicalHypotheses must be a mongodb id',
+        'All logicalHypotheses\'s elements must be unique',
+        'each value in logicalHypotheses must contain at least 1 elements',
+        'each value in assertion must be a mongodb id'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
   it('fails if the system does not exist', async (): Promise<void> => {
     const systemId = new ObjectId();
 
