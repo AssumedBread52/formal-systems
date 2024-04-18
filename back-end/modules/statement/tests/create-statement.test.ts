@@ -56,6 +56,74 @@ describe('Create Statement', (): void => {
     });
   });
 
+  it('fails if a symbol used does not exist in the system', async (): Promise<void> => {
+    const turnstile = new SymbolEntity();
+    const wff = new SymbolEntity();
+    const setvar = new SymbolEntity();
+    const alpha = new SymbolEntity();
+    const a = new SymbolEntity();
+    const system = new SystemEntity();
+    const user = new UserEntity();
+
+    turnstile.systemId = system._id;
+    turnstile.createdByUserId = user._id;
+    wff.systemId = system._id;
+    wff.createdByUserId = user._id;
+    setvar.systemId = system._id;
+    setvar.createdByUserId = user._id;
+    alpha.type = SymbolType.Variable;
+    alpha.systemId = system._id;
+    alpha.createdByUserId = user._id;
+    a.type = SymbolType.Variable;
+    a.createdByUserId = user._id;
+    system.createdByUserId = user._id;
+
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    symbolRepositoryMock.find.mockReturnValueOnce([
+      turnstile,
+      wff,
+      setvar,
+      alpha
+    ]);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [alpha._id, a._id]
+      ],
+      variableTypeHypotheses: [
+        [wff._id, alpha._id],
+        [setvar._id, a._id]
+      ],
+      logicalHypotheses: [
+        [
+          turnstile._id,
+          alpha._id
+        ]
+      ],
+      assertion: [
+        turnstile._id,
+        a._id
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'All symbols must exist within the formal system.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
   it('fails if any distinct variable restriction has a first element that is a constant symbol', async (): Promise<void> => {
     const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
