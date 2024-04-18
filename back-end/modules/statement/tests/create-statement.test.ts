@@ -202,6 +202,51 @@ describe('Create Statement', (): void => {
     });
   });
 
+  it('fails with an invalid payload', async (): Promise<void> => {
+    const variableSymbolId1 = new ObjectId();
+    const variableSymbolId2 = new ObjectId();
+
+    const user = new UserEntity();
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [variableSymbolId1, variableSymbolId2],
+        [variableSymbolId2, variableSymbolId1]
+      ],
+      variableTypeHypotheses: [
+        [variableSymbolId1, variableSymbolId2],
+        [new ObjectId(), variableSymbolId2]
+      ],
+      logicalHypotheses: [
+        [variableSymbolId1],
+        [variableSymbolId1]
+      ],
+      assertion: [
+        variableSymbolId1
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+      error: 'Bad Request',
+      message: [
+        'All distinctVariableRestrictions\'s elements must be unique',
+        'All variableTypeHypotheses\'s elements must be unique',
+        'All logicalHypotheses\'s elements must be unique',
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
   it('fails if the system does not exist', async (): Promise<void> => {
     const systemId = new ObjectId();
 
