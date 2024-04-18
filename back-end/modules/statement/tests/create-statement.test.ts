@@ -959,9 +959,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with a missing symbol', async (): Promise<void> => {
-    const testUser = new UserEntity();
-    const testSystem = new SystemEntity();
+  it('fails if it uses a symbol from a different system', async (): Promise<void> => {
     const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
     const setvar = new SymbolEntity();
@@ -971,35 +969,33 @@ describe('Create Statement', (): void => {
     const forAll = new SymbolEntity();
     const phi = new SymbolEntity();
     const psi = new SymbolEntity();
-    const chi = new SymbolEntity();
     const x = new SymbolEntity();
+    const system = new SystemEntity();
+    const user = new UserEntity();
 
-    testSystem.createdByUserId = testUser._id;
-    turnstile.systemId = testSystem._id;
-    turnstile.createdByUserId = testUser._id;
-    wff.systemId = testSystem._id;
-    wff.createdByUserId = testUser._id;
-    setvar.systemId = testSystem._id;
-    setvar.createdByUserId = testUser._id;
-    openParenthesis.systemId = testSystem._id;
-    openParenthesis.createdByUserId = testUser._id;
-    closeParenthesis.systemId = testSystem._id;
-    closeParenthesis.createdByUserId = testUser._id;
-    implication.systemId = testSystem._id;
-    implication.createdByUserId = testUser._id;
-    forAll.systemId = testSystem._id;
-    forAll.createdByUserId = testUser._id;
+    turnstile.systemId = system._id;
+    turnstile.createdByUserId = user._id;
+    wff.systemId = system._id;
+    wff.createdByUserId = user._id;
+    setvar.systemId = system._id;
+    setvar.createdByUserId = user._id;
+    openParenthesis.systemId = system._id;
+    openParenthesis.createdByUserId = user._id;
+    closeParenthesis.systemId = system._id;
+    closeParenthesis.createdByUserId = user._id;
+    implication.systemId = system._id;
+    implication.createdByUserId = user._id;
+    forAll.systemId = system._id;
+    forAll.createdByUserId = user._id;
     phi.type = SymbolType.Variable;
-    phi.systemId = testSystem._id;
-    phi.createdByUserId = testUser._id;
+    phi.systemId = system._id;
+    phi.createdByUserId = user._id;
     psi.type = SymbolType.Variable;
-    psi.systemId = testSystem._id;
-    psi.createdByUserId = testUser._id;
-    chi.type = SymbolType.Variable;
-    chi.systemId = testSystem._id;
-    chi.createdByUserId = testUser._id;
+    psi.systemId = system._id;
+    psi.createdByUserId = user._id;
     x.type = SymbolType.Variable;
-    x.createdByUserId = testUser._id;
+    x.createdByUserId = user._id;
+    system.createdByUserId = user._id;
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
@@ -1014,15 +1010,14 @@ describe('Create Statement', (): void => {
       implication,
       forAll,
       phi,
-      psi,
-      chi
+      psi
     ]);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(testSystem);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(testUser);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(testUser._id);
+    const token = await app.get(AuthService).generateToken(user._id);
 
-    const response = await request(app.getHttpServer()).post(`/system/${testSystem._id}/statement`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
       `token=${token}`
     ]).send({
       title: 'Test',
@@ -1033,7 +1028,6 @@ describe('Create Statement', (): void => {
       variableTypeHypotheses: [
         [wff._id, phi._id],
         [wff._id, psi._id],
-        [wff._id, chi._id],
         [setvar._id, x._id]
       ],
       logicalHypotheses: [
@@ -1042,11 +1036,7 @@ describe('Create Statement', (): void => {
           openParenthesis._id,
           phi._id,
           implication._id,
-          openParenthesis._id,
           psi._id,
-          implication._id,
-          chi._id,
-          closeParenthesis._id,
           closeParenthesis._id
         ]
       ],
@@ -1055,15 +1045,9 @@ describe('Create Statement', (): void => {
         openParenthesis._id,
         phi._id,
         implication._id,
-        openParenthesis._id,
         forAll._id,
         x._id,
         psi._id,
-        implication._id,
-        forAll._id,
-        x._id,
-        chi._id,
-        closeParenthesis._id,
         closeParenthesis._id
       ]
     });
