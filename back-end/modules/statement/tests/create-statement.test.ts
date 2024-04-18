@@ -14,6 +14,7 @@ import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { StatementRepositoryMock } from './mocks/statement-repository.mock';
 
@@ -53,6 +54,68 @@ describe('Create Statement', (): void => {
       error: 'Unprocessable Entity',
       message: 'systemId should be a mongodb id',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails if the system does not exist', async (): Promise<void> => {
+    const systemId = new ObjectId();
+
+    const turnstile = new SymbolEntity();
+    const wff = new SymbolEntity();
+    const setvar = new SymbolEntity();
+    const alpha = new SymbolEntity();
+    const a = new SymbolEntity();
+    const user = new UserEntity();
+
+    turnstile.systemId = systemId;
+    turnstile.createdByUserId = user._id;
+    wff.systemId = systemId;
+    wff.createdByUserId = user._id;
+    setvar.systemId = systemId;
+    setvar.createdByUserId = user._id;
+    alpha.type = SymbolType.Variable;
+    alpha.systemId = systemId;
+    alpha.createdByUserId = user._id;
+    a.type = SymbolType.Variable;
+    a.systemId = systemId;
+    a.createdByUserId = user._id;
+
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [alpha._id, a._id]
+      ],
+      variableTypeHypotheses: [
+        [wff._id, alpha._id],
+        [setvar._id, a._id]
+      ],
+      logicalHypotheses: [
+        [
+          turnstile._id,
+          alpha._id
+        ]
+      ],
+      assertion: [
+        turnstile._id,
+        a._id
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
+      error: 'Not Found',
+      message: 'Statements cannot be added to a formal system that does not exist.',
+      statusCode: HttpStatus.NOT_FOUND
     });
   });
 
