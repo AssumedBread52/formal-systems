@@ -5,6 +5,9 @@ import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
 import { testMissingToken } from '@/auth/tests/helpers/test-missing-token';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { StatementEntity } from '@/statement/statement.entity';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { SymbolEntity } from '@/symbol/symbol.entity';
+import { SymbolRepositoryMock } from '@/symbol/tests/mocks/symbol-repository.mock';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -357,6 +360,69 @@ describe('Update Statement', (): void => {
       error: 'Forbidden',
       message: 'You cannot update a statement unless you created it.',
       statusCode: HttpStatus.FORBIDDEN
+    });
+  });
+
+  it('fails if a symbol used does not exist in the system', async (): Promise<void> => {
+    const statement = new StatementEntity();
+    const wff = new SymbolEntity();
+    const setvar = new SymbolEntity();
+    const alpha = new SymbolEntity();
+    const a = new SymbolEntity();
+    const user = new UserEntity();
+
+    statement.createdByUserId = user._id;
+    wff.systemId = statement.systemId;
+    wff.createdByUserId = user._id;
+    setvar.systemId = statement.systemId;
+    setvar.createdByUserId = user._id;
+    alpha.type = SymbolType.Variable;
+    alpha.systemId = statement.systemId;
+    alpha.createdByUserId = user._id;
+    a.type = SymbolType.Variable;
+    a.createdByUserId = user._id;
+
+    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
+    symbolRepositoryMock.find.mockReturnValueOnce([
+      wff,
+      setvar,
+      alpha
+    ]);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [wff._id, setvar._id],
+        [alpha._id, wff._id]
+      ],
+      newVariableTypeHypotheses: [
+        [alpha._id, wff._id],
+        [wff._id, setvar._id]
+      ],
+      newLogicalHypotheses: [
+        [
+          alpha._id
+        ]
+      ],
+      newAssertion: [
+        a._id
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'All symbols must exist within the formal system.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
