@@ -1084,6 +1084,79 @@ describe('Update Statement', (): void => {
     });
   });
 
+  it('succeeds', async (): Promise<void> => {
+    const statement = new StatementEntity();
+    const turnstile = new SymbolEntity();
+    const wff = new SymbolEntity();
+    const setvar = new SymbolEntity();
+    const alpha = new SymbolEntity();
+    const a = new SymbolEntity();
+    const user = new UserEntity();
+
+    statement.assertion = [
+      turnstile._id,
+      alpha._id
+    ];
+    statement.createdByUserId = user._id;
+    turnstile.systemId = statement.systemId;
+    turnstile.createdByUserId = user._id;
+    wff.systemId = statement.systemId;
+    wff.createdByUserId = user._id;
+    setvar.systemId = statement.systemId;
+    setvar.createdByUserId = user._id;
+    alpha.type = SymbolType.Variable;
+    alpha.systemId = statement.systemId;
+    alpha.createdByUserId = user._id;
+    a.type = SymbolType.Variable;
+    a.systemId = statement.systemId;
+    a.createdByUserId = user._id;
+
+    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
+    statementRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    symbolRepositoryMock.find.mockReturnValueOnce([
+      turnstile,
+      wff,
+      setvar,
+      alpha,
+      a
+    ]);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [alpha._id, a._id]
+      ],
+      newVariableTypeHypotheses: [
+        [wff._id, alpha._id],
+        [setvar._id, a._id]
+      ],
+      newLogicalHypotheses: [
+        [
+          turnstile._id,
+          alpha._id
+        ]
+      ],
+      newAssertion: [
+        turnstile._id,
+        a._id
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.OK, {
+      id: statement._id.toString()
+    });
+  });
+
   afterAll(async (): Promise<void> => {
     await app.close();
   });
