@@ -313,6 +313,53 @@ describe('Update Statement', (): void => {
     });
   });
 
+  it('fails if the user did not create the statement', async (): Promise<void> => {
+    const wffSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+
+    const statement = new StatementEntity();
+    const user = new UserEntity();
+
+    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [wffSymbolId, setvarSymbolId],
+        [alphaSymbolId, wffSymbolId]
+      ],
+      newVariableTypeHypotheses: [
+        [alphaSymbolId, wffSymbolId],
+        [wffSymbolId, setvarSymbolId]
+      ],
+      newLogicalHypotheses: [
+        [
+          alphaSymbolId
+        ]
+      ],
+      newAssertion: [
+        aSymbolId
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
+      error: 'Forbidden',
+      message: 'You cannot update a statement unless you created it.',
+      statusCode: HttpStatus.FORBIDDEN
+    });
+  });
+
   afterAll(async (): Promise<void> => {
     await app.close();
   });
