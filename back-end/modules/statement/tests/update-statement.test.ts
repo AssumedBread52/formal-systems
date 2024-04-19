@@ -80,6 +80,191 @@ describe('Update Statement', (): void => {
     });
   });
 
+  it('fails with an invalid payload', async (): Promise<void> => {
+    const user = new UserEntity();
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newDistinctVariableRestrictions: 'invalid',
+      newVariableTypeHypotheses: 'invalid',
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+      error: 'Bad Request',
+      message: [
+        'newTitle should not be empty',
+        'newDescription should not be empty',
+        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'newDistinctVariableRestrictions must be an array',
+        'All newDistinctVariableRestrictions\'s elements must be unique',
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'newVariableTypeHypotheses must be an array',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid payload', async (): Promise<void> => {
+    const user = new UserEntity();
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        'invalid',
+        'invalid'
+      ],
+      newVariableTypeHypotheses: [
+        'invalid',
+        'invalid'
+      ],
+      newLogicalHypotheses: [
+        'invalid',
+        'invalid'
+      ],
+      newAssertion: 'invalid'
+    });
+
+    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+      error: 'Bad Request',
+      message: [
+        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'All newDistinctVariableRestrictions\'s elements must be unique',
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid payload', async (): Promise<void> => {
+    const symbolId = new ObjectId();
+
+    const user = new UserEntity();
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        ['invalid', 'invalid', 'invalid'],
+        ['invalid'],
+        [symbolId, 'invalid'],
+        ['invalid', symbolId],
+        [symbolId, symbolId]
+      ],
+      newVariableTypeHypotheses: [
+        ['invalid', 'invalid', 'invalid'],
+        ['invalid'],
+        [symbolId, 'invalid'],
+        ['invalid', symbolId],
+        [symbolId, symbolId]
+      ],
+      newLogicalHypotheses: [
+        ['invalid'],
+        ['invalid']
+      ],
+      newAssertion: [
+        'invalid'
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+      error: 'Bad Request',
+      message: [
+        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'All newDistinctVariableRestrictions\'s elements must be unique',
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newAssertion must be a mongodb id'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid payload', async (): Promise<void> => {
+    const symbolId1 = new ObjectId();
+    const symbolId2 = new ObjectId();
+
+    const user = new UserEntity();
+
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [symbolId1, symbolId2],
+        [symbolId2, symbolId1]
+      ],
+      newVariableTypeHypotheses: [
+        [symbolId1, symbolId2],
+        [new ObjectId(), symbolId2]
+      ],
+      newLogicalHypotheses: [
+        [symbolId1],
+        [symbolId1]
+      ],
+      newAssertion: [
+        symbolId1
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+      error: 'Bad Request',
+      message: [
+        'All newDistinctVariableRestrictions\'s elements must be unique',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'All newLogicalHypotheses\'s elements must be unique'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
   afterAll(async (): Promise<void> => {
     await app.close();
   });
