@@ -37,6 +37,33 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
     systemRepository.save(system);
   }
 
+  async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
+    const { connection, databaseEntity } = event;
+
+    const { type, systemId } = databaseEntity;
+
+    const systemRepository = connection.getMongoRepository(SystemEntity);
+
+    const system = await systemRepository.findOneBy({
+      _id: systemId
+    });
+
+    if (!system) {
+      return;
+    }
+
+    switch (type) {
+      case SymbolType.Constant:
+        system.constantSymbolCount--;
+        break;
+      case SymbolType.Variable:
+        system.variableSymbolCount--;
+        break;
+    }
+
+    systemRepository.save(system);
+  }
+
   async afterUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
     const { connection, databaseEntity, entity } = event;
 
@@ -67,33 +94,6 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
         break;
       case SymbolType.Variable:
         system.constantSymbolCount++;
-        system.variableSymbolCount--;
-        break;
-    }
-
-    systemRepository.save(system);
-  }
-
-  async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
-    const { connection, databaseEntity } = event;
-
-    const { type, systemId } = databaseEntity;
-
-    const systemRepository = connection.getMongoRepository(SystemEntity);
-
-    const system = await systemRepository.findOneBy({
-      _id: systemId
-    });
-
-    if (!system) {
-      return;
-    }
-
-    switch (type) {
-      case SymbolType.Constant:
-        system.constantSymbolCount--;
-        break;
-      case SymbolType.Variable:
         system.variableSymbolCount--;
         break;
     }

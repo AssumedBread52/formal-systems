@@ -37,6 +37,33 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
     userRepository.save(user);
   }
 
+  async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
+    const { connection, databaseEntity } = event;
+
+    const { type, createdByUserId } = databaseEntity;
+
+    const userRepository = connection.getMongoRepository(UserEntity);
+
+    const user = await userRepository.findOneBy({
+      _id: createdByUserId
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    switch (type) {
+      case SymbolType.Constant:
+        user.constantSymbolCount--;
+        break;
+      case SymbolType.Variable:
+        user.variableSymbolCount--;
+        break;
+    }
+
+    userRepository.save(user);
+  }
+
   async afterUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
     const { connection, databaseEntity, entity } = event;
 
@@ -67,33 +94,6 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
         break;
       case SymbolType.Variable:
         user.constantSymbolCount++;
-        user.variableSymbolCount--;
-        break;
-    }
-
-    userRepository.save(user);
-  }
-
-  async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
-    const { connection, databaseEntity } = event;
-
-    const { type, createdByUserId } = databaseEntity;
-
-    const userRepository = connection.getMongoRepository(UserEntity);
-
-    const user = await userRepository.findOneBy({
-      _id: createdByUserId
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found.');
-    }
-
-    switch (type) {
-      case SymbolType.Constant:
-        user.constantSymbolCount--;
-        break;
-      case SymbolType.Variable:
         user.variableSymbolCount--;
         break;
     }
