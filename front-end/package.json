@@ -14,17 +14,17 @@
   "author": "Antonio Sanchez",
   "license": "ISC",
   "dependencies": {
-    "@ant-design/icons": "^5.2.6",
-    "@reduxjs/toolkit": "^2.0.1",
-    "antd": "^5.12.8",
-    "katex": "^0.16.9",
-    "next": "^14.0.4",
-    "react-redux": "^9.0.4"
+    "@ant-design/icons": "^5.3.6",
+    "@reduxjs/toolkit": "^2.2.3",
+    "antd": "^5.16.2",
+    "katex": "^0.16.10",
+    "next": "^14.2.2",
+    "react-redux": "^9.1.1"
   },
   "devDependencies": {
     "@types/katex": "^0.16.7",
-    "@types/node": "^20.11.0",
-    "@types/react": "^18.2.47",
-    "typescript": "^5.3.3"
+    "@types/node": "^20.12.7",
+    "@types/react": "^18.2.79",
+    "typescript": "^5.4.5"
   }
 }
