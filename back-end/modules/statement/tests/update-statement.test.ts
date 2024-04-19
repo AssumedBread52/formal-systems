@@ -4,12 +4,14 @@ import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
 import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
 import { testMissingToken } from '@/auth/tests/helpers/test-missing-token';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
+import { StatementEntity } from '@/statement/statement.entity';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
+import { StatementRepositoryMock } from './mocks/statement-repository.mock';
 
 describe('Update Statement', (): void => {
   let app: INestApplication;
@@ -262,6 +264,52 @@ describe('Update Statement', (): void => {
         'All newLogicalHypotheses\'s elements must be unique'
       ],
       statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails if the statement does not exist', async (): Promise<void> => {
+    const wffSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+
+    const user = new UserEntity();
+
+    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    statementRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [wffSymbolId, setvarSymbolId],
+        [alphaSymbolId, wffSymbolId]
+      ],
+      newVariableTypeHypotheses: [
+        [alphaSymbolId, wffSymbolId],
+        [wffSymbolId, setvarSymbolId]
+      ],
+      newLogicalHypotheses: [
+        [
+          alphaSymbolId
+        ]
+      ],
+      newAssertion: [
+        aSymbolId
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
+      error: 'Not Found',
+      message: 'Statement not found.',
+      statusCode: HttpStatus.NOT_FOUND
     });
   });
 
