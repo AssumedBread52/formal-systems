@@ -252,6 +252,7 @@ describe('Create Statement', (): void => {
     const setvarSymbolId = new ObjectId();
     const alphaSymbolId = new ObjectId();
     const aSymbolId = new ObjectId();
+
     const user = new UserEntity();
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
@@ -297,6 +298,7 @@ describe('Create Statement', (): void => {
     const setvarSymbolId = new ObjectId();
     const alphaSymbolId = new ObjectId();
     const aSymbolId = new ObjectId();
+
     const system = new SystemEntity();
     const user = new UserEntity();
 
