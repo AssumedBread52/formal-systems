@@ -203,8 +203,8 @@ describe('Create Statement', (): void => {
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
-    const variableSymbolId1 = new ObjectId();
-    const variableSymbolId2 = new ObjectId();
+    const symbolId1 = new ObjectId();
+    const symbolId2 = new ObjectId();
 
     const user = new UserEntity();
 
@@ -220,19 +220,19 @@ describe('Create Statement', (): void => {
       title: 'Test',
       description: 'This is a test.',
       distinctVariableRestrictions: [
-        [variableSymbolId1, variableSymbolId2],
-        [variableSymbolId2, variableSymbolId1]
+        [symbolId1, symbolId2],
+        [symbolId2, symbolId1]
       ],
       variableTypeHypotheses: [
-        [variableSymbolId1, variableSymbolId2],
-        [new ObjectId(), variableSymbolId2]
+        [symbolId1, symbolId2],
+        [new ObjectId(), symbolId2]
       ],
       logicalHypotheses: [
-        [variableSymbolId1],
-        [variableSymbolId1]
+        [symbolId1],
+        [symbolId1]
       ],
       assertion: [
-        variableSymbolId1
+        symbolId1
       ]
     });
 
@@ -248,8 +248,10 @@ describe('Create Statement', (): void => {
   });
 
   it('fails if the system does not exist', async (): Promise<void> => {
-    const symbolId = new ObjectId();
-
+    const wffSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
     const user = new UserEntity();
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
@@ -265,8 +267,21 @@ describe('Create Statement', (): void => {
     ]).send({
       title: 'Test',
       description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [wffSymbolId, setvarSymbolId],
+        [alphaSymbolId, wffSymbolId]
+      ],
+      variableTypeHypotheses: [
+        [alphaSymbolId, wffSymbolId],
+        [wffSymbolId, setvarSymbolId]
+      ],
+      logicalHypotheses: [
+        [
+          alphaSymbolId
+        ]
+      ],
       assertion: [
-        symbolId
+        aSymbolId
       ]
     });
 
@@ -278,26 +293,12 @@ describe('Create Statement', (): void => {
   });
 
   it('fails if the user did not create the system', async (): Promise<void> => {
-    const turnstile = new SymbolEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
+    const wffSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
     const system = new SystemEntity();
     const user = new UserEntity();
-
-    turnstile.systemId = system._id;
-    turnstile.createdByUserId = user._id;
-    wff.systemId = system._id;
-    wff.createdByUserId = user._id;
-    setvar.systemId = system._id;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = system._id;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = system._id;
-    a.createdByUserId = user._id;
 
     const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
@@ -313,21 +314,20 @@ describe('Create Statement', (): void => {
       title: 'Test',
       description: 'This is a test.',
       distinctVariableRestrictions: [
-        [alpha._id, a._id]
+        [wffSymbolId, setvarSymbolId],
+        [alphaSymbolId, wffSymbolId]
       ],
       variableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [setvar._id, a._id]
+        [alphaSymbolId, wffSymbolId],
+        [wffSymbolId, setvarSymbolId]
       ],
       logicalHypotheses: [
         [
-          turnstile._id,
-          alpha._id
+          alphaSymbolId
         ]
       ],
       assertion: [
-        turnstile._id,
-        a._id
+        aSymbolId
       ]
     });
 
@@ -339,7 +339,6 @@ describe('Create Statement', (): void => {
   });
 
   it('fails if a symbol used does not exist in the system', async (): Promise<void> => {
-    const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
     const setvar = new SymbolEntity();
     const alpha = new SymbolEntity();
@@ -347,8 +346,6 @@ describe('Create Statement', (): void => {
     const system = new SystemEntity();
     const user = new UserEntity();
 
-    turnstile.systemId = system._id;
-    turnstile.createdByUserId = user._id;
     wff.systemId = system._id;
     wff.createdByUserId = user._id;
     setvar.systemId = system._id;
@@ -365,7 +362,6 @@ describe('Create Statement', (): void => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
       wff,
       setvar,
       alpha
@@ -381,20 +377,19 @@ describe('Create Statement', (): void => {
       title: 'Test',
       description: 'This is a test.',
       distinctVariableRestrictions: [
-        [alpha._id, a._id]
+        [wff._id, setvar._id],
+        [alpha._id, wff._id]
       ],
       variableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [setvar._id, a._id]
+        [alpha._id, wff._id],
+        [wff._id, setvar._id]
       ],
       logicalHypotheses: [
         [
-          turnstile._id,
           alpha._id
         ]
       ],
       assertion: [
-        turnstile._id,
         a._id
       ]
     });
@@ -407,7 +402,6 @@ describe('Create Statement', (): void => {
   });
 
   it('fails if any distinct variable restriction has a first element that is a constant symbol', async (): Promise<void> => {
-    const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
     const setvar = new SymbolEntity();
     const alpha = new SymbolEntity();
@@ -415,8 +409,6 @@ describe('Create Statement', (): void => {
     const system = new SystemEntity();
     const user = new UserEntity();
 
-    turnstile.systemId = system._id;
-    turnstile.createdByUserId = user._id;
     wff.systemId = system._id;
     wff.createdByUserId = user._id;
     setvar.systemId = system._id;
@@ -434,7 +426,6 @@ describe('Create Statement', (): void => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
       wff,
       setvar,
       alpha,
@@ -451,20 +442,19 @@ describe('Create Statement', (): void => {
       title: 'Test',
       description: 'This is a test.',
       distinctVariableRestrictions: [
-        [wff._id, alpha._id]
+        [wff._id, setvar._id],
+        [alpha._id, wff._id]
       ],
       variableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [setvar._id, a._id]
+        [alpha._id, wff._id],
+        [wff._id, setvar._id]
       ],
       logicalHypotheses: [
         [
-          turnstile._id,
           alpha._id
         ]
       ],
       assertion: [
-        turnstile._id,
         a._id
       ]
     });
@@ -477,17 +467,13 @@ describe('Create Statement', (): void => {
   });
 
   it('fails if any distinct variable restriction has a second element that is a constant symbol', async (): Promise<void> => {
-    const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
     const setvar = new SymbolEntity();
     const alpha = new SymbolEntity();
     const a = new SymbolEntity();
-    const period = new SymbolEntity();
     const system = new SystemEntity();
     const user = new UserEntity();
 
-    turnstile.systemId = system._id;
-    turnstile.createdByUserId = user._id;
     wff.systemId = system._id;
     wff.createdByUserId = user._id;
     setvar.systemId = system._id;
@@ -498,8 +484,6 @@ describe('Create Statement', (): void => {
     a.type = SymbolType.Variable;
     a.systemId = system._id;
     a.createdByUserId = user._id;
-    period.systemId = system._id;
-    period.createdByUserId = user._id;
     system.createdByUserId = user._id;
 
     const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
@@ -507,12 +491,10 @@ describe('Create Statement', (): void => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
       wff,
       setvar,
       alpha,
-      a,
-      period
+      a
     ]);
     systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
@@ -525,20 +507,18 @@ describe('Create Statement', (): void => {
       title: 'Test',
       description: 'This is a test.',
       distinctVariableRestrictions: [
-        [alpha._id, period._id]
+        [alpha._id, wff._id]
       ],
       variableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [setvar._id, a._id]
+        [alpha._id, wff._id],
+        [wff._id, setvar._id]
       ],
       logicalHypotheses: [
         [
-          turnstile._id,
           alpha._id
         ]
       ],
       assertion: [
-        turnstile._id,
         a._id
       ]
     });
@@ -551,17 +531,17 @@ describe('Create Statement', (): void => {
   });
 
   it('fails if any variable type hypothesis has a first element that is a variable symbol', async (): Promise<void> => {
-    const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
+    const setvar = new SymbolEntity();
     const alpha = new SymbolEntity();
     const a = new SymbolEntity();
     const system = new SystemEntity();
     const user = new UserEntity();
 
-    turnstile.systemId = system._id;
-    turnstile.createdByUserId = user._id;
     wff.systemId = system._id;
     wff.createdByUserId = user._id;
+    setvar.systemId = system._id;
+    setvar.createdByUserId = user._id;
     alpha.type = SymbolType.Variable;
     alpha.systemId = system._id;
     alpha.createdByUserId = user._id;
@@ -575,8 +555,8 @@ describe('Create Statement', (): void => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
       wff,
+      setvar,
       alpha,
       a
     ]);
@@ -594,17 +574,15 @@ describe('Create Statement', (): void => {
         [alpha._id, a._id]
       ],
       variableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [alpha._id, a._id]
+        [alpha._id, wff._id],
+        [wff._id, setvar._id]
       ],
       logicalHypotheses: [
         [
-          turnstile._id,
           alpha._id
         ]
       ],
       assertion: [
-        turnstile._id,
         a._id
       ]
     });
@@ -617,7 +595,6 @@ describe('Create Statement', (): void => {
   });
 
   it('fails if any variable type hypothesis has a second element that is a constant symbol', async (): Promise<void> => {
-    const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
     const setvar = new SymbolEntity();
     const alpha = new SymbolEntity();
@@ -625,8 +602,6 @@ describe('Create Statement', (): void => {
     const system = new SystemEntity();
     const user = new UserEntity();
 
-    turnstile.systemId = system._id;
-    turnstile.createdByUserId = user._id;
     wff.systemId = system._id;
     wff.createdByUserId = user._id;
     setvar.systemId = system._id;
@@ -644,7 +619,6 @@ describe('Create Statement', (): void => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
       wff,
       setvar,
       alpha,
@@ -664,17 +638,14 @@ describe('Create Statement', (): void => {
         [alpha._id, a._id]
       ],
       variableTypeHypotheses: [
-        [wff._id, setvar._id],
-        [setvar._id, a._id]
+        [wff._id, setvar._id]
       ],
       logicalHypotheses: [
         [
-          turnstile._id,
           alpha._id
         ]
       ],
       assertion: [
-        turnstile._id,
         a._id
       ]
     });
@@ -687,20 +658,11 @@ describe('Create Statement', (): void => {
   });
 
   it('fails if any logical hypothesis is not prefixed by a constant symbol', async (): Promise<void> => {
-    const turnstile = new SymbolEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
     const alpha = new SymbolEntity();
     const a = new SymbolEntity();
     const system = new SystemEntity();
     const user = new UserEntity();
 
-    turnstile.systemId = system._id;
-    turnstile.createdByUserId = user._id;
-    wff.systemId = system._id;
-    wff.createdByUserId = user._id;
-    setvar.systemId = system._id;
-    setvar.createdByUserId = user._id;
     alpha.type = SymbolType.Variable;
     alpha.systemId = system._id;
     alpha.createdByUserId = user._id;
@@ -714,9 +676,6 @@ describe('Create Statement', (): void => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
-      wff,
-      setvar,
       alpha,
       a
     ]);
@@ -734,8 +693,6 @@ describe('Create Statement', (): void => {
         [alpha._id, a._id]
       ],
       variableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [setvar._id, a._id]
       ],
       logicalHypotheses: [
         [
@@ -743,7 +700,6 @@ describe('Create Statement', (): void => {
         ]
       ],
       assertion: [
-        turnstile._id,
         a._id
       ]
     });
@@ -757,7 +713,6 @@ describe('Create Statement', (): void => {
 
   it('fails if a variable symbol in any logical hypothesis does not have a corresponding variable type hypothesis', async (): Promise<void> => {
     const turnstile = new SymbolEntity();
-    const setvar = new SymbolEntity();
     const alpha = new SymbolEntity();
     const a = new SymbolEntity();
     const system = new SystemEntity();
@@ -765,8 +720,6 @@ describe('Create Statement', (): void => {
 
     turnstile.systemId = system._id;
     turnstile.createdByUserId = user._id;
-    setvar.systemId = system._id;
-    setvar.createdByUserId = user._id;
     alpha.type = SymbolType.Variable;
     alpha.systemId = system._id;
     alpha.createdByUserId = user._id;
@@ -781,7 +734,6 @@ describe('Create Statement', (): void => {
 
     symbolRepositoryMock.find.mockReturnValueOnce([
       turnstile,
-      setvar,
       alpha,
       a
     ]);
@@ -799,7 +751,6 @@ describe('Create Statement', (): void => {
         [alpha._id, a._id]
       ],
       variableTypeHypotheses: [
-        [setvar._id, a._id]
       ],
       logicalHypotheses: [
         [
@@ -808,7 +759,6 @@ describe('Create Statement', (): void => {
         ]
       ],
       assertion: [
-        turnstile._id,
         a._id
       ]
     });
@@ -823,7 +773,6 @@ describe('Create Statement', (): void => {
   it('fails if the assertion is not prefixed by a constant symbol', async (): Promise<void> => {
     const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
     const alpha = new SymbolEntity();
     const a = new SymbolEntity();
     const system = new SystemEntity();
@@ -833,8 +782,6 @@ describe('Create Statement', (): void => {
     turnstile.createdByUserId = user._id;
     wff.systemId = system._id;
     wff.createdByUserId = user._id;
-    setvar.systemId = system._id;
-    setvar.createdByUserId = user._id;
     alpha.type = SymbolType.Variable;
     alpha.systemId = system._id;
     alpha.createdByUserId = user._id;
@@ -850,7 +797,6 @@ describe('Create Statement', (): void => {
     symbolRepositoryMock.find.mockReturnValueOnce([
       turnstile,
       wff,
-      setvar,
       alpha,
       a
     ]);
@@ -868,8 +814,7 @@ describe('Create Statement', (): void => {
         [alpha._id, a._id]
       ],
       variableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [setvar._id, a._id]
+        [wff._id, alpha._id]
       ],
       logicalHypotheses: [
         [
