@@ -682,6 +682,119 @@ describe('Update Statement', (): void => {
     });
   });
 
+  it('fails if any logical hypothesis is not prefixed by a constant symbol', async (): Promise<void> => {
+    const statement = new StatementEntity();
+    const alpha = new SymbolEntity();
+    const a = new SymbolEntity();
+    const user = new UserEntity();
+
+    statement.createdByUserId = user._id;
+    alpha.type = SymbolType.Variable;
+    alpha.systemId = statement.systemId;
+    alpha.createdByUserId = user._id;
+    a.type = SymbolType.Variable;
+    a.systemId = statement.systemId;
+    a.createdByUserId = user._id;
+
+    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
+    symbolRepositoryMock.find.mockReturnValueOnce([
+      alpha,
+      a
+    ]);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [alpha._id, a._id]
+      ],
+      newVariableTypeHypotheses: [
+      ],
+      newLogicalHypotheses: [
+        [
+          alpha._id
+        ]
+      ],
+      newAssertion: [
+        a._id
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'All logical hypotheses and the assertion must start with a constant symbol.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails if a variable symbol in any logical hypothesis does not have a corresponding variable type hypothesis', async (): Promise<void> => {
+    const statement = new StatementEntity();
+    const turnstile = new SymbolEntity();
+    const alpha = new SymbolEntity();
+    const a = new SymbolEntity();
+    const user = new UserEntity();
+
+    statement.createdByUserId = user._id;
+    turnstile.systemId = statement.systemId;
+    turnstile.createdByUserId = user._id;
+    alpha.type = SymbolType.Variable;
+    alpha.systemId = statement.systemId;
+    alpha.createdByUserId = user._id;
+    a.type = SymbolType.Variable;
+    a.systemId = statement.systemId;
+    a.createdByUserId = user._id;
+
+    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
+    symbolRepositoryMock.find.mockReturnValueOnce([
+      turnstile,
+      alpha,
+      a
+    ]);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = await app.get(AuthService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [alpha._id, a._id]
+      ],
+      newVariableTypeHypotheses: [
+      ],
+      newLogicalHypotheses: [
+        [
+          turnstile._id,
+          alpha._id
+        ]
+      ],
+      newAssertion: [
+        a._id
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+      error: 'Unprocessable Entity',
+      message: 'All variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
   afterAll(async (): Promise<void> => {
     await app.close();
   });
