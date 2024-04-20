@@ -12,7 +12,7 @@ export const DependenciesBlock = (props: DependenciesBlockProps): ReactElement =
   return (
     <AntdRow gutter={[4, 4]}>
       {packageNames.map((packageName: string): ReactElement => {
-        const version = packages[packageName];
+        const version = packages[packageName].substring(1);
 
         return (
           <AntdCol key={packageName} xs={24} sm={24} md={12} lg={8} xl={8} xxl={6}>

@@ -12,8 +12,8 @@ export const DependencyItem = (props: DependencyItemProps): ReactElement => {
   );
 
   return (
-    <AntdCard bodyStyle={{ textAlign: 'center' }} extra={explorePackageLink} title={packageName} type='inner'>
-      version: {version.substring(1)}
+    <AntdCard styles={{ body: { textAlign: 'center' } }} extra={explorePackageLink} title={packageName}>
+      version: {version}
     </AntdCard>
   );
 };
