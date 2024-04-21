@@ -11,7 +11,7 @@ import { SignInForm } from './sign-in-form/sign-in-form';
 
 export const SignInPage = (): ReactElement => {
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Sign In'>
+    <AntdCard styles={{ header: { textAlign: 'center' } }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Sign In'>
       <SignInForm>
         <InputEmail name='email' />
         <InputPassword name='password' />

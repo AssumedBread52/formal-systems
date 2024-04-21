@@ -13,7 +13,7 @@ import { SignUpForm } from './sign-up-form/sign-up-form';
 
 export const SignUpPage = (): ReactElement => {
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Sign Up'>
+    <AntdCard styles={{ header: { textAlign: 'center' } }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Sign Up'>
       <SignUpForm>
         <InputFirstName name='firstName' />
         <InputLastName name='lastName' />
