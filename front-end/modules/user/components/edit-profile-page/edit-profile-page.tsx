@@ -16,7 +16,7 @@ export const EditProfilePage = async (): Promise<ReactElement> => {
   const { firstName, lastName, email } = await fetchSessionUser();
 
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Edit Profile'>
+    <AntdCard styles={{ header: { textAlign: 'center' } }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Edit Profile'>
       <EditProfileForm newFirstName={firstName} newLastName={lastName} newEmail={email}>
         <InputFirstName name='newFirstName' />
         <InputLastName name='newLastName' />
