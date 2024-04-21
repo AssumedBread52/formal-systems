@@ -9,7 +9,7 @@ import { SignOutForm } from './sign-out-form/sign-out-form';
 
 export const SignOutPage = (): ReactElement => {
   return (
-    <AntdCard headStyle={{ textAlign: 'center' }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Sign Out'>
+    <AntdCard styles={{ header: { textAlign: 'center' } }} style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '600px' }} title='Sign Out'>
       <SignOutForm>
         <AntdFormItem style={{ textAlign: 'center' }}>
           <AntdSpace direction='vertical'>
