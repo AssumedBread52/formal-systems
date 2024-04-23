@@ -1,4 +1,5 @@
 import { ServerSideProps } from '@/app/types/server-side-props';
+import { ProtectedContent } from '@/auth/components/protected-content/protected-content';
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { PaginatedSearchControls } from '@/common/components/paginated-search-controls/paginated-search-controls';
 import { fetchStatementsSearch } from '@/statement/fetch-data/fetch-statements-search';
@@ -11,22 +12,20 @@ import { StatementList } from './statement-list/statement-list';
 export const SearchStatementsPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params, searchParams } = props;
 
-  if (!searchParams.page) {
-    searchParams.page = '1';
-  }
-
-  if (!searchParams.count) {
-    searchParams.count = '10';
-  }
-
   const { 'system-id': systemId = '' } = params;
 
   const { title, createdByUserId } = await fetchSystem(systemId);
 
   const { results, total } = await fetchStatementsSearch(systemId, searchParams);
 
+  const addSystem = (
+    <ProtectedContent userId={createdByUserId}>
+      <AddStatement />
+    </ProtectedContent>
+  );
+
   return (
-    <AntdCard extra={<AddStatement createdByUserId={createdByUserId} />} title={`${title} Statements`}>
+    <AntdCard extra={addSystem} title={`${title} Statements`}>
       <PaginatedSearchControls total={total}>
         <StatementList statements={results} />
       </PaginatedSearchControls>
