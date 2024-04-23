@@ -44,13 +44,13 @@ export const SystemPage = async (props: ServerSideProps): Promise<ReactElement> 
       <AntdDivider />
       <AntdCard extra={exploreStatementsLink} title='Statements' type='inner'>
         <AntdDescriptions bordered>
-          <AntdDescriptionsItem label='Statements Count'>
+          <AntdDescriptionsItem label='Statement Count'>
             {axiomCount + theoremCount + deductionCount}
           </AntdDescriptionsItem>
           <AntdDescriptionsItem label='Axiom Count'>
             {axiomCount}
           </AntdDescriptionsItem>
-          <AntdDescriptionsItem label='Proven Statements Count'>
+          <AntdDescriptionsItem label='Proven Statement Count'>
             {theoremCount + deductionCount}
           </AntdDescriptionsItem>
           <AntdDescriptionsItem label='Theorem Count'>
