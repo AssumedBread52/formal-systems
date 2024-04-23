@@ -1,4 +1,5 @@
 import { ServerSideProps } from '@/app/types/server-side-props';
+import { ProtectedContent } from '@/auth/components/protected-content/protected-content';
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { PaginatedSearchControls } from '@/common/components/paginated-search-controls/paginated-search-controls';
 import { fetchSymbolsSearch } from '@/symbol/fetch-data/fetch-symbols-search';
@@ -11,22 +12,20 @@ import { SymbolList } from './symbol-list/symbol-list';
 export const SearchSymbolsPage = async (props: ServerSideProps): Promise<ReactElement> => {
   const { params, searchParams } = props;
 
-  if (!searchParams.page) {
-    searchParams.page = '1';
-  }
-
-  if (!searchParams.count) {
-    searchParams.count = '10';
-  }
-
   const { 'system-id': systemId = '' } = params;
 
   const { title, createdByUserId } = await fetchSystem(systemId);
 
   const { results, total } = await fetchSymbolsSearch(systemId, searchParams);
 
+  const addSymbol = (
+    <ProtectedContent userId={createdByUserId}>
+      <AddSymbol />
+    </ProtectedContent>
+  );
+
   return (
-    <AntdCard extra={<AddSymbol createdByUserId={createdByUserId} />} title={`${title} Symbols`}>
+    <AntdCard extra={addSymbol} title={`${title} Symbols`}>
       <PaginatedSearchControls total={total}>
         <SymbolList symbols={results} />
       </PaginatedSearchControls>
