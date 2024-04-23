@@ -1,9 +1,10 @@
+import { ProtectedContent } from '@/auth/components/protected-content/protected-content';
 import { AntdCard } from '@/common/components/antd-card/antd-card';
 import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
 import { System } from '@/system/types/system';
 import { UserSignatureProps } from '@/user/types/user-signature-props';
 import dynamic from 'next/dynamic';
-import { ComponentType, ReactElement, ReactNode } from 'react';
+import { ComponentType, ReactElement } from 'react';
 import { EditSystem } from './edit-system/edit-system';
 import { ExploreSystemLink } from './explore-system-link/explore-system-link';
 import { RemoveSystem } from './remove-system/remove-system';
@@ -18,9 +19,13 @@ export const SystemItem = (props: Pick<System, 'id' | 'title' | 'description' | 
   const { id, title, description, createdByUserId } = props;
 
   const actions = [
-    <EditSystem id={id} title={title} description={description} createdByUserId={createdByUserId} />,
-    <RemoveSystem id={id} createdByUserId={createdByUserId} />
-  ] as ReactNode[];
+    <ProtectedContent userId={createdByUserId}>
+      <EditSystem id={id} newTitle={title} newDescription={description} />
+    </ProtectedContent>,
+    <ProtectedContent userId={createdByUserId}>
+      <RemoveSystem id={id} />
+    </ProtectedContent>
+  ];
 
   return (
     <AntdCard actions={actions} extra={<ExploreSystemLink id={id} />} title={title} type='inner'>
