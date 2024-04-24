@@ -22,12 +22,16 @@ export const editStatement = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'a
       ];
     },
     query: (editStatementPayload: EditStatementPayload): FetchArgs => {
-      const { id, newTitle, newDescription, systemId } = editStatementPayload;
+      const { id, newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion, systemId } = editStatementPayload;
 
       return {
         body: {
           newTitle,
-          newDescription
+          newDescription,
+          newDistinctVariableRestrictions,
+          newVariableTypeHypotheses,
+          newLogicalHypotheses,
+          newAssertion
         },
         method: 'PATCH',
         url: `/system/${systemId}/statement/${id}`
