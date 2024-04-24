@@ -9,12 +9,16 @@ export const addStatement = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'ap
       Tags.Statement
     ],
     query: (newStatementPayload: NewStatementPayload): FetchArgs => {
-      const { title, description, systemId } = newStatementPayload;
+      const { title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, systemId } = newStatementPayload;
 
       return {
         body: {
           title,
-          description
+          description,
+          distinctVariableRestrictions,
+          variableTypeHypotheses,
+          logicalHypotheses,
+          assertion
         },
         method: 'POST',
         url: `/system/${systemId}/statement`
