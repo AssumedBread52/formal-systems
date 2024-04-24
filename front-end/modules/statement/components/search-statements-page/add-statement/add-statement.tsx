@@ -54,7 +54,7 @@ export const AddStatement = (): ReactElement => {
   return (
     <Fragment>
       <AntdButton type='primary' onClick={clickHandler}>
-        Add Symbol
+        Add Statement
       </AntdButton>
       <AntdModal destroyOnClose closeIcon={null} footer={null} open={open} onCancel={cancelHandler}>
         <AntdCard styles={{ header: { textAlign: 'center' } }} title='Add Statement'>
