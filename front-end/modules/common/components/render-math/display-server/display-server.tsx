@@ -4,10 +4,10 @@ import 'katex/dist/katex.min.css';
 import { ReactElement } from 'react';
 
 export const DisplayServer = (props: RenderMathProps): ReactElement => {
-  const { content } = props;
+  const { content, inline } = props;
 
   const __html = katex.renderToString(content, {
-    displayMode: true,
+    displayMode: !inline,
     throwOnError: false
   });
 

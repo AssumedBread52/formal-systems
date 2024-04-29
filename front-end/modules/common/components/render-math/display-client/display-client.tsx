@@ -3,10 +3,10 @@
 import { RenderMathProps } from '@/common/types/render-math-props';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
-import { ReactElement, useEffect, useRef } from 'react';
+import { CSSProperties, ReactElement, useEffect, useRef } from 'react';
 
 export const DisplayClient = (props: RenderMathProps): ReactElement => {
-  const { content } = props;
+  const { content, inline } = props;
 
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -18,12 +18,18 @@ export const DisplayClient = (props: RenderMathProps): ReactElement => {
     }
 
     katex.render(content, current, {
-      displayMode: true,
+      displayMode: !inline,
       throwOnError: false
     });
   }, [content, divRef]);
 
+  const style = {} as CSSProperties;
+
+  if (inline) {
+    style.display = 'inline-block';
+  }
+
   return (
-    <div ref={divRef} />
+    <div style={style} ref={divRef} />
   );
 };
