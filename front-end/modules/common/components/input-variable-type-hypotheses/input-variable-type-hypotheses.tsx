@@ -65,49 +65,51 @@ export const InputVariableTypeHypotheses = (props: InputProps): ReactElement => 
 
           return (
             <Fragment>
-              {fields.map((field: FormListFieldData): ReactElement => {
-                const { key, name } = field;
+              <Flex vertical>
+                {fields.map((field: FormListFieldData): ReactElement => {
+                  const { key, name } = field;
 
-                const constantSymbolRules = [
-                  { required: true, message: 'A type is required.' }
-                ] as Rule[];
-                const variableSymbolRules = [
-                  { required: true, message: 'A variable is required.' }
-                ] as Rule[];
+                  const constantSymbolRules = [
+                    { required: true, message: 'A type is required.' }
+                  ] as Rule[];
+                  const variableSymbolRules = [
+                    { required: true, message: 'A variable is required.' }
+                  ] as Rule[];
 
-                const removeHandler = (): void => {
-                  remove(name);
-                };
+                  const removeHandler = (): void => {
+                    remove(name);
+                  };
 
-                return (
-                  <Fragment key={key}>
-                    <Item name={[name, 0]} rules={constantSymbolRules}>
-                      <Select options={constantOptions} />
-                    </Item>
-                    <Item name={[name, 1]} rules={variableSymbolRules}>
-                      <Select options={variableSymbols?.map((symbol: Symbol): DefaultOptionType => {
-                        const { id, title, content } = symbol;
+                  return (
+                    <Fragment key={key}>
+                      <Item name={[name, 0]} rules={constantSymbolRules}>
+                        <Select options={constantOptions} />
+                      </Item>
+                      <Item name={[name, 1]} rules={variableSymbolRules}>
+                        <Select options={variableSymbols?.map((symbol: Symbol): DefaultOptionType => {
+                          const { id, title, content } = symbol;
 
-                        return {
-                          disabled: usedVariableSymbols.includes(id),
-                          label: (
-                            <Flex justify='space-between'>
-                              {title}
-                              <RenderMath content={content} inline />
-                            </Flex>
-                          ),
-                          value: id
-                        };
-                      })} />
-                    </Item>
-                    <Item>
-                      <Button block icon={<MinusCircleOutlined />} type='dashed' onClick={removeHandler}>
-                        Remove Variable Type Hypothesis
-                      </Button>
-                    </Item>
-                  </Fragment>
-                );
-              })}
+                          return {
+                            disabled: usedVariableSymbols.includes(id),
+                            label: (
+                              <Flex justify='space-between'>
+                                {title}
+                                <RenderMath content={content} inline />
+                              </Flex>
+                            ),
+                            value: id
+                          };
+                        })} />
+                      </Item>
+                      <Item>
+                        <Button block icon={<MinusCircleOutlined />} type='dashed' onClick={removeHandler}>
+                          Remove Variable Type Hypothesis
+                        </Button>
+                      </Item>
+                    </Fragment>
+                  );
+                })}
+              </Flex>
               <Item>
                 <Button block disabled={variableSymbols?.length === typeHypotheses?.length} icon={<PlusCircleOutlined />} type='dashed' onClick={addHandler}>
                   Add Variable Type Hypothesis

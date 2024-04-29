@@ -54,33 +54,35 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
 
           return (
             <Fragment>
-              {fields.map((field: FormListFieldData): ReactElement => {
-                const { key, name } = field;
+              <Flex vertical>
+                {fields.map((field: FormListFieldData): ReactElement => {
+                  const { key, name } = field;
 
-                const rules = [
-                  { required: true, message: 'A variable is required.' }
-                ] as Rule[];
+                  const rules = [
+                    { required: true, message: 'A variable is required.' }
+                  ] as Rule[];
 
-                const removeHandler = (): void => {
-                  remove(name);
-                };
+                  const removeHandler = (): void => {
+                    remove(name);
+                  };
 
-                return (
-                  <Fragment key={key}>
-                    <Item name={[name, 0]} rules={rules}>
-                      <Select options={options} />
-                    </Item>
-                    <Item name={[name, 1]} rules={rules}>
-                      <Select options={options} />
-                    </Item>
-                    <Item>
-                      <Button block icon={<MinusCircleOutlined />} type='dashed' onClick={removeHandler}>
-                        Remove Distinct Variable Restriction
-                      </Button>
-                    </Item>
-                  </Fragment>
-                );
-              })}
+                  return (
+                    <Fragment key={key}>
+                      <Item name={[name, 0]} rules={rules}>
+                        <Select options={options} />
+                      </Item>
+                      <Item name={[name, 1]} rules={rules}>
+                        <Select options={options} />
+                      </Item>
+                      <Item>
+                        <Button block icon={<MinusCircleOutlined />} type='dashed' onClick={removeHandler}>
+                          Remove Distinct Variable Restriction
+                        </Button>
+                      </Item>
+                    </Fragment>
+                  );
+                })}
+              </Flex>
               <Item>
                 <Button block disabled={restrictions?.length === ((data?.length ?? 0) * ((data?.length ?? 0) - 1)) / 2} icon={<PlusCircleOutlined />} type='dashed' onClick={addHandler}>
                   Add Distinct Variable Restriction
