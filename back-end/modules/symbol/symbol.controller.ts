@@ -6,6 +6,7 @@ import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.pay
 import { SystemService } from '@/system/system.service';
 import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
+import { SymbolType } from './enums/symbol-type.enum';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
 import { NewSymbolPayload } from './payloads/new-symbol.payload';
 import { SearchPayload } from './payloads/search.payload';
@@ -45,6 +46,26 @@ export class SymbolController {
     const [results, total] = await this.symbolService.readSymbols(page, count, keywords, types, systemId);
 
     return new PaginatedResultsPayload(SymbolPayload, results, total);
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('constant')
+  async getConstantSymbols(@ObjectIdDecorator('systemId') systemId: ObjectId): Promise<SymbolPayload[]> {
+    const symbols = await this.symbolService.readByType(systemId, SymbolType.Constant);
+
+    return symbols.map((symbol: SymbolEntity): SymbolPayload => {
+      return new SymbolPayload(symbol);
+    });
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('variable')
+  async getVariableSymbols(@ObjectIdDecorator('systemId') systemId: ObjectId): Promise<SymbolPayload[]> {
+    const symbols = await this.symbolService.readByType(systemId, SymbolType.Variable);
+
+    return symbols.map((symbol: SymbolEntity): SymbolPayload => {
+      return new SymbolPayload(symbol);
+    });
   }
 
   @Get(':symbolId')
