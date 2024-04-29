@@ -7,6 +7,8 @@ import { editStatement } from '@/statement/end-points/edit-statement';
 import { removeStatement } from '@/statement/end-points/remove-statement';
 import { addSymbol } from '@/symbol/end-points/add-symbol';
 import { editSymbol } from '@/symbol/end-points/edit-symbol';
+import { fetchConstantSymbols } from '@/symbol/end-points/fetch-constant-symbols';
+import { fetchVariableSymbols } from '@/symbol/end-points/fetch-variable-symbols';
 import { removeSymbol } from '@/symbol/end-points/remove-symbol';
 import { addSystem } from '@/system/end-points/add-system';
 import { editSystem } from '@/system/end-points/edit-system';
@@ -32,6 +34,8 @@ export const api = createApi({
 
     addSymbol: ReturnType<typeof addSymbol>;
     editSymbol: ReturnType<typeof editSymbol>;
+    fetchConstantSymbols: ReturnType<typeof fetchConstantSymbols>;
+    fetchVariableSymbols: ReturnType<typeof fetchVariableSymbols>;
     removeSymbol: ReturnType<typeof removeSymbol>;
 
     addSystem: ReturnType<typeof addSystem>;
@@ -56,6 +60,8 @@ export const api = createApi({
 
       addSystem: addSystem(builder),
       editSystem: editSystem(builder),
+      fetchConstantSymbols: fetchConstantSymbols(builder),
+      fetchVariableSymbols: fetchVariableSymbols(builder),
       removeSystem: removeSystem(builder),
 
       editProfile: editProfile(builder)
