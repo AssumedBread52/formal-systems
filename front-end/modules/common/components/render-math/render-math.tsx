@@ -5,11 +5,11 @@ import { DisplayClient } from './display-client/display-client';
 import { DisplayServer } from './display-server/display-server';
 
 export const RenderMath = (props: RenderMathProps): ReactElement => {
-  const { content } = props;
+  const { content, inline } = props;
 
   const Display = pickClientServer(DisplayClient, DisplayServer);
 
   return (
-    <Display content={content} />
+    <Display content={content} inline={inline} />
   );
 };
