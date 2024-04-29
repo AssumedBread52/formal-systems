@@ -73,9 +73,11 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
                     <Item name={[name, 1]} rules={rules}>
                       <Select options={options} />
                     </Item>
-                    <Button block icon={<MinusCircleOutlined />} type='dashed' onClick={removeHandler}>
-                      Remove Distinct Variable Restriction
-                    </Button>
+                    <Item>
+                      <Button block icon={<MinusCircleOutlined />} type='dashed' onClick={removeHandler}>
+                        Remove Distinct Variable Restriction
+                      </Button>
+                    </Item>
                   </Fragment>
                 );
               })}

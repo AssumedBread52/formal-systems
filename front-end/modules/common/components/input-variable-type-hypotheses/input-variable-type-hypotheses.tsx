@@ -100,9 +100,11 @@ export const InputVariableTypeHypotheses = (props: InputProps): ReactElement => 
                         };
                       })} />
                     </Item>
-                    <Button block icon={<MinusCircleOutlined />} type='dashed' onClick={removeHandler}>
-                      Remove Variable Type Hypothesis
-                    </Button>
+                    <Item>
+                      <Button block icon={<MinusCircleOutlined />} type='dashed' onClick={removeHandler}>
+                        Remove Variable Type Hypothesis
+                      </Button>
+                    </Item>
                   </Fragment>
                 );
               })}
