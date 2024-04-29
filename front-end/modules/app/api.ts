@@ -56,12 +56,12 @@ export const api = createApi({
 
       addSymbol: addSymbol(builder),
       editSymbol: editSymbol(builder),
+      fetchConstantSymbols: fetchConstantSymbols(builder),
+      fetchVariableSymbols: fetchVariableSymbols(builder),
       removeSymbol: removeSymbol(builder),
 
       addSystem: addSystem(builder),
       editSystem: editSystem(builder),
-      fetchConstantSymbols: fetchConstantSymbols(builder),
-      fetchVariableSymbols: fetchVariableSymbols(builder),
       removeSystem: removeSystem(builder),
 
       editProfile: editProfile(builder)
