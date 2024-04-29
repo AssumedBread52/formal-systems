@@ -1,7 +1,7 @@
 import { RenderMathProps } from '@/common/types/render-math-props';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
-import { ReactElement } from 'react';
+import { CSSProperties, ReactElement } from 'react';
 
 export const DisplayServer = (props: RenderMathProps): ReactElement => {
   const { content, inline } = props;
@@ -11,7 +11,13 @@ export const DisplayServer = (props: RenderMathProps): ReactElement => {
     throwOnError: false
   });
 
+  const style = {} as CSSProperties;
+
+  if (inline) {
+    style.display = 'inline-block';
+  }
+
   return (
-    <div dangerouslySetInnerHTML={{ __html }} />
+    <div style={style} dangerouslySetInnerHTML={{ __html }} />
   );
 };
