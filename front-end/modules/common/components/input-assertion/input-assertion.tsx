@@ -87,7 +87,7 @@ export const InputAssertion = (props: InputProps): ReactElement => {
                 </AntdCol>
               </AntdRow>
               <AntdFlex>
-                {fields.map((field: FormListFieldData): ReactElement => {
+                {fields.map((field: FormListFieldData, index: number, array: FormListFieldData[]): ReactElement => {
                   const { key, name } = field;
 
                   const ExpressionElement = (props: Props): ReactElement => {
@@ -103,7 +103,7 @@ export const InputAssertion = (props: InputProps): ReactElement => {
                     };
 
                     return (
-                      <AntdTag closable onClose={closeHandler}>
+                      <AntdTag closable={(index + 1) === array.length} onClose={closeHandler}>
                         <RenderMath content={data?.content ?? ''} inline />
                       </AntdTag>
                     );
