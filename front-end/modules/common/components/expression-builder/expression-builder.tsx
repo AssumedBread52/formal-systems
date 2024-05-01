@@ -15,7 +15,7 @@ import { AntdTag } from '@/common/components/antd-tag/antd-tag';
 import { RenderMath } from '@/common/components/render-math/render-math';
 import { SymbolType } from '@/symbol/enums/symbol-type';
 import { Symbol } from '@/symbol/types/symbol';
-import { FormListFieldData, FormListOperation, InputProps as Props } from 'antd';
+import { FormListFieldData, FormListOperation, InputProps } from 'antd';
 import { FormListProps } from 'antd/es/form';
 import { useParams } from 'next/navigation';
 import { Fragment, ReactElement, ReactNode, useState } from 'react';
@@ -87,7 +87,7 @@ export const ExpressionBuilder = (props: Pick<FormListProps, 'name'>): ReactElem
               {fields.map((field: FormListFieldData, index: number, array: FormListFieldData[]): ReactElement => {
                 const { key, name } = field;
 
-                const ExpressionElement = (props: Props): ReactElement => {
+                const ExpressionElement = (props: InputProps): ReactElement => {
                   const { value = '' } = props;
 
                   const { data } = useFetchSymbolQuery({
