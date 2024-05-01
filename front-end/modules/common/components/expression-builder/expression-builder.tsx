@@ -16,12 +16,13 @@ import { RenderMath } from '@/common/components/render-math/render-math';
 import { SymbolType } from '@/symbol/enums/symbol-type';
 import { Symbol } from '@/symbol/types/symbol';
 import { FormListFieldData, FormListOperation, InputProps as Props } from 'antd';
+import { FormListProps } from 'antd/es/form';
 import { useParams } from 'next/navigation';
 import { Fragment, ReactElement, ReactNode, useState } from 'react';
 
 const { useFetchSymbolQuery, useFetchSymbolsQuery } = api;
 
-export const ExpressionBuilder = (props: Pick<FormListFieldData, 'name'>): ReactElement => {
+export const ExpressionBuilder = (props: Pick<FormListProps, 'name'>): ReactElement => {
   const { name } = props;
 
   const [page, setPage] = useState<number>(1);
