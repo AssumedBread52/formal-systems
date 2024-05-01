@@ -7,7 +7,6 @@ import { InputProps } from '@/common/types/input-props';
 import { Symbol } from '@/symbol/types/symbol';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Button, Flex, Form, FormListFieldData, FormListOperation, Select } from 'antd';
-import { Rule } from 'antd/es/form';
 import useFormInstance from 'antd/es/form/hooks/useFormInstance';
 import { DefaultOptionType } from 'antd/es/select';
 import { useParams } from 'next/navigation';
@@ -48,20 +47,18 @@ export const InputVariableTypeHypotheses = (props: InputProps): ReactElement => 
           const { add, remove } = operation;
 
           const addHandler = (): void => {
-            add();
+            add([]);
           };
 
-          const typeHypotheses = formInstance.getFieldValue(name) as ([string, string] | [undefined, string] | [string] | undefined)[] | undefined;
+          const typeHypotheses = formInstance.getFieldValue(name) as ([string, string] | [undefined, string] | [string] | [])[] | undefined;
 
-          const usedVariableSymbols = (typeHypotheses ?? []).reduce((usedVariableSymbols: string[], typeHypothesis: [string, string] | [undefined, string] | [string] | undefined): string[] => {
-            if (!typeHypothesis || typeHypothesis.length !== 2) {
-              return usedVariableSymbols;
+          const usedVariables = (typeHypotheses ?? []).reduce((usedVariables: Record<string, boolean>, typeHypothesis: [string, string] | [undefined, string] | [string] | []): Record<string, boolean> => {
+            if (typeHypothesis.length === 2) {
+              usedVariables[typeHypothesis[1]] = true;
             }
 
-            usedVariableSymbols.push(typeHypothesis[1]);
-
-            return usedVariableSymbols;
-          }, []);
+            return usedVariables;
+          }, {});
 
           return (
             <Fragment>
@@ -69,12 +66,12 @@ export const InputVariableTypeHypotheses = (props: InputProps): ReactElement => 
                 {fields.map((field: FormListFieldData): ReactElement => {
                   const { key, name } = field;
 
-                  const constantSymbolRules = [
+                  const typeRules = [
                     { required: true, message: 'A type is required.' }
-                  ] as Rule[];
-                  const variableSymbolRules = [
+                  ];
+                  const variableRules = [
                     { required: true, message: 'A variable is required.' }
-                  ] as Rule[];
+                  ];
 
                   const removeHandler = (): void => {
                     remove(name);
@@ -82,15 +79,15 @@ export const InputVariableTypeHypotheses = (props: InputProps): ReactElement => 
 
                   return (
                     <Fragment key={key}>
-                      <Item name={[name, 0]} rules={constantSymbolRules}>
+                      <Item name={[name, 0]} rules={typeRules}>
                         <Select options={constantOptions} />
                       </Item>
-                      <Item name={[name, 1]} rules={variableSymbolRules}>
+                      <Item name={[name, 1]} rules={variableRules}>
                         <Select options={variableSymbols?.map((symbol: Symbol): DefaultOptionType => {
                           const { id, title, content } = symbol;
 
                           return {
-                            disabled: usedVariableSymbols.includes(id),
+                            disabled: usedVariables[id],
                             label: (
                               <Flex justify='space-between'>
                                 {title}
