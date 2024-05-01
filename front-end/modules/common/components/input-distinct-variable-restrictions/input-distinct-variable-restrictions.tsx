@@ -7,8 +7,6 @@ import { InputProps } from '@/common/types/input-props';
 import { Symbol } from '@/symbol/types/symbol';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Button, Flex, Form, FormListFieldData, FormListOperation, Select } from 'antd';
-import { Rule } from 'antd/es/form';
-import useFormInstance from 'antd/es/form/hooks/useFormInstance';
 import { DefaultOptionType } from 'antd/es/select';
 import { useParams } from 'next/navigation';
 import { Fragment, ReactElement, ReactNode } from 'react';
@@ -23,8 +21,6 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
   const { 'system-id': systemId = '' } = useParams<RouteParams>();
 
   const { data } = useFetchVariableSymbolsQuery(systemId);
-
-  const formInstance = useFormInstance();
 
   const options = data?.map((symbol: Symbol): DefaultOptionType => {
     const { id, title, content } = symbol;
@@ -47,10 +43,8 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
           const { add, remove } = operation;
 
           const addHandler = (): void => {
-            add();
+            add([]);
           };
-
-          const restrictions = formInstance.getFieldValue(name) as ([string, string] | [undefined, string] | [string] | undefined)[] | undefined;
 
           return (
             <Fragment>
@@ -60,7 +54,7 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
 
                   const rules = [
                     { required: true, message: 'A variable is required.' }
-                  ] as Rule[];
+                  ];
 
                   const removeHandler = (): void => {
                     remove(name);
@@ -84,7 +78,7 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
                 })}
               </Flex>
               <Item>
-                <Button block disabled={restrictions?.length === ((data?.length ?? 0) * ((data?.length ?? 0) - 1)) / 2} icon={<PlusCircleOutlined />} type='dashed' onClick={addHandler}>
+                <Button block icon={<PlusCircleOutlined />} type='dashed' onClick={addHandler}>
                   Add Distinct Variable Restriction
                 </Button>
               </Item>
