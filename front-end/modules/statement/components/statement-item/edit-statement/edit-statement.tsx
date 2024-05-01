@@ -11,10 +11,14 @@ import { AntdLoadingOutlined } from '@/common/components/antd-loading-outlined/a
 import { AntdModal } from '@/common/components/antd-modal/antd-modal';
 import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { AntdSpin } from '@/common/components/antd-spin/antd-spin';
+import { InputAssertion } from '@/common/components/input-assertion/input-assertion';
 import { InputDescription } from '@/common/components/input-description/input-description';
+import { InputDistinctVariableRestrictions } from '@/common/components/input-distinct-variable-restrictions/input-distinct-variable-restrictions';
 import { InputHiddenId } from '@/common/components/input-hidden-id/input-hidden-id';
 import { InputHiddenSystemId } from '@/common/components/input-hidden-system-id/input-hidden-system-id';
+import { InputLogicalHypotheses } from '@/common/components/input-logical-hypotheses/input-logical-hypotheses';
 import { InputTitle } from '@/common/components/input-title/input-title';
+import { InputVariableTypeHypotheses } from '@/common/components/input-variable-type-hypotheses/input-variable-type-hypotheses';
 import { EditStatementPayload } from '@/statement/types/edit-statement-payload';
 import { useRouter } from 'next/navigation';
 import { Fragment, ReactElement, useEffect, useState } from 'react';
@@ -62,10 +66,10 @@ export const EditStatement = (props: EditStatementPayload): ReactElement => {
               <InputHiddenId />
               <InputTitle name='newTitle' />
               <InputDescription name='newDescription' />
-              Distinct Variable Restrictions
-              Variable Type Hypotheses
-              Logical Hypotheses
-              Assertion
+              <InputDistinctVariableRestrictions name='newDistinctVariableRestrictions' />
+              <InputVariableTypeHypotheses name='newVariableTypeHypotheses' />
+              <InputLogicalHypotheses name='logicalHypotheses' />
+              <InputAssertion name='newAssertion' />
               <InputHiddenSystemId />
               <AntdFormItem wrapperCol={{ xs: { span: 24 }, sm: { offset: 8 } }}>
                 <AntdSpace>
