@@ -57,7 +57,9 @@ export const InputAssertion = (props: InputProps): ReactElement => {
             <Fragment>
               <AntdRow gutter={[0, 16]}>
                 <AntdCol span={24}>
-                  <AntdInputSearch allowClear defaultValue={keywords.join(' ')} enterButton onSearch={searchHandler} />
+                  <AntdFormItem style={{ margin: 0 }}>
+                    <AntdInputSearch allowClear defaultValue={keywords.join(' ')} enterButton onSearch={searchHandler} />
+                  </AntdFormItem>
                 </AntdCol>
                 <AntdCol span={24}>
                   <AntdPagination style={{ textAlign: 'center' }} current={page} pageSize={4} onChange={setPage} total={data?.total ?? 0} />
