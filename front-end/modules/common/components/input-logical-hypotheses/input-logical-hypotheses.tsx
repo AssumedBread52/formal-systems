@@ -20,7 +20,7 @@ export const InputLogicalHypotheses = (props: InputProps): ReactElement => {
   const rules = [
     {
       message: 'All logical hypotheses must be unique.',
-      validator: (currentRule: RuleObject, value?: string[][]): Promise<void | any> => {
+      validator: (currentRule: RuleObject, value?: string[][]): Promise<any | void> => {
         const { message } = currentRule;
 
         if (!value) {
