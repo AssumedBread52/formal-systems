@@ -48,7 +48,7 @@ export const InputLogicalHypotheses = (props: InputProps): ReactElement => {
                   }
 
                   const rules = [
-                    { min: 1, message: 'Assertion is required.' }
+                    { min: 1, message: 'Must be a constant prefixed expression.' }
                   ];
 
                   return (
