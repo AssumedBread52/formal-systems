@@ -20,16 +20,16 @@ export const InputLogicalHypotheses = (props: InputProps): ReactElement => {
   const rules = [
     {
       message: 'All logical hypotheses must be unique.',
-      validator: (currentRule: RuleObject, value?: string[][]): Promise<any | void> => {
+      validator: (currentRule: RuleObject, logicalHypotheses?: string[][]): Promise<any | void> => {
         const { message } = currentRule;
 
-        if (!value) {
+        if (!logicalHypotheses) {
           return Promise.resolve();
         }
 
         const dictionary = {} as Record<string, string>;
-        for (const expression of value) {
-          const key = expression.join('');
+        for (const logicalHypothesis of logicalHypotheses) {
+          const key = logicalHypothesis.join('');
 
           if (dictionary[key]) {
             return Promise.reject(message);
