@@ -2,12 +2,18 @@
 
 import { api } from '@/app/api';
 import { RouteParams } from '@/app/types/route-params';
+import { AntdButton } from '@/common/components/antd-button/antd-button';
+import { AntdFlex } from '@/common/components/antd-flex/antd-flex';
 import { AntdFormErrorList } from '@/common/components/antd-form-error-list/antd-form-error-list';
+import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item';
+import { AntdFormList } from '@/common/components/antd-form-list/antd-form-list';
+import { AntdMinusCircleOutlined } from '@/common/components/antd-minus-circle-outlined/antd-minus-circle-outlined';
+import { AntdPlusCircleOutlined } from '@/common/components/antd-plus-circle-outlined/antd-plus-circle-outlined';
+import { AntdSelect } from '@/common/components/antd-select/antd-select';
 import { RenderMath } from '@/common/components/render-math/render-math';
 import { InputProps } from '@/common/types/input-props';
 import { Symbol } from '@/symbol/types/symbol';
-import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import { Button, Flex, Form, FormListFieldData, FormListOperation, Select } from 'antd';
+import { FormListFieldData, FormListOperation } from 'antd';
 import { RuleObject } from 'antd/es/form';
 import useFormInstance from 'antd/es/form/hooks/useFormInstance';
 import { DefaultOptionType } from 'antd/es/select';
@@ -16,8 +22,6 @@ import { ValidatorRule } from 'rc-field-form/lib/interface';
 import { Fragment, ReactElement, ReactNode } from 'react';
 
 const { useFetchConstantSymbolsQuery, useFetchVariableSymbolsQuery } = api;
-
-const { Item, List } = Form;
 
 export const InputVariableTypeHypotheses = (props: InputProps): ReactElement => {
   const { name } = props;
@@ -34,10 +38,10 @@ export const InputVariableTypeHypotheses = (props: InputProps): ReactElement => 
 
     return {
       label: (
-        <Flex justify='space-between'>
+        <AntdFlex justify='space-between'>
           {title}
           <RenderMath content={content} inline />
-        </Flex>
+        </AntdFlex>
       ),
       value: id
     };
@@ -88,8 +92,8 @@ export const InputVariableTypeHypotheses = (props: InputProps): ReactElement => 
   ] as ValidatorRule[];
 
   return (
-    <Item label={<Fragment>Variable Type<br />Hypotheses</Fragment>} name={name}>
-      <List name={name} rules={rules}>
+    <AntdFormItem label={<Fragment>Variable Type<br />Hypotheses</Fragment>} name={name}>
+      <AntdFormList name={name} rules={rules}>
         {(fields: FormListFieldData[], operation: FormListOperation, meta: { errors: ReactNode[]; warnings: ReactNode[]; }): ReactNode => {
           const { add, remove } = operation;
           const { errors } = meta;
@@ -110,7 +114,7 @@ export const InputVariableTypeHypotheses = (props: InputProps): ReactElement => 
 
           return (
             <Fragment>
-              <Flex vertical>
+              <AntdFlex vertical>
                 {fields.map((field: FormListFieldData): ReactElement => {
                   const { key, name } = field;
 
@@ -127,44 +131,44 @@ export const InputVariableTypeHypotheses = (props: InputProps): ReactElement => 
 
                   return (
                     <Fragment key={key}>
-                      <Item name={[name, 0]} rules={typeRules}>
-                        <Select options={constantOptions} />
-                      </Item>
-                      <Item name={[name, 1]} rules={variableRules}>
-                        <Select options={variableSymbols?.map((symbol: Symbol): DefaultOptionType => {
+                      <AntdFormItem name={[name, 0]} rules={typeRules}>
+                        <AntdSelect options={constantOptions} />
+                      </AntdFormItem>
+                      <AntdFormItem name={[name, 1]} rules={variableRules}>
+                        <AntdSelect options={variableSymbols?.map((symbol: Symbol): DefaultOptionType => {
                           const { id, title, content } = symbol;
 
                           return {
                             disabled: usedVariables[id],
                             label: (
-                              <Flex justify='space-between'>
+                              <AntdFlex justify='space-between'>
                                 {title}
                                 <RenderMath content={content} inline />
-                              </Flex>
+                              </AntdFlex>
                             ),
                             value: id
                           };
                         })} />
-                      </Item>
-                      <Item>
-                        <Button block icon={<MinusCircleOutlined />} type='dashed' onClick={removeHandler}>
+                      </AntdFormItem>
+                      <AntdFormItem>
+                        <AntdButton block icon={<AntdMinusCircleOutlined />} type='dashed' onClick={removeHandler}>
                           Remove Variable Type Hypothesis
-                        </Button>
-                      </Item>
+                        </AntdButton>
+                      </AntdFormItem>
                     </Fragment>
                   );
                 })}
-              </Flex>
-              <Item>
-                <Button block disabled={variableSymbols?.length === typeHypotheses?.length} icon={<PlusCircleOutlined />} type='dashed' onClick={addHandler}>
+              </AntdFlex>
+              <AntdFormItem>
+                <AntdButton block disabled={variableSymbols?.length === typeHypotheses?.length} icon={<AntdPlusCircleOutlined />} type='dashed' onClick={addHandler}>
                   Add Variable Type Hypothesis
-                </Button>
+                </AntdButton>
                 <AntdFormErrorList errors={errors} />
-              </Item>
+              </AntdFormItem>
             </Fragment>
           );
         }}
-      </List>
-    </Item>
+      </AntdFormList>
+    </AntdFormItem>
   );
 };
