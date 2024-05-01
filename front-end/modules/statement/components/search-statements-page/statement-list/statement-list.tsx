@@ -20,11 +20,11 @@ export const StatementList = (props: StatementListProps): ReactElement => {
   return (
     <AntdRow gutter={[0, 16]}>
       {statements.map((statement: Statement): ReactElement => {
-        const { id, title, description, systemId, createdByUserId } = statement;
+        const { id, title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, systemId, createdByUserId } = statement;
 
         return (
           <AntdCol key={id} span={24}>
-            <StatementItem id={id} title={title} description={description} systemId={systemId} createdByUserId={createdByUserId} />
+            <StatementItem id={id} title={title} description={description} distinctVariableRestrictions={distinctVariableRestrictions} variableTypeHypotheses={variableTypeHypotheses} logicalHypotheses={logicalHypotheses} assertion={assertion} systemId={systemId} createdByUserId={createdByUserId} />
           </AntdCol>
         );
       })}
