@@ -1,7 +1,7 @@
 import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item';
+import { ExpressionBuilder } from '@/common/components/expression-builder/expression-builder';
 import { InputProps } from '@/common/types/input-props';
 import { ReactElement } from 'react';
-import { ExpressionBuilder } from '../expression-builder/expression-builder';
 
 export const InputAssertion = (props: InputProps): ReactElement => {
   const { name, optional } = props;
