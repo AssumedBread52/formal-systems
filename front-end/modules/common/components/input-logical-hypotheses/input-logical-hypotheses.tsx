@@ -41,15 +41,7 @@ export const InputLogicalHypotheses = (props: InputProps): ReactElement => {
                   return (
                     <Fragment key={key}>
                       <AntdFormItem name={name} rules={rules}>
-                        <AntdFormList name={name}>
-                          {(fields: FormListFieldData[], operation: FormListOperation): ReactNode => {
-                            const { add, remove } = operation;
-
-                            return (
-                              <ExpressionBuilder fields={fields} add={add} remove={remove} />
-                            );
-                          }}
-                        </AntdFormList>
+                        <ExpressionBuilder name={name} />
                       </AntdFormItem>
                       <AntdFormItem>
                         <AntdButton block icon={<AntdMinusCircleOutlined />} type='dashed' onClick={removeHandler}>
