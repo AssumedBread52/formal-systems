@@ -6,7 +6,8 @@ import { RenderMath } from '@/common/components/render-math/render-math';
 import { InputProps } from '@/common/types/input-props';
 import { Symbol } from '@/symbol/types/symbol';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import { Button, Flex, Form, FormListFieldData, FormListOperation, Select } from 'antd';
+import { Button, Flex, Form, FormListFieldData, FormListOperation, Select, Space } from 'antd';
+import { Rule } from 'antd/es/form';
 import { DefaultOptionType } from 'antd/es/select';
 import { useParams } from 'next/navigation';
 import { Fragment, ReactElement, ReactNode } from 'react';
@@ -29,6 +30,10 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
       label: (
         <Flex justify='space-between'>
           {title}
+          <Space>
+            <span />
+            <span />
+          </Space>
           <RenderMath content={content} inline />
         </Flex>
       ),
@@ -53,8 +58,8 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
                   const { key, name } = field;
 
                   const rules = [
-                    { required: true, message: 'A variable is required.' }
-                  ];
+                    { len: 2, message: 'A variable pair is required.', type: 'array' }
+                  ] as Rule[];
 
                   const removeHandler = (): void => {
                     remove(name);
@@ -62,11 +67,8 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
 
                   return (
                     <Fragment key={key}>
-                      <Item name={[name, 0]} rules={rules}>
-                        <Select options={options} />
-                      </Item>
-                      <Item name={[name, 1]} rules={rules}>
-                        <Select options={options} />
+                      <Item name={name} rules={rules}>
+                        <Select maxCount={2} mode='multiple' options={options} />
                       </Item>
                       <Item>
                         <Button block icon={<MinusCircleOutlined />} type='dashed' onClick={removeHandler}>
