@@ -5,30 +5,12 @@ import { AntdDivider } from '@/common/components/antd-divider/antd-divider';
 import { AntdListItem } from '@/common/components/antd-list-item/antd-list-item';
 import { AntdList } from '@/common/components/antd-list/antd-list';
 import { AntdRow } from '@/common/components/antd-row/antd-row';
-import { RenderMath } from '@/common/components/render-math/render-math';
 import { Statement } from '@/statement/types/statement';
-import { fetchSymbol } from '@/symbol/fetch-data/fetch-symbol';
-import { Symbol } from '@/symbol/types/symbol';
+import { DisplayExpression } from '@/symbol/components/display-expression/display-expression';
 import { ReactElement } from 'react';
 import { EditStatement } from './edit-statement/edit-statement';
 import { ExploreStatementLink } from './explore-statement-link/explore-statement-link';
 import { RemoveStatement } from './remove-statement/remove-statement';
-
-const Custom = async (props: { symbolIds: string[]; systemId: string; }): Promise<ReactElement> => {
-  const { symbolIds, systemId } = props;
-
-  const content = (await Promise.all(symbolIds.map(async (symbolId: string): Promise<Symbol> => {
-    return fetchSymbol(systemId, symbolId);
-  }))).reduce((expression: string, symbol: Symbol): string => {
-    const { content } = symbol;
-
-    return `${expression}${content}`;
-  }, '');
-
-  return (
-    <RenderMath content={content} inline />
-  );
-};
 
 export const StatementItem = (props: Pick<Statement, 'id' | 'title' | 'description' | 'distinctVariableRestrictions' | 'variableTypeHypotheses' | 'logicalHypotheses' | 'assertion' | 'systemId' | 'createdByUserId'>): ReactElement => {
   const { id, title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, systemId, createdByUserId } = props;
@@ -52,7 +34,7 @@ export const StatementItem = (props: Pick<Statement, 'id' | 'title' | 'descripti
             {distinctVariableRestrictions.map((distinctVariableRestriction: [string, string]): ReactElement => {
               return (
                 <AntdListItem>
-                  <Custom symbolIds={distinctVariableRestriction} systemId={systemId} />
+                  <DisplayExpression symbolIds={distinctVariableRestriction} systemId={systemId} />
                 </AntdListItem>
               );
             })}
@@ -63,7 +45,7 @@ export const StatementItem = (props: Pick<Statement, 'id' | 'title' | 'descripti
             {variableTypeHypotheses.map((variableTypeHypothesis: [string, string]): ReactElement => {
               return (
                 <AntdListItem>
-                  <Custom symbolIds={variableTypeHypothesis} systemId={systemId} />
+                  <DisplayExpression symbolIds={variableTypeHypothesis} systemId={systemId} />
                 </AntdListItem>
               );
             })}
@@ -74,7 +56,7 @@ export const StatementItem = (props: Pick<Statement, 'id' | 'title' | 'descripti
             {logicalHypotheses.map((logicalHypothesis: string[]): ReactElement => {
               return (
                 <AntdListItem>
-                  <Custom symbolIds={logicalHypothesis} systemId={systemId} />
+                  <DisplayExpression symbolIds={logicalHypothesis} systemId={systemId} />
                 </AntdListItem>
               );
             })}
@@ -83,7 +65,7 @@ export const StatementItem = (props: Pick<Statement, 'id' | 'title' | 'descripti
         <AntdCol span={24}>
           <AntdList bordered header='Assertion'>
             <AntdListItem>
-              <Custom symbolIds={assertion} systemId={systemId} />
+              <DisplayExpression symbolIds={assertion} systemId={systemId} />
             </AntdListItem>
           </AntdList>
         </AntdCol>
