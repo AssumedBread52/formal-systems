@@ -1,1 +1,1 @@
-export { StatementPage as default, generateMetadata } from '@/statement/components/statement-page/statement-page';
+export { StatementPage as default } from '@/statement/components/statement-page/statement-page';
