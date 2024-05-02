@@ -68,7 +68,7 @@ export const EditStatement = (props: EditStatementPayload): ReactElement => {
               <InputDescription name='newDescription' />
               <InputDistinctVariableRestrictions name='newDistinctVariableRestrictions' />
               <InputVariableTypeHypotheses name='newVariableTypeHypotheses' />
-              <InputLogicalHypotheses name='logicalHypotheses' />
+              <InputLogicalHypotheses name='newLogicalHypotheses' />
               <InputAssertion name='newAssertion' />
               <InputHiddenSystemId />
               <AntdFormItem wrapperCol={{ xs: { span: 24 }, sm: { offset: 8 } }}>
