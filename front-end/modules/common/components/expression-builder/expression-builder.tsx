@@ -83,7 +83,7 @@ export const ExpressionBuilder = (props: Pick<FormListProps, 'name'>): ReactElem
                 </AntdCard>
               </AntdCol>
             </AntdRow>
-            <AntdFlex>
+            <AntdFlex wrap='wrap'>
               {fields.map((field: FormListFieldData, index: number, array: FormListFieldData[]): ReactElement => {
                 const { key, name } = field;
 
