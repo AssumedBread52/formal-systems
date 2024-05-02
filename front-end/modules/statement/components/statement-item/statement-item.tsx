@@ -31,9 +31,9 @@ export const StatementItem = (props: Pick<Statement, 'id' | 'title' | 'descripti
       <AntdRow gutter={[0, 16]}>
         <AntdCol span={24}>
           <AntdList bordered header='Distinct Variable Restrictions'>
-            {distinctVariableRestrictions.map((distinctVariableRestriction: [string, string]): ReactElement => {
+            {distinctVariableRestrictions.map((distinctVariableRestriction: [string, string], index: number): ReactElement => {
               return (
-                <AntdListItem>
+                <AntdListItem key={index}>
                   <DisplayExpression symbolIds={distinctVariableRestriction} systemId={systemId} />
                 </AntdListItem>
               );
@@ -42,9 +42,9 @@ export const StatementItem = (props: Pick<Statement, 'id' | 'title' | 'descripti
         </AntdCol>
         <AntdCol span={24}>
           <AntdList bordered header='Variable Type Hypotheses'>
-            {variableTypeHypotheses.map((variableTypeHypothesis: [string, string]): ReactElement => {
+            {variableTypeHypotheses.map((variableTypeHypothesis: [string, string], index: number): ReactElement => {
               return (
-                <AntdListItem>
+                <AntdListItem key={index}>
                   <DisplayExpression symbolIds={variableTypeHypothesis} systemId={systemId} />
                 </AntdListItem>
               );
@@ -53,9 +53,9 @@ export const StatementItem = (props: Pick<Statement, 'id' | 'title' | 'descripti
         </AntdCol>
         <AntdCol span={24}>
           <AntdList bordered header='Logical Hypotheses'>
-            {logicalHypotheses.map((logicalHypothesis: string[]): ReactElement => {
+            {logicalHypotheses.map((logicalHypothesis: string[], index: number): ReactElement => {
               return (
-                <AntdListItem>
+                <AntdListItem key={index}>
                   <DisplayExpression symbolIds={logicalHypothesis} systemId={systemId} />
                 </AntdListItem>
               );
