@@ -2,19 +2,24 @@
 
 import { api } from '@/app/api';
 import { RouteParams } from '@/app/types/route-params';
+import { AntdButton } from '@/common/components/antd-button/antd-button';
+import { AntdFlex } from '@/common/components/antd-flex/antd-flex';
+import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item';
+import { AntdFormList } from '@/common/components/antd-form-list/antd-form-list';
+import { AntdMinusCircleOutlined } from '@/common/components/antd-minus-circle-outlined/antd-minus-circle-outlined';
+import { AntdPlusCircleOutlined } from '@/common/components/antd-plus-circle-outlined/antd-plus-circle-outlined';
+import { AntdSelect } from '@/common/components/antd-select/antd-select';
+import { AntdSpace } from '@/common/components/antd-space/antd-space';
 import { RenderMath } from '@/common/components/render-math/render-math';
 import { InputProps } from '@/common/types/input-props';
 import { Symbol } from '@/symbol/types/symbol';
-import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import { Button, Flex, Form, FormListFieldData, FormListOperation, Select, Space } from 'antd';
+import { FormListFieldData, FormListOperation } from 'antd';
 import { Rule } from 'antd/es/form';
 import { DefaultOptionType } from 'antd/es/select';
 import { useParams } from 'next/navigation';
 import { Fragment, ReactElement, ReactNode } from 'react';
 
 const { useFetchVariableSymbolsQuery } = api;
-
-const { Item, List } = Form;
 
 export const InputDistinctVariableRestrictions = (props: InputProps): ReactElement => {
   const { name } = props;
@@ -28,22 +33,22 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
 
     return {
       label: (
-        <Flex justify='space-between'>
+        <AntdFlex justify='space-between'>
           {title}
-          <Space>
+          <AntdSpace>
             <span />
             <span />
-          </Space>
+          </AntdSpace>
           <RenderMath content={content} inline />
-        </Flex>
+        </AntdFlex>
       ),
       value: id
     };
   });
 
   return (
-    <Item label={<Fragment>Distinct Variable<br />Restrictions</Fragment>} name={name}>
-      <List name={name}>
+    <AntdFormItem label={<Fragment>Distinct Variable<br />Restrictions</Fragment>} name={name}>
+      <AntdFormList name={name}>
         {(fields: FormListFieldData[], operation: FormListOperation): ReactNode => {
           const { add, remove } = operation;
 
@@ -53,7 +58,7 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
 
           return (
             <Fragment>
-              <Flex vertical>
+              <AntdFlex vertical>
                 {fields.map((field: FormListFieldData): ReactElement => {
                   const { key, name } = field;
 
@@ -67,27 +72,27 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
 
                   return (
                     <Fragment key={key}>
-                      <Item name={name} rules={rules}>
-                        <Select maxCount={2} mode='multiple' options={options} />
-                      </Item>
-                      <Item>
-                        <Button block icon={<MinusCircleOutlined />} type='dashed' onClick={removeHandler}>
+                      <AntdFormItem name={name} rules={rules}>
+                        <AntdSelect maxCount={2} mode='multiple' options={options} />
+                      </AntdFormItem>
+                      <AntdFormItem>
+                        <AntdButton block icon={<AntdMinusCircleOutlined />} type='dashed' onClick={removeHandler}>
                           Remove Distinct Variable Restriction
-                        </Button>
-                      </Item>
+                        </AntdButton>
+                      </AntdFormItem>
                     </Fragment>
                   );
                 })}
-              </Flex>
-              <Item>
-                <Button block icon={<PlusCircleOutlined />} type='dashed' onClick={addHandler}>
+              </AntdFlex>
+              <AntdFormItem>
+                <AntdButton block icon={<AntdPlusCircleOutlined />} type='dashed' onClick={addHandler}>
                   Add Distinct Variable Restriction
-                </Button>
-              </Item>
+                </AntdButton>
+              </AntdFormItem>
             </Fragment>
           );
         }}
-      </List>
-    </Item>
+      </AntdFormList>
+    </AntdFormItem>
   );
 };
