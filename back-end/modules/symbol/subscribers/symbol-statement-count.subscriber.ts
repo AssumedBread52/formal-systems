@@ -79,7 +79,7 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
       return check && logicalHypothesis.length === entity.logicalHypotheses[currentIndex].length && logicalHypothesis.reduce((symbolCheck: boolean, symbolId: ObjectId, index: number): boolean => {
         return symbolCheck && symbolId.toString() === entity.logicalHypotheses[currentIndex][index].toString();
       }, true);
-    }, true) && assertion.length === entity.assertion.length && assertion.reduce((check, symbolId: ObjectId, currentIndex: number): boolean => {
+    }, true) && assertion.length === entity.assertion.length && assertion.reduce((check: boolean, symbolId: ObjectId, currentIndex: number): boolean => {
       return check && symbolId.toString() === entity.assertion[currentIndex].toString();
     }, true)) {
       return;
