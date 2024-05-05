@@ -85,7 +85,7 @@ export const InputDistinctVariableRestrictions = (props: InputProps): ReactEleme
                 })}
               </AntdFlex>
               <AntdFormItem>
-                <AntdButton block icon={<AntdPlusCircleOutlined />} type='dashed' onClick={addHandler}>
+                <AntdButton block disabled={(((data?.length ?? 0) * ((data?.length ?? 0) - 1)) / 2) === fields.length} icon={<AntdPlusCircleOutlined />} type='dashed' onClick={addHandler}>
                   Add Distinct Variable Restriction
                 </AntdButton>
               </AntdFormItem>
