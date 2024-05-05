@@ -27,6 +27,7 @@ export const ConstantPrefixedExpressionBuilder = (props: Pick<FormListProps, 'na
 
   const [page, setPage] = useState<number>(1);
   const [keywords, setKeywords] = useState<string[]>([]);
+  const [types, setTypes] = useState<SymbolType[]>([SymbolType.Constant]);
 
   const { 'system-id': systemId = '' } = useParams<RouteParams>();
 
@@ -34,6 +35,7 @@ export const ConstantPrefixedExpressionBuilder = (props: Pick<FormListProps, 'na
     page,
     count: 4,
     keywords,
+    types,
     systemId
   });
 
@@ -62,20 +64,18 @@ export const ConstantPrefixedExpressionBuilder = (props: Pick<FormListProps, 'na
               <AntdCol span={24}>
                 <AntdCard loading={isLoading}>
                   {(data?.results ?? []).map((symbol: Symbol): ReactElement => {
-                    const { id, title, type, content } = symbol;
-
-                    const disabled = 0 === fields.length && SymbolType.Variable === type;
+                    const { id, title, content } = symbol;
 
                     const addHandler = (): void => {
-                      if (disabled) {
-                        return;
-                      }
-
                       add(id);
+
+                      if (fields.length === 0) {
+                        setTypes([]);
+                      }
                     };
 
                     return (
-                      <AntdButton key={id} disabled={disabled} style={{ width: '25%' }} title={title} onClick={addHandler}>
+                      <AntdButton key={id} style={{ width: '25%' }} title={title} onClick={addHandler}>
                         <RenderMath content={content} inline />
                       </AntdButton>
                     );
@@ -97,6 +97,11 @@ export const ConstantPrefixedExpressionBuilder = (props: Pick<FormListProps, 'na
 
                   const closeHandler = (): void => {
                     remove(name);
+
+                    if (fields.length === 1) {
+                      setPage(1);
+                      setTypes([SymbolType.Constant]);
+                    }
                   };
 
                   return (
