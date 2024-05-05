@@ -75,7 +75,7 @@ describe('Create Symbol', (): void => {
       message: [
         'title should not be empty',
         'description should not be empty',
-        'type must be one of the following values: CONSTANT, VARIABLE',
+        'type must be one of the following values: Constant, Variable',
         'content should not be empty'
       ],
       statusCode: HttpStatus.BAD_REQUEST

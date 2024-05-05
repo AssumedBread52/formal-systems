@@ -93,7 +93,7 @@ describe('Update Symbol', (): void => {
       message: [
         'newTitle should not be empty',
         'newDescription should not be empty',
-        'newType must be one of the following values: CONSTANT, VARIABLE',
+        'newType must be one of the following values: Constant, Variable',
         'newContent should not be empty'
       ],
       statusCode: HttpStatus.BAD_REQUEST

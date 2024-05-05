@@ -901,7 +901,9 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails if a statement has the same assertion', async (): Promise<void> => {
+  it('fails if a statement has the same title', async (): Promise<void> => {
+    const title = 'Test';
+
     const conflictStatement = new StatementEntity();
     const turnstile = new SymbolEntity();
     const wff = new SymbolEntity();
@@ -911,10 +913,7 @@ describe('Create Statement', (): void => {
     const system = new SystemEntity();
     const user = new UserEntity();
 
-    conflictStatement.assertion = [
-      turnstile._id,
-      a._id
-    ];
+    conflictStatement.title = title;
     conflictStatement.systemId = system._id;
     conflictStatement.createdByUserId = user._id;
     turnstile.systemId = system._id;
@@ -952,7 +951,7 @@ describe('Create Statement', (): void => {
     const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
       `token=${token}`
     ]).send({
-      title: 'Test',
+      title,
       description: 'This is a test.',
       distinctVariableRestrictions: [
         [alpha._id, a._id]
@@ -975,7 +974,7 @@ describe('Create Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Statements within a formal system must have a unique assertion.',
+      message: 'Statements within a formal system must have a unique title.',
       statusCode: HttpStatus.CONFLICT
     });
   });
