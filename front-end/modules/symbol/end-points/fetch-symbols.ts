@@ -12,12 +12,13 @@ export const fetchSymbols = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'ap
       Tags.Symbol
     ],
     query: (queryArgs: SearchSymbolsParams): string => {
-      const { page, count, keywords, systemId } = queryArgs;
+      const { page, count, keywords, types, systemId } = queryArgs;
 
       return `/system/${systemId}/symbol?${stringify({
         page,
         count,
-        'keywords[]': keywords
+        'keywords[]': keywords,
+        types
       })}`;
     }
   });
