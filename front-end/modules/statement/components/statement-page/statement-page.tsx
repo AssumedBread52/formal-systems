@@ -11,7 +11,7 @@ export const StatementPage = async (props: ServerSideProps): Promise<ReactElemen
   const {} = await fetchStatement(systemId, statementId);
 
   return (
-    <AntdCard title='Metrics'>
+    <AntdCard title='Proof'>
     </AntdCard>
   );
 };
