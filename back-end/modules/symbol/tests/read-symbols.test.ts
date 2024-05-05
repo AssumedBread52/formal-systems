@@ -18,8 +18,8 @@ describe('Read Symbols', (): void => {
     ['?count=-2', 'count must not be less than 1'],
     ['?keywords=', 'each value in keywords should not be empty', 'keywords must be an array'],
     ['?keywords[]=', 'each value in keywords should not be empty'],
-    ['?types=', 'each value in types must be one of the following values: CONSTANT, VARIABLE', 'types must contain no more than 2 elements'],
-    ['?types[]=', 'each value in types must be one of the following values: CONSTANT, VARIABLE']
+    ['?types=', 'each value in types must be one of the following values: Constant, Variable', 'types must contain no more than 2 elements'],
+    ['?types[]=', 'each value in types must be one of the following values: Constant, Variable']
   ];
   const goodQueries = [
     '',
