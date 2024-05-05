@@ -7,7 +7,7 @@ import { AntdFormItem } from '@/common/components/antd-form-item/antd-form-item'
 import { AntdFormList } from '@/common/components/antd-form-list/antd-form-list';
 import { AntdMinusCircleOutlined } from '@/common/components/antd-minus-circle-outlined/antd-minus-circle-outlined';
 import { AntdPlusCircleOutlined } from '@/common/components/antd-plus-circle-outlined/antd-plus-circle-outlined';
-import { ExpressionBuilder } from '@/common/components/expression-builder/expression-builder';
+import { ConstantPrefixedExpressionBuilder } from '@/common/components/constant-prefixed-expression-builder/constant-prefixed-expression-builder';
 import { InputProps } from '@/common/types/input-props';
 import { FormListFieldData, FormListOperation } from 'antd';
 import { RuleObject } from 'antd/es/form';
@@ -71,7 +71,7 @@ export const InputLogicalHypotheses = (props: InputProps): ReactElement => {
                   return (
                     <Fragment key={key}>
                       <AntdFormItem name={name} rules={rules}>
-                        <ExpressionBuilder name={name} />
+                        <ConstantPrefixedExpressionBuilder name={name} />
                       </AntdFormItem>
                       <AntdFormItem>
                         <AntdButton block icon={<AntdMinusCircleOutlined />} type='dashed' onClick={removeHandler}>

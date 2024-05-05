@@ -22,7 +22,7 @@ import { Fragment, ReactElement, ReactNode, useState } from 'react';
 
 const { useFetchSymbolQuery, useFetchSymbolsQuery } = api;
 
-export const ExpressionBuilder = (props: Pick<FormListProps, 'name'>): ReactElement => {
+export const ConstantPrefixedExpressionBuilder = (props: Pick<FormListProps, 'name'>): ReactElement => {
   const { name } = props;
 
   const [page, setPage] = useState<number>(1);
