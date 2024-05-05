@@ -13,14 +13,14 @@ export class StatementService {
   constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>) {
   }
 
-  private async conflictCheck(assertion: ObjectId[], systemId: ObjectId): Promise<void> {
+  private async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
     const collision = await this.statementRepository.findOneBy({
-      assertion,
+      title,
       systemId
     });
 
     if (collision) {
-      throw new ConflictException('Statements within a formal system must have a unique assertion.');
+      throw new ConflictException('Statements within a formal system must have a unique title.');
     }
   }
 
@@ -64,7 +64,7 @@ export class StatementService {
 
     this.processabilityCheck(distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, symbolDictionary);
 
-    await this.conflictCheck(assertion, systemId);
+    await this.conflictCheck(title, systemId);
 
     const statement = new StatementEntity();
 
@@ -107,15 +107,13 @@ export class StatementService {
   }
 
   async update(statement: StatementEntity, editStatementPayload: EditStatementPayload, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
-    const { assertion, systemId } = statement;
+    const { title, systemId } = statement;
     const { newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion } = editStatementPayload;
 
     this.processabilityCheck(newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion, symbolDictionary);
 
-    if (assertion.length !== newAssertion.length || assertion.reduce((check: boolean, symbolId: ObjectId, currentIndex: number): boolean => {
-      return check || newAssertion[currentIndex].toString() !== symbolId.toString();
-    }, false)) {
-      await this.conflictCheck(newAssertion, systemId);
+    if (title !== newTitle) {
+      await this.conflictCheck(newTitle, systemId);
     }
 
     statement.title = newTitle;
