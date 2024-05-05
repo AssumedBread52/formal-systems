@@ -31,9 +31,9 @@ export const ConstantPrefixedExpressionBuilder = (props: Pick<FormListProps, 'na
   const { 'system-id': systemId = '' } = useParams<RouteParams>();
 
   const { data, isLoading } = useFetchSymbolsQuery({
-    page: page.toString(),
-    count: '4',
-    'keywords[]': keywords,
+    page,
+    count: 4,
+    keywords,
     systemId
   });
 
