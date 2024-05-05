@@ -33,7 +33,9 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
       symbol.axiomAppearances++;
     });
 
-    symbolRepository.save(symbols);
+    Promise.all(symbols.map((symbol: SymbolEntity): Promise<SymbolEntity> => {
+      return symbolRepository.save(symbol);
+    }));
   }
 
   async afterRemove(event: RemoveEvent<StatementEntity>): Promise<void> {
@@ -59,7 +61,9 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
       symbol.axiomAppearances--;
     });
 
-    symbolRepository.save(symbols);
+    Promise.all(symbols.map((symbol: SymbolEntity): Promise<SymbolEntity> => {
+      return symbolRepository.save(symbol);
+    }));
   }
 
   async afterUpdate(event: UpdateEvent<StatementEntity>): Promise<void> {
@@ -88,39 +92,38 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
     const symbolRepository = connection.getMongoRepository(SymbolEntity);
 
     const beforeSymbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
-
-    const beforeSymbols = await symbolRepository.find({
-      _id: {
-        $in: beforeSymbolIds
-      }
-    });
-
-    if (0 === beforeSymbols.length) {
-      throw new NotFoundException('Symbols not found.');
-    }
-
-    beforeSymbols.forEach((symbol: SymbolEntity): void => {
-      symbol.axiomAppearances--;
-    });
-
-    symbolRepository.save(beforeSymbols);
-
     const afterSymbolIds = entity.assertion.concat(...entity.distinctVariableRestrictions, ...entity.variableTypeHypotheses, ...entity.logicalHypotheses);
 
-    const afterSymbols = await symbolRepository.find({
+    const symbols = await symbolRepository.find({
       _id: {
-        $in: afterSymbolIds
+        $in: beforeSymbolIds.concat(afterSymbolIds)
       }
     });
 
-    if (0 === afterSymbols.length) {
+    if (0 === symbols.length) {
       throw new NotFoundException('Symbols not found.');
     }
 
-    afterSymbols.forEach((symbol: SymbolEntity): void => {
-      symbol.axiomAppearances++;
+    symbols.forEach((symbol: SymbolEntity): void => {
+      const { _id } = symbol;
+
+      const id = _id.toString();
+
+      if (beforeSymbolIds.reduce((exists: boolean, beforeSymbolId: ObjectId): boolean => {
+        return exists || beforeSymbolId.toString() === id;
+      }, false)) {
+        symbol.axiomAppearances--;
+      }
+
+      if (afterSymbolIds.reduce((exists: boolean, afterSymbolId: ObjectId): boolean => {
+        return exists || afterSymbolId.toString() === id;
+      }, false)) {
+        symbol.axiomAppearances++;
+      }
     });
 
-    symbolRepository.save(afterSymbols);
+    Promise.all(symbols.map((symbol: SymbolEntity): Promise<SymbolEntity> => {
+      return symbolRepository.save(symbol);
+    }));
   }
 };
