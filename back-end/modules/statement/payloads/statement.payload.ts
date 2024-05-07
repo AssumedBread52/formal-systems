@@ -1,76 +1,17 @@
-import { IsDistinctPairDecorator } from '@/common/decorators/is-distinct-pair.decorator';
-import { IsExpressionDecorator } from '@/common/decorators/is-expression.decorator';
 import { StatementEntity } from '@/statement/statement.entity';
-import { ArrayMinSize, ArrayUnique, IsArray, IsInt, IsMongoId, IsNotEmpty, Min, isArray } from 'class-validator';
 import { ObjectId } from 'mongodb';
 
 export class StatementPayload {
-  @IsMongoId()
   id: string;
-  @IsNotEmpty()
   title: string;
-  @IsNotEmpty()
   description: string;
-  @ArrayUnique((element: any): string => {
-    if (!isArray(element) || 2 !== element.length) {
-      return '';
-    }
-
-    const first = `${element[0]}`;
-    const second = `${element[1]}`;
-
-    if (first.localeCompare(second) < 0) {
-      return `${first}${second}`;
-    } else {
-      return `${second}${first}`;
-    }
-  })
-  @IsArray()
-  @IsDistinctPairDecorator({
-    each: true
-  })
   distinctVariableRestrictions: [string, string][];
-  @ArrayUnique((element: any): string => {
-    if (!isArray(element) || 2 !== element.length) {
-      return '';
-    }
-
-    return `${element[1]}`;
-  })
-  @IsArray()
-  @IsDistinctPairDecorator({
-    each: true
-  })
   variableTypeHypotheses: [string, string][];
-  @ArrayMinSize(1, {
-    each: true
-  })
-  @ArrayUnique((element: any): string => {
-    if (!isArray(element)) {
-      return '';
-    }
-
-    return element.map((id: any): string => {
-      return `${id}`;
-    }).join(',');
-  })
-  @IsArray()
-  @IsExpressionDecorator({
-    each: true
-  })
   logicalHypotheses: string[][];
-  @IsInt()
-  @Min(0)
   proofAppearances: number;
-  @IsInt()
-  @Min(0)
   proofSteps: number;
-  @ArrayMinSize(1)
-  @IsExpressionDecorator()
   assertion: string[];
-  @IsMongoId()
   systemId: string;
-  @IsMongoId()
   createdByUserId: string;
 
   constructor(statement: StatementEntity) {

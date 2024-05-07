@@ -1,30 +1,16 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { IsEnum, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
 
 export class SymbolPayload {
-  @IsMongoId()
   id: string;
-  @IsNotEmpty()
   title: string;
-  @IsNotEmpty()
   description: string;
-  @IsEnum(SymbolType)
   type: SymbolType;
-  @IsNotEmpty()
   content: string;
-  @IsInt()
-  @Min(0)
   axiomAppearances: number;
-  @IsInt()
-  @Min(0)
   theoremAppearances: number;
-  @IsInt()
-  @Min(0)
   deductionAppearances: number;
-  @IsMongoId()
   systemId: string;
-  @IsMongoId()
   createdByUserId: string;
 
   constructor(symbol: SymbolEntity) {
