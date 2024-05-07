@@ -94,6 +94,8 @@ describe('Read Statement by ID', (): void => {
       assertion: statement.assertion.map((symbolId: ObjectId): string => {
         return symbolId.toString();
       }),
+      proofAppearances: statement.proofAppearances,
+      proofSteps: statement.proofSteps,
       systemId: statement.systemId.toString(),
       createdByUserId: statement.createdByUserId.toString()
     });
