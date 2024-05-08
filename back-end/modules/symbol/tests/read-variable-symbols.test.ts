@@ -86,4 +86,8 @@ describe('Read Variable Symbols', (): void => {
       }
     ]);
   });
+
+  afterAll(async (): Promise<void> => {
+    await app.close();
+  });
 });

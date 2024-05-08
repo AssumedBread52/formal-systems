@@ -84,4 +84,8 @@ describe('Read Constant Symbols', (): void => {
       }
     ]);
   });
+
+  afterAll(async (): Promise<void> => {
+    await app.close();
+  });
 });
