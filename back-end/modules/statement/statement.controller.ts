@@ -20,30 +20,6 @@ export class StatementController {
   constructor(private statementService: StatementService, private symbolService: SymbolService, private systemService: SystemService) {
   }
 
-  private async fetchSymbolDictionary(systemId: ObjectId, symbolIds: ObjectId[]): Promise<Record<string, SymbolEntity>> {
-    const symbols = await this.symbolService.readByIds(systemId, symbolIds);
-
-    const symbolDictionary = symbols.reduce((dictionary: Record<string, SymbolEntity>, symbol: SymbolEntity): Record<string, SymbolEntity> => {
-      const { _id } = symbol;
-
-      const id = _id.toString();
-
-      if (!dictionary[id]) {
-        dictionary[id] = symbol;
-      }
-
-      return dictionary;
-    }, {});
-
-    symbolIds.forEach((symbolId: ObjectId): void => {
-      if (!symbolDictionary[symbolId.toString()]) {
-        throw new UnprocessableEntityException('All symbols must exist within the formal system.');
-      }
-    });
-
-    return symbolDictionary;
-  }
-
   @UseGuards(JwtGuard)
   @Delete(':statementId')
   async deleteStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('statementId') statementId: ObjectId): Promise<IdPayload> {
@@ -132,5 +108,29 @@ export class StatementController {
     const symbolDictionary = await this.fetchSymbolDictionary(systemId, symbolIds);
 
     await this.statementService.create(newStatementPayload, systemId, sessionUserId, symbolDictionary);
+  }
+
+  private async fetchSymbolDictionary(systemId: ObjectId, symbolIds: ObjectId[]): Promise<Record<string, SymbolEntity>> {
+    const symbols = await this.symbolService.readByIds(systemId, symbolIds);
+
+    const symbolDictionary = symbols.reduce((dictionary: Record<string, SymbolEntity>, symbol: SymbolEntity): Record<string, SymbolEntity> => {
+      const { _id } = symbol;
+
+      const id = _id.toString();
+
+      if (!dictionary[id]) {
+        dictionary[id] = symbol;
+      }
+
+      return dictionary;
+    }, {});
+
+    symbolIds.forEach((symbolId: ObjectId): void => {
+      if (!symbolDictionary[symbolId.toString()]) {
+        throw new UnprocessableEntityException('All symbols must exist within the formal system.');
+      }
+    });
+
+    return symbolDictionary;
   }
 };

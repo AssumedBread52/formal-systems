@@ -12,16 +12,6 @@ export class UserService {
   constructor(@InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>) {
   }
 
-  private async conflictCheck(email: string): Promise<void> {
-    const collision = await this.userRepository.findOneBy({
-      email
-    });
-
-    if (collision) {
-      throw new ConflictException('Users must have a unique e-mail address.');
-    }
-  }
-
   async create(signUpPayload: SignUpPayload): Promise<UserEntity> {
     const { firstName, lastName, email, password } = signUpPayload;
 
@@ -65,5 +55,15 @@ export class UserService {
     }
 
     return this.userRepository.save(sessionUser);
+  }
+
+  private async conflictCheck(email: string): Promise<void> {
+    const collision = await this.userRepository.findOneBy({
+      email
+    });
+
+    if (collision) {
+      throw new ConflictException('Users must have a unique e-mail address.');
+    }
   }
 };

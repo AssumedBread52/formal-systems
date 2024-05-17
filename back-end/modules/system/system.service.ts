@@ -11,17 +11,6 @@ export class SystemService {
   constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
   }
 
-  private async conflictCheck(title: string, createdByUserId: ObjectId): Promise<void> {
-    const collision = await this.systemRepository.findOneBy({
-      title,
-      createdByUserId
-    });
-
-    if (collision) {
-      throw new ConflictException('Systems created by the same user must have a unique title.');
-    }
-  }
-
   async create(newSystemPayload: NewSystemPayload, sessionUserId: ObjectId): Promise<SystemEntity> {
     const { title, description } = newSystemPayload;
 
@@ -81,5 +70,16 @@ export class SystemService {
 
   delete(system: SystemEntity): Promise<SystemEntity> {
     return this.systemRepository.remove(system);
+  }
+
+  private async conflictCheck(title: string, createdByUserId: ObjectId): Promise<void> {
+    const collision = await this.systemRepository.findOneBy({
+      title,
+      createdByUserId
+    });
+
+    if (collision) {
+      throw new ConflictException('Systems created by the same user must have a unique title.');
+    }
   }
 };

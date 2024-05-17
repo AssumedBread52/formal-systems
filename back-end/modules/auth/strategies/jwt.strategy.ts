@@ -19,6 +19,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrat
     } as StrategyOptions);
   }
 
+  validate(tokenPayload: IdPayload): Promise<UserEntity> {
+    const { id } = tokenPayload;
+
+    return this.authService.validateUserById(new ObjectId(id));
+  }
+
   private static extractJwt(request: Request): string | null {
     const { cookies } = request;
 
@@ -29,11 +35,5 @@ export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrat
     }
 
     return token;
-  }
-
-  validate(tokenPayload: IdPayload): Promise<UserEntity> {
-    const { id } = tokenPayload;
-
-    return this.authService.validateUserById(new ObjectId(id));
   }
 };

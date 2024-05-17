@@ -12,17 +12,6 @@ export class SymbolService {
   constructor(@InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>) {
   }
 
-  private async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
-    const collision = await this.symbolRepository.findOneBy({
-      title,
-      systemId
-    });
-
-    if (collision) {
-      throw new ConflictException('Symbols within a formal system must have a unique title.');
-    }
-  }
-
   async create(newSymbolPayload: NewSymbolPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<SymbolEntity> {
     const { title, description, type, content } = newSymbolPayload;
 
@@ -116,5 +105,16 @@ export class SymbolService {
     }
 
     return this.symbolRepository.remove(symbol);
+  }
+
+  private async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
+    const collision = await this.symbolRepository.findOneBy({
+      title,
+      systemId
+    });
+
+    if (collision) {
+      throw new ConflictException('Symbols within a formal system must have a unique title.');
+    }
   }
 };

@@ -13,52 +13,6 @@ export class StatementService {
   constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>) {
   }
 
-  private async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
-    const collision = await this.statementRepository.findOneBy({
-      title,
-      systemId
-    });
-
-    if (collision) {
-      throw new ConflictException('Statements within a formal system must have a unique title.');
-    }
-  }
-
-  private processabilityCheck(distinctVariableRestrictions: [ObjectId, ObjectId][], variableTypeHypotheses: [ObjectId, ObjectId][], logicalHypotheses: ObjectId[][], assertion: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): void {
-    distinctVariableRestrictions.forEach((distinctVariableRestriction: [ObjectId, ObjectId]): void => {
-      if (SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[0].toString()].type || SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[1].toString()].type) {
-        throw new UnprocessableEntityException('All distinct variable restrictions must a pair of variable symbols.');
-      }
-    });
-
-    const types = variableTypeHypotheses.reduce((types: Record<string, string>, variableTypeHypothesis: [ObjectId, ObjectId]): Record<string, string> => {
-      const constant = variableTypeHypothesis[0].toString();
-      const variable = variableTypeHypothesis[1].toString();
-
-      if (SymbolType.Constant !== symbolDictionary[constant].type || SymbolType.Variable !== symbolDictionary[variable].type) {
-        throw new UnprocessableEntityException('All variable type hypotheses must be a constant variable pair.');
-      }
-
-      types[variable] = constant;
-
-      return types;
-    }, {});
-
-    [...logicalHypotheses, assertion].forEach((expression: ObjectId[]): void => {
-      if (symbolDictionary[expression[0].toString()].type !== SymbolType.Constant) {
-        throw new UnprocessableEntityException('All logical hypotheses and the assertion must start with a constant symbol.');
-      }
-
-      expression.forEach((symbolId: ObjectId): void => {
-        const id = symbolId.toString();
-
-        if (SymbolType.Variable === symbolDictionary[id].type && !types[id]) {
-          throw new UnprocessableEntityException('All variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis.');
-        }
-      });
-    });
-  }
-
   async create(newStatementPayload: NewStatementPayload, systemId: ObjectId, sessionUserId: ObjectId, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
     const { title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = newStatementPayload;
 
@@ -128,5 +82,51 @@ export class StatementService {
 
   delete(statement: StatementEntity): Promise<StatementEntity> {
     return this.statementRepository.remove(statement);
+  }
+
+  private async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
+    const collision = await this.statementRepository.findOneBy({
+      title,
+      systemId
+    });
+
+    if (collision) {
+      throw new ConflictException('Statements within a formal system must have a unique title.');
+    }
+  }
+
+  private processabilityCheck(distinctVariableRestrictions: [ObjectId, ObjectId][], variableTypeHypotheses: [ObjectId, ObjectId][], logicalHypotheses: ObjectId[][], assertion: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): void {
+    distinctVariableRestrictions.forEach((distinctVariableRestriction: [ObjectId, ObjectId]): void => {
+      if (SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[0].toString()].type || SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[1].toString()].type) {
+        throw new UnprocessableEntityException('All distinct variable restrictions must a pair of variable symbols.');
+      }
+    });
+
+    const types = variableTypeHypotheses.reduce((types: Record<string, string>, variableTypeHypothesis: [ObjectId, ObjectId]): Record<string, string> => {
+      const constant = variableTypeHypothesis[0].toString();
+      const variable = variableTypeHypothesis[1].toString();
+
+      if (SymbolType.Constant !== symbolDictionary[constant].type || SymbolType.Variable !== symbolDictionary[variable].type) {
+        throw new UnprocessableEntityException('All variable type hypotheses must be a constant variable pair.');
+      }
+
+      types[variable] = constant;
+
+      return types;
+    }, {});
+
+    [...logicalHypotheses, assertion].forEach((expression: ObjectId[]): void => {
+      if (symbolDictionary[expression[0].toString()].type !== SymbolType.Constant) {
+        throw new UnprocessableEntityException('All logical hypotheses and the assertion must start with a constant symbol.');
+      }
+
+      expression.forEach((symbolId: ObjectId): void => {
+        const id = symbolId.toString();
+
+        if (SymbolType.Variable === symbolDictionary[id].type && !types[id]) {
+          throw new UnprocessableEntityException('All variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis.');
+        }
+      });
+    });
   }
 };
