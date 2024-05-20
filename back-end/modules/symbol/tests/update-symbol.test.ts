@@ -187,7 +187,7 @@ describe('Update Symbol', (): void => {
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Symbols in the system must have a unique title.',
+      message: 'Symbols in the same system must have a unique title.',
       statusCode: HttpStatus.CONFLICT
     });
   });
