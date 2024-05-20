@@ -136,10 +136,10 @@ describe('Delete Symbol', (): void => {
       `token=${token}`
     ]);
 
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Conflict',
       message: 'Symbols in use cannot be deleted.',
-      statusCode: HttpStatus.CONFLICT
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
@@ -162,10 +162,10 @@ describe('Delete Symbol', (): void => {
       `token=${token}`
     ]);
 
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Conflict',
       message: 'Symbols in use cannot be deleted.',
-      statusCode: HttpStatus.CONFLICT
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
@@ -188,10 +188,10 @@ describe('Delete Symbol', (): void => {
       `token=${token}`
     ]);
 
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Conflict',
       message: 'Symbols in use cannot be deleted.',
-      statusCode: HttpStatus.CONFLICT
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 

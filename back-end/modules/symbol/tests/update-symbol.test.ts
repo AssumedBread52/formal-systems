@@ -217,10 +217,10 @@ describe('Update Symbol', (): void => {
       newContent: '\\alpha'
     });
 
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Conflict',
       message: 'Symbols in use cannot change their type.',
-      statusCode: HttpStatus.CONFLICT
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
@@ -249,10 +249,10 @@ describe('Update Symbol', (): void => {
       newContent: '\\alpha'
     });
 
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Conflict',
       message: 'Symbols in use cannot change their type.',
-      statusCode: HttpStatus.CONFLICT
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
@@ -281,10 +281,10 @@ describe('Update Symbol', (): void => {
       newContent: '\\alpha'
     });
 
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Conflict',
       message: 'Symbols in use cannot change their type.',
-      statusCode: HttpStatus.CONFLICT
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
