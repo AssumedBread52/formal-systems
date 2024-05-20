@@ -4,11 +4,12 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
+import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolService } from '@/symbol/symbol.service';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, Delete, Get, Patch, Post, Query, UnprocessableEntityException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { StatementNotFoundException } from './exceptions/statement-not-found.exception';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
@@ -130,7 +131,7 @@ export class StatementController {
 
     symbolIds.forEach((symbolId: ObjectId): void => {
       if (!symbolDictionary[symbolId.toString()]) {
-        throw new UnprocessableEntityException('All symbols must exist within the formal system.');
+        throw new SymbolNotFoundException();
       }
     });
 
