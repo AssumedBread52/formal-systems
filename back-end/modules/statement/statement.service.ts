@@ -9,6 +9,7 @@ import { StatementUniqueTitleException } from './exceptions/statement-unique-tit
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
 import { StatementEntity } from './statement.entity';
+import { InvalidSymbolPrefixException } from './exceptions/invalid-symbol-prefix.exception';
 
 @Injectable()
 export class StatementService {
@@ -119,7 +120,7 @@ export class StatementService {
 
     [...logicalHypotheses, assertion].forEach((expression: ObjectId[]): void => {
       if (symbolDictionary[expression[0].toString()].type !== SymbolType.Constant) {
-        throw new UnprocessableEntityException('All logical hypotheses and the assertion must start with a constant symbol.');
+        throw new InvalidSymbolPrefixException();
       }
 
       expression.forEach((symbolId: ObjectId): void => {
