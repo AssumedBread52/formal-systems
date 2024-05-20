@@ -7,6 +7,7 @@ import { MongoRepository, RootFilterOperators } from 'typeorm';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
 import { StatementEntity } from './statement.entity';
+import { MissingVariableTypeHypothesisException } from './exceptions/missing-variable-type-hypothesis.exception';
 
 @Injectable()
 export class StatementService {
@@ -124,7 +125,7 @@ export class StatementService {
         const id = symbolId.toString();
 
         if (SymbolType.Variable === symbolDictionary[id].type && !types[id]) {
-          throw new UnprocessableEntityException('All variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis.');
+          throw new MissingVariableTypeHypothesisException();
         }
       });
     });
