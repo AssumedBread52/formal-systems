@@ -19,7 +19,7 @@ describe('Read User by ID', (): void => {
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Unprocessable Entity',
-      message: 'userId should be a mongodb id',
+      message: 'Invalid Mongodb ID structure.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
