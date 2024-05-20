@@ -170,7 +170,7 @@ describe('Create Symbol', (): void => {
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Symbols within a formal system must have a unique title.',
+      message: 'Symbols in the same system must have a unique title.',
       statusCode: HttpStatus.CONFLICT
     });
   });

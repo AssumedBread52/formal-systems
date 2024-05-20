@@ -974,7 +974,7 @@ describe('Create Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Statements within a formal system must have a unique title.',
+      message: 'Statements in the same system must have a unique title.',
       statusCode: HttpStatus.CONFLICT
     });
   });
