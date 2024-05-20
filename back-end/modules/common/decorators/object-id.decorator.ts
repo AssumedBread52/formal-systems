@@ -1,4 +1,5 @@
-import { ExecutionContext, UnprocessableEntityException, createParamDecorator } from '@nestjs/common';
+import { InvalidObjectIdException } from '@/common/exceptions/invalid-object-id.exception';
+import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 import { isMongoId } from 'class-validator';
 import { Request } from 'express';
 import { ObjectId } from 'mongodb';
@@ -9,7 +10,7 @@ export const ObjectIdDecorator = createParamDecorator((key: string, context: Exe
   const { params } = request;
 
   if (!isMongoId(params[key])) {
-    throw new UnprocessableEntityException(`${key} should be a mongodb id`);
+    throw new InvalidObjectIdException();
   }
 
   return new ObjectId(params[key]);
