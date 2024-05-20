@@ -100,7 +100,11 @@ export class StatementService {
 
   private processabilityCheck(distinctVariableRestrictions: [ObjectId, ObjectId][], variableTypeHypotheses: [ObjectId, ObjectId][], logicalHypotheses: ObjectId[][], assertion: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): void {
     distinctVariableRestrictions.forEach((distinctVariableRestriction: [ObjectId, ObjectId]): void => {
-      if (SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[0].toString()].type || SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[1].toString()].type) {
+      if (SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[0].toString()].type) {
+        throw new UnprocessableEntityException('All distinct variable restrictions must a pair of variable symbols.');
+      }
+
+      if (SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[1].toString()].type) {
         throw new UnprocessableEntityException('All distinct variable restrictions must a pair of variable symbols.');
       }
     });
@@ -109,7 +113,11 @@ export class StatementService {
       const constant = variableTypeHypothesis[0].toString();
       const variable = variableTypeHypothesis[1].toString();
 
-      if (SymbolType.Constant !== symbolDictionary[constant].type || SymbolType.Variable !== symbolDictionary[variable].type) {
+      if (SymbolType.Constant !== symbolDictionary[constant].type) {
+        throw new UnprocessableEntityException('All variable type hypotheses must be a constant variable pair.');
+      }
+      
+      if (SymbolType.Variable !== symbolDictionary[variable].type) {
         throw new UnprocessableEntityException('All variable type hypotheses must be a constant variable pair.');
       }
 
