@@ -187,7 +187,7 @@ describe('Update Symbol', (): void => {
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Symbols within a formal system must have a unique title.',
+      message: 'Symbols in the system must have a unique title.',
       statusCode: HttpStatus.CONFLICT
     });
   });
@@ -218,8 +218,8 @@ describe('Update Symbol', (): void => {
     });
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
-      error: 'Conflict',
-      message: 'Symbols in use cannot change their type.',
+      error: 'Unprocessable Entity',
+      message: 'Symbols in use cannot under go write actions.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
@@ -250,8 +250,8 @@ describe('Update Symbol', (): void => {
     });
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
-      error: 'Conflict',
-      message: 'Symbols in use cannot change their type.',
+      error: 'Unprocessable Entity',
+      message: 'Symbols in use cannot under go write actions.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
@@ -282,8 +282,8 @@ describe('Update Symbol', (): void => {
     });
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
-      error: 'Conflict',
-      message: 'Symbols in use cannot change their type.',
+      error: 'Unprocessable Entity',
+      message: 'Symbols in use cannot under go write actions.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
