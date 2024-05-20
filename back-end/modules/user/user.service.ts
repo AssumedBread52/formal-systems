@@ -1,9 +1,10 @@
 import { SignUpPayload } from '@/auth/payloads/sign-up.payload';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
+import { UserUniqueEmailAddressException } from './exceptions/user-unique-email-address.exception';
 import { EditProfilePayload } from './payloads/edit-profile.payload';
 import { UserEntity } from './user.entity';
 
@@ -63,7 +64,7 @@ export class UserService {
     });
 
     if (collision) {
-      throw new ConflictException('Users must have a unique e-mail address.');
+      throw new UserUniqueEmailAddressException();
     }
   }
 };
