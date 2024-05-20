@@ -419,10 +419,10 @@ describe('Update Statement', (): void => {
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
-      error: 'Unprocessable Entity',
-      message: 'All symbols must exist within the formal system.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
+      error: 'Not Found',
+      message: 'Symbol not found.',
+      statusCode: HttpStatus.NOT_FOUND
     });
   });
 

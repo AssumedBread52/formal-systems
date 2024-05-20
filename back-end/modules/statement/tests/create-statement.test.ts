@@ -767,7 +767,7 @@ describe('Create Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Unprocessable Entity',
-      message: 'All variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis.',
+      message: 'All variable symbols in all logical hypotheses and the assertion must have a corresponding variable type hypothesis.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
@@ -896,7 +896,7 @@ describe('Create Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Unprocessable Entity',
-      message: 'All variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis.',
+      message: 'All variable symbols in all logical hypotheses and the assertion must have a corresponding variable type hypothesis.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
