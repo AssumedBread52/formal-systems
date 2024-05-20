@@ -1,7 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
+import { SystemUniqueTitleException } from './exceptions/system-unique-title.exception';
 import { EditSystemPayload } from './payloads/edit-system.payload';
 import { NewSystemPayload } from './payloads/new-system.payload';
 import { SystemEntity } from './system.entity';
@@ -79,7 +80,7 @@ export class SystemService {
     });
 
     if (collision) {
-      throw new ConflictException('Systems created by the same user must have a unique title.');
+      throw new SystemUniqueTitleException();
     }
   }
 };
