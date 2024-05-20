@@ -1,8 +1,9 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
 import { SymbolType } from './enums/symbol-type.enum';
+import { InUseException } from './exceptions/in-use.exception';
 import { SymbolUniqueTitleException } from './exceptions/symbol-unique-title.exception';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
 import { NewSymbolPayload } from './payloads/new-symbol.payload';
@@ -87,7 +88,7 @@ export class SymbolService {
     }
 
     if (type !== newType && (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0)) {
-      throw new UnprocessableEntityException('Symbols in use cannot change their type.');
+      throw new InUseException();
     }
 
     symbol.title = newTitle;
@@ -102,7 +103,7 @@ export class SymbolService {
     const { axiomAppearances, theoremAppearances, deductionAppearances } = symbol;
 
     if (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0) {
-      throw new UnprocessableEntityException('Symbols in use cannot be deleted.');
+      throw new InUseException();
     }
 
     return this.symbolRepository.remove(symbol);
