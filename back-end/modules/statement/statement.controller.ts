@@ -5,9 +5,11 @@ import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolService } from '@/symbol/symbol.service';
+import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Patch, Post, Query, UnprocessableEntityException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, Patch, Post, Query, UnprocessableEntityException, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
+import { StatementNotFoundException } from './exceptions/statement-not-found.exception';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
 import { SearchPayload } from './payloads/search.payload';
@@ -54,7 +56,7 @@ export class StatementController {
     const statement = await this.statementService.readById(systemId, statementId);
 
     if (!statement) {
-      throw new NotFoundException('Statement not found.');
+      throw new StatementNotFoundException();
     }
 
     return new StatementPayload(statement);
@@ -66,7 +68,7 @@ export class StatementController {
     const statement = await this.statementService.readById(systemId, statementId);
 
     if (!statement) {
-      throw new NotFoundException('Statement not found.');
+      throw new StatementNotFoundException();
     }
 
     const { createdByUserId } = statement;
@@ -92,7 +94,7 @@ export class StatementController {
     const system = await this.systemService.readById(systemId);
 
     if (!system) {
-      throw new NotFoundException('Statements cannot be added to a formal system that does not exist.');
+      throw new SystemNotFoundException();
     }
 
     const { createdByUserId } = system;

@@ -1,6 +1,6 @@
 import { SystemEntity } from '@/system/system.entity';
+import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { UserEntity } from '@/user/user.entity';
-import { NotFoundException } from '@nestjs/common';
 import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent } from 'typeorm';
 
 @EventSubscriber()
@@ -21,7 +21,7 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
     });
 
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new UserNotFoundException();
     }
 
     user.systemCount++;
@@ -41,7 +41,7 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
     });
 
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new UserNotFoundException();
     }
 
     user.systemCount--;

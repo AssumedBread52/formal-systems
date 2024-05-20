@@ -1,6 +1,6 @@
 import { StatementEntity } from '@/statement/statement.entity';
+import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemEntity } from '@/system/system.entity';
-import { NotFoundException } from '@nestjs/common';
 import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent } from 'typeorm';
 
 @EventSubscriber()
@@ -21,7 +21,7 @@ export class SystemStatementCountSubscriber implements EntitySubscriberInterface
     });
 
     if (!system) {
-      throw new NotFoundException('System not found.');
+      throw new SystemNotFoundException();
     }
 
     system.axiomCount++;

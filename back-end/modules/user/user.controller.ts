@@ -2,8 +2,9 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
-import { Body, Controller, Get, NotFoundException, Patch, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Patch, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
+import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { EditProfilePayload } from './payloads/edit-profile.payload';
 import { UserPayload } from './payloads/user.payload';
 import { UserEntity } from './user.entity';
@@ -25,7 +26,7 @@ export class UserController {
     const user = await this.userService.readById(userId);
 
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new UserNotFoundException();
     }
 
     return new UserPayload(user);

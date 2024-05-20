@@ -1,7 +1,7 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
+import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemEntity } from '@/system/system.entity';
-import { NotFoundException } from '@nestjs/common';
 import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
 @EventSubscriber()
@@ -22,7 +22,7 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
     });
 
     if (!system) {
-      throw new NotFoundException('System not found.');
+      throw new SystemNotFoundException();
     }
 
     switch (type) {
@@ -84,7 +84,7 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
     });
 
     if (!system) {
-      throw new NotFoundException('System not found.');
+      throw new SystemNotFoundException();
     }
 
     switch (type) {

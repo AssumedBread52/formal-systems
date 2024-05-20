@@ -3,10 +3,12 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
+import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { SymbolType } from './enums/symbol-type.enum';
+import { SymbolNotFoundException } from './exceptions/symbol-not-found.exception';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
 import { NewSymbolPayload } from './payloads/new-symbol.payload';
 import { SearchPayload } from './payloads/search.payload';
@@ -73,7 +75,7 @@ export class SymbolController {
     const symbol = await this.symbolService.readById(systemId, symbolId);
 
     if (!symbol) {
-      throw new NotFoundException('Symbol not found.');
+      throw new SymbolNotFoundException();
     }
 
     return new SymbolPayload(symbol);
@@ -85,7 +87,7 @@ export class SymbolController {
     const symbol = await this.symbolService.readById(systemId, symbolId);
 
     if (!symbol) {
-      throw new NotFoundException('Symbol not found.');
+      throw new SymbolNotFoundException();
     }
 
     const { createdByUserId } = symbol;
@@ -105,7 +107,7 @@ export class SymbolController {
     const system = await this.systemService.readById(systemId);
 
     if (!system) {
-      throw new NotFoundException('Symbols cannot be added to formal systems that do not exist.');
+      throw new SystemNotFoundException();
     }
 
     const { _id, createdByUserId } = system;

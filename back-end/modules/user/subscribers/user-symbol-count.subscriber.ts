@@ -1,7 +1,7 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
+import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { UserEntity } from '@/user/user.entity';
-import { NotFoundException } from '@nestjs/common';
 import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
 @EventSubscriber()
@@ -22,7 +22,7 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
     });
 
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new UserNotFoundException();
     }
 
     switch (type) {
@@ -49,7 +49,7 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
     });
 
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new UserNotFoundException();
     }
 
     switch (type) {
@@ -84,7 +84,7 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
     });
 
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new UserNotFoundException();
     }
 
     switch (type) {
