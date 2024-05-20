@@ -55,7 +55,7 @@ describe('Update Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Unprocessable Entity',
-      message: 'statementId should be a mongodb id',
+      message: 'Invalid Mongodb ID structure.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
@@ -80,7 +80,7 @@ describe('Update Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Unprocessable Entity',
-      message: 'systemId should be a mongodb id',
+      message: 'Invalid Mongodb ID structure.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
