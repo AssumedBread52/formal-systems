@@ -1,6 +1,5 @@
 import { StatementEntity } from '@/statement/statement.entity';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { NotFoundException } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
@@ -13,7 +12,7 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
   async afterInsert(event: InsertEvent<StatementEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = entity;
+    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, systemId } = entity;
 
     const symbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
 
@@ -22,12 +21,9 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
     const symbols = await symbolRepository.find({
       _id: {
         $in: symbolIds
-      }
+      },
+      systemId
     });
-
-    if (0 === symbols.length) {
-      throw new NotFoundException('No symbols found.');
-    }
 
     symbols.forEach((symbol: SymbolEntity): void => {
       symbol.axiomAppearances++;
@@ -73,7 +69,7 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
       return;
     }
 
-    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = databaseEntity;
+    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, systemId } = databaseEntity;
 
     if (distinctVariableRestrictions.length === entity.distinctVariableRestrictions.length && distinctVariableRestrictions.reduce((check: boolean, distinctVariableRestriction: [ObjectId, ObjectId], currentIndex: number): boolean => {
       return check && distinctVariableRestriction[0].toString() === entity.distinctVariableRestrictions[currentIndex][0].toString() && distinctVariableRestriction[1].toString() === entity.distinctVariableRestrictions[currentIndex][1].toString();
@@ -97,12 +93,9 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
     const symbols = await symbolRepository.find({
       _id: {
         $in: beforeSymbolIds.concat(afterSymbolIds)
-      }
+      },
+      systemId
     });
-
-    if (0 === symbols.length) {
-      throw new NotFoundException('Symbols not found.');
-    }
 
     symbols.forEach((symbol: SymbolEntity): void => {
       const { _id } = symbol;
