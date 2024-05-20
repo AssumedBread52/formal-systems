@@ -486,7 +486,7 @@ describe('Update Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Unprocessable Entity',
-      message: 'All distinct variable restrictions must a pair of variable symbols.',
+      message: 'Invalid variable type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
@@ -550,7 +550,7 @@ describe('Update Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Unprocessable Entity',
-      message: 'All distinct variable restrictions must a pair of variable symbols.',
+      message: 'Invalid variable type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
@@ -614,7 +614,7 @@ describe('Update Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Unprocessable Entity',
-      message: 'All variable type hypotheses must be a constant variable pair.',
+      message: 'Invalid variable type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
@@ -677,7 +677,7 @@ describe('Update Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Unprocessable Entity',
-      message: 'All variable type hypotheses must be a constant variable pair.',
+      message: 'Invalid variable type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });

@@ -1,15 +1,16 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
+import { InvalidSymbolPrefixException } from './exceptions/invalid-symbol-prefix.exception';
+import { InvalidVariableTypeException } from './exceptions/invalid-variable-type.exception';
 import { MissingVariableTypeHypothesisException } from './exceptions/missing-variable-type-hypothesis.exception';
 import { StatementUniqueTitleException } from './exceptions/statement-unique-title.exception';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
 import { StatementEntity } from './statement.entity';
-import { InvalidSymbolPrefixException } from './exceptions/invalid-symbol-prefix.exception';
 
 @Injectable()
 export class StatementService {
@@ -101,11 +102,11 @@ export class StatementService {
   private processabilityCheck(distinctVariableRestrictions: [ObjectId, ObjectId][], variableTypeHypotheses: [ObjectId, ObjectId][], logicalHypotheses: ObjectId[][], assertion: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): void {
     distinctVariableRestrictions.forEach((distinctVariableRestriction: [ObjectId, ObjectId]): void => {
       if (SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[0].toString()].type) {
-        throw new UnprocessableEntityException('All distinct variable restrictions must a pair of variable symbols.');
+        throw new InvalidVariableTypeException();
       }
 
       if (SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[1].toString()].type) {
-        throw new UnprocessableEntityException('All distinct variable restrictions must a pair of variable symbols.');
+        throw new InvalidVariableTypeException();
       }
     });
 
@@ -114,11 +115,11 @@ export class StatementService {
       const variable = variableTypeHypothesis[1].toString();
 
       if (SymbolType.Constant !== symbolDictionary[constant].type) {
-        throw new UnprocessableEntityException('All variable type hypotheses must be a constant variable pair.');
+        throw new InvalidVariableTypeException();
       }
       
       if (SymbolType.Variable !== symbolDictionary[variable].type) {
-        throw new UnprocessableEntityException('All variable type hypotheses must be a constant variable pair.');
+        throw new InvalidVariableTypeException();
       }
 
       types[variable] = constant;
