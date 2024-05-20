@@ -919,7 +919,7 @@ describe('Update Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
       error: 'Unprocessable Entity',
-      message: 'All variable symbols in any logical hypothesis or the assertion must have a corresponding variable type hypothesis.',
+      message: 'All variable symbols in all logical hypotheses and the assertion must have a corresponding variable type hypothesis.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
@@ -995,7 +995,7 @@ describe('Update Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.CONFLICT, {
       error: 'Conflict',
-      message: 'Statements within a formal system must have a unique title.',
+      message: 'Statements in the same system must have a unique title.',
       statusCode: HttpStatus.CONFLICT
     });
   });
