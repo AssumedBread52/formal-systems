@@ -358,7 +358,7 @@ describe('Update Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
       error: 'Forbidden',
-      message: 'You cannot update a statement unless you created it.',
+      message: 'Write actions require user ownership.',
       statusCode: HttpStatus.FORBIDDEN
     });
   });

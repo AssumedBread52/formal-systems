@@ -121,7 +121,7 @@ describe('Update System', (): void => {
 
     expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
       error: 'Forbidden',
-      message: 'You cannot update a system unless you created it.',
+      message: 'Write actions require user ownership.',
       statusCode: HttpStatus.FORBIDDEN
     });
   });
