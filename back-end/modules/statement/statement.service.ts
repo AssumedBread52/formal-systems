@@ -1,13 +1,14 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { ConflictException, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
+import { MissingVariableTypeHypothesisException } from './exceptions/missing-variable-type-hypothesis.exception';
+import { StatementUniqueTitleException } from './exceptions/statement-unique-title.exception';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
 import { StatementEntity } from './statement.entity';
-import { MissingVariableTypeHypothesisException } from './exceptions/missing-variable-type-hypothesis.exception';
 
 @Injectable()
 export class StatementService {
@@ -92,7 +93,7 @@ export class StatementService {
     });
 
     if (collision) {
-      throw new ConflictException('Statements within a formal system must have a unique title.');
+      throw new StatementUniqueTitleException();
     }
   }
 
