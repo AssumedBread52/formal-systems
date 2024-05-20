@@ -104,7 +104,7 @@ describe('Create Symbol', (): void => {
 
     expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
       error: 'Not Found',
-      message: 'Symbols cannot be added to formal systems that do not exist.',
+      message: 'System not found.',
       statusCode: HttpStatus.NOT_FOUND
     });
   });
@@ -132,7 +132,7 @@ describe('Create Symbol', (): void => {
 
     expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
       error: 'Forbidden',
-      message: 'Symbols cannot be added to formal systems unless you created them.',
+      message: 'Write actions require user ownership.',
       statusCode: HttpStatus.FORBIDDEN
     });
   });

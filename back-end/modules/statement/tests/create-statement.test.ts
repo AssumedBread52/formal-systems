@@ -288,7 +288,7 @@ describe('Create Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
       error: 'Not Found',
-      message: 'Statements cannot be added to a formal system that does not exist.',
+      message: 'System not found.',
       statusCode: HttpStatus.NOT_FOUND
     });
   });
@@ -335,7 +335,7 @@ describe('Create Statement', (): void => {
 
     expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
       error: 'Forbidden',
-      message: 'Statements cannot be added to formal systems unless you created them.',
+      message: 'Write actions require user ownership.',
       statusCode: HttpStatus.FORBIDDEN
     });
   });
