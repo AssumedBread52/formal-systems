@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
 import { SymbolType } from './enums/symbol-type.enum';
+import { SymbolUniqueTitleException } from './exceptions/symbol-unique-title.exception';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
 import { NewSymbolPayload } from './payloads/new-symbol.payload';
 import { SymbolEntity } from './symbol.entity';
@@ -114,7 +115,7 @@ export class SymbolService {
     });
 
     if (collision) {
-      throw new ConflictException('Symbols within a formal system must have a unique title.');
+      throw new SymbolUniqueTitleException();
     }
   }
 };
