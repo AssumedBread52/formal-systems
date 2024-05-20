@@ -1,9 +1,11 @@
 import { UserEntity } from '@/user/user.entity';
 import { UserService } from '@/user/user.service';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
+import { InvalidCredentialsException } from './exceptions/invalid-credentials.exception';
+import { InvalidTokenException } from './exceptions/invalid-token.exception';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +16,7 @@ export class AuthService {
     const user = await this.userService.readByEmail(email);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid e-mail address or password.');
+      throw new InvalidCredentialsException();
     }
 
     const { hashedPassword } = user;
@@ -22,7 +24,7 @@ export class AuthService {
     const matched = await compare(password, hashedPassword);
 
     if (!matched) {
-      throw new UnauthorizedException('Invalid e-mail address or password.');
+      throw new InvalidCredentialsException();
     }
 
     return user;
@@ -32,7 +34,7 @@ export class AuthService {
     const user = await this.userService.readById(userId);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid token.');
+      throw new InvalidTokenException();
     }
 
     return user;
