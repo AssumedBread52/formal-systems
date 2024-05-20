@@ -137,8 +137,8 @@ describe('Delete Symbol', (): void => {
     ]);
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
-      error: 'Conflict',
-      message: 'Symbols in use cannot be deleted.',
+      error: 'Unprocessable Entity',
+      message: 'Symbols in use cannot under go write actions.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
@@ -163,8 +163,8 @@ describe('Delete Symbol', (): void => {
     ]);
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
-      error: 'Conflict',
-      message: 'Symbols in use cannot be deleted.',
+      error: 'Unprocessable Entity',
+      message: 'Symbols in use cannot under go write actions.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
@@ -189,8 +189,8 @@ describe('Delete Symbol', (): void => {
     ]);
 
     expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
-      error: 'Conflict',
-      message: 'Symbols in use cannot be deleted.',
+      error: 'Unprocessable Entity',
+      message: 'Symbols in use cannot under go write actions.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
