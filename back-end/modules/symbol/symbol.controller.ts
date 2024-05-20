@@ -1,11 +1,12 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
+import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, Delete, ForbiddenException, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { SymbolType } from './enums/symbol-type.enum';
 import { SymbolNotFoundException } from './exceptions/symbol-not-found.exception';
@@ -33,7 +34,7 @@ export class SymbolController {
     const { createdByUserId } = symbol;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new ForbiddenException('You cannot delete a symbol unless you created it.');
+      throw new OwnershipException();
     }
 
     await this.symbolService.delete(symbol);
@@ -93,7 +94,7 @@ export class SymbolController {
     const { createdByUserId } = symbol;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new ForbiddenException('You cannot update a symbol unless you created it.');
+      throw new OwnershipException();
     }
 
     await this.symbolService.update(symbol, editSymbolPayload);
@@ -113,7 +114,7 @@ export class SymbolController {
     const { _id, createdByUserId } = system;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new ForbiddenException('Symbols cannot be added to formal systems unless you created them.');
+      throw new OwnershipException();
     }
 
     await this.symbolService.create(newSymbolPayload, _id, sessionUserId);

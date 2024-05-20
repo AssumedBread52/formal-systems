@@ -1,9 +1,10 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
+import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
-import { Body, Controller, Delete, ForbiddenException, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { SystemNotFoundException } from './exceptions/system-not-found.exception';
 import { EditSystemPayload } from './payloads/edit-system.payload';
@@ -30,7 +31,7 @@ export class SystemController {
     const { createdByUserId } = system;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new ForbiddenException('You cannot delete a system unless you created it.');
+      throw new OwnershipException();
     }
 
     await this.systemService.delete(system);
@@ -70,7 +71,7 @@ export class SystemController {
     const { createdByUserId } = system;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new ForbiddenException('You cannot update a system unless you created it.');
+      throw new OwnershipException();
     }
 
     await this.systemService.update(system, editSystemPayload);

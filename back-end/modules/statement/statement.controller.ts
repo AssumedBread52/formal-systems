@@ -1,4 +1,5 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
+import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
@@ -7,7 +8,7 @@ import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolService } from '@/symbol/symbol.service';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemService } from '@/system/system.service';
-import { Body, Controller, Delete, ForbiddenException, Get, Patch, Post, Query, UnprocessableEntityException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, UnprocessableEntityException, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { StatementNotFoundException } from './exceptions/statement-not-found.exception';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
@@ -34,7 +35,7 @@ export class StatementController {
     const { createdByUserId } = statement;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new ForbiddenException('You cannot delete a statement unless you created it.');
+      throw new OwnershipException();
     }
 
     await this.statementService.delete(statement);
@@ -74,7 +75,7 @@ export class StatementController {
     const { createdByUserId } = statement;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new ForbiddenException('You cannot update a statement unless you created it.');
+      throw new OwnershipException();
     }
 
     const { newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion } = editStatementPayload;
@@ -100,7 +101,7 @@ export class StatementController {
     const { createdByUserId } = system;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new ForbiddenException('Statements cannot be added to formal systems unless you created them.');
+      throw new OwnershipException();
     }
 
     const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = newStatementPayload;
