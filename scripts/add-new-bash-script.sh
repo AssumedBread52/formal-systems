@@ -4,7 +4,7 @@ if [ "$1" = "--help" ]; then
   echo "Usage: ./scripts/add-new-bash-script.sh FILENAME"
   echo "  A missing FILENAME has no effect. The script can create directories if needed."
   echo "  ./scripts/add-new-bash-script.sh a/b will create the directory a if needed and"
-  echo "  create b.sh if needed. If a script already exists it will be reset."
+  echo "  create b.sh if needed. If a script already exists it will be overwritten."
 
   exit
 fi
