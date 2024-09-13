@@ -4,7 +4,7 @@
   "description": "This is the front-end of the formal systems web app. The formal systems web app is a tool that enables users to learn about formal systems through interaction. \"Play is the highest form of research\" - Albert Einstein",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --experimental-https --experimental-https-key ./private-key.pem --experimental-https-cert ./public-certificate.pem --experimental-https-ca ./certificate-authority-public-certificate.pem",
     "build": "next build",
     "start": "next start",
     "test": "jest",

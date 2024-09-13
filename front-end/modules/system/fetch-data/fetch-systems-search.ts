@@ -4,7 +4,7 @@ import { System } from '@/system/types/system';
 import { stringify } from 'querystring';
 
 export const fetchSystemsSearch = async (queryParams: QueryParams): Promise<PaginatedSearchResults<System>> => {
-  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.BACK_END_PORT}/system?${stringify(queryParams)}`, {
+  const response = await fetch(`https://${process.env.BACK_END_HOSTNAME}:${process.env.BACK_END_PORT}/system?${stringify(queryParams)}`, {
     cache: 'no-store'
   });
 

@@ -21,7 +21,7 @@ services:
       database:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://back-end:5000/app/status || exit 1"]
+      test: ["CMD-SHELL", "curl --cacert certificate-authority-public-certificate.pem --fail https://back-end:5000/app/status || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -38,7 +38,7 @@ services:
       back-end:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://front-end:3000/api/app/status || exit 1"]
+      test: ["CMD-SHELL", "curl --cacert certificate-authority-public-certificate.pem --fail https://front-end:3000/api/app/status || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3

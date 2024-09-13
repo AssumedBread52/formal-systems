@@ -4,7 +4,7 @@ import { Statement } from '@/statement/types/statement';
 import { stringify } from 'querystring';
 
 export const fetchStatementsSearch = async (systemId: string, queryParams: QueryParams): Promise<PaginatedSearchResults<Statement>> => {
-  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.BACK_END_PORT}/system/${systemId}/statement?${stringify(queryParams)}`, {
+  const response = await fetch(`https://${process.env.BACK_END_HOSTNAME}:${process.env.BACK_END_PORT}/system/${systemId}/statement?${stringify(queryParams)}`, {
     cache: 'no-store'
   });
 

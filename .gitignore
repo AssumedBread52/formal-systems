@@ -3,6 +3,9 @@ back-end/coverage/
 back-end/node_modules/
 back-end/*.cksm
 back-end/*.env
+back-end/*.ext
+back-end/*.pem
+certificate-authority/
 database/data/
 database/*.cksm
 database/*.env
@@ -10,5 +13,7 @@ front-end/.next/
 front-end/node_modules/
 front-end/*.cksm
 front-end/*.env
+front-end/*.ext
+front-end/*.pem
 front-end/next-env.d.ts
 scripts/generate/*.cksm

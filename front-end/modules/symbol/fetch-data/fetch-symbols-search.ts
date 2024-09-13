@@ -4,7 +4,7 @@ import { Symbol } from '@/symbol/types/symbol';
 import { stringify } from 'querystring';
 
 export const fetchSymbolsSearch = async (systemId: string, queryParams: QueryParams): Promise<PaginatedSearchResults<Symbol>> => {
-  const response = await fetch(`http://${process.env.BACK_END_HOSTNAME}:${process.env.BACK_END_PORT}/system/${systemId}/symbol?${stringify(queryParams)}`, {
+  const response = await fetch(`https://${process.env.BACK_END_HOSTNAME}:${process.env.BACK_END_PORT}/system/${systemId}/symbol?${stringify(queryParams)}`, {
     cache: 'no-store'
   });
 

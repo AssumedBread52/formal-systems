@@ -52,7 +52,7 @@ module.exports = {
     return [
       {
         source: '/api/:path*',
-        destination: `http://${process.env.BACK_END_HOSTNAME}:${process.env.BACK_END_PORT}/:path*`
+        destination: `https://${process.env.BACK_END_HOSTNAME}:${process.env.BACK_END_PORT}/:path*`
       }
     ];
   }
