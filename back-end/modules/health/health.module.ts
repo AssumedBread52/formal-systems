@@ -5,7 +5,9 @@ import { HealthService } from './health.service';
 
 @Module({
   imports: [
-    TerminusModule
+    TerminusModule.forRoot({
+      errorLogStyle: 'pretty'
+    })
   ],
   controllers: [
     HealthController
