@@ -76,10 +76,13 @@ function generate_ssh_files() {
     echo -n "DNS.2 = localhost" >> ./$1/config.ext
   fi
 
+  EXPIRY_STATUS=$(openssl x509 -checkend 86400 -noout -in ./$1/certificate-authority-public-certificate.pem)
+  if [ "$EXPIRY_STATUS" = "Certificate will expire" ]; then
+    cp ./certificate-authority/public-certificate.pem ./$1/certificate-authority-public-certificate.pem
+  fi
+
   if [ ! -f ./$1/public-certificate.pem ]; then
     openssl x509 -req -in ./$1/certificate-signature-request.pem -CA ./certificate-authority/public-certificate.pem -CAkey ./certificate-authority/private-key.pem -CAcreateserial -out ./$1/public-certificate.pem -days 2 -sha256 -extfile ./$1/config.ext
-
-    cp ./certificate-authority/public-certificate.pem ./$1/certificate-authority-public-certificate.pem
   else
     EXPIRY_STATUS=$(openssl x509 -checkend 86400 -noout -in ./$1/public-certificate.pem)
     if [ "$EXPIRY_STATUS" = "Certificate will expire" ]; then
