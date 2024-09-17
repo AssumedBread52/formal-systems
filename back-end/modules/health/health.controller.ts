@@ -12,6 +12,6 @@ export class HealthController {
   check(): Promise<HealthCheckResult> {
     return this.healthCheckService.check([
       this.healthService.checkDatabase.bind(this.healthService)
-    ])
+    ]);
   }
 };
