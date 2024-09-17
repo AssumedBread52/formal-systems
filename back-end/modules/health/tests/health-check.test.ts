@@ -3,7 +3,7 @@ import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-res
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 
-describe('Status Check', (): void => {
+describe('Health Check', (): void => {
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
