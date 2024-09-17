@@ -1,7 +1,7 @@
+import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { createTestApp } from './helpers/create-test-app';
 
 describe('Status Check', (): void => {
   let app: INestApplication;
@@ -11,9 +11,22 @@ describe('Status Check', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).get('/app/status');
+    const response = await request(app.getHttpServer()).get('/health');
 
-    expectCorrectResponse(response, HttpStatus.NO_CONTENT, {});
+    expectCorrectResponse(response, HttpStatus.OK, {
+      details: {
+        database: {
+          status: 'up'
+        }
+      },
+      error: {},
+      info: {
+        database: {
+          status: 'up'
+        }
+      },
+      status: 'ok'
+    });
   });
 
   afterAll(async (): Promise<void> => {
