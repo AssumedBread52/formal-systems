@@ -4,6 +4,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DatabaseType } from 'typeorm';
 import { AppModule } from './app/app.module';
 import { AuthModule } from './auth/auth.module';
+import { HealthModule } from './health/health.module';
 import { StatementModule } from './statement/statement.module';
 import { CleanUpSystemStatementsSubscriber } from './statement/subscribers/clean-up-system-statements.subscriber';
 import { CleanUpSystemSymbolsSubscriber } from './symbol/subscribers/clean-up-system-symbols.subscriber';
@@ -28,6 +29,7 @@ import { UserModule } from './user/user.module';
         'database-credentials.env'
       ]
     }),
+    HealthModule,
     StatementModule,
     SymbolModule,
     SystemModule,
