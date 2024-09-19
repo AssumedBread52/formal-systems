@@ -10,7 +10,7 @@ describe('Health Check', (): void => {
     app = await createTestApp();
   });
 
-  it('succeeds', async (): Promise<void> => {
+  it('performs a health check', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).get('/health');
 
     expectCorrectResponse(response, HttpStatus.OK, {
