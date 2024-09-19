@@ -4,25 +4,19 @@ import { readFileSync } from 'fs';
 
 @Controller('app')
 export class AppController {
-  private packageJson: {
-    dependencies: Record<string, string>;
-    devDependencies: Record<string, string>;
-  };
-
-  constructor(configService: ConfigService) {
-    this.packageJson = JSON.parse(readFileSync(configService.getOrThrow<string>('npm_package_json'), 'utf-8'));
+  constructor(private configService: ConfigService) {
   }
 
   @Get('dependencies')
   getDependencies(): Record<string, string> {
-    const { dependencies } = this.packageJson;
+    const { dependencies } = JSON.parse(readFileSync(this.configService.getOrThrow<string>('npm_package_json'), 'utf-8'));
 
     return dependencies;
   }
 
   @Get('dev-dependencies')
   getDevDependencies(): Record<string, string> {
-    const { devDependencies } = this.packageJson;
+    const { devDependencies } = JSON.parse(readFileSync(this.configService.getOrThrow<string>('npm_package_json'), 'utf-8'));
 
     return devDependencies;
   }
