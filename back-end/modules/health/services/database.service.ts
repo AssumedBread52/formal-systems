@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { HealthIndicatorResult, TypeOrmHealthIndicator } from '@nestjs/terminus';
 
 @Injectable()
-export class HealthService {
+export class DatabaseService {
   constructor(private typeOrmHealthIndicator: TypeOrmHealthIndicator) {
   }
 
-  checkDatabase(): Promise<HealthIndicatorResult> {
+  check(): Promise<HealthIndicatorResult> {
     return this.typeOrmHealthIndicator.pingCheck('database');
   }
 };
