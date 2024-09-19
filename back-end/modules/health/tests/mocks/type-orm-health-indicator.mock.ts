@@ -1,9 +1,9 @@
 import { HealthIndicatorResult } from '@nestjs/terminus';
 
 export class TypeOrmHealthIndicatorMock {
-  pingCheck = jest.fn((type: string): HealthIndicatorResult => {
+  pingCheck = jest.fn((key: string): HealthIndicatorResult => {
     return {
-      [type]: {
+      [key]: {
         status: 'up'
       }
     };
