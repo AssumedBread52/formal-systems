@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
 import { HealthController } from './health.controller';
-import { DatabaseService } from './services/database.service';
+import { DatabaseCheckService } from './services/database-check.service';
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { DatabaseService } from './services/database.service';
     HealthController
   ],
   providers: [
-    DatabaseService
+    DatabaseCheckService
   ]
 })
 export class HealthModule {
