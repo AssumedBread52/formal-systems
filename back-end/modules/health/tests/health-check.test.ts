@@ -1,9 +1,10 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
+import { pingCheckMock } from './mocks/ping-check.mock';
 
 describe('Health Check', (): void => {
+  const pingCheck = pingCheckMock();
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -11,9 +12,20 @@ describe('Health Check', (): void => {
   });
 
   it('performs a health check', async (): Promise<void> => {
+    pingCheck.mockResolvedValueOnce({
+      database: {
+        status: 'up'
+      }
+    });
+
     const response = await request(app.getHttpServer()).get('/health');
 
-    expectCorrectResponse(response, HttpStatus.OK, {
+    const { statusCode, body } = response;
+
+    expect(pingCheck).toHaveBeenCalledTimes(1);
+    expect(pingCheck).toHaveBeenCalledWith('database');
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual({
       details: {
         database: {
           status: 'up'
