@@ -1,4 +1,3 @@
-import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import * as request from 'supertest';
@@ -19,9 +18,11 @@ describe('Dependencies', (): void => {
   it.each(cases)('pulls the %s', async (type: string, key: string): Promise<void> => {
     const response = await request(app.getHttpServer()).get(`/app/${type}`);
 
+    const { statusCode, body } = response;
     const packageJson = JSON.parse(readFileSync(process.env.npm_package_json!, 'utf-8'));
 
-    expectCorrectResponse(response, HttpStatus.OK, packageJson[key]);
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual(packageJson[key]);
   });
 
   afterAll(async (): Promise<void> => {

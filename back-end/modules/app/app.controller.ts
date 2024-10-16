@@ -1,23 +1,18 @@
 import { Controller, Get } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { readFileSync } from 'fs';
+import { DependenciesService } from './services/dependencies.service';
 
 @Controller('app')
 export class AppController {
-  constructor(private configService: ConfigService) {
+  constructor(private dependenciesService: DependenciesService) {
   }
 
   @Get('dependencies')
   getDependencies(): Record<string, string> {
-    const { dependencies } = JSON.parse(readFileSync(this.configService.getOrThrow<string>('npm_package_json'), 'utf-8'));
-
-    return dependencies;
+    return this.dependenciesService.getByType('dependencies');
   }
 
   @Get('dev-dependencies')
   getDevDependencies(): Record<string, string> {
-    const { devDependencies } = JSON.parse(readFileSync(this.configService.getOrThrow<string>('npm_package_json'), 'utf-8'));
-
-    return devDependencies;
+    return this.dependenciesService.getByType('devDependencies');
   }
 };

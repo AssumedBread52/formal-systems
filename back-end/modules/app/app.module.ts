@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
+import { DependenciesService } from './services/dependencies.service';
 
 @Module({
   imports: [
@@ -8,6 +9,9 @@ import { AppController } from './app.controller';
   ],
   controllers: [
     AppController
+  ],
+  providers: [
+    DependenciesService
   ]
 })
 export class AppModule {
