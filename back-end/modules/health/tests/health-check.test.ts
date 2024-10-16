@@ -11,7 +11,7 @@ describe('Health Check', (): void => {
     app = await createTestApp();
   });
 
-  it('performs a health check', async (): Promise<void> => {
+  it('performs a successful health check', async (): Promise<void> => {
     pingCheck.mockResolvedValueOnce({
       database: {
         status: 'up'
