@@ -1,9 +1,12 @@
-import { AuthService } from '@/auth/auth.service';
-import { IdPayload } from '@/common/payloads/id.payload';
+import { InvalidTokenException } from '@/auth/exceptions/invalid-token.exception';
+import { TokenPayload } from '@/auth/payloads/token.payload';
+import { ValidateService } from '@/auth/services/validate.service';
 import { UserEntity } from '@/user/user.entity';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { plainToClass } from 'class-transformer';
+import { validateSync } from 'class-validator';
 import { Request } from 'express';
 import { ObjectId } from 'mongodb';
 import { Strategy, StrategyOptions } from 'passport-jwt';
@@ -11,7 +14,7 @@ import { BaseStrategy } from './base.strategy';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrategy {
-  constructor(private authService: AuthService, configService: ConfigService) {
+  constructor(private validateService: ValidateService, configService: ConfigService) {
     super({
       jwtFromRequest: JwtStrategy.extractJwt,
       ignoreExpiration: false,
@@ -19,10 +22,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrat
     } as StrategyOptions);
   }
 
-  validate(tokenPayload: IdPayload): Promise<UserEntity> {
+  validate(payload: any): Promise<UserEntity> {
+    const tokenPayload = plainToClass(TokenPayload, payload);
+
+    const errors = validateSync(tokenPayload);
+
+    if (0 !== errors.length) {
+      throw new InvalidTokenException();
+    }
+
     const { id } = tokenPayload;
 
-    return this.authService.validateUserById(new ObjectId(id));
+    return this.validateService.validateUserById(new ObjectId(id));
   }
 
   private static extractJwt(request: Request): string | null {

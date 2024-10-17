@@ -1,11 +1,13 @@
+import { UserEntity } from '@/user/user.entity';
 import { UserModule } from '@/user/user.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
 import { CookieService } from './services/cookie.service';
 import { TokenService } from './services/token.service';
+import { ValidateService } from './services/validate.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
@@ -31,17 +33,20 @@ import { LocalStrategy } from './strategies/local.strategy';
         };
       }
     }),
+    TypeOrmModule.forFeature([
+      UserEntity
+    ]),
     UserModule
   ],
   controllers: [
     AuthController
   ],
   providers: [
-    AuthService,
     CookieService,
     JwtStrategy,
     LocalStrategy,
-    TokenService
+    TokenService,
+    ValidateService
   ]
 })
 export class AuthModule {
