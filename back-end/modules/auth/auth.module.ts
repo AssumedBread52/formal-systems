@@ -5,6 +5,7 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { CookieService } from './services/cookie.service';
+import { TokenService } from './services/token.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
@@ -39,7 +40,8 @@ import { LocalStrategy } from './strategies/local.strategy';
     AuthService,
     CookieService,
     JwtStrategy,
-    LocalStrategy
+    LocalStrategy,
+    TokenService
   ]
 })
 export class AuthModule {

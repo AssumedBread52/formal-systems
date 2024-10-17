@@ -1,5 +1,5 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { AuthService } from '@/auth/auth.service';
+import { TokenService } from '@/auth/services/token.service';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
@@ -36,7 +36,7 @@ describe('Sign Out', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = await app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).post('/auth/sign-out').set('Cookie', [
       `token=${token}`

@@ -1,5 +1,5 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { AuthService } from '@/auth/auth.service';
+import { TokenService } from '@/auth/services/token.service';
 import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
 import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
 import { testMissingToken } from '@/auth/tests/helpers/test-missing-token';
@@ -42,7 +42,7 @@ describe('Update Statement', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch('/system/1/statement/1').set('Cookie', [
       `token=${token}`
@@ -67,7 +67,7 @@ describe('Update Statement', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/1/statement/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
@@ -92,7 +92,7 @@ describe('Update Statement', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
@@ -132,7 +132,7 @@ describe('Update Statement', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
@@ -180,7 +180,7 @@ describe('Update Statement', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
@@ -235,7 +235,7 @@ describe('Update Statement', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
@@ -284,7 +284,7 @@ describe('Update Statement', (): void => {
     statementRepositoryMock.findOneBy.mockReturnValueOnce(null);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
@@ -331,7 +331,7 @@ describe('Update Statement', (): void => {
     statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`
@@ -394,7 +394,7 @@ describe('Update Statement', (): void => {
     ]);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`
@@ -459,7 +459,7 @@ describe('Update Statement', (): void => {
     ]);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`
@@ -524,7 +524,7 @@ describe('Update Statement', (): void => {
     ]);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`
@@ -588,7 +588,7 @@ describe('Update Statement', (): void => {
     ]);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`
@@ -652,7 +652,7 @@ describe('Update Statement', (): void => {
     ]);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`
@@ -707,7 +707,7 @@ describe('Update Statement', (): void => {
     ]);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`
@@ -765,7 +765,7 @@ describe('Update Statement', (): void => {
     ]);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`
@@ -828,7 +828,7 @@ describe('Update Statement', (): void => {
     ]);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`
@@ -892,7 +892,7 @@ describe('Update Statement', (): void => {
     ]);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`
@@ -967,7 +967,7 @@ describe('Update Statement', (): void => {
     ]);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`
@@ -1042,7 +1042,7 @@ describe('Update Statement', (): void => {
     ]);
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
       `token=${token}`

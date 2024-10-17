@@ -1,5 +1,5 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { AuthService } from '@/auth/auth.service';
+import { TokenService } from '@/auth/services/token.service';
 import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
 import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
 import { testMissingToken } from '@/auth/tests/helpers/test-missing-token';
@@ -36,7 +36,7 @@ describe('Update Session User', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
@@ -66,7 +66,7 @@ describe('Update Session User', (): void => {
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
     userRepositoryMock.findOneBy.mockReturnValueOnce(conflictUser);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
@@ -92,7 +92,7 @@ describe('Update Session User', (): void => {
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
     userRepositoryMock.findOneBy.mockReturnValueOnce(null);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`

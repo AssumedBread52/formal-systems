@@ -1,7 +1,6 @@
 import { UserEntity } from '@/user/user.entity';
 import { UserService } from '@/user/user.service';
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import { InvalidCredentialsException } from './exceptions/invalid-credentials.exception';
@@ -9,7 +8,7 @@ import { InvalidTokenException } from './exceptions/invalid-token.exception';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService, private userService: UserService) {
+  constructor(private userService: UserService) {
   }
 
   async validateUserByCredentials(email: string, password: string): Promise<UserEntity> {
@@ -38,11 +37,5 @@ export class AuthService {
     }
 
     return user;
-  }
-
-  generateToken(userId: ObjectId): Promise<string> {
-    return this.jwtService.signAsync({
-      id: userId
-    });
   }
 };

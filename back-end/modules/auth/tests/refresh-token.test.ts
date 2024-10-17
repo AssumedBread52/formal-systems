@@ -1,5 +1,5 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { AuthService } from '@/auth/auth.service';
+import { TokenService } from '@/auth/services/token.service';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
@@ -37,7 +37,7 @@ describe('Refresh Token', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
 
-    const token = await app.get(AuthService).generateToken(user._id);
+    const token = app.get(TokenService).generateToken(user._id);
 
     const response = await request(app.getHttpServer()).post('/auth/refresh-token').set('Cookie', [
       `token=${token}`
