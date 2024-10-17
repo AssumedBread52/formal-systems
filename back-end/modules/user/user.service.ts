@@ -1,4 +1,3 @@
-import { SignUpPayload } from '@/auth/payloads/sign-up.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcryptjs';
@@ -6,6 +5,7 @@ import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 import { UserUniqueEmailAddressException } from './exceptions/user-unique-email-address.exception';
 import { EditProfilePayload } from './payloads/edit-profile.payload';
+import { SignUpPayload } from './payloads/sign-up.payload';
 import { UserEntity } from './user.entity';
 
 @Injectable()

@@ -1,5 +1,4 @@
 import { UserEntity } from '@/user/user.entity';
-import { UserModule } from '@/user/user.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
@@ -35,8 +34,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     }),
     TypeOrmModule.forFeature([
       UserEntity
-    ]),
-    UserModule
+    ])
   ],
   controllers: [
     AuthController
@@ -47,6 +45,10 @@ import { LocalStrategy } from './strategies/local.strategy';
     LocalStrategy,
     TokenService,
     ValidateService
+  ],
+  exports: [
+    CookieService,
+    TokenService
   ]
 })
 export class AuthModule {

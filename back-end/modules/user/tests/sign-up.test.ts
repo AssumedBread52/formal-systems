@@ -1,11 +1,11 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
+import { expectAuthCookies } from '@/auth/tests/helpers/expect-auth-cookies';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
-import { expectAuthCookies } from './helpers/expect-auth-cookies';
 
 describe('Sign Up', (): void => {
   let app: INestApplication;
@@ -15,7 +15,7 @@ describe('Sign Up', (): void => {
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).post('/auth/sign-up');
+    const response = await request(app.getHttpServer()).post('/user');
 
     expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
       error: 'Bad Request',
@@ -40,7 +40,7 @@ describe('Sign Up', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(conflictUser);
 
-    const response = await request(app.getHttpServer()).post('/auth/sign-up').send({
+    const response = await request(app.getHttpServer()).post('/user').send({
       firstName: 'Test',
       lastName: 'User',
       email,
@@ -59,7 +59,7 @@ describe('Sign Up', (): void => {
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(null);
 
-    const response = await request(app.getHttpServer()).post('/auth/sign-up').send({
+    const response = await request(app.getHttpServer()).post('/user').send({
       firstName: 'Test',
       lastName: 'User',
       email: 'test@example.com',
