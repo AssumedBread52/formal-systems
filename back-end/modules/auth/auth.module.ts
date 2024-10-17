@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { CookieService } from './services/cookie.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
@@ -36,6 +37,7 @@ import { LocalStrategy } from './strategies/local.strategy';
   ],
   providers: [
     AuthService,
+    CookieService,
     JwtStrategy,
     LocalStrategy
   ]

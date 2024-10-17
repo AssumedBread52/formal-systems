@@ -1,6 +1,5 @@
 import { UserService } from '@/user/user.service';
 import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards, ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { AuthService } from './auth.service';
@@ -8,10 +7,11 @@ import { SessionUserDecorator } from './decorators/session-user.decorator';
 import { JwtGuard } from './guards/jwt.guard';
 import { LocalGuard } from './guards/local.guard';
 import { SignUpPayload } from './payloads/sign-up.payload';
+import { CookieService } from './services/cookie.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService, private configService: ConfigService, private userService: UserService) {
+  constructor(private authService: AuthService, private cookieService: CookieService, private userService: UserService) {
   }
 
   @UseGuards(JwtGuard)
@@ -20,7 +20,7 @@ export class AuthController {
   async refreshToken(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): Promise<void> {
     const token = await this.authService.generateToken(sessionUserId);
 
-    this.setAuthCookies(response, token);
+    this.cookieService.setAuthCookies(response, token);
   }
 
   @UseGuards(LocalGuard)
@@ -29,15 +29,14 @@ export class AuthController {
   async signIn(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): Promise<void> {
     const token = await this.authService.generateToken(sessionUserId);
 
-    this.setAuthCookies(response, token);
+    this.cookieService.setAuthCookies(response, token);
   }
 
   @UseGuards(JwtGuard)
   @Post('sign-out')
   @HttpCode(HttpStatus.NO_CONTENT)
   signOut(@Res({ passthrough: true }) response: Response): void {
-    response.clearCookie('token');
-    response.clearCookie('authStatus');
+    this.cookieService.clearAuthCookies(response);
   }
 
   @Post('sign-up')
@@ -46,20 +45,6 @@ export class AuthController {
 
     const token = await this.authService.generateToken(_id);
 
-    this.setAuthCookies(response, token);
-  }
-
-  private setAuthCookies(response: Response, token: string): void {
-    const maxAge = this.configService.getOrThrow<number>('AUTH_COOKIE_MAX_AGE_MILLISECONDS');
-
-    response.cookie('token', token, {
-      httpOnly: true,
-      maxAge,
-      secure: true
-    });
-    response.cookie('authStatus', 'true', {
-      maxAge,
-      secure: true
-    });
+    this.cookieService.setAuthCookies(response, token);
   }
 };
