@@ -43,7 +43,7 @@ describe('Health Check', (): void => {
   });
 
   it('fails a health check', async (): Promise<void> => {
-    pingCheck.mockRejectedValueOnce(new HealthCheckError('Ingnored Error message', {
+    pingCheck.mockRejectedValueOnce(new HealthCheckError('Ignored Error message', {
       database: {
         message: 'Returned error message',
         status: 'down'
