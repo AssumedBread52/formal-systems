@@ -4,7 +4,6 @@ import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { hashSync } from 'bcryptjs';
-import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
 describe('Sign In', (): void => {
@@ -62,10 +61,8 @@ describe('Sign In', (): void => {
   it('fails with an incorrect password', async (): Promise<void> => {
     const email = 'test@example.com';
     const password = '123456';
-    const userId = new ObjectId();
     const user = new UserEntity();
 
-    user._id = userId;
     user.email = email;
     user.hashedPassword = hashSync(password, 12);
 
@@ -96,10 +93,8 @@ describe('Sign In', (): void => {
   it('succeeds', async (): Promise<void> => {
     const email = 'test@example.com';
     const password = '123456';
-    const userId = new ObjectId();
     const user = new UserEntity();
 
-    user._id = userId;
     user.email = email;
     user.hashedPassword = hashSync(password, 12);
 
