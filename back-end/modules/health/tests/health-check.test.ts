@@ -27,7 +27,7 @@ describe('Health Check', (): void => {
 
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(pingCheck).toHaveBeenCalledTimes(1);
-    expect(pingCheck).toHaveBeenCalledWith('database');
+    expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toEqual({
       details: {
@@ -59,7 +59,7 @@ describe('Health Check', (): void => {
 
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(pingCheck).toHaveBeenCalledTimes(1);
-    expect(pingCheck).toHaveBeenCalledWith('database');
+    expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.SERVICE_UNAVAILABLE);
     expect(body).toEqual({
       details: {

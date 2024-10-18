@@ -25,6 +25,8 @@ describe('Dependencies', (): void => {
     const { statusCode, body } = response;
     const packageJson = JSON.parse(readFileSync(process.env.npm_package_json!, 'utf-8'));
 
+    expect(getOrThrow).toHaveBeenCalledTimes(1);
+    expect(getOrThrow).toHaveBeenNthCalledWith(1, 'npm_package_json');
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toEqual(packageJson[key]);
   });
