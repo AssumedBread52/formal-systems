@@ -1,12 +1,12 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
+import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { HealthCheckError } from '@nestjs/terminus';
 import * as request from 'supertest';
 import { pingCheckMock } from './mocks/ping-check.mock';
-import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
 
 describe('Health Check', (): void => {
-  getOrThrowMock();
+  const getOrThrow = getOrThrowMock();
   const pingCheck = pingCheckMock();
   let app: INestApplication;
 
@@ -25,6 +25,7 @@ describe('Health Check', (): void => {
 
     const { statusCode, body } = response;
 
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenCalledWith('database');
     expect(statusCode).toBe(HttpStatus.OK);
@@ -56,6 +57,7 @@ describe('Health Check', (): void => {
 
     const { statusCode, body } = response;
 
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenCalledWith('database');
     expect(statusCode).toBe(HttpStatus.SERVICE_UNAVAILABLE);
