@@ -112,13 +112,16 @@ describe('Refresh Token', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
+    const userId = new ObjectId();
     const user = new UserEntity();
+
+    user._id = userId;
 
     findOneBy.mockResolvedValueOnce(user);
     getOrThrow.mockReturnValueOnce(1000);
 
     const token = app.get(JwtService).sign({
-      id: user._id
+      id: userId
     });
 
     const response = await request(app.getHttpServer()).post('/auth/refresh-token').set('Cookie', [
@@ -130,7 +133,7 @@ describe('Refresh Token', (): void => {
 
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: user._id
+      _id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(1);
     expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
