@@ -18,7 +18,7 @@ describe('Refresh Token', (): void => {
 
   it('fails without a token', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).post('/auth/refresh-token');
-    
+
     const { statusCode, body } = response;
     const cookies = response.get('Set-Cookie');
 
