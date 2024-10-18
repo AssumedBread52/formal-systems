@@ -3,8 +3,10 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { HealthCheckError } from '@nestjs/terminus';
 import * as request from 'supertest';
 import { pingCheckMock } from './mocks/ping-check.mock';
+import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
 
 describe('Health Check', (): void => {
+  getOrThrowMock();
   const pingCheck = pingCheckMock();
   let app: INestApplication;
 

@@ -3,7 +3,7 @@ import { HealthIndicatorResult, TypeOrmHealthIndicator, TypeOrmPingCheckSettings
 export const pingCheckMock = (): jest.SpyInstance<Promise<HealthIndicatorResult>, [key: string, options?: TypeOrmPingCheckSettings], any> => {
   const pingCheck = jest.spyOn(TypeOrmHealthIndicator.prototype, 'pingCheck');
 
-  afterEach((): void => {
+  beforeEach((): void => {
     pingCheck.mockReset();
   });
 

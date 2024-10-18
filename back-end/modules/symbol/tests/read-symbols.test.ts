@@ -1,4 +1,5 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
+import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
@@ -9,6 +10,8 @@ import * as request from 'supertest';
 import { SymbolRepositoryMock } from './mocks/symbol-repository.mock';
 
 describe('Read Symbols', (): void => {
+  getOrThrowMock();
+
   const badQueries = [
     ['?page=a', 'page must not be less than 1', 'page must be an integer number'],
     ['?page=5.4', 'page must be an integer number'],

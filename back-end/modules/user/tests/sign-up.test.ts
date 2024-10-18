@@ -1,4 +1,5 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
+import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
 import { expectAuthCookies } from '@/auth/tests/helpers/expect-auth-cookies';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -8,6 +9,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
 
 describe('Sign Up', (): void => {
+  const getOrThrow = getOrThrowMock();
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -58,6 +60,7 @@ describe('Sign Up', (): void => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    getOrThrow.mockReturnValueOnce('1000');
 
     const response = await request(app.getHttpServer()).post('/user').send({
       firstName: 'Test',

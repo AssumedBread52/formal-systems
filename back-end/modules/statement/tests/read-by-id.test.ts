@@ -1,4 +1,5 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
+import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { StatementEntity } from '@/statement/statement.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -8,6 +9,7 @@ import * as request from 'supertest';
 import { StatementRepositoryMock } from './mocks/statement-repository.mock';
 
 describe('Read Statement by ID', (): void => {
+  getOrThrowMock();
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {

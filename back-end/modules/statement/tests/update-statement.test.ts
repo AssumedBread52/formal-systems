@@ -1,4 +1,5 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
+import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
 import { TokenService } from '@/auth/services/token.service';
 import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
 import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
@@ -17,6 +18,7 @@ import * as request from 'supertest';
 import { StatementRepositoryMock } from './mocks/statement-repository.mock';
 
 describe('Update Statement', (): void => {
+  getOrThrowMock();
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {

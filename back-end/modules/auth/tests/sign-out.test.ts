@@ -1,4 +1,5 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
+import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
 import { TokenService } from '@/auth/services/token.service';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -11,6 +12,7 @@ import { testInvalidToken } from './helpers/test-invalid-token';
 import { testMissingToken } from './helpers/test-missing-token';
 
 describe('Sign Out', (): void => {
+  getOrThrowMock();
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {

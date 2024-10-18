@@ -1,4 +1,5 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
+import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
 import { TokenService } from '@/auth/services/token.service';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -12,6 +13,7 @@ import { testInvalidToken } from './helpers/test-invalid-token';
 import { testMissingToken } from './helpers/test-missing-token';
 
 describe('Refresh Token', (): void => {
+  const getOrThrow = getOrThrowMock();
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -36,6 +38,7 @@ describe('Refresh Token', (): void => {
     const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
 
     userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    getOrThrow.mockReturnValueOnce('1000');
 
     const token = app.get(TokenService).generateToken(user._id);
 
@@ -45,6 +48,8 @@ describe('Refresh Token', (): void => {
 
     expectCorrectResponse(response, HttpStatus.NO_CONTENT, {});
     expectAuthCookies(response);
+    expect(getOrThrow).toHaveBeenCalledTimes(1);
+    expect(getOrThrow).toHaveBeenCalledWith('AUTH_COOKIE_MAX_AGE_MILLISECONDS');
   });
 
   afterAll(async (): Promise<void> => {
