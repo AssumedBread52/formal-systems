@@ -1,15 +1,14 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
-import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
-import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
+import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { hash } from 'bcryptjs';
+import { hashSync } from 'bcryptjs';
+import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { expectAuthCookies } from './helpers/expect-auth-cookies';
 
 describe('Sign In', (): void => {
+  const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   let app: INestApplication;
 
@@ -17,71 +16,116 @@ describe('Sign In', (): void => {
     app = await createTestApp();
   });
 
-  it('fails with invalid payload', async (): Promise<void> => {
+  it('fails with an invalid payload', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).post('/auth/sign-in');
 
-    expectCorrectResponse(response, HttpStatus.UNAUTHORIZED, {
+    const { statusCode, body } = response;
+    const cookies = response.get('Set-Cookie');
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
       message: 'Unauthorized',
       statusCode: HttpStatus.UNAUTHORIZED
     });
+    expect(cookies).toBeUndefined();
   });
 
   it('fails when the e-mail address does not match a user', async (): Promise<void> => {
+    const email = 'test@example.com';
+
+    findOneBy.mockResolvedValueOnce(null);
+
     const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
-      email: 'test@example.com',
+      email,
       password: '123456'
     });
 
-    expectCorrectResponse(response, HttpStatus.UNAUTHORIZED, {
+    const { statusCode, body } = response;
+    const cookies = response.get('Set-Cookie');
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      email
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
       error: 'Unauthorized',
       message: 'Invalid e-mail address or password.',
       statusCode: HttpStatus.UNAUTHORIZED
     });
+    expect(cookies).toBeUndefined();
   });
 
   it('fails with an incorrect password', async (): Promise<void> => {
+    const email = 'test@example.com';
+    const password = '123456';
+    const userId = new ObjectId();
     const user = new UserEntity();
 
-    user.email = 'test@example.com';
+    user._id = userId;
+    user.email = email;
+    user.hashedPassword = hashSync(password, 12);
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
-      email: user.email,
-      password: '123456'
+      email,
+      password: 'password'
     });
 
-    expectCorrectResponse(response, HttpStatus.UNAUTHORIZED, {
+    const { statusCode, body } = response;
+    const cookies = response.get('Set-Cookie');
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      email
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
       error: 'Unauthorized',
       message: 'Invalid e-mail address or password.',
       statusCode: HttpStatus.UNAUTHORIZED
     });
+    expect(cookies).toBeUndefined();
   });
 
   it('succeeds', async (): Promise<void> => {
+    const email = 'test@example.com';
     const password = '123456';
-
+    const userId = new ObjectId();
     const user = new UserEntity();
 
-    user.email = 'test@example.com';
-    user.hashedPassword = await hash(password, 12);
+    user._id = userId;
+    user.email = email;
+    user.hashedPassword = hashSync(password, 12);
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-    getOrThrow.mockReturnValueOnce('1000');
+    findOneBy.mockResolvedValueOnce(user);
+    getOrThrow.mockReturnValueOnce(1000);
 
     const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
-      email: user.email,
+      email,
       password
     });
 
-    expectCorrectResponse(response, HttpStatus.NO_CONTENT, {});
-    expectAuthCookies(response);
+    const { statusCode, body } = response;
+    const cookies = response.get('Set-Cookie');
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      email
+    });
     expect(getOrThrow).toHaveBeenCalledTimes(1);
-    expect(getOrThrow).toHaveBeenCalledWith('AUTH_COOKIE_MAX_AGE_MILLISECONDS');
+    expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
+    expect(statusCode).toBe(HttpStatus.NO_CONTENT);
+    expect(body).toEqual({});
+    expect(cookies).toBeDefined();
+    expect(cookies).toHaveLength(2);
+    expect(cookies![0]).toMatch(/^token=.+; Max-Age=1; .+; HttpOnly; Secure$/);
+    expect(cookies![1]).toMatch(/^authStatus=true; Max-Age=1; .+; Secure$/);
   });
 
   afterAll(async (): Promise<void> => {
