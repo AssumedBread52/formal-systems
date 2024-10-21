@@ -5,8 +5,10 @@ import { TokenService } from '@/auth/services/token.service';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { Body, Controller, Get, Patch, Post, Res, UseGuards, ValidationPipe } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'express';
 import { ObjectId } from 'mongodb';
+import { MongoRepository } from 'typeorm';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { EditProfilePayload } from './payloads/edit-profile.payload';
 import { SignUpPayload } from './payloads/sign-up.payload';
@@ -16,7 +18,7 @@ import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private cookieService: CookieService, private tokenService: TokenService, private userService: UserService) {
+  constructor(private cookieService: CookieService, private tokenService: TokenService, @InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>, private userService: UserService) {
   }
 
   @UseGuards(JwtGuard)
@@ -27,7 +29,9 @@ export class UserController {
 
   @Get(':userId')
   async getById(@ObjectIdDecorator('userId') userId: ObjectId): Promise<UserPayload> {
-    const user = await this.userService.readById(userId);
+    const user = await this.userRepository.findOneBy({
+      _id: userId
+    });
 
     if (!user) {
       throw new UserNotFoundException();

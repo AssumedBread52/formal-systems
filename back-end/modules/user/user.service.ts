@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcryptjs';
-import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 import { UserUniqueEmailAddressException } from './exceptions/user-unique-email-address.exception';
 import { EditProfilePayload } from './payloads/edit-profile.payload';
@@ -26,18 +25,6 @@ export class UserService {
     user.hashedPassword = await hash(password, 12);
 
     return this.userRepository.save(user);
-  }
-
-  readByEmail(email: string): Promise<UserEntity | null> {
-    return this.userRepository.findOneBy({
-      email
-    });
-  }
-
-  readById(userId: ObjectId): Promise<UserEntity | null> {
-    return this.userRepository.findOneBy({
-      _id: userId
-    });
   }
 
   async update(sessionUser: UserEntity, editProfilePayload: EditProfilePayload): Promise<UserEntity> {

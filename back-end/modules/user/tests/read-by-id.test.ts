@@ -1,15 +1,14 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
-import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
+import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { UserRepositoryMock } from './mocks/user-repository.mock';
 
 describe('Read User by ID', (): void => {
-  getOrThrowMock();
+  const findOneBy = findOneByMock();
+  const getOrThrow = getOrThrowMock();
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -19,21 +18,34 @@ describe('Read User by ID', (): void => {
   it('fails with an invalid route parameter', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).get('/user/1');
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'Invalid Mongodb ID structure.',
+      message: 'Invalid Object ID.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
   it('fails if user is not found', async (): Promise<void> => {
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    const userId = new ObjectId();
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const response = await request(app.getHttpServer()).get(`/user/${new ObjectId()}`);
+    const response = await request(app.getHttpServer()).get(`/user/${userId}`);
 
-    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    expect(body).toEqual({
       error: 'Not Found',
       message: 'User not found.',
       statusCode: HttpStatus.NOT_FOUND
@@ -41,19 +53,30 @@ describe('Read User by ID', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
+    const userId = new ObjectId();
+    const email = 'test@example.com';
     const user = new UserEntity();
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = userId;
+    user.email = email;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
 
-    const response = await request(app.getHttpServer()).get(`/user/${user._id}`);
+    const response = await request(app.getHttpServer()).get(`/user/${userId}`);
 
-    expectCorrectResponse(response, HttpStatus.OK, {
-      id: user._id.toString(),
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual({
+      id: userId.toString(),
       firstName: user.firstName,
       lastName: user.lastName,
-      email: user.email,
+      email,
       systemCount: user.systemCount,
       constantSymbolCount: user.constantSymbolCount,
       variableSymbolCount: user.variableSymbolCount,
