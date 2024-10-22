@@ -1,8 +1,5 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
-import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
-import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
-import { testMissingToken } from '@/auth/tests/helpers/test-missing-token';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { UserEntity } from '@/user/user.entity';
@@ -23,15 +20,105 @@ describe('Update Session User', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testMissingToken(app, 'patch', '/user/session-user');
+    const response = await request(app.getHttpServer()).patch('/user/session-user');
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testExpiredToken(app, 'patch', '/user/session-user');
+    const token = app.get(JwtService).sign({
+      id: new ObjectId()
+    });
+
+    await new Promise((resolve: (value: unknown) => void): void => {
+      setTimeout(resolve, 1000);
+    });
+
+    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testInvalidToken(app, 'patch', '/user/session-user');
+    const token = app.get(JwtService).sign({
+      id: 1
+    });
+
+    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
+  it('fails if the user ID in the token payload does not match a user', async (): Promise<void> => {
+    const userId = new ObjectId();
+    const firstName = 'Test';
+    const lastName = 'User';
+    const email = 'test@example.com';
+    const password = '123456';
+    const user = new UserEntity();
+
+    user._id = userId;
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.hashedPassword = hashSync(password, 12);
+
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
