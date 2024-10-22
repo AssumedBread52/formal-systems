@@ -7,6 +7,7 @@ export class EditProfilePayload {
   newLastName: string = '';
   @IsEmail()
   newEmail: string = '';
+  @IsNotEmpty()
   @IsOptional()
   newPassword?: string;
 };
