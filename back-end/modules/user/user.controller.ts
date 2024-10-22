@@ -10,15 +10,14 @@ import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { EditProfilePayload } from './payloads/edit-profile.payload';
-import { SignUpPayload } from './payloads/sign-up.payload';
 import { UserPayload } from './payloads/user.payload';
+import { UserCreateService } from './services/user-create.service';
 import { UserUpdateService } from './services/user-update.service';
 import { UserEntity } from './user.entity';
-import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private cookieService: CookieService, private tokenService: TokenService, @InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>, private userService: UserService, private userUpdateService: UserUpdateService) {
+  constructor(private cookieService: CookieService, private tokenService: TokenService, @InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>, private userCreateService: UserCreateService, private userUpdateService: UserUpdateService) {
   }
 
   @UseGuards(JwtGuard)
@@ -49,11 +48,15 @@ export class UserController {
   }
 
   @Post()
-  async postUser(@Body(ValidationPipe) signUpPayload: SignUpPayload, @Res({ passthrough: true }) response: Response): Promise<void> {
-    const { _id } = await this.userService.create(signUpPayload);
+  async postUser(@Body() payload: any, @Res({ passthrough: true }) response: Response): Promise<UserPayload> {
+    const createdUser = await this.userCreateService.create(payload);
+
+    const { _id } = createdUser;
 
     const token = this.tokenService.generateToken(_id);
 
     this.cookieService.setAuthCookies(response, token);
+
+    return new UserPayload(createdUser);
   }
 };

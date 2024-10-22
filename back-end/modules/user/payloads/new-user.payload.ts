@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
-export class SignUpPayload {
+export class NewUserPayload {
   @IsNotEmpty()
   firstName: string = '';
   @IsNotEmpty()
