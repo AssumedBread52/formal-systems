@@ -54,10 +54,14 @@ describe('Read User by ID', (): void => {
 
   it('succeeds', async (): Promise<void> => {
     const userId = new ObjectId();
+    const firstName = 'Test';
+    const lastName = 'User';
     const email = 'test@example.com';
     const user = new UserEntity();
 
     user._id = userId;
+    user.firstName = firstName;
+    user.lastName = lastName;
     user.email = email;
 
     findOneBy.mockResolvedValueOnce(user);
@@ -74,8 +78,8 @@ describe('Read User by ID', (): void => {
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toEqual({
       id: userId.toString(),
-      firstName: user.firstName,
-      lastName: user.lastName,
+      firstName,
+      lastName,
       email,
       systemCount: user.systemCount,
       constantSymbolCount: user.constantSymbolCount,
