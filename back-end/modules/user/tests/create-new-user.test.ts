@@ -8,7 +8,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
 
-describe('Sign Up', (): void => {
+describe('Create New User', (): void => {
   const getOrThrow = getOrThrowMock();
   let app: INestApplication;
 
