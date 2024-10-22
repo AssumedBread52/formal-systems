@@ -115,6 +115,7 @@ describe('Update Session User', (): void => {
     newUser.firstName = newFirstName;
     newUser.lastName = newLastName;
     newUser.email = newEmail;
+    newUser.hashedPassword = hashSync(newPassword, 12);
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
