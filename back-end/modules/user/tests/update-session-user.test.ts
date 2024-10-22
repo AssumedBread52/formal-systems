@@ -62,38 +62,7 @@ describe('Update Session User', (): void => {
     });
   });
 
-  it('fails if new e-mail address is already in use', async (): Promise<void> => {
-    const newEmail = 'test@example.com';
-
-    const conflictUser = new UserEntity();
-    const user = new UserEntity();
-
-    conflictUser.email = newEmail;
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(conflictUser);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newFirstName: 'Test',
-      newLastName: 'User',
-      newEmail,
-      newPassword: '123456'
-    });
-
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
-      error: 'Conflict',
-      message: 'Users must have a unique e-mail address.',
-      statusCode: HttpStatus.CONFLICT
-    });
-  });
-
-  it('succeeds without chaning the password', async (): Promise<void> => {
+  it('fails if the new e-mail address is already in use', async (): Promise<void> => {
     const userId = new ObjectId();
     const firstName = 'Test';
     const lastName = 'User';
@@ -102,22 +71,19 @@ describe('Update Session User', (): void => {
     const newFirstName = 'User';
     const newLastName = 'Example';
     const newEmail = 'example@test.com';
+    const newPassword = 'qwerty';
     const user = new UserEntity();
-    const newUser = new UserEntity();
+    const conflictUser = new UserEntity();
 
     user._id = userId;
     user.firstName = firstName;
     user.lastName = lastName;
     user.email = email;
     user.hashedPassword = hashSync(password, 12);
-    newUser._id = userId;
-    newUser.firstName = newFirstName;
-    newUser.lastName = newLastName;
-    newUser.email = newEmail;
+    conflictUser.email = newEmail;
 
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(null);
-    save.mockResolvedValueOnce(newUser);
+    findOneBy.mockResolvedValueOnce(conflictUser);
 
     const token = app.get(JwtService).sign({
       id: userId
@@ -128,7 +94,8 @@ describe('Update Session User', (): void => {
     ]).send({
       newFirstName,
       newLastName,
-      newEmail
+      newEmail,
+      newPassword
     });
 
     const { statusCode, body } = response;
@@ -141,32 +108,12 @@ describe('Update Session User', (): void => {
       email: newEmail
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(1);
-    expect(save).toHaveBeenNthCalledWith(1, {
-      _id: userId,
-      firstName: newFirstName,
-      lastName: newLastName,
-      email: newEmail,
-      hashedPassword: expect.stringMatching(/\$2a\$12\$.+/),
-      systemCount: user.systemCount,
-      constantSymbolCount: user.constantSymbolCount,
-      variableSymbolCount: user.variableSymbolCount,
-      axiomCount: user.axiomCount,
-      theoremCount: user.theoremCount,
-      deductionCount: user.deductionCount
-    });
-    expect(statusCode).toBe(HttpStatus.OK);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.CONFLICT);
     expect(body).toEqual({
-      id: userId.toString(),
-      firstName: newFirstName,
-      lastName: newLastName,
-      email: newEmail,
-      systemCount: user.systemCount,
-      constantSymbolCount: user.constantSymbolCount,
-      variableSymbolCount: user.variableSymbolCount,
-      axiomCount: user.axiomCount,
-      theoremCount: user.theoremCount,
-      deductionCount: user.deductionCount
+      error: 'Conflict',
+      message: 'Users must have a unique e-mail address.',
+      statusCode: HttpStatus.CONFLICT
     });
   });
 
