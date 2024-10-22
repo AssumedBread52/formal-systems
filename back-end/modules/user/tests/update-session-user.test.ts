@@ -93,6 +93,83 @@ describe('Update Session User', (): void => {
     });
   });
 
+  it('succeeds without chaning the password', async (): Promise<void> => {
+    const userId = new ObjectId();
+    const firstName = 'Test';
+    const lastName = 'User';
+    const email = 'test@example.com';
+    const password = '123456';
+    const newFirstName = 'User';
+    const newLastName = 'Example';
+    const newEmail = 'example@test.com';
+    const user = new UserEntity();
+    const newUser = new UserEntity();
+
+    user._id = userId;
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.hashedPassword = hashSync(password, 12);
+    newUser._id = userId;
+    newUser.firstName = newFirstName;
+    newUser.lastName = newLastName;
+    newUser.email = newEmail;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(null);
+    save.mockResolvedValueOnce(newUser);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newFirstName,
+      newLastName,
+      newEmail
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      email: newEmail
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenNthCalledWith(1, {
+      _id: userId,
+      firstName: newFirstName,
+      lastName: newLastName,
+      email: newEmail,
+      hashedPassword: expect.stringMatching(/\$2a\$12\$.+/),
+      systemCount: user.systemCount,
+      constantSymbolCount: user.constantSymbolCount,
+      variableSymbolCount: user.variableSymbolCount,
+      axiomCount: user.axiomCount,
+      theoremCount: user.theoremCount,
+      deductionCount: user.deductionCount
+    });
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual({
+      id: userId.toString(),
+      firstName: newFirstName,
+      lastName: newLastName,
+      email: newEmail,
+      systemCount: user.systemCount,
+      constantSymbolCount: user.constantSymbolCount,
+      variableSymbolCount: user.variableSymbolCount,
+      axiomCount: user.axiomCount,
+      theoremCount: user.theoremCount,
+      deductionCount: user.deductionCount
+    });
+  });
+
   it('succeeds', async (): Promise<void> => {
     const userId = new ObjectId();
     const firstName = 'Test';
