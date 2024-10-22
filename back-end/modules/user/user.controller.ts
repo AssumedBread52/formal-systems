@@ -3,7 +3,6 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { CookieService } from '@/auth/services/cookie.service';
 import { TokenService } from '@/auth/services/token.service';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
-import { IdPayload } from '@/common/payloads/id.payload';
 import { Body, Controller, Get, Patch, Post, Res, UseGuards, ValidationPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'express';
@@ -42,10 +41,10 @@ export class UserController {
 
   @UseGuards(JwtGuard)
   @Patch('session-user')
-  async patchSessionUser(@SessionUserDecorator() sessionUser: UserEntity, @Body(ValidationPipe) editProfilePayload: EditProfilePayload): Promise<IdPayload> {
-    const { _id } = await this.userService.update(sessionUser, editProfilePayload);
+  async patchSessionUser(@SessionUserDecorator() sessionUser: UserEntity, @Body(ValidationPipe) editProfilePayload: EditProfilePayload): Promise<UserPayload> {
+    const updatedSessionUser = await this.userService.update(sessionUser, editProfilePayload);
 
-    return new IdPayload(_id);
+    return new UserPayload(updatedSessionUser);
   }
 
   @Post()
