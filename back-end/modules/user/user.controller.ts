@@ -12,12 +12,13 @@ import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { EditProfilePayload } from './payloads/edit-profile.payload';
 import { SignUpPayload } from './payloads/sign-up.payload';
 import { UserPayload } from './payloads/user.payload';
+import { UserUpdateService } from './services/user-update.service';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private cookieService: CookieService, private tokenService: TokenService, @InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>, private userService: UserService) {
+  constructor(private cookieService: CookieService, private tokenService: TokenService, @InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>, private userService: UserService, private userUpdateService: UserUpdateService) {
   }
 
   @UseGuards(JwtGuard)
@@ -42,7 +43,7 @@ export class UserController {
   @UseGuards(JwtGuard)
   @Patch('session-user')
   async patchSessionUser(@SessionUserDecorator() sessionUser: UserEntity, @Body(ValidationPipe) editProfilePayload: EditProfilePayload): Promise<UserPayload> {
-    const updatedSessionUser = await this.userService.update(sessionUser, editProfilePayload);
+    const updatedSessionUser = await this.userUpdateService.update(sessionUser, editProfilePayload);
 
     return new UserPayload(updatedSessionUser);
   }

@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcryptjs';
 import { MongoRepository } from 'typeorm';
 import { UserUniqueEmailAddressException } from './exceptions/user-unique-email-address.exception';
-import { EditProfilePayload } from './payloads/edit-profile.payload';
 import { SignUpPayload } from './payloads/sign-up.payload';
 import { UserEntity } from './user.entity';
 
@@ -25,24 +24,6 @@ export class UserService {
     user.hashedPassword = await hash(password, 12);
 
     return this.userRepository.save(user);
-  }
-
-  async update(sessionUser: UserEntity, editProfilePayload: EditProfilePayload): Promise<UserEntity> {
-    const { email } = sessionUser;
-    const { newFirstName, newLastName, newEmail, newPassword } = editProfilePayload;
-
-    if (email !== newEmail) {
-      await this.conflictCheck(newEmail);
-    }
-
-    sessionUser.firstName = newFirstName;
-    sessionUser.lastName = newLastName;
-    sessionUser.email = newEmail;
-    if (newPassword) {
-      sessionUser.hashedPassword = await hash(newPassword, 12);
-    }
-
-    return this.userRepository.save(sessionUser);
   }
 
   private async conflictCheck(email: string): Promise<void> {
