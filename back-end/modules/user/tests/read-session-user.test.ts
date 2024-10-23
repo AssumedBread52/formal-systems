@@ -55,9 +55,7 @@ describe('Read Session User', (): void => {
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    const token = app.get(JwtService).sign({
-      id: 1
-    });
+    const token = app.get(JwtService).sign({});
 
     const response = await request(app.getHttpServer()).get('/user/session-user').set('Cookie', [
       `token=${token}`
@@ -108,12 +106,24 @@ describe('Read Session User', (): void => {
     const firstName = 'Test';
     const lastName = 'User';
     const email = 'test@example.com';
+    const systemCount = 1;
+    const constantSymbolCount = 6;
+    const variableSymbolCount = 3;
+    const axiomCount = 6;
+    const theoremCount = 1;
+    const deductionCount = 1;
     const user = new UserEntity();
 
     user._id = userId;
     user.firstName = firstName;
     user.lastName = lastName;
     user.email = email;
+    user.systemCount = systemCount;
+    user.constantSymbolCount = constantSymbolCount;
+    user.variableSymbolCount = variableSymbolCount;
+    user.axiomCount = axiomCount;
+    user.theoremCount = theoremCount;
+    user.deductionCount = deductionCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
@@ -138,12 +148,12 @@ describe('Read Session User', (): void => {
       firstName,
       lastName,
       email,
-      systemCount: user.systemCount,
-      constantSymbolCount: user.constantSymbolCount,
-      variableSymbolCount: user.variableSymbolCount,
-      axiomCount: user.axiomCount,
-      theoremCount: user.theoremCount,
-      deductionCount: user.deductionCount
+      systemCount,
+      constantSymbolCount,
+      variableSymbolCount,
+      axiomCount,
+      theoremCount,
+      deductionCount
     });
   });
 
