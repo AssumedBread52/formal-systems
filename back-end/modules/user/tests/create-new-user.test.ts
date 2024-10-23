@@ -74,6 +74,7 @@ describe('Create New User', (): void => {
     user.email = email;
 
     findOneBy.mockResolvedValueOnce(null);
+    getOrThrow.mockReturnValueOnce(1000);
     save.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/user').send({
