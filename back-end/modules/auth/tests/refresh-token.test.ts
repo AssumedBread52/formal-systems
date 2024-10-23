@@ -59,9 +59,7 @@ describe('Refresh Token', (): void => {
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    const token = app.get(JwtService).sign({
-      id: 1
-    });
+    const token = app.get(JwtService).sign({});
 
     const response = await request(app.getHttpServer()).post('/auth/refresh-token').set('Cookie', [
       `token=${token}`
