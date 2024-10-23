@@ -1,14 +1,11 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
-import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { UserRepositoryMock } from './mocks/user-repository.mock';
 
 describe('Create New User', (): void => {
   const findOneBy = findOneByMock();
@@ -23,7 +20,14 @@ describe('Create New User', (): void => {
   it('fails with an invalid payload', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).post('/user');
 
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+    const { statusCode, body } = response;
+    const cookies = response.get('Set-Cookie');
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
       error: 'Bad Request',
       message: [
         'firstName should not be empty',
@@ -33,31 +37,43 @@ describe('Create New User', (): void => {
       ],
       statusCode: HttpStatus.BAD_REQUEST
     });
+    expect(cookies).toBeUndefined();
   });
 
   it('fails with e-mail address collision', async (): Promise<void> => {
+    const firstName = 'Test';
+    const lastName = 'User';
     const email = 'test@example.com';
-
+    const password = '123456';
     const conflictUser = new UserEntity();
 
     conflictUser.email = email;
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(conflictUser);
+    findOneBy.mockResolvedValueOnce(conflictUser);
 
     const response = await request(app.getHttpServer()).post('/user').send({
-      firstName: 'Test',
-      lastName: 'User',
+      firstName,
+      lastName,
       email,
-      password: '123456'
+      password
     });
 
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+    const { statusCode, body } = response;
+    const cookies = response.get('Set-Cookie');
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      email
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.CONFLICT);
+    expect(body).toEqual({
       error: 'Conflict',
       message: 'Users must have a unique e-mail address.',
       statusCode: HttpStatus.CONFLICT
     });
+    expect(cookies).toBeUndefined();
   });
 
   it('succeeds', async (): Promise<void> => {
