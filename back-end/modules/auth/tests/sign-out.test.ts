@@ -59,9 +59,7 @@ describe('Sign Out', (): void => {
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    const token = app.get(JwtService).sign({
-      id: 1
-    });
+    const token = app.get(JwtService).sign({});
 
     const response = await request(app.getHttpServer()).post('/auth/sign-out').set('Cookie', [
       `token=${token}`
