@@ -5,7 +5,6 @@ import { saveMock } from '@/common/tests/mocks/save.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { hashSync } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
@@ -60,9 +59,7 @@ describe('Update Session User', (): void => {
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    const token = app.get(JwtService).sign({
-      id: 1
-    });
+    const token = app.get(JwtService).sign({});
 
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
@@ -83,17 +80,6 @@ describe('Update Session User', (): void => {
 
   it('fails if the user ID in the token payload does not match a user', async (): Promise<void> => {
     const userId = new ObjectId();
-    const firstName = 'Test';
-    const lastName = 'User';
-    const email = 'test@example.com';
-    const password = '123456';
-    const user = new UserEntity();
-
-    user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashSync(password, 12);
 
     findOneBy.mockResolvedValueOnce(null);
 
@@ -123,17 +109,7 @@ describe('Update Session User', (): void => {
 
   it('fails with an invalid payload', async (): Promise<void> => {
     const userId = new ObjectId();
-    const firstName = 'Test';
-    const lastName = 'User';
-    const email = 'test@example.com';
-    const password = '123456';
     const user = new UserEntity();
-
-    user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashSync(password, 12);
 
     findOneBy.mockResolvedValueOnce(user);
 
@@ -170,22 +146,11 @@ describe('Update Session User', (): void => {
 
   it('fails if the new e-mail address is already in use', async (): Promise<void> => {
     const userId = new ObjectId();
-    const firstName = 'Test';
-    const lastName = 'User';
-    const email = 'test@example.com';
-    const password = '123456';
-    const newFirstName = 'User';
-    const newLastName = 'Example';
     const newEmail = 'example@test.com';
-    const newPassword = 'qwerty';
     const user = new UserEntity();
     const conflictUser = new UserEntity();
 
     user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashSync(password, 12);
     conflictUser.email = newEmail;
 
     findOneBy.mockResolvedValueOnce(user);
@@ -198,10 +163,10 @@ describe('Update Session User', (): void => {
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
     ]).send({
-      newFirstName,
-      newLastName,
+      newFirstName: 'User',
+      newLastName: 'Example',
       newEmail,
-      newPassword
+      newPassword: 'qwerty'
     });
 
     const { statusCode, body } = response;
@@ -225,27 +190,35 @@ describe('Update Session User', (): void => {
 
   it('succeeds', async (): Promise<void> => {
     const userId = new ObjectId();
-    const firstName = 'Test';
-    const lastName = 'User';
-    const email = 'test@example.com';
-    const password = '123456';
+    const systemCount = 1;
+    const constantSymbolCount = 6;
+    const variableSymbolCount = 3;
+    const axiomCount = 6;
+    const theoremCount = 1;
+    const deductionCount = 1;
     const newFirstName = 'User';
     const newLastName = 'Example';
     const newEmail = 'example@test.com';
-    const newPassword = 'qwerty';
     const user = new UserEntity();
     const newUser = new UserEntity();
 
     user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashSync(password, 12);
+    user.systemCount = systemCount;
+    user.constantSymbolCount = constantSymbolCount;
+    user.variableSymbolCount = variableSymbolCount;
+    user.axiomCount = axiomCount;
+    user.theoremCount = theoremCount;
+    user.deductionCount = deductionCount;
     newUser._id = userId;
     newUser.firstName = newFirstName;
     newUser.lastName = newLastName;
     newUser.email = newEmail;
-    newUser.hashedPassword = hashSync(newPassword, 12);
+    newUser.systemCount = systemCount;
+    newUser.constantSymbolCount = constantSymbolCount;
+    newUser.variableSymbolCount = variableSymbolCount;
+    newUser.axiomCount = axiomCount;
+    newUser.theoremCount = theoremCount;
+    newUser.deductionCount = deductionCount;
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
@@ -261,7 +234,7 @@ describe('Update Session User', (): void => {
       newFirstName,
       newLastName,
       newEmail,
-      newPassword
+      newPassword: 'qwerty'
     });
 
     const { statusCode, body } = response;
@@ -281,12 +254,12 @@ describe('Update Session User', (): void => {
       lastName: newLastName,
       email: newEmail,
       hashedPassword: expect.stringMatching(/\$2a\$12\$.+/),
-      systemCount: user.systemCount,
-      constantSymbolCount: user.constantSymbolCount,
-      variableSymbolCount: user.variableSymbolCount,
-      axiomCount: user.axiomCount,
-      theoremCount: user.theoremCount,
-      deductionCount: user.deductionCount
+      systemCount,
+      constantSymbolCount,
+      variableSymbolCount,
+      axiomCount,
+      theoremCount,
+      deductionCount
     });
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toEqual({
@@ -294,12 +267,12 @@ describe('Update Session User', (): void => {
       firstName: newFirstName,
       lastName: newLastName,
       email: newEmail,
-      systemCount: user.systemCount,
-      constantSymbolCount: user.constantSymbolCount,
-      variableSymbolCount: user.variableSymbolCount,
-      axiomCount: user.axiomCount,
-      theoremCount: user.theoremCount,
-      deductionCount: user.deductionCount
+      systemCount,
+      constantSymbolCount,
+      variableSymbolCount,
+      axiomCount,
+      theoremCount,
+      deductionCount
     });
   });
 
