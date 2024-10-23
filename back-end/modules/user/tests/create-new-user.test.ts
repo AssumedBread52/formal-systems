@@ -41,10 +41,7 @@ describe('Create New User', (): void => {
   });
 
   it('fails with e-mail address collision', async (): Promise<void> => {
-    const firstName = 'Test';
-    const lastName = 'User';
     const email = 'test@example.com';
-    const password = '123456';
     const conflictUser = new UserEntity();
 
     conflictUser.email = email;
@@ -52,10 +49,10 @@ describe('Create New User', (): void => {
     findOneBy.mockResolvedValueOnce(conflictUser);
 
     const response = await request(app.getHttpServer()).post('/user').send({
-      firstName,
-      lastName,
+      firstName: 'Test',
+      lastName: 'User',
       email,
-      password
+      password: '123456'
     });
 
     const { statusCode, body } = response;
@@ -81,7 +78,6 @@ describe('Create New User', (): void => {
     const firstName = 'Test';
     const lastName = 'User';
     const email = 'test@example.com';
-    const password = '123456';
     const user = new UserEntity();
 
     user._id = userId;
@@ -97,7 +93,7 @@ describe('Create New User', (): void => {
       firstName,
       lastName,
       email,
-      password
+      password: '123456'
     });
 
     const { statusCode, body } = response;
