@@ -60,11 +60,10 @@ describe('Sign In', (): void => {
 
   it('fails with an incorrect password', async (): Promise<void> => {
     const email = 'test@example.com';
-    const password = '123456';
     const user = new UserEntity();
 
     user.email = email;
-    user.hashedPassword = hashSync(password, 12);
+    user.hashedPassword = hashSync('123456', 12);
 
     findOneBy.mockResolvedValueOnce(user);
 
