@@ -1,6 +1,6 @@
 import { UserUniqueEmailAddressException } from '@/user/exceptions/user-unique-email-address.exception';
 import { UserEntity } from '@/user/user.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, ValidationPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
@@ -17,7 +17,9 @@ export class ValidateService {
     const errors = validateSync(newPayload);
 
     if (0 < errors.length) {
-      throw new BadRequestException(errors);
+      const validationPipe = new ValidationPipe();
+
+      throw validationPipe.createExceptionFactory()(errors);
     }
 
     return newPayload;
