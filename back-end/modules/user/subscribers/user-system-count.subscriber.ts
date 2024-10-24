@@ -5,7 +5,7 @@ import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent } 
 
 @EventSubscriber()
 export class UserSystemCountSubscriber implements EntitySubscriberInterface<SystemEntity> {
-  listenTo(): string | Function {
+  listenTo(): Function | string {
     return SystemEntity;
   }
 
