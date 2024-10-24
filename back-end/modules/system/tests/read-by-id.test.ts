@@ -1,15 +1,14 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
-import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
+import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { SystemEntity } from '@/system/system.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { SystemRepositoryMock } from './mocks/system-repository.mock';
 
 describe('Read System by ID', (): void => {
-  getOrThrowMock();
+  const findOneBy = findOneByMock();
+  const getOrThrow = getOrThrowMock();
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -19,21 +18,34 @@ describe('Read System by ID', (): void => {
   it('fails with an invalid route parameter', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).get('/system/1');
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'Invalid Mongodb ID structure.',
+      message: 'Invalid Object ID.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
   it('fails if the system is not found', async (): Promise<void> => {
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const systemId = new ObjectId();
 
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const response = await request(app.getHttpServer()).get(`/system/${new ObjectId()}`);
+    const response = await request(app.getHttpServer()).get(`/system/${systemId}`);
 
-    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    expect(body).toEqual({
       error: 'Not Found',
       message: 'System not found.',
       statusCode: HttpStatus.NOT_FOUND
@@ -41,24 +53,25 @@ describe('Read System by ID', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
+    const systemId = new ObjectId();
     const system = new SystemEntity();
 
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    system._id = systemId;
 
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    findOneBy.mockResolvedValueOnce(system);
 
-    const response = await request(app.getHttpServer()).get(`/system/${system._id}`);
+    const response = await request(app.getHttpServer()).get(`/system/${systemId}`);
 
-    expectCorrectResponse(response, HttpStatus.OK, {
-      id: system._id.toString(),
-      title: system.title,
-      description: system.description,
-      constantSymbolCount: system.constantSymbolCount,
-      variableSymbolCount: system.variableSymbolCount,
-      axiomCount: system.axiomCount,
-      theoremCount: system.theoremCount,
-      deductionCount: system.deductionCount,
-      createdByUserId: system.createdByUserId.toString()
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual({
+      id: systemId.toString()
     });
   });
 

@@ -4,19 +4,20 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
-import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { SystemNotFoundException } from './exceptions/system-not-found.exception';
 import { EditSystemPayload } from './payloads/edit-system.payload';
 import { NewSystemPayload } from './payloads/new-system.payload';
 import { SearchPayload } from './payloads/search.payload';
 import { SystemPayload } from './payloads/system.payload';
+import { SystemReadService } from './services/system-read.service';
 import { SystemEntity } from './system.entity';
 import { SystemService } from './system.service';
 
 @Controller('system')
 export class SystemController {
-  constructor(private systemService: SystemService) {
+  constructor(private systemReadService: SystemReadService, private systemService: SystemService) {
   }
 
   @UseGuards(JwtGuard)
@@ -49,12 +50,8 @@ export class SystemController {
   }
 
   @Get(':systemId')
-  async getById(@ObjectIdDecorator('systemId') systemId: ObjectId): Promise<SystemPayload> {
-    const system = await this.systemService.readById(systemId);
-
-    if (!system) {
-      throw new SystemNotFoundException();
-    }
+  async getById(@Param('systemId') systemId: string): Promise<SystemPayload> {
+    const system = await this.systemReadService.readById(systemId);
 
     return new SystemPayload(system);
   }
