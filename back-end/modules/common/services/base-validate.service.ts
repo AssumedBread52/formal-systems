@@ -5,7 +5,7 @@ import { isMongoId, validateSync } from 'class-validator';
 import { ObjectId } from 'mongodb';
 
 @Injectable()
-export abstract class BaseValidationService {
+export abstract class BaseValidateService {
   abstract conflictCheck(...params: any[]): Promise<void>;
 
   idCheck(id: any): ObjectId {
