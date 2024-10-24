@@ -1,4 +1,4 @@
-import { BaseValidationService } from '@/common/services/base-validation.service';
+import { BaseValidateService } from '@/common/services/base-validate.service';
 import { UserUniqueEmailAddressException } from '@/user/exceptions/user-unique-email-address.exception';
 import { UserEntity } from '@/user/user.entity';
 import { Injectable } from '@nestjs/common';
@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 
 @Injectable()
-export class ValidateService extends BaseValidationService {
+export class ValidateService extends BaseValidateService {
   constructor(@InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>) {
     super();
   }
