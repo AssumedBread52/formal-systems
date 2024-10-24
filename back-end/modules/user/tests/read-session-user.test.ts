@@ -31,9 +31,7 @@ describe('Read Session User', (): void => {
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    const token = app.get(JwtService).sign({
-      id: new ObjectId()
-    });
+    const token = app.get(JwtService).sign({});
 
     await new Promise((resolve: (value: unknown) => void): void => {
       setTimeout(resolve, 1000);
