@@ -54,9 +54,25 @@ describe('Read System by ID', (): void => {
 
   it('succeeds', async (): Promise<void> => {
     const systemId = new ObjectId();
+    const title = 'Test System';
+    const description = 'This is a test.';
+    const constantSymbolCount = 6;
+    const variableSymbolCount = 3;
+    const axiomCount = 6;
+    const theoremCount = 1;
+    const deductionCount = 1;
+    const createdByUserId = new ObjectId();
     const system = new SystemEntity();
 
     system._id = systemId;
+    system.title = title;
+    system.description = description;
+    system.constantSymbolCount = constantSymbolCount;
+    system.variableSymbolCount = variableSymbolCount;
+    system.axiomCount = axiomCount;
+    system.theoremCount = theoremCount;
+    system.deductionCount = deductionCount;
+    system.createdByUserId = createdByUserId;
 
     findOneBy.mockResolvedValueOnce(system);
 
@@ -71,7 +87,15 @@ describe('Read System by ID', (): void => {
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toEqual({
-      id: systemId.toString()
+      id: systemId.toString(),
+      title,
+      description,
+      constantSymbolCount,
+      variableSymbolCount,
+      axiomCount,
+      theoremCount,
+      deductionCount,
+      createdByUserId: createdByUserId.toString()
     });
   });
 
