@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SystemDeleteService } from './services/system-delete.service';
 import { SystemReadService } from './services/system-read.service';
 import { ValidateService } from './services/validate.service';
 import { SystemController } from './system.controller';
@@ -16,6 +17,7 @@ import { SystemService } from './system.service';
     SystemController
   ],
   providers: [
+    SystemDeleteService,
     SystemReadService,
     SystemService,
     ValidateService

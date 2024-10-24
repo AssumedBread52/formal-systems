@@ -11,33 +11,22 @@ import { EditSystemPayload } from './payloads/edit-system.payload';
 import { NewSystemPayload } from './payloads/new-system.payload';
 import { SearchPayload } from './payloads/search.payload';
 import { SystemPayload } from './payloads/system.payload';
+import { SystemDeleteService } from './services/system-delete.service';
 import { SystemReadService } from './services/system-read.service';
 import { SystemEntity } from './system.entity';
 import { SystemService } from './system.service';
 
 @Controller('system')
 export class SystemController {
-  constructor(private systemReadService: SystemReadService, private systemService: SystemService) {
+  constructor(private systemDeleteService: SystemDeleteService, private systemReadService: SystemReadService, private systemService: SystemService) {
   }
 
   @UseGuards(JwtGuard)
   @Delete(':systemId')
-  async deleteSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId): Promise<IdPayload> {
-    const system = await this.systemService.readById(systemId);
+  async deleteSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string): Promise<SystemPayload> {
+    const system = await this.systemDeleteService.delete(sessionUserId, systemId);
 
-    if (!system) {
-      return new IdPayload(systemId);
-    }
-
-    const { createdByUserId } = system;
-
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new OwnershipException();
-    }
-
-    await this.systemService.delete(system);
-
-    return new IdPayload(systemId);
+    return new SystemPayload(system);
   }
 
   @Get()

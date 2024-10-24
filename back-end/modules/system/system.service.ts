@@ -69,10 +69,6 @@ export class SystemService {
     return this.systemRepository.save(system);
   }
 
-  delete(system: SystemEntity): Promise<SystemEntity> {
-    return this.systemRepository.remove(system);
-  }
-
   private async conflictCheck(title: string, createdByUserId: ObjectId): Promise<void> {
     const collision = await this.systemRepository.findOneBy({
       title,
