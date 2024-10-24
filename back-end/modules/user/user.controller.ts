@@ -2,21 +2,17 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { CookieService } from '@/auth/services/cookie.service';
 import { TokenService } from '@/auth/services/token.service';
-import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
-import { Body, Controller, Get, Patch, Post, Res, UseGuards } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Body, Controller, Get, Param, Patch, Post, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { ObjectId } from 'mongodb';
-import { MongoRepository } from 'typeorm';
-import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserPayload } from './payloads/user.payload';
 import { UserCreateService } from './services/user-create.service';
+import { UserReadService } from './services/user-read.service';
 import { UserUpdateService } from './services/user-update.service';
 import { UserEntity } from './user.entity';
 
 @Controller('user')
 export class UserController {
-  constructor(private cookieService: CookieService, private tokenService: TokenService, @InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>, private userCreateService: UserCreateService, private userUpdateService: UserUpdateService) {
+  constructor(private cookieService: CookieService, private tokenService: TokenService, private userCreateService: UserCreateService, private userReadService: UserReadService, private userUpdateService: UserUpdateService) {
   }
 
   @UseGuards(JwtGuard)
@@ -26,14 +22,8 @@ export class UserController {
   }
 
   @Get(':userId')
-  async getById(@ObjectIdDecorator('userId') userId: ObjectId): Promise<UserPayload> {
-    const user = await this.userRepository.findOneBy({
-      _id: userId
-    });
-
-    if (!user) {
-      throw new UserNotFoundException();
-    }
+  async getById(@Param('userId') userId: string): Promise<UserPayload> {
+    const user = await this.userReadService.readById(userId);
 
     return new UserPayload(user);
   }

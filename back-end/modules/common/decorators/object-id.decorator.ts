@@ -4,7 +4,7 @@ import { isMongoId } from 'class-validator';
 import { Request } from 'express';
 import { ObjectId } from 'mongodb';
 
-export const ObjectIdDecorator = createParamDecorator((key: 'statementId' | 'symbolId' | 'systemId' | 'userId', context: ExecutionContext): ObjectId => {
+export const ObjectIdDecorator = createParamDecorator((key: 'statementId' | 'symbolId' | 'systemId', context: ExecutionContext): ObjectId => {
   const request = context.switchToHttp().getRequest<Request>();
 
   const { params } = request;
