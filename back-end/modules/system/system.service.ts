@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
-import { SystemUniqueTitleException } from './exceptions/system-unique-title.exception';
-import { EditSystemPayload } from './payloads/edit-system.payload';
 import { SystemEntity } from './system.entity';
 
 @Injectable()
@@ -38,30 +36,5 @@ export class SystemService {
       take: count,
       where
     });
-  }
-
-  async update(system: SystemEntity, editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
-    const { title, createdByUserId } = system;
-    const { newTitle, newDescription } = editSystemPayload;
-
-    if (title !== newTitle) {
-      await this.conflictCheck(newTitle, createdByUserId);
-    }
-
-    system.title = newTitle;
-    system.description = newDescription;
-
-    return this.systemRepository.save(system);
-  }
-
-  private async conflictCheck(title: string, createdByUserId: ObjectId): Promise<void> {
-    const collision = await this.systemRepository.findOneBy({
-      title,
-      createdByUserId
-    });
-
-    if (collision) {
-      throw new SystemUniqueTitleException();
-    }
   }
 };

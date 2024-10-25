@@ -1,24 +1,20 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
-import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
-import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
-import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
-import { SystemNotFoundException } from './exceptions/system-not-found.exception';
-import { EditSystemPayload } from './payloads/edit-system.payload';
 import { SearchPayload } from './payloads/search.payload';
 import { SystemPayload } from './payloads/system.payload';
 import { SystemCreateService } from './services/system-create.service';
 import { SystemDeleteService } from './services/system-delete.service';
 import { SystemReadService } from './services/system-read.service';
+import { SystemUpdateService } from './services/system-update.service';
 import { SystemEntity } from './system.entity';
 import { SystemService } from './system.service';
 
 @Controller('system')
 export class SystemController {
-  constructor(private systemCreateService: SystemCreateService, private systemDeleteService: SystemDeleteService, private systemReadService: SystemReadService, private systemService: SystemService) {
+  constructor(private systemCreateService: SystemCreateService, private systemDeleteService: SystemDeleteService, private systemReadService: SystemReadService, private systemService: SystemService, private systemUpdateService: SystemUpdateService) {
   }
 
   @UseGuards(JwtGuard)
@@ -47,22 +43,10 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Patch(':systemId')
-  async patchSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(ValidationPipe) editSystemPayload: EditSystemPayload): Promise<IdPayload> {
-    const system = await this.systemService.readById(systemId);
+  async patchSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<SystemPayload> {
+    const updatedSystem = await this.systemUpdateService.update(sessionUserId, systemId, payload);
 
-    if (!system) {
-      throw new SystemNotFoundException();
-    }
-
-    const { createdByUserId } = system;
-
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new OwnershipException();
-    }
-
-    await this.systemService.update(system, editSystemPayload);
-
-    return new IdPayload(systemId);
+    return new SystemPayload(updatedSystem);
   }
 
   @UseGuards(JwtGuard)
