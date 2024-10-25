@@ -4,26 +4,11 @@ import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
 import { SystemUniqueTitleException } from './exceptions/system-unique-title.exception';
 import { EditSystemPayload } from './payloads/edit-system.payload';
-import { NewSystemPayload } from './payloads/new-system.payload';
 import { SystemEntity } from './system.entity';
 
 @Injectable()
 export class SystemService {
   constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
-  }
-
-  async create(newSystemPayload: NewSystemPayload, sessionUserId: ObjectId): Promise<SystemEntity> {
-    const { title, description } = newSystemPayload;
-
-    await this.conflictCheck(title, sessionUserId);
-
-    const system = new SystemEntity();
-
-    system.title = title;
-    system.description = description;
-    system.createdByUserId = sessionUserId;
-
-    return this.systemRepository.save(system);
   }
 
   readById(systemId: ObjectId): Promise<SystemEntity | null> {

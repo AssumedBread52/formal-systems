@@ -8,9 +8,9 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, Va
 import { ObjectId } from 'mongodb';
 import { SystemNotFoundException } from './exceptions/system-not-found.exception';
 import { EditSystemPayload } from './payloads/edit-system.payload';
-import { NewSystemPayload } from './payloads/new-system.payload';
 import { SearchPayload } from './payloads/search.payload';
 import { SystemPayload } from './payloads/system.payload';
+import { SystemCreateService } from './services/system-create.service';
 import { SystemDeleteService } from './services/system-delete.service';
 import { SystemReadService } from './services/system-read.service';
 import { SystemEntity } from './system.entity';
@@ -18,7 +18,7 @@ import { SystemService } from './system.service';
 
 @Controller('system')
 export class SystemController {
-  constructor(private systemDeleteService: SystemDeleteService, private systemReadService: SystemReadService, private systemService: SystemService) {
+  constructor(private systemCreateService: SystemCreateService, private systemDeleteService: SystemDeleteService, private systemReadService: SystemReadService, private systemService: SystemService) {
   }
 
   @UseGuards(JwtGuard)
@@ -67,7 +67,9 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async postSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Body(ValidationPipe) newSystemPayload: NewSystemPayload): Promise<void> {
-    await this.systemService.create(newSystemPayload, sessionUserId);
+  async postSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Body() payload: any): Promise<SystemPayload> {
+    const createdSystem = await this.systemCreateService.create(sessionUserId, payload);
+
+    return new SystemPayload(createdSystem);
   }
 };
