@@ -10,11 +10,9 @@ export class SystemReadService {
   constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>, private validateService: ValidateService) {
   }
 
-  async readById(id: any): Promise<SystemEntity> {
-    const systemId = this.validateService.idCheck(id);
-
+  async readById(systemId: any): Promise<SystemEntity> {
     const system = await this.systemRepository.findOneBy({
-      _id: systemId
+      _id: this.validateService.idCheck(systemId)
     });
 
     if (!system) {

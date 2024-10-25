@@ -10,11 +10,9 @@ export class UserReadService {
   constructor(@InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>, private validateService: ValidateService) {
   }
 
-  async readById(id: any): Promise<UserEntity> {
-    const userId = this.validateService.idCheck(id);
-
+  async readById(userId: any): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({
-      _id: userId
+      _id: this.validateService.idCheck(userId)
     });
 
     if (!user) {
