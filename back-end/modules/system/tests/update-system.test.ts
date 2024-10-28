@@ -59,29 +59,6 @@ describe('Update System', (): void => {
     });
   });
 
-  it('fails with an invalid payload', async (): Promise<void> => {
-    const user = new UserEntity();
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}`).set('Cookie', [
-      `token=${token}`
-    ]);
-
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
-      error: 'Bad Request',
-      message: [
-        'newTitle should not be empty',
-        'newDescription should not be empty'
-      ],
-      statusCode: HttpStatus.BAD_REQUEST
-    });
-  });
-
   it('fails if the system is not found', async (): Promise<void> => {
     const user = new UserEntity();
 
@@ -130,6 +107,49 @@ describe('Update System', (): void => {
       error: 'Forbidden',
       message: 'Write actions require user ownership.',
       statusCode: HttpStatus.FORBIDDEN
+    });
+  });
+
+  it('fails with an invalid payload', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'newTitle should not be empty',
+        'newDescription should not be empty'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
     });
   });
 
