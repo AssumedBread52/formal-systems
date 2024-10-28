@@ -1,21 +1,13 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
-import { TokenService } from '@/auth/services/token.service';
-import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
-import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
-import { testMissingToken } from '@/auth/tests/helpers/test-missing-token';
-import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { SystemEntity } from '@/system/system.entity';
-import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { SystemRepositoryMock } from './mocks/system-repository.mock';
 
 describe('Update System', (): void => {
   const findOneBy = findOneByMock();
@@ -28,56 +20,155 @@ describe('Update System', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testMissingToken(app, 'patch', '/system/1');
+    const response = await request(app.getHttpServer()).patch('/system/1');
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testExpiredToken(app, 'patch', '/system/1');
-  });
+    const token = app.get(JwtService).sign({});
 
-  it('fails with an invalid token', async (): Promise<void> => {
-    await testInvalidToken(app, 'patch', '/system/1');
-  });
-
-  it('fails with an invalid route parameter', async (): Promise<void> => {
-    const user = new UserEntity();
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
+    await new Promise((resolve: (value: unknown) => void): void => {
+      setTimeout(resolve, 1000);
+    });
 
     const response = await request(app.getHttpServer()).patch('/system/1').set('Cookie', [
       `token=${token}`
     ]);
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
+  it('fails with an invalid token', async (): Promise<void> => {
+    const token = app.get(JwtService).sign({});
+
+    const response = await request(app.getHttpServer()).patch('/system/1').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
+  it('fails if the user ID in the token payload does not match a user', async (): Promise<void> => {
+    const userId = new ObjectId();
+
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer()).patch('/system/1').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
+  it('fails with an invalid system ID', async (): Promise<void> => {
+    const userId = new ObjectId();
+    const user = new UserEntity();
+
+    user._id = userId;
+
+    findOneBy.mockResolvedValueOnce(user);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer()).patch('/system/1').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'Invalid Mongodb ID structure.',
+      message: 'Invalid Object ID.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
   it('fails if the system is not found', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const userId = new ObjectId();
     const user = new UserEntity();
 
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = userId;
 
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newTitle: 'New Title',
-      newDescription: 'This is a new test.'
+    const token = app.get(JwtService).sign({
+      id: userId
     });
 
-    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    expect(body).toEqual({
       error: 'Not Found',
       message: 'System not found.',
       statusCode: HttpStatus.NOT_FOUND
@@ -85,25 +176,38 @@ describe('Update System', (): void => {
   });
 
   it('fails if the system was not created by the user', async (): Promise<void> => {
-    const system = new SystemEntity();
+    const systemId = new ObjectId();
+    const userId = new ObjectId();
     const user = new UserEntity();
+    const system = new SystemEntity();
 
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = userId;
+    system._id = systemId;
 
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
 
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).patch(`/system/${system._id}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newTitle: 'New Title',
-      newDescription: 'This is a new test.'
+    const token = app.get(JwtService).sign({
+      id: userId
     });
 
-    expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.FORBIDDEN);
+    expect(body).toEqual({
       error: 'Forbidden',
       message: 'Write actions require user ownership.',
       statusCode: HttpStatus.FORBIDDEN
