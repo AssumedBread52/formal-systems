@@ -134,33 +134,51 @@ describe('Update System', (): void => {
   });
 
   it('fails if the title is already in use', async (): Promise<void> => {
-    const newTitle = 'New Title';
-
-    const conflictSystem = new SystemEntity();
-    const system = new SystemEntity();
+    const systemId = new ObjectId();
+    const newTitle = 'New Test System';
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const system = new SystemEntity();
+    const conflictSystem = new SystemEntity();
 
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
     conflictSystem.title = newTitle;
-    conflictSystem.createdByUserId = user._id;
-    system.createdByUserId = user._id;
+    conflictSystem.createdByUserId = createdByUserId;
 
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(conflictSystem);
 
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(conflictSystem);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).patch(`/system/${system._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}`).set('Cookie', [
       `token=${token}`
     ]).send({
       newTitle,
       newDescription: 'This is a new test.'
     });
 
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      createdByUserId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.CONFLICT);
+    expect(body).toEqual({
       error: 'Conflict',
       message: 'Systems created by the same user must have a unique title.',
       statusCode: HttpStatus.CONFLICT
