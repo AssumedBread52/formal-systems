@@ -109,7 +109,7 @@ describe('Read Session User', (): void => {
     const variableSymbolCount = 3;
     const axiomCount = 6;
     const theoremCount = 1;
-    const deductionCount = 1;
+    const deductionCount = 2;
     const user = new UserEntity();
 
     user._id = userId;

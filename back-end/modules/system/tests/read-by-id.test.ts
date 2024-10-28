@@ -60,7 +60,7 @@ describe('Read System by ID', (): void => {
     const variableSymbolCount = 3;
     const axiomCount = 6;
     const theoremCount = 1;
-    const deductionCount = 1;
+    const deductionCount = 2;
     const createdByUserId = new ObjectId();
     const system = new SystemEntity();
 
