@@ -9,7 +9,7 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
     return SystemEntity;
   }
 
-  async afterInsert(event: InsertEvent<SystemEntity>): Promise<void> {
+  async beforeInsert(event: InsertEvent<SystemEntity>): Promise<void> {
     const { connection, entity } = event;
 
     const { createdByUserId } = entity;
@@ -29,7 +29,7 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
     userRepository.save(user);
   }
 
-  async afterRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
+  async beforeRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
     const { createdByUserId } = databaseEntity;
