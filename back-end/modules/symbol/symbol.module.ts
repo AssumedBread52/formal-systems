@@ -1,3 +1,4 @@
+import { SystemEntity } from '@/system/system.entity';
 import { SystemModule } from '@/system/system.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,7 +10,8 @@ import { SymbolService } from './symbol.service';
   imports: [
     SystemModule,
     TypeOrmModule.forFeature([
-      SymbolEntity
+      SymbolEntity,
+      SystemEntity
     ])
   ],
   controllers: [

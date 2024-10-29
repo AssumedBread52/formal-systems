@@ -7,7 +7,6 @@ import { SystemUpdateService } from './services/system-update.service';
 import { ValidateService } from './services/validate.service';
 import { SystemController } from './system.controller';
 import { SystemEntity } from './system.entity';
-import { SystemService } from './system.service';
 
 @Module({
   imports: [
@@ -22,12 +21,8 @@ import { SystemService } from './system.service';
     SystemCreateService,
     SystemDeleteService,
     SystemReadService,
-    SystemService,
     SystemUpdateService,
     ValidateService
-  ],
-  exports: [
-    SystemService
   ]
 })
 export class SystemModule {

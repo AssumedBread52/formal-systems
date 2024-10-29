@@ -1,20 +1,18 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
-import { SearchPayload } from './payloads/search.payload';
 import { SystemPayload } from './payloads/system.payload';
 import { SystemCreateService } from './services/system-create.service';
 import { SystemDeleteService } from './services/system-delete.service';
 import { SystemReadService } from './services/system-read.service';
 import { SystemUpdateService } from './services/system-update.service';
 import { SystemEntity } from './system.entity';
-import { SystemService } from './system.service';
 
 @Controller('system')
 export class SystemController {
-  constructor(private systemCreateService: SystemCreateService, private systemDeleteService: SystemDeleteService, private systemReadService: SystemReadService, private systemService: SystemService, private systemUpdateService: SystemUpdateService) {
+  constructor(private systemCreateService: SystemCreateService, private systemDeleteService: SystemDeleteService, private systemReadService: SystemReadService, private systemUpdateService: SystemUpdateService) {
   }
 
   @UseGuards(JwtGuard)
@@ -26,10 +24,8 @@ export class SystemController {
   }
 
   @Get()
-  async getSystems(@Query(new ValidationPipe({ transform: true })) searchPayload: SearchPayload): Promise<PaginatedResultsPayload<SystemEntity, SystemPayload>> {
-    const { page, count, keywords, userIds } = searchPayload;
-
-    const [results, total] = await this.systemService.readSystems(page, count, keywords, userIds);
+  async getSystems(@Query() payload: any): Promise<PaginatedResultsPayload<SystemEntity, SystemPayload>> {
+    const [results, total] = await this.systemReadService.readSystems(payload);
 
     return new PaginatedResultsPayload(SystemPayload, results, total);
   }

@@ -5,9 +5,11 @@ import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
-import { SystemService } from '@/system/system.service';
+import { SystemEntity } from '@/system/system.entity';
 import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
+import { MongoRepository } from 'typeorm';
 import { SymbolType } from './enums/symbol-type.enum';
 import { SymbolNotFoundException } from './exceptions/symbol-not-found.exception';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
@@ -19,7 +21,7 @@ import { SymbolService } from './symbol.service';
 
 @Controller('system/:systemId/symbol')
 export class SymbolController {
-  constructor(private symbolService: SymbolService, private systemService: SystemService) {
+  constructor(private symbolService: SymbolService, @InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
   }
 
   @UseGuards(JwtGuard)
@@ -105,7 +107,9 @@ export class SymbolController {
   @UseGuards(JwtGuard)
   @Post()
   async postSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(ValidationPipe) newSymbolPayload: NewSymbolPayload): Promise<void> {
-    const system = await this.systemService.readById(systemId);
+    const system = await this.systemRepository.findOneBy({
+      _id: systemId
+    });
 
     if (!system) {
       throw new SystemNotFoundException();

@@ -8,9 +8,11 @@ import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.ex
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolService } from '@/symbol/symbol.service';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
-import { SystemService } from '@/system/system.service';
+import { SystemEntity } from '@/system/system.entity';
 import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
+import { MongoRepository } from 'typeorm';
 import { StatementNotFoundException } from './exceptions/statement-not-found.exception';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { NewStatementPayload } from './payloads/new-statement.payload';
@@ -21,7 +23,7 @@ import { StatementService } from './statement.service';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
-  constructor(private statementService: StatementService, private symbolService: SymbolService, private systemService: SystemService) {
+  constructor(private statementService: StatementService, private symbolService: SymbolService, @InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
   }
 
   @UseGuards(JwtGuard)
@@ -93,7 +95,9 @@ export class StatementController {
   @UseGuards(JwtGuard)
   @Post()
   async postStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(new ValidationPipe({ transform: true })) newStatementPayload: NewStatementPayload): Promise<void> {
-    const system = await this.systemService.readById(systemId);
+    const system = await this.systemRepository.findOneBy({
+      _id: systemId
+    });
 
     if (!system) {
       throw new SystemNotFoundException();
