@@ -23,6 +23,9 @@ import { SystemEntity } from './system.entity';
     SystemReadService,
     SystemUpdateService,
     ValidateService
+  ],
+  exports: [
+    SystemReadService
   ]
 })
 export class SystemModule {

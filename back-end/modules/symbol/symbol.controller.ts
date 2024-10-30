@@ -4,24 +4,20 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
-import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
-import { SystemEntity } from '@/system/system.entity';
-import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
-import { MongoRepository } from 'typeorm';
 import { SymbolType } from './enums/symbol-type.enum';
 import { SymbolNotFoundException } from './exceptions/symbol-not-found.exception';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
-import { NewSymbolPayload } from './payloads/new-symbol.payload';
 import { SearchPayload } from './payloads/search.payload';
 import { SymbolPayload } from './payloads/symbol.payload';
+import { SymbolCreateService } from './services/symbol-create.service';
 import { SymbolEntity } from './symbol.entity';
 import { SymbolService } from './symbol.service';
 
 @Controller('system/:systemId/symbol')
 export class SymbolController {
-  constructor(private symbolService: SymbolService, @InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
+  constructor(private symbolCreateService: SymbolCreateService, private symbolService: SymbolService) {
   }
 
   @UseGuards(JwtGuard)
@@ -106,21 +102,9 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async postSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(ValidationPipe) newSymbolPayload: NewSymbolPayload): Promise<void> {
-    const system = await this.systemRepository.findOneBy({
-      _id: systemId
-    });
+  async postSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<SymbolPayload> {
+    const createdSymbol = await this.symbolCreateService.create(sessionUserId, systemId, payload);
 
-    if (!system) {
-      throw new SystemNotFoundException();
-    }
-
-    const { _id, createdByUserId } = system;
-
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new OwnershipException();
-    }
-
-    await this.symbolService.create(newSymbolPayload, _id, sessionUserId);
+    return new SymbolPayload(createdSymbol);
   }
 };

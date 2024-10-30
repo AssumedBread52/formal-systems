@@ -6,29 +6,11 @@ import { SymbolType } from './enums/symbol-type.enum';
 import { InUseException } from './exceptions/in-use.exception';
 import { SymbolUniqueTitleException } from './exceptions/symbol-unique-title.exception';
 import { EditSymbolPayload } from './payloads/edit-symbol.payload';
-import { NewSymbolPayload } from './payloads/new-symbol.payload';
 import { SymbolEntity } from './symbol.entity';
 
 @Injectable()
 export class SymbolService {
   constructor(@InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>) {
-  }
-
-  async create(newSymbolPayload: NewSymbolPayload, systemId: ObjectId, sessionUserId: ObjectId): Promise<SymbolEntity> {
-    const { title, description, type, content } = newSymbolPayload;
-
-    await this.conflictCheck(title, systemId);
-
-    const symbol = new SymbolEntity();
-
-    symbol.title = title;
-    symbol.description = description;
-    symbol.type = type;
-    symbol.content = content;
-    symbol.systemId = systemId;
-    symbol.createdByUserId = sessionUserId;
-
-    return this.symbolRepository.save(symbol);
   }
 
   readById(systemId: ObjectId, symbolId: ObjectId): Promise<SymbolEntity | null> {

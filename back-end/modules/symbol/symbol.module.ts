@@ -2,6 +2,8 @@ import { SystemEntity } from '@/system/system.entity';
 import { SystemModule } from '@/system/system.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SymbolCreateService } from './services/symbol-create.service';
+import { ValidateService } from './services/validate.service';
 import { SymbolController } from './symbol.controller';
 import { SymbolEntity } from './symbol.entity';
 import { SymbolService } from './symbol.service';
@@ -18,7 +20,9 @@ import { SymbolService } from './symbol.service';
     SymbolController
   ],
   providers: [
-    SymbolService
+    SymbolCreateService,
+    SymbolService,
+    ValidateService
   ],
   exports: [
     SymbolService
