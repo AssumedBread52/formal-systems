@@ -8,7 +8,7 @@ import { SystemReadService } from './system-read.service';
 
 @Injectable()
 export class SystemDeleteService {
-  constructor(private systemReadService: SystemReadService, @InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
+  constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>, private systemReadService: SystemReadService) {
   }
 
   async delete(sessionUserId: ObjectId, systemId: any): Promise<SystemEntity> {
