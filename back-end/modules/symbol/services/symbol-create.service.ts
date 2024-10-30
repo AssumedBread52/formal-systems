@@ -10,7 +10,7 @@ import { ValidateService } from './validate.service';
 
 @Injectable()
 export class SymbolCreateService {
-  constructor(private systemReadService: SystemReadService, private validateService: ValidateService, @InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>) {
+  constructor(@InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>, private systemReadService: SystemReadService, private validateService: ValidateService) {
   }
 
   async create(sessionUserId: ObjectId, systemId: any, payload: any): Promise<SymbolEntity> {
