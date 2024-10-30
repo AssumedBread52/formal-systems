@@ -10,7 +10,7 @@ import { ValidateService } from './validate.service';
 
 @Injectable()
 export class SystemUpdateService {
-  constructor(private systemReadService: SystemReadService, @InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>, private validateService: ValidateService) {
+  constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>, private systemReadService: SystemReadService, private validateService: ValidateService) {
   }
 
   async update(sessionUserId: ObjectId, systemId: any, payload: any): Promise<SystemEntity> {
