@@ -1,21 +1,15 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
-import { TokenService } from '@/auth/services/token.service';
-import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SystemEntity } from '@/system/system.entity';
-import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.mock';
-import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { SymbolRepositoryMock } from './mocks/symbol-repository.mock';
 
 describe('Create Symbol', (): void => {
   const findOneBy = findOneByMock();
@@ -28,7 +22,7 @@ describe('Create Symbol', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer).post('/system/1/symbol');
+    const response = await request(app.getHttpServer()).post('/system/1/symbol');
 
     const { statusCode, body } = response;
 
@@ -49,7 +43,7 @@ describe('Create Symbol', (): void => {
       setTimeout(resolve, 1000);
     });
 
-    const response = await request(app.getHttpServer).post('/system/1/symbol').set('Cookie', [
+    const response = await request(app.getHttpServer()).post('/system/1/symbol').set('Cookie', [
       `token=${token}`
     ]);
 
@@ -68,7 +62,7 @@ describe('Create Symbol', (): void => {
   it('fails with an invalid token', async (): Promise<void> => {
     const token = app.get(JwtService).sign({});
 
-    const response = await request(app.getHttpServer).post('/system/1/symbol').set('Cookie', [
+    const response = await request(app.getHttpServer()).post('/system/1/symbol').set('Cookie', [
       `token=${token}`
     ]);
 
@@ -94,7 +88,7 @@ describe('Create Symbol', (): void => {
       id: userId
     });
 
-    const response = await request(app.getHttpServer).post('/system/1/symbol').set('Cookie', [
+    const response = await request(app.getHttpServer()).post('/system/1/symbol').set('Cookie', [
       `token=${token}`
     ]);
 
@@ -115,41 +109,149 @@ describe('Create Symbol', (): void => {
   });
 
   it('fails with an invalid route parameter', async (): Promise<void> => {
+    const userId = new ObjectId();
     const user = new UserEntity();
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = userId;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
 
     const response = await request(app.getHttpServer()).post('/system/1/symbol').set('Cookie', [
       `token=${token}`
     ]);
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'Invalid Mongodb ID structure.',
+      message: 'Invalid Object ID.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
-  it('fails with an invalid payload', async (): Promise<void> => {
+  it('fails if the system does not exist', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const userId = new ObjectId();
     const user = new UserEntity();
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = userId;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
 
-    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/symbol`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/symbol`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    expect(body).toEqual({
+      error: 'Not Found',
+      message: 'System not found.',
+      statusCode: HttpStatus.NOT_FOUND
+    });
+  });
+
+  it('fails if the user did not create the system', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const userId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = userId;
+    system._id = systemId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/symbol`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.FORBIDDEN);
+    expect(body).toEqual({
+      error: 'Forbidden',
+      message: 'Write actions require user ownership.',
+      statusCode: HttpStatus.FORBIDDEN
+    });
+  });
+
+  it('fails with an invalid payload', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/symbol`).set('Cookie', [
       `token=${token}`
     ]).send({
       type: 'invalid'
     });
 
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
       error: 'Bad Request',
       message: [
         'title should not be empty',
@@ -161,84 +263,30 @@ describe('Create Symbol', (): void => {
     });
   });
 
-  it('fails if the system does not exist', async (): Promise<void> => {
-    const user = new UserEntity();
-
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/symbol`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      title: 'Test',
-      description: 'This is a test.',
-      type: SymbolType.Variable,
-      content: '\\alpha'
-    });
-
-    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
-      error: 'Not Found',
-      message: 'System not found.',
-      statusCode: HttpStatus.NOT_FOUND
-    });
-  });
-
-  it('fails if the user did not create the system', async (): Promise<void> => {
-    const system = new SystemEntity();
-    const user = new UserEntity();
-
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).post(`/system/${system._id}/symbol`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      title: 'Test',
-      description: 'This is a test.',
-      type: SymbolType.Variable,
-      content: '\\alpha'
-    });
-
-    expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
-      error: 'Forbidden',
-      message: 'Write actions require user ownership.',
-      statusCode: HttpStatus.FORBIDDEN
-    });
-  });
-
   it('fails if the title is not unique in the system', async (): Promise<void> => {
-    const title = 'Test';
-
-    const conflictSymbol = new SymbolEntity();
-    const system = new SystemEntity();
+    const title = 'Test Symbol';
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const system = new SystemEntity();
+    const conflictSymbol = new SymbolEntity();
 
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
     conflictSymbol.title = title;
-    conflictSymbol.systemId = system._id;
-    conflictSymbol.createdByUserId = user._id;
-    system.createdByUserId = user._id;
+    conflictSymbol.systemId = systemId;
+    conflictSymbol.createdByUserId = createdByUserId;
 
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(conflictSymbol);
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(conflictSymbol);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).post(`/system/${system._id}/symbol`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/symbol`).set('Cookie', [
       `token=${token}`
     ]).send({
       title,
@@ -247,7 +295,23 @@ describe('Create Symbol', (): void => {
       content: '\\alpha'
     });
 
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.CONFLICT);
+    expect(body).toEqual({
       error: 'Conflict',
       message: 'Symbols in the same system must have a unique title.',
       statusCode: HttpStatus.CONFLICT
@@ -255,31 +319,86 @@ describe('Create Symbol', (): void => {
   });
 
   it('succeeds', async (): Promise<void> => {
-    const system = new SystemEntity();
+    const symbolId = new ObjectId();
+    const title = 'Test Symbol';
+    const description = 'This is a test.';
+    const type = SymbolType.Variable;
+    const content = '\\alpha';
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const system = new SystemEntity();
+    const symbol = new SymbolEntity();
 
-    system.createdByUserId = user._id;
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+    symbol._id = symbolId;
+    symbol.title = title;
+    symbol.description = description;
+    symbol.type = type;
+    symbol.content = content;
+    symbol.systemId = systemId;
+    symbol.createdByUserId = createdByUserId;
 
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(null);
+    save.mockResolvedValueOnce(symbol);
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).post(`/system/${system._id}/symbol`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      title: 'Test',
-      description: 'This is a test.',
-      type: SymbolType.Variable,
-      content: '\\alpha'
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
     });
 
-    expectCorrectResponse(response, HttpStatus.CREATED, {});
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/symbol`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title,
+      description,
+      type,
+      content
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenNthCalledWith(1, {
+      _id: expect.objectContaining(/[0-9a-f]{24}/),
+      title,
+      description,
+      type,
+      content,
+      axiomAppearances: 0,
+      deductionAppearances: 0,
+      theoremAppearances: 0,
+      systemId,
+      createdByUserId
+    });
+    expect(statusCode).toBe(HttpStatus.CREATED);
+    expect(body).toEqual({
+      id: symbolId.toString(),
+      title,
+      description,
+      type,
+      content,
+      axiomAppearances: 0,
+      deductionAppearances: 0,
+      theoremAppearances: 0,
+      systemId: systemId.toString(),
+      createdByUserId: createdByUserId.toString()
+    });
   });
 
   afterAll(async (): Promise<void> => {
