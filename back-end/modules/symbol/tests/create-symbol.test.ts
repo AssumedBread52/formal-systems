@@ -1,10 +1,9 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
 import { TokenService } from '@/auth/services/token.service';
-import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
-import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
-import { testMissingToken } from '@/auth/tests/helpers/test-missing-token';
 import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
+import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
+import { saveMock } from '@/common/tests/mocks/save.mock';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SystemEntity } from '@/system/system.entity';
@@ -12,13 +11,16 @@ import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.moc
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 import { SymbolRepositoryMock } from './mocks/symbol-repository.mock';
 
 describe('Create Symbol', (): void => {
-  getOrThrowMock();
+  const findOneBy = findOneByMock();
+  const getOrThrow = getOrThrowMock();
+  const save = saveMock();
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -26,15 +28,90 @@ describe('Create Symbol', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testMissingToken(app, 'post', '/system/1/symbol');
+    const response = await request(app.getHttpServer).post('/system/1/symbol');
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testExpiredToken(app, 'post', '/system/1/symbol');
+    const token = app.get(JwtService).sign({});
+
+    await new Promise((resolve: (value: unknown) => void): void => {
+      setTimeout(resolve, 1000);
+    });
+
+    const response = await request(app.getHttpServer).post('/system/1/symbol').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an invalid token', async (): Promise<void> => {
-    await testInvalidToken(app, 'post', '/system/1/symbol');
+    const token = app.get(JwtService).sign({});
+
+    const response = await request(app.getHttpServer).post('/system/1/symbol').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
+  it('fails if the user ID in the token payload does not match a user', async (): Promise<void> => {
+    const userId = new ObjectId();
+
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer).post('/system/1/symbol').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an invalid route parameter', async (): Promise<void> => {
