@@ -60,9 +60,9 @@ export class SymbolService {
   }
 
   delete(symbol: SymbolEntity): Promise<SymbolEntity> {
-    const { axiomUseCount, theoremUseCount, deductionUseCount } = symbol;
+    const { axiomAppearances, theoremAppearances, deductionAppearances } = symbol;
 
-    if (axiomUseCount > 0 || theoremUseCount > 0 || deductionUseCount > 0) {
+    if (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0) {
       throw new InUseException();
     }
 
