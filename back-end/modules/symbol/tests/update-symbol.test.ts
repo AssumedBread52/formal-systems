@@ -85,34 +85,6 @@ describe('Update Symbol', (): void => {
     });
   });
 
-  it('fails with an invalid payload', async (): Promise<void> => {
-    expect(1).toBe(2);
-    const user = new UserEntity();
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/symbol/${new ObjectId()}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newType: 'invalid'
-    });
-
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
-      error: 'Bad Request',
-      message: [
-        'newTitle should not be empty',
-        'newDescription should not be empty',
-        'newType must be one of the following values: Constant, Variable',
-        'newContent should not be empty'
-      ],
-      statusCode: HttpStatus.BAD_REQUEST
-    });
-  });
-
   it('fails if the symbol does not exist', async (): Promise<void> => {
     expect(1).toBe(2);
     const user = new UserEntity();
@@ -167,6 +139,59 @@ describe('Update Symbol', (): void => {
       error: 'Forbidden',
       message: 'Write actions require user ownership.',
       statusCode: HttpStatus.FORBIDDEN
+    });
+  });
+
+  it('fails with an invalid payload', async (): Promise<void> => {
+    const symbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const symbol = new SymbolEntity();
+
+    user._id = createdByUserId;
+    symbol._id = symbolId;
+    symbol.axiomAppearances = 1;
+    symbol.theoremAppearances = 1;
+    symbol.deductionAppearances = 1;
+    symbol.systemId = systemId;
+    symbol.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(symbol);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newType: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: symbolId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'newTitle should not be empty',
+        'newDescription should not be empty',
+        'newType must be one of the following values: Constant, Variable',
+        'newContent should not be empty'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
     });
   });
 
