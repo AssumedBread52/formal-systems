@@ -8,16 +8,16 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, Va
 import { ObjectId } from 'mongodb';
 import { SymbolType } from './enums/symbol-type.enum';
 import { SymbolNotFoundException } from './exceptions/symbol-not-found.exception';
-import { EditSymbolPayload } from './payloads/edit-symbol.payload';
 import { SearchPayload } from './payloads/search.payload';
 import { SymbolPayload } from './payloads/symbol.payload';
 import { SymbolCreateService } from './services/symbol-create.service';
+import { SymbolUpdateService } from './services/symbol-update.service';
 import { SymbolEntity } from './symbol.entity';
 import { SymbolService } from './symbol.service';
 
 @Controller('system/:systemId/symbol')
 export class SymbolController {
-  constructor(private symbolCreateService: SymbolCreateService, private symbolService: SymbolService) {
+  constructor(private symbolCreateService: SymbolCreateService, private symbolUpdateService: SymbolUpdateService, private symbolService: SymbolService) {
   }
 
   @UseGuards(JwtGuard)
@@ -82,22 +82,10 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Patch(':symbolId')
-  async patchSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId, @Body(ValidationPipe) editSymbolPayload: EditSymbolPayload): Promise<IdPayload> {
-    const symbol = await this.symbolService.readById(systemId, symbolId);
+  async patchSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string, @Body() payload: any): Promise<SymbolPayload> {
+    const updatedSymbol = await this.symbolUpdateService.update(sessionUserId, systemId, symbolId, payload);
 
-    if (!symbol) {
-      throw new SymbolNotFoundException();
-    }
-
-    const { createdByUserId } = symbol;
-
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new OwnershipException();
-    }
-
-    await this.symbolService.update(symbol, editSymbolPayload);
-
-    return new IdPayload(symbolId);
+    return new SymbolPayload(updatedSymbol);
   }
 
   @UseGuards(JwtGuard)

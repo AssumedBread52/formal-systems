@@ -4,8 +4,6 @@ import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
 import { SymbolType } from './enums/symbol-type.enum';
 import { InUseException } from './exceptions/in-use.exception';
-import { SymbolUniqueTitleException } from './exceptions/symbol-unique-title.exception';
-import { EditSymbolPayload } from './payloads/edit-symbol.payload';
 import { SymbolEntity } from './symbol.entity';
 
 @Injectable()
@@ -61,44 +59,13 @@ export class SymbolService {
     });
   }
 
-  async update(symbol: SymbolEntity, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
-    const { title, type, axiomAppearances, theoremAppearances, deductionAppearances, systemId } = symbol;
-    const { newTitle, newDescription, newType, newContent } = editSymbolPayload;
-
-    if (title !== newTitle) {
-      await this.conflictCheck(newTitle, systemId);
-    }
-
-    if (type !== newType && (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0)) {
-      throw new InUseException();
-    }
-
-    symbol.title = newTitle;
-    symbol.description = newDescription;
-    symbol.type = newType;
-    symbol.content = newContent;
-
-    return this.symbolRepository.save(symbol);
-  }
-
   delete(symbol: SymbolEntity): Promise<SymbolEntity> {
-    const { axiomAppearances, theoremAppearances, deductionAppearances } = symbol;
+    const { axiomUseCount, theoremUseCount, deductionUseCount } = symbol;
 
-    if (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0) {
+    if (axiomUseCount > 0 || theoremUseCount > 0 || deductionUseCount > 0) {
       throw new InUseException();
     }
 
     return this.symbolRepository.remove(symbol);
-  }
-
-  private async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
-    const collision = await this.symbolRepository.findOneBy({
-      title,
-      systemId
-    });
-
-    if (collision) {
-      throw new SymbolUniqueTitleException();
-    }
   }
 };
