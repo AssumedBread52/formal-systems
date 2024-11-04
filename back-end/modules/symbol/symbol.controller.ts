@@ -2,21 +2,20 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { SymbolType } from './enums/symbol-type.enum';
-import { SymbolNotFoundException } from './exceptions/symbol-not-found.exception';
-import { SearchPayload } from './payloads/search.payload';
 import { SymbolPayload } from './payloads/symbol.payload';
 import { SymbolCreateService } from './services/symbol-create.service';
 import { SymbolDeleteService } from './services/symbol-delete.service';
+import { SymbolReadService } from './services/symbol-read.service';
 import { SymbolUpdateService } from './services/symbol-update.service';
 import { SymbolEntity } from './symbol.entity';
 import { SymbolService } from './symbol.service';
 
 @Controller('system/:systemId/symbol')
 export class SymbolController {
-  constructor(private symbolCreateService: SymbolCreateService, private symbolDeleteService: SymbolDeleteService, private symbolUpdateService: SymbolUpdateService, private symbolService: SymbolService) {
+  constructor(private symbolCreateService: SymbolCreateService, private symbolDeleteService: SymbolDeleteService, private symbolReadService: SymbolReadService, private symbolUpdateService: SymbolUpdateService, private symbolService: SymbolService) {
   }
 
   @UseGuards(JwtGuard)
@@ -28,10 +27,8 @@ export class SymbolController {
   }
 
   @Get()
-  async getSymbols(@ObjectIdDecorator('systemId') systemId: ObjectId, @Query(new ValidationPipe({ transform: true })) searchPayload: SearchPayload): Promise<PaginatedResultsPayload<SymbolEntity, SymbolPayload>> {
-    const { page, count, keywords, types } = searchPayload;
-
-    const [results, total] = await this.symbolService.readSymbols(page, count, keywords, types, systemId);
+  async getSymbols(@Param('systemId') systemId: string, @Query() payload: any): Promise<PaginatedResultsPayload<SymbolEntity, SymbolPayload>> {
+    const [results, total] = await this.symbolReadService.readSymbols(systemId, payload);
 
     return new PaginatedResultsPayload(SymbolPayload, results, total);
   }
@@ -57,12 +54,8 @@ export class SymbolController {
   }
 
   @Get(':symbolId')
-  async getById(@ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId): Promise<SymbolPayload> {
-    const symbol = await this.symbolService.readById(systemId, symbolId);
-
-    if (!symbol) {
-      throw new SymbolNotFoundException();
-    }
+  async getById(@Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolPayload> {
+    const symbol = await this.symbolReadService.readById(systemId, symbolId);
 
     return new SymbolPayload(symbol);
   }

@@ -1,17 +1,16 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
-import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
+import { findAndCountMock } from '@/common/tests/mocks/find-and-count.mock';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { SymbolRepositoryMock } from './mocks/symbol-repository.mock';
+import { RootFilterOperators } from 'typeorm';
 
 describe('Read Symbols', (): void => {
-  getOrThrowMock();
-
+  const findAndCount = findAndCountMock();
+  const getOrThrow = getOrThrowMock();
   const badQueries = [
     ['?page=a', 'page must not be less than 1', 'page must be an integer number'],
     ['?page=5.4', 'page must be an integer number'],
@@ -31,7 +30,7 @@ describe('Read Symbols', (): void => {
     '?keywords[]=test',
     '?keywords[]=test&keywords[]=word',
     `?types[]=${SymbolType.Constant}`,
-    `?types[]=${SymbolType.Constant}&userIds[]=${SymbolType.Variable}`
+    `?types[]=${SymbolType.Constant}&types[]=${SymbolType.Variable}`
   ];
   let app: INestApplication;
 
@@ -39,48 +38,109 @@ describe('Read Symbols', (): void => {
     app = await createTestApp();
   });
 
-  it('fails with an invalid system id', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).get('/system/1/symbol');
-
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
-      error: 'Unprocessable Entity',
-      message: 'Invalid Mongodb ID structure.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
   it.each(badQueries)('fails %s', async (badQuery: string, ...message: string[]): Promise<void> => {
-    const response = await request(app.getHttpServer()).get(`/system/${new ObjectId()}/symbol${badQuery}`);
+    const response = await request(app.getHttpServer()).get(`/system/1/symbol${badQuery}`);
 
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+    const { statusCode, body } = response;
+
+    expect(findAndCount).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
       error: 'Bad Request',
       message,
       statusCode: HttpStatus.BAD_REQUEST
     });
   });
 
+  it('fails with an invalid system id', async (): Promise<void> => {
+    const response = await request(app.getHttpServer()).get('/system/1/symbol');
+
+    const { statusCode, body } = response;
+
+    expect(findAndCount).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Invalid Object ID.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
   it.each(goodQueries)('succeeds %s', async (goodQuery: string): Promise<void> => {
+    const symbolId = new ObjectId();
+    const title = 'Test Symbol';
+    const description = 'This is a test.';
+    const type = SymbolType.Variable;
+    const content = '\\alpha';
+    const axiomAppearances = 6;
+    const theoremAppearances = 1;
+    const deductionAppearances = 2;
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const symbol = new SymbolEntity();
+    const total = 1;
 
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    symbol._id = symbolId;
+    symbol.title = title;
+    symbol.description = description;
+    symbol.type = type;
+    symbol.content = content;
+    symbol.axiomAppearances = axiomAppearances;
+    symbol.theoremAppearances = theoremAppearances;
+    symbol.deductionAppearances = deductionAppearances;
+    symbol.systemId = systemId;
+    symbol.createdByUserId = createdByUserId;
 
-    symbolRepositoryMock.findAndCount.mockReturnValueOnce([[symbol], 1]);
+    findAndCount.mockResolvedValueOnce([[symbol], total]);
 
-    const response = await request(app.getHttpServer()).get(`/system/${symbol.systemId}/symbol${goodQuery}`);
+    const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol${goodQuery}`);
 
-    expectCorrectResponse(response, HttpStatus.OK, {
+    const { statusCode, body } = response;
+
+    const urlSearchParams = new URLSearchParams(goodQuery);
+    const page = parseInt(urlSearchParams.get('page') ?? '1');
+    const count = parseInt(urlSearchParams.get('count') ?? '10');
+    const keywords = urlSearchParams.getAll('keywords[]');
+    const types = urlSearchParams.getAll('types[]');
+    const where = {
+      systemId
+    } as RootFilterOperators<SymbolEntity>;
+
+    if (0 !== keywords.length) {
+      where.$text = {
+        $caseSensitive: false,
+        $search: keywords.join(',')
+      };
+    }
+    if (0 !== types.length) {
+      where.type = {
+        $in: types
+      };
+    }
+
+    expect(findAndCount).toHaveBeenCalledTimes(1);
+    expect(findAndCount).toHaveBeenNthCalledWith(1, {
+      skip: (page - 1) * count,
+      take: count,
+      where
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual({
       results: [
         {
-          id: symbol._id.toString(),
-          title: symbol.title,
-          description: symbol.description,
-          type: symbol.type,
-          content: symbol.content,
-          axiomAppearances: symbol.axiomAppearances,
-          theoremAppearances: symbol.theoremAppearances,
-          deductionAppearances: symbol.deductionAppearances,
-          systemId: symbol.systemId.toString(),
-          createdByUserId: symbol.createdByUserId.toString()
+          id: symbolId.toString(),
+          title,
+          description,
+          type,
+          content,
+          axiomAppearances,
+          theoremAppearances,
+          deductionAppearances,
+          systemId: systemId.toString(),
+          createdByUserId: createdByUserId.toString()
         }
       ],
       total: 1
