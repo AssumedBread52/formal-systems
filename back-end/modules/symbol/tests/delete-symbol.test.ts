@@ -133,26 +133,43 @@ describe('Delete Symbol', (): void => {
   });
 
   it('fails if the symbol is used in any axioms', async (): Promise<void> => {
-    expect(1).toBe(2);
-    const symbol = new SymbolEntity();
+    const symbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const symbol = new SymbolEntity();
 
+    user._id = createdByUserId;
+    symbol._id = symbolId;
     symbol.axiomAppearances = 1;
-    symbol.createdByUserId = user._id;
+    symbol.systemId = systemId;
+    symbol.createdByUserId = createdByUserId;
 
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(symbol);
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).delete(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
       `token=${token}`
     ]);
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: symbolId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(remove).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
       message: 'Symbols in use cannot under go write actions.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
@@ -160,26 +177,43 @@ describe('Delete Symbol', (): void => {
   });
 
   it('fails if the symbol is used in any theorems', async (): Promise<void> => {
-    expect(1).toBe(2);
-    const symbol = new SymbolEntity();
+    const symbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const symbol = new SymbolEntity();
 
+    user._id = createdByUserId;
+    symbol._id = symbolId;
     symbol.theoremAppearances = 1;
-    symbol.createdByUserId = user._id;
+    symbol.systemId = systemId;
+    symbol.createdByUserId = createdByUserId;
 
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(symbol);
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).delete(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
       `token=${token}`
     ]);
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: symbolId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(remove).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
       message: 'Symbols in use cannot under go write actions.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
@@ -187,26 +221,43 @@ describe('Delete Symbol', (): void => {
   });
 
   it('fails if the symbol is used in any deductions', async (): Promise<void> => {
-    expect(1).toBe(2);
-    const symbol = new SymbolEntity();
+    const symbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const symbol = new SymbolEntity();
 
+    user._id = createdByUserId;
+    symbol._id = symbolId;
     symbol.deductionAppearances = 1;
-    symbol.createdByUserId = user._id;
+    symbol.systemId = systemId;
+    symbol.createdByUserId = createdByUserId;
 
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(symbol);
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).delete(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
       `token=${token}`
     ]);
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: symbolId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(remove).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
       message: 'Symbols in use cannot under go write actions.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
