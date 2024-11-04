@@ -1,8 +1,8 @@
-import { SystemEntity } from '@/system/system.entity';
 import { SystemModule } from '@/system/system.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SymbolCreateService } from './services/symbol-create.service';
+import { SymbolDeleteService } from './services/symbol-delete.service';
 import { SymbolReadService } from './services/symbol-read.service';
 import { SymbolUpdateService } from './services/symbol-update.service';
 import { ValidateService } from './services/validate.service';
@@ -14,8 +14,7 @@ import { SymbolService } from './symbol.service';
   imports: [
     SystemModule,
     TypeOrmModule.forFeature([
-      SymbolEntity,
-      SystemEntity
+      SymbolEntity
     ])
   ],
   controllers: [
@@ -23,6 +22,7 @@ import { SymbolService } from './symbol.service';
   ],
   providers: [
     SymbolCreateService,
+    SymbolDeleteService,
     SymbolReadService,
     SymbolService,
     SymbolUpdateService,

@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
 import { SymbolType } from './enums/symbol-type.enum';
-import { InUseException } from './exceptions/in-use.exception';
 import { SymbolEntity } from './symbol.entity';
 
 @Injectable()
@@ -57,15 +56,5 @@ export class SymbolService {
       take: count,
       where
     });
-  }
-
-  delete(symbol: SymbolEntity): Promise<SymbolEntity> {
-    const { axiomAppearances, theoremAppearances, deductionAppearances } = symbol;
-
-    if (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0) {
-      throw new InUseException();
-    }
-
-    return this.symbolRepository.remove(symbol);
   }
 };

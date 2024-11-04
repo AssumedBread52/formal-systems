@@ -1,8 +1,6 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
-import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
-import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
@@ -11,33 +9,22 @@ import { SymbolNotFoundException } from './exceptions/symbol-not-found.exception
 import { SearchPayload } from './payloads/search.payload';
 import { SymbolPayload } from './payloads/symbol.payload';
 import { SymbolCreateService } from './services/symbol-create.service';
+import { SymbolDeleteService } from './services/symbol-delete.service';
 import { SymbolUpdateService } from './services/symbol-update.service';
 import { SymbolEntity } from './symbol.entity';
 import { SymbolService } from './symbol.service';
 
 @Controller('system/:systemId/symbol')
 export class SymbolController {
-  constructor(private symbolCreateService: SymbolCreateService, private symbolUpdateService: SymbolUpdateService, private symbolService: SymbolService) {
+  constructor(private symbolCreateService: SymbolCreateService, private symbolDeleteService: SymbolDeleteService, private symbolUpdateService: SymbolUpdateService, private symbolService: SymbolService) {
   }
 
   @UseGuards(JwtGuard)
   @Delete(':symbolId')
-  async deleteSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('symbolId') symbolId: ObjectId): Promise<IdPayload> {
-    const symbol = await this.symbolService.readById(systemId, symbolId);
+  async deleteSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolPayload> {
+    const symbol = await this.symbolDeleteService.delete(sessionUserId, systemId, symbolId);
 
-    if (!symbol) {
-      return new IdPayload(symbolId);
-    }
-
-    const { createdByUserId } = symbol;
-
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new OwnershipException();
-    }
-
-    await this.symbolService.delete(symbol);
-
-    return new IdPayload(symbolId);
+    return new SymbolPayload(symbol);
   }
 
   @Get()
