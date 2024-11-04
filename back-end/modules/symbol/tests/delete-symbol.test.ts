@@ -16,7 +16,6 @@ import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { SymbolRepositoryMock } from './mocks/symbol-repository.mock';
 
 describe('Delete Symbol', (): void => {
   const findOneBy = findOneByMock();
@@ -85,47 +84,81 @@ describe('Delete Symbol', (): void => {
     });
   });
 
-  it('succeeds if the symbol does not exist', async (): Promise<void> => {
-    expect(1).toBe(2);
+  it('fails if the symbol does not exist', async (): Promise<void> => {
     const symbolId = new ObjectId();
-
+    const systemId = new ObjectId();
+    const userId = new ObjectId();
     const user = new UserEntity();
 
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = userId;
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
 
-    const response = await request(app.getHttpServer()).delete(`/system/${new ObjectId()}/symbol/${symbolId}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
       `token=${token}`
     ]);
 
-    expectCorrectResponse(response, HttpStatus.OK, {
-      id: symbolId.toString()
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: symbolId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(remove).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    expect(body).toEqual({
+      error: 'Not Found',
+      message: 'Symbol not found.',
+      statusCode: HttpStatus.NOT_FOUND
     });
   });
 
   it('fails if the user did not create the symbol', async (): Promise<void> => {
-    expect(1).toBe(2);
-    const symbol = new SymbolEntity();
+    const symbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const symbol = new SymbolEntity();
 
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = createdByUserId;
+    symbol._id = symbolId;
+    symbol.systemId = systemId;
 
-    symbolRepositoryMock.findOneBy.mockReturnValueOnce(symbol);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(symbol);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).delete(`/system/${symbol.systemId}/symbol/${symbol._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
       `token=${token}`
     ]);
 
-    expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: symbolId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(remove).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.FORBIDDEN);
+    expect(body).toEqual({
       error: 'Forbidden',
       message: 'Write actions require user ownership.',
       statusCode: HttpStatus.FORBIDDEN
