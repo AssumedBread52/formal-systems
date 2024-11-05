@@ -4,11 +4,11 @@ import { EntitySubscriberInterface, EventSubscriber, RemoveEvent } from 'typeorm
 
 @EventSubscriber()
 export class CleanUpSystemSymbolsSubscriber implements EntitySubscriberInterface<SystemEntity> {
-  listenTo(): string | Function {
+  listenTo(): Function | string {
     return SystemEntity;
   }
 
-  async afterRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
+  async beforeRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
     const { _id } = databaseEntity;
