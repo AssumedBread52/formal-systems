@@ -34,7 +34,7 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
         break;
     }
 
-    systemRepository.save(system);
+    await systemRepository.save(system);
   }
 
   async beforeRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
@@ -49,7 +49,7 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
     });
 
     if (!system) {
-      return;
+      throw new SystemNotFoundException();
     }
 
     switch (type) {
@@ -61,7 +61,7 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
         break;
     }
 
-    systemRepository.save(system);
+    await systemRepository.save(system);
   }
 
   async beforeUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
@@ -98,6 +98,6 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
         break;
     }
 
-    systemRepository.save(system);
+    await systemRepository.save(system);
   }
 };
