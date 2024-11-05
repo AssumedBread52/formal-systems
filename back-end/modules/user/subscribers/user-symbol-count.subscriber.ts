@@ -6,11 +6,11 @@ import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, U
 
 @EventSubscriber()
 export class UserSymbolCountSubscriber implements EntitySubscriberInterface<SymbolEntity> {
-  listenTo(): string | Function {
+  listenTo(): Function | string {
     return SymbolEntity;
   }
 
-  async afterInsert(event: InsertEvent<SymbolEntity>): Promise<void> {
+  async beforeInsert(event: InsertEvent<SymbolEntity>): Promise<void> {
     const { connection, entity } = event;
 
     const { type, createdByUserId } = entity;
@@ -37,7 +37,7 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
     userRepository.save(user);
   }
 
-  async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
+  async beforeRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
     const { type, createdByUserId } = databaseEntity;
@@ -64,7 +64,7 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
     userRepository.save(user);
   }
 
-  async afterUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
+  async beforeUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
     const { connection, databaseEntity, entity } = event;
 
     if (!entity) {
