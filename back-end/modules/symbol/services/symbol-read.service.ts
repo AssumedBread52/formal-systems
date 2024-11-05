@@ -39,6 +39,7 @@ export class SymbolReadService {
         $search: keywords.join(',')
       };
     }
+
     if (0 !== types.length) {
       where.type = {
         $in: types
