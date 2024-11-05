@@ -25,6 +25,8 @@ export class SymbolDeleteService {
       throw new InUseException();
     }
 
-    return this.symbolRepository.remove(symbol);
+    await this.symbolRepository.remove(symbol);
+
+    return symbol;
   }
 };

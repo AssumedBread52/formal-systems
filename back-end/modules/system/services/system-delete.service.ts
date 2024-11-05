@@ -20,6 +20,8 @@ export class SystemDeleteService {
       throw new OwnershipException();
     }
 
-    return this.systemRepository.remove(system);
+    await this.systemRepository.remove(system);
+
+    return system;
   }
 };
