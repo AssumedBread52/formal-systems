@@ -2,7 +2,7 @@ import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { UserEntity } from '@/user/user.entity';
-import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
+import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
 @EventSubscriber()
 export class UserSymbolCountSubscriber implements EntitySubscriberInterface<SymbolEntity> {
@@ -10,73 +10,38 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
     return SymbolEntity;
   }
 
-  async beforeInsert(event: InsertEvent<SymbolEntity>): Promise<void> {
+  async afterInsert(event: InsertEvent<SymbolEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    const { type, createdByUserId } = entity;
-
-    const userRepository = connection.getMongoRepository(UserEntity);
-
-    const user = await userRepository.findOneBy({
-      _id: createdByUserId
-    });
-
-    if (!user) {
-      throw new UserNotFoundException();
-    }
-
-    switch (type) {
-      case SymbolType.Constant:
-        user.constantSymbolCount++;
-        break;
-      case SymbolType.Variable:
-        user.variableSymbolCount++;
-        break;
-    }
-
-    await userRepository.save(user);
+    this.adjustSymbolCounts(connection, entity);
   }
 
-  async beforeRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
+  async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
-    const { type, createdByUserId } = databaseEntity;
-
-    const userRepository = connection.getMongoRepository(UserEntity);
-
-    const user = await userRepository.findOneBy({
-      _id: createdByUserId
-    });
-
-    if (!user) {
-      throw new UserNotFoundException();
-    }
-
-    switch (type) {
-      case SymbolType.Constant:
-        user.constantSymbolCount--;
-        break;
-      case SymbolType.Variable:
-        user.variableSymbolCount--;
-        break;
-    }
-
-    await userRepository.save(user);
+    this.adjustSymbolCounts(connection, databaseEntity);
   }
 
-  async beforeUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
+  async afterUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
     const { connection, databaseEntity, entity } = event;
 
     if (!entity) {
       return;
     }
 
-    const { type, createdByUserId } = databaseEntity;
+    const { type } = databaseEntity;
 
     if (type === entity.type) {
       return;
     }
 
+    this.adjustSymbolCounts(connection, databaseEntity);
+  }
+
+  private async adjustSymbolCounts(connection: DataSource, symbol: SymbolEntity): Promise<void> {
+    const { createdByUserId } = symbol;
+
+    const symbolRepository = connection.getMongoRepository(SymbolEntity);
     const userRepository = connection.getMongoRepository(UserEntity);
 
     const user = await userRepository.findOneBy({
@@ -87,17 +52,15 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
       throw new UserNotFoundException();
     }
 
-    switch (type) {
-      case SymbolType.Constant:
-        user.constantSymbolCount--;
-        user.variableSymbolCount++;
-        break;
-      case SymbolType.Variable:
-        user.constantSymbolCount++;
-        user.variableSymbolCount--;
-        break;
-    }
+    user.constantSymbolCount = await symbolRepository.count({
+      type: SymbolType.Constant,
+      createdByUserId
+    });
+    user.variableSymbolCount = await symbolRepository.count({
+      type: SymbolType.Variable,
+      createdByUserId
+    });
 
-    await userRepository.save(user);
+    userRepository.save(user);
   }
 };

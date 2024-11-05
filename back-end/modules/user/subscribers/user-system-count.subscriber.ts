@@ -1,7 +1,7 @@
 import { SystemEntity } from '@/system/system.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { UserEntity } from '@/user/user.entity';
-import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent } from 'typeorm';
+import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent } from 'typeorm';
 
 @EventSubscriber()
 export class UserSystemCountSubscriber implements EntitySubscriberInterface<SystemEntity> {
@@ -9,31 +9,22 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
     return SystemEntity;
   }
 
-  async beforeInsert(event: InsertEvent<SystemEntity>): Promise<void> {
+  async afterInsert(event: InsertEvent<SystemEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    const { createdByUserId } = entity;
-
-    const userRepository = connection.getMongoRepository(UserEntity);
-
-    const user = await userRepository.findOneBy({
-      _id: createdByUserId
-    });
-
-    if (!user) {
-      throw new UserNotFoundException();
-    }
-
-    user.systemCount++;
-
-    await userRepository.save(user);
+    this.adjustSystemCount(connection, entity);
   }
 
-  async beforeRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
+  async afterRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
-    const { createdByUserId } = databaseEntity;
+    this.adjustSystemCount(connection, databaseEntity);
+  }
 
+  private async adjustSystemCount(connection: DataSource, system: SystemEntity): Promise<void> {
+    const { createdByUserId } = system;
+
+    const systemRepository = connection.getMongoRepository(SystemEntity);
     const userRepository = connection.getMongoRepository(UserEntity);
 
     const user = await userRepository.findOneBy({
@@ -44,8 +35,10 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
       throw new UserNotFoundException();
     }
 
-    user.systemCount--;
+    user.systemCount = await systemRepository.count({
+      createdByUserId
+    });
 
-    await userRepository.save(user);
+    userRepository.save(user);
   }
 };
