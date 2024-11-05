@@ -53,7 +53,7 @@ describe('Read Symbols', (): void => {
     });
   });
 
-  it('fails with an invalid system id', async (): Promise<void> => {
+  it('fails with an invalid system ID', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).get('/system/1/symbol');
 
     const { statusCode, body } = response;
@@ -143,7 +143,7 @@ describe('Read Symbols', (): void => {
           createdByUserId: createdByUserId.toString()
         }
       ],
-      total: 1
+      total
     });
   });
 
