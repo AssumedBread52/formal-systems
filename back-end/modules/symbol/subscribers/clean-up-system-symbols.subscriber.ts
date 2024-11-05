@@ -19,6 +19,6 @@ export class CleanUpSystemSymbolsSubscriber implements EntitySubscriberInterface
       systemId: _id
     });
 
-    symbolRepository.remove(symbols);
+    await symbolRepository.remove(symbols);
   }
 };
