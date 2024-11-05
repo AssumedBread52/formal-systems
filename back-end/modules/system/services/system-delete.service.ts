@@ -14,13 +14,15 @@ export class SystemDeleteService {
   async delete(sessionUserId: ObjectId, systemId: any): Promise<SystemEntity> {
     const system = await this.systemReadService.readById(systemId);
 
-    const { createdByUserId } = system;
+    const { _id, createdByUserId } = system;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
     }
 
     await this.systemRepository.remove(system);
+
+    system._id = _id;
 
     return system;
   }

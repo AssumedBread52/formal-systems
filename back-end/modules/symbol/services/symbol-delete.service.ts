@@ -15,7 +15,7 @@ export class SymbolDeleteService {
   async delete(sessionUserId: ObjectId, systemId: any, symbolId: any): Promise<SymbolEntity> {
     const symbol = await this.symbolReadService.readById(systemId, symbolId);
 
-    const { axiomAppearances, theoremAppearances, deductionAppearances, createdByUserId } = symbol;
+    const { _id, axiomAppearances, theoremAppearances, deductionAppearances, createdByUserId } = symbol;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
@@ -26,6 +26,8 @@ export class SymbolDeleteService {
     }
 
     await this.symbolRepository.remove(symbol);
+
+    symbol._id = _id;
 
     return symbol;
   }
