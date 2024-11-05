@@ -26,7 +26,7 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
 
     user.systemCount++;
 
-    userRepository.save(user);
+    await userRepository.save(user);
   }
 
   async beforeRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
@@ -46,6 +46,6 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
 
     user.systemCount--;
 
-    userRepository.save(user);
+    await userRepository.save(user);
   }
 };

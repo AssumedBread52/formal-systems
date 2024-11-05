@@ -34,7 +34,7 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
         break;
     }
 
-    userRepository.save(user);
+    await userRepository.save(user);
   }
 
   async beforeRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
@@ -61,7 +61,7 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
         break;
     }
 
-    userRepository.save(user);
+    await userRepository.save(user);
   }
 
   async beforeUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
@@ -98,6 +98,6 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
         break;
     }
 
-    userRepository.save(user);
+    await userRepository.save(user);
   }
 };
