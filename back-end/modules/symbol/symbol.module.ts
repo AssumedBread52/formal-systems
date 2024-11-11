@@ -8,7 +8,6 @@ import { SymbolUpdateService } from './services/symbol-update.service';
 import { ValidateService } from './services/validate.service';
 import { SymbolController } from './symbol.controller';
 import { SymbolEntity } from './symbol.entity';
-import { SymbolService } from './symbol.service';
 
 @Module({
   imports: [
@@ -24,12 +23,11 @@ import { SymbolService } from './symbol.service';
     SymbolCreateService,
     SymbolDeleteService,
     SymbolReadService,
-    SymbolService,
     SymbolUpdateService,
     ValidateService
   ],
   exports: [
-    SymbolService
+    SymbolReadService
   ]
 })
 export class SymbolModule {

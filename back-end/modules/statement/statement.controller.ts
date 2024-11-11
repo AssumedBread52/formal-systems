@@ -4,9 +4,7 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
-import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
-import { SymbolEntity } from '@/symbol/symbol.entity';
-import { SymbolService } from '@/symbol/symbol.service';
+import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemEntity } from '@/system/system.entity';
 import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
@@ -23,7 +21,7 @@ import { StatementService } from './statement.service';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
-  constructor(private statementService: StatementService, private symbolService: SymbolService, @InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
+  constructor(private statementService: StatementService, private symbolReadService: SymbolReadService, @InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
   }
 
   @UseGuards(JwtGuard)
@@ -85,7 +83,7 @@ export class StatementController {
 
     const symbolIds = newAssertion.concat(...newDistinctVariableRestrictions, ...newVariableTypeHypotheses, ...newLogicalHypotheses);
 
-    const symbolDictionary = await this.fetchSymbolDictionary(systemId, symbolIds);
+    const symbolDictionary = await this.symbolReadService.readSymbolDictionary(systemId, symbolIds);
 
     await this.statementService.update(statement, editStatementPayload, symbolDictionary);
 
@@ -113,32 +111,8 @@ export class StatementController {
 
     const symbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
 
-    const symbolDictionary = await this.fetchSymbolDictionary(systemId, symbolIds);
+    const symbolDictionary = await this.symbolReadService.readSymbolDictionary(systemId, symbolIds);
 
     await this.statementService.create(newStatementPayload, systemId, sessionUserId, symbolDictionary);
-  }
-
-  private async fetchSymbolDictionary(systemId: ObjectId, symbolIds: ObjectId[]): Promise<Record<string, SymbolEntity>> {
-    const symbols = await this.symbolService.readByIds(systemId, symbolIds);
-
-    const symbolDictionary = symbols.reduce((dictionary: Record<string, SymbolEntity>, symbol: SymbolEntity): Record<string, SymbolEntity> => {
-      const { _id } = symbol;
-
-      const id = _id.toString();
-
-      if (!dictionary[id]) {
-        dictionary[id] = symbol;
-      }
-
-      return dictionary;
-    }, {});
-
-    symbolIds.forEach((symbolId: ObjectId): void => {
-      if (!symbolDictionary[symbolId.toString()]) {
-        throw new SymbolNotFoundException();
-      }
-    });
-
-    return symbolDictionary;
   }
 };
