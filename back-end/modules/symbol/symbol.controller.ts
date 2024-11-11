@@ -1,21 +1,18 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
-import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
-import { SymbolType } from './enums/symbol-type.enum';
 import { SymbolPayload } from './payloads/symbol.payload';
 import { SymbolCreateService } from './services/symbol-create.service';
 import { SymbolDeleteService } from './services/symbol-delete.service';
 import { SymbolReadService } from './services/symbol-read.service';
 import { SymbolUpdateService } from './services/symbol-update.service';
 import { SymbolEntity } from './symbol.entity';
-import { SymbolService } from './symbol.service';
 
 @Controller('system/:systemId/symbol')
 export class SymbolController {
-  constructor(private symbolCreateService: SymbolCreateService, private symbolDeleteService: SymbolDeleteService, private symbolReadService: SymbolReadService, private symbolUpdateService: SymbolUpdateService, private symbolService: SymbolService) {
+  constructor(private symbolCreateService: SymbolCreateService, private symbolDeleteService: SymbolDeleteService, private symbolReadService: SymbolReadService, private symbolUpdateService: SymbolUpdateService) {
   }
 
   @UseGuards(JwtGuard)
@@ -31,26 +28,6 @@ export class SymbolController {
     const [results, total] = await this.symbolReadService.readSymbols(systemId, payload);
 
     return new PaginatedResultsPayload(SymbolPayload, results, total);
-  }
-
-  @UseGuards(JwtGuard)
-  @Get('constant')
-  async getConstantSymbols(@ObjectIdDecorator('systemId') systemId: ObjectId): Promise<SymbolPayload[]> {
-    const symbols = await this.symbolService.readByType(systemId, SymbolType.Constant);
-
-    return symbols.map((symbol: SymbolEntity): SymbolPayload => {
-      return new SymbolPayload(symbol);
-    });
-  }
-
-  @UseGuards(JwtGuard)
-  @Get('variable')
-  async getVariableSymbols(@ObjectIdDecorator('systemId') systemId: ObjectId): Promise<SymbolPayload[]> {
-    const symbols = await this.symbolService.readByType(systemId, SymbolType.Variable);
-
-    return symbols.map((symbol: SymbolEntity): SymbolPayload => {
-      return new SymbolPayload(symbol);
-    });
   }
 
   @Get(':symbolId')
