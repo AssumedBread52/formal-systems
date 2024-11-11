@@ -8,9 +8,9 @@ export class StatementPayload {
   distinctVariableRestrictions: [string, string][];
   variableTypeHypotheses: [string, string][];
   logicalHypotheses: string[][];
+  assertion: string[];
   proofAppearances: number;
   proofSteps: number;
-  assertion: string[];
   systemId: string;
   createdByUserId: string;
 
@@ -21,15 +21,19 @@ export class StatementPayload {
     this.title = title;
     this.description = description;
     this.distinctVariableRestrictions = distinctVariableRestrictions.map((distinctVariableRestriction: [ObjectId, ObjectId]): [string, string] => {
+      const [first, second] = distinctVariableRestriction;
+
       return [
-        distinctVariableRestriction[0].toString(),
-        distinctVariableRestriction[1].toString()
+        first.toString(),
+        second.toString()
       ];
     });
     this.variableTypeHypotheses = variableTypeHypotheses.map((variableTypeHypothesis: [ObjectId, ObjectId]): [string, string] => {
+      const [type, variable] = variableTypeHypothesis;
+
       return [
-        variableTypeHypothesis[0].toString(),
-        variableTypeHypothesis[1].toString()
+        type.toString(),
+        variable.toString()
       ];
     });
     this.logicalHypotheses = logicalHypotheses.map((logicalHypothesis: ObjectId[]): string[] => {
