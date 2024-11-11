@@ -3,7 +3,6 @@ import { AuthModule } from '@/auth/auth.module';
 import { HealthModule } from '@/health/health.module';
 import { StatementEntity } from '@/statement/statement.entity';
 import { StatementModule } from '@/statement/statement.module';
-import { StatementRepositoryMock } from '@/statement/tests/mocks/statement-repository.mock';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
 import { SystemEntity } from '@/system/system.entity';
@@ -27,7 +26,7 @@ export const createTestApp = async (): Promise<INestApplication> => {
       SystemModule,
       UserModule
     ]
-  }).overrideProvider(getRepositoryToken(StatementEntity)).useClass(StatementRepositoryMock).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(SystemEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(UserEntity)).useClass(MongoRepository).compile();
+  }).overrideProvider(getRepositoryToken(StatementEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(SystemEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(UserEntity)).useClass(MongoRepository).compile();
 
   const app = testingModule.createNestApplication();
 
