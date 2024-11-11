@@ -1,4 +1,4 @@
-import { ValidateBy, ValidationOptions, arrayMaxSize, arrayMinSize, arrayUnique, buildMessage, isArray, isMongoId } from 'class-validator';
+import { arrayMaxSize, arrayMinSize, arrayUnique, buildMessage, isArray, isMongoId, ValidateBy, ValidationOptions } from 'class-validator';
 
 export const IsDistinctPairDecorator = (validationOptions?: ValidationOptions): PropertyDecorator => {
   return ValidateBy({
@@ -20,8 +20,7 @@ export const IsDistinctPairDecorator = (validationOptions?: ValidationOptions): 
           return false;
         }
 
-        const first = `${value[0]}`;
-        const second = `${value[1]}`;
+        const [first, second] = value;
 
         if (!isMongoId(first)) {
           return false;
@@ -31,14 +30,14 @@ export const IsDistinctPairDecorator = (validationOptions?: ValidationOptions): 
           return false;
         }
 
-        if (!arrayUnique(value, (item: any): string => {
-          return `${item}`;
+        if (!arrayUnique(value, (item: string): string => {
+          return item;
         })) {
           return false;
         }
 
         return true;
-      },
+      }
     }
   }, validationOptions);
 };
