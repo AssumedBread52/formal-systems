@@ -83,7 +83,7 @@ export class StatementController {
 
     const symbolIds = newAssertion.concat(...newDistinctVariableRestrictions, ...newVariableTypeHypotheses, ...newLogicalHypotheses);
 
-    const symbolDictionary = await this.symbolReadService.readSymbolDictionary(systemId, symbolIds);
+    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds, {});
 
     await this.statementService.update(statement, editStatementPayload, symbolDictionary);
 
@@ -111,7 +111,7 @@ export class StatementController {
 
     const symbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
 
-    const symbolDictionary = await this.symbolReadService.readSymbolDictionary(systemId, symbolIds);
+    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds, {});
 
     await this.statementService.create(newStatementPayload, systemId, sessionUserId, symbolDictionary);
   }

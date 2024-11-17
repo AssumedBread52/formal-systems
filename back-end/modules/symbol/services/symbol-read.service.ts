@@ -12,6 +12,31 @@ export class SymbolReadService {
   constructor(@InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>, private validateService: ValidateService) {
   }
 
+  async addToSymbolDictionary(systemId: ObjectId, symbolIds: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): Promise<Record<string, SymbolEntity>> {
+    const symbols = await this.symbolRepository.findBy({
+      _id: {
+        $in: symbolIds
+      },
+      systemId
+    });
+
+    const newSymbolDictionary = symbols.reduce((dictionary: Record<string, SymbolEntity>, symbol: SymbolEntity): Record<string, SymbolEntity> => {
+      const { _id } = symbol;
+
+      dictionary[_id.toString()] = symbol;
+
+      return dictionary;
+    }, symbolDictionary);
+
+    symbolIds.forEach((symbolId: ObjectId): void => {
+      if (!newSymbolDictionary[symbolId.toString()]) {
+        throw new SymbolNotFoundException();
+      }
+    });
+
+    return newSymbolDictionary;
+  }
+
   async readById(systemId: any, symbolId: any): Promise<SymbolEntity> {
     const symbol = await this.symbolRepository.findOneBy({
       _id: this.validateService.idCheck(symbolId),
@@ -23,31 +48,6 @@ export class SymbolReadService {
     }
 
     return symbol;
-  }
-
-  async readSymbolDictionary(systemId: ObjectId, symbolIds: ObjectId[]): Promise<Record<string, SymbolEntity>> {
-    const symbols = await this.symbolRepository.findBy({
-      _id: {
-        $in: symbolIds
-      },
-      systemId
-    });
-
-    const symbolDictionary = symbols.reduce((dictionary: Record<string, SymbolEntity>, symbol: SymbolEntity): Record<string, SymbolEntity> => {
-      const { _id } = symbol;
-
-      dictionary[_id.toString()] = symbol;
-
-      return dictionary;
-    }, {});
-
-    symbolIds.forEach((symbolId: ObjectId): void => {
-      if (!symbolDictionary[symbolId.toString()]) {
-        throw new SymbolNotFoundException();
-      }
-    });
-
-    return symbolDictionary;
   }
 
   readSymbols(containingSystemId: any, payload: any): Promise<[SymbolEntity[], number]> {
