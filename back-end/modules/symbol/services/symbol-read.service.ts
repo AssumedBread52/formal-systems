@@ -13,23 +13,31 @@ export class SymbolReadService {
   }
 
   async addToSymbolDictionary(systemId: ObjectId, symbolIds: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): Promise<Record<string, SymbolEntity>> {
-    const symbols = await this.symbolRepository.findBy({
+    const missingSymbolIds = symbolIds.filter((symbolId: ObjectId): boolean => {
+      if (symbolDictionary[symbolId.toString()]) {
+        return false;
+      }
+
+      return true;
+    });
+
+    const missingSymbols = await this.symbolRepository.findBy({
       _id: {
-        $in: symbolIds
+        $in: missingSymbolIds
       },
       systemId
     });
 
-    const newSymbolDictionary = symbols.reduce((dictionary: Record<string, SymbolEntity>, symbol: SymbolEntity): Record<string, SymbolEntity> => {
-      const { _id } = symbol;
+    const newSymbolDictionary = missingSymbols.reduce((dictionary: Record<string, SymbolEntity>, missingSymbol: SymbolEntity): Record<string, SymbolEntity> => {
+      const { _id } = missingSymbol;
 
-      dictionary[_id.toString()] = symbol;
+      dictionary[_id.toString()] = missingSymbol;
 
       return dictionary;
     }, symbolDictionary);
 
-    symbolIds.forEach((symbolId: ObjectId): void => {
-      if (!newSymbolDictionary[symbolId.toString()]) {
+    missingSymbolIds.forEach((missingSymbolId: ObjectId): void => {
+      if (!newSymbolDictionary[missingSymbolId.toString()]) {
         throw new SymbolNotFoundException();
       }
     });
