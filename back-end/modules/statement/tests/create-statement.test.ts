@@ -747,55 +747,84 @@ describe('Create Statement', (): void => {
   });
 
   it('fails if any logical hypothesis is not prefixed by a constant symbol', async (): Promise<void> => {
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
-    const system = new SystemEntity();
+    const title = 'Test Statement';
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const system = new SystemEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
 
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = system._id;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = system._id;
-    a.createdByUserId = user._id;
-    system.createdByUserId = user._id;
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
 
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      alpha,
-      a
+    findBy.mockResolvedValueOnce([
+      alphaSymbol,
+      aSymbol
     ]);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
       `token=${token}`
     ]).send({
-      title: 'Test',
+      title,
       description: 'This is a test.',
       distinctVariableRestrictions: [
-        [alpha._id, a._id]
+        [alphaSymbolId, aSymbolId]
       ],
-      variableTypeHypotheses: [
-      ],
+      variableTypeHypotheses: [],
       logicalHypotheses: [
-        [
-          alpha._id
-        ]
+        [aSymbolId, alphaSymbolId]
       ],
       assertion: [
-        a._id
+        alphaSymbolId,
+        aSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [alphaSymbolId, aSymbolId, aSymbolId, alphaSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'All logical hypotheses and the assertion must start with a constant symbol.',
+      message: 'Invalid symbol type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
@@ -803,7 +832,6 @@ describe('Create Statement', (): void => {
   it('fails if a variable symbol in any logical hypothesis does not have a corresponding variable type hypothesis', async (): Promise<void> => {
     const title = 'Test Statement';
     const turnstileSymbolId = new ObjectId();
-    const wffSymbolId = new ObjectId();
     const alphaSymbolId = new ObjectId();
     const aSymbolId = new ObjectId();
     const systemId = new ObjectId();
@@ -811,7 +839,6 @@ describe('Create Statement', (): void => {
     const user = new UserEntity();
     const system = new SystemEntity();
     const turnstileSymbol = new SymbolEntity();
-    const wffSymbol = new SymbolEntity();
     const alphaSymbol = new SymbolEntity();
     const aSymbol = new SymbolEntity();
 
@@ -821,9 +848,6 @@ describe('Create Statement', (): void => {
     turnstileSymbol._id = turnstileSymbolId;
     turnstileSymbol.systemId = systemId;
     turnstileSymbol.createdByUserId = createdByUserId;
-    wffSymbol._id = wffSymbolId;
-    wffSymbol.systemId = systemId;
-    wffSymbol.createdByUserId = createdByUserId;
     alphaSymbol._id = alphaSymbolId;
     alphaSymbol.type = SymbolType.Variable;
     alphaSymbol.systemId = systemId;
@@ -835,7 +859,6 @@ describe('Create Statement', (): void => {
 
     findBy.mockResolvedValueOnce([
       turnstileSymbol,
-      wffSymbol,
       alphaSymbol,
       aSymbol
     ]);
@@ -899,7 +922,6 @@ describe('Create Statement', (): void => {
     const title = 'Test Statement';
     const turnstileSymbolId = new ObjectId();
     const wffSymbolId = new ObjectId();
-    const setvarSymbolId = new ObjectId();
     const alphaSymbolId = new ObjectId();
     const aSymbolId = new ObjectId();
     const systemId = new ObjectId();
@@ -908,7 +930,6 @@ describe('Create Statement', (): void => {
     const system = new SystemEntity();
     const turnstileSymbol = new SymbolEntity();
     const wffSymbol = new SymbolEntity();
-    const setvarSymbol = new SymbolEntity();
     const alphaSymbol = new SymbolEntity();
     const aSymbol = new SymbolEntity();
 
@@ -921,9 +942,6 @@ describe('Create Statement', (): void => {
     wffSymbol._id = wffSymbolId;
     wffSymbol.systemId = systemId;
     wffSymbol.createdByUserId = createdByUserId;
-    setvarSymbol._id = setvarSymbolId;
-    setvarSymbol.systemId = systemId;
-    setvarSymbol.createdByUserId = createdByUserId;
     alphaSymbol._id = alphaSymbolId;
     alphaSymbol.type = SymbolType.Variable;
     alphaSymbol.systemId = systemId;
@@ -936,7 +954,6 @@ describe('Create Statement', (): void => {
     findBy.mockResolvedValueOnce([
       turnstileSymbol,
       wffSymbol,
-      setvarSymbol,
       alphaSymbol,
       aSymbol
     ]);
@@ -1002,7 +1019,6 @@ describe('Create Statement', (): void => {
     const title = 'Test Statement';
     const turnstileSymbolId = new ObjectId();
     const wffSymbolId = new ObjectId();
-    const setvarSymbolId = new ObjectId();
     const alphaSymbolId = new ObjectId();
     const aSymbolId = new ObjectId();
     const systemId = new ObjectId();
@@ -1011,7 +1027,6 @@ describe('Create Statement', (): void => {
     const system = new SystemEntity();
     const turnstileSymbol = new SymbolEntity();
     const wffSymbol = new SymbolEntity();
-    const setvarSymbol = new SymbolEntity();
     const alphaSymbol = new SymbolEntity();
     const aSymbol = new SymbolEntity();
 
@@ -1024,9 +1039,6 @@ describe('Create Statement', (): void => {
     wffSymbol._id = wffSymbolId;
     wffSymbol.systemId = systemId;
     wffSymbol.createdByUserId = createdByUserId;
-    setvarSymbol._id = setvarSymbolId;
-    setvarSymbol.systemId = systemId;
-    setvarSymbol.createdByUserId = createdByUserId;
     alphaSymbol._id = alphaSymbolId;
     alphaSymbol.type = SymbolType.Variable;
     alphaSymbol.systemId = systemId;
@@ -1039,7 +1051,6 @@ describe('Create Statement', (): void => {
     findBy.mockResolvedValueOnce([
       turnstileSymbol,
       wffSymbol,
-      setvarSymbol,
       alphaSymbol,
       aSymbol
     ]);
