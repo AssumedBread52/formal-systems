@@ -8,8 +8,7 @@ import { StatementEntity } from '@/statement/statement.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
-import { SystemEntity } from '@/system/system.entity';
+import { SystemReadService } from '@/system/services/system-read.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -17,19 +16,11 @@ import { MongoRepository } from 'typeorm';
 
 @Injectable()
 export class StatementCreateService {
-  constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>, @InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>, private symbolReadService: SymbolReadService) {
+  constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>, private symbolReadService: SymbolReadService, private systemReadService: SystemReadService) {
   }
 
   async create(sessionUserId: ObjectId, systemId: any, payload: NewStatementPayload): Promise<StatementEntity> {
-    const system = await this.systemRepository.findOneBy({
-      _id: systemId
-    });
-
-    if (!system) {
-      throw new SystemNotFoundException();
-    }
-
-    const { createdByUserId } = system;
+    const { _id, createdByUserId } = await this.systemReadService.readById(systemId);
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
@@ -39,7 +30,7 @@ export class StatementCreateService {
 
     const symbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
 
-    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds.map((symbolId: string): ObjectId => {
+    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(_id, symbolIds.map((symbolId: string): ObjectId => {
       return new ObjectId(symbolId);
     }), {});
 
