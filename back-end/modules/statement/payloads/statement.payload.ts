@@ -7,8 +7,8 @@ export class StatementPayload {
   description: string;
   distinctVariableRestrictions: [string, string][];
   variableTypeHypotheses: [string, string][];
-  logicalHypotheses: string[][];
-  assertion: string[];
+  logicalHypotheses: [string, ...string[]][];
+  assertion: [string, ...string[]];
   proofAppearances: number;
   proofSteps: number;
   systemId: string;
@@ -36,14 +36,23 @@ export class StatementPayload {
         variable.toString()
       ];
     });
-    this.logicalHypotheses = logicalHypotheses.map((logicalHypothesis: ObjectId[]): string[] => {
-      return logicalHypothesis.map((symbolId: ObjectId): string => {
+    this.logicalHypotheses = logicalHypotheses.map((logicalHypothesis: [ObjectId, ...ObjectId[]]): [string, ...string[]] => {
+      const [prefix, ...expression] = logicalHypothesis;
+
+      return [
+        prefix.toString(),
+        ...expression.map((symbolId: ObjectId): string => {
+          return symbolId.toString();
+        })
+      ];
+    });
+    const [prefix, ...expression] = assertion;
+    this.assertion = [
+      prefix.toString(),
+      ...expression.map((symbolId: ObjectId): string => {
         return symbolId.toString();
-      });
-    });
-    this.assertion = assertion.map((symbolId: ObjectId): string => {
-      return symbolId.toString();
-    });
+      })
+    ];
     this.proofAppearances = proofAppearances;
     this.proofSteps = proofSteps;
     this.systemId = systemId.toString();
