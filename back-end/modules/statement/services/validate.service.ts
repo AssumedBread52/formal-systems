@@ -1,6 +1,5 @@
 import { BaseValidateService } from '@/common/services/base-validate.service';
-import { InvalidSymbolPrefixException } from '@/statement/exceptions/invalid-symbol-prefix.exception';
-import { InvalidVariableTypeException } from '@/statement/exceptions/invalid-variable-type.exception';
+import { InvalidSymbolTypeException } from '@/statement/exceptions/invalid-symbol-type.exception';
 import { MissingVariableTypeHypothesisException } from '@/statement/exceptions/missing-variable-type-hypothesis.exception';
 import { StatementUniqueTitleException } from '@/statement/exceptions/statement-unique-title.exception';
 import { NewStatementPayload } from '@/statement/payloads/new-statement.payload';
@@ -42,11 +41,11 @@ export class ValidateService extends BaseValidateService {
       const [first, second] = distinctVariableRestriction;
 
       if (SymbolType.Variable !== symbolDictionary[first].type) {
-        throw new InvalidVariableTypeException();
+        throw new InvalidSymbolTypeException();
       }
 
       if (SymbolType.Variable !== symbolDictionary[second].type) {
-        throw new InvalidVariableTypeException();
+        throw new InvalidSymbolTypeException();
       }
     });
 
@@ -54,11 +53,11 @@ export class ValidateService extends BaseValidateService {
       const [type, variable] = variableTypeHypothesis;
 
       if (SymbolType.Constant !== symbolDictionary[type].type) {
-        throw new InvalidVariableTypeException();
+        throw new InvalidSymbolTypeException();
       }
       
       if (SymbolType.Variable !== symbolDictionary[variable].type) {
-        throw new InvalidVariableTypeException();
+        throw new InvalidSymbolTypeException();
       }
 
       dictionary[variable] = type;
@@ -70,7 +69,7 @@ export class ValidateService extends BaseValidateService {
       const [prefix, ...expression] = prefixedExpression;
 
       if (SymbolType.Constant !== symbolDictionary[prefix].type) {
-        throw new InvalidSymbolPrefixException();
+        throw new InvalidSymbolTypeException();
       }
 
       expression.forEach((symbolId: string): void => {
