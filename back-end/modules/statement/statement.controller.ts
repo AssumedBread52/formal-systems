@@ -11,12 +11,13 @@ import { StatementNotFoundException } from './exceptions/statement-not-found.exc
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { SearchPayload } from './payloads/search.payload';
 import { StatementPayload } from './payloads/statement.payload';
+import { StatementCreateService } from './services/statement-create.service';
 import { StatementEntity } from './statement.entity';
 import { StatementService } from './statement.service';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
-  constructor(private statementService: StatementService, private symbolReadService: SymbolReadService) {
+  constructor(private statementCreateService: StatementCreateService, private statementService: StatementService, private symbolReadService: SymbolReadService) {
   }
 
   @UseGuards(JwtGuard)
@@ -88,7 +89,7 @@ export class StatementController {
   @UseGuards(JwtGuard)
   @Post()
   async postStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<StatementPayload> {
-    const createdStatement = await this.statementService.create(sessionUserId, systemId, payload);
+    const createdStatement = await this.statementCreateService.create(sessionUserId, systemId, payload);
 
     return new StatementPayload(createdStatement);
   }
