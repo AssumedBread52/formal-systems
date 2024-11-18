@@ -69,6 +69,99 @@ describe('Create Statement', (): void => {
     });
   });
 
+  it('fails if the system does not exist', async (): Promise<void> => {
+    const wffSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+
+    const user = new UserEntity();
+
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(null);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = app.get(TokenService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [wffSymbolId, setvarSymbolId],
+        [alphaSymbolId, wffSymbolId]
+      ],
+      variableTypeHypotheses: [
+        [alphaSymbolId, wffSymbolId],
+        [wffSymbolId, setvarSymbolId]
+      ],
+      logicalHypotheses: [
+        [
+          alphaSymbolId
+        ]
+      ],
+      assertion: [
+        aSymbolId
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
+      error: 'Not Found',
+      message: 'System not found.',
+      statusCode: HttpStatus.NOT_FOUND
+    });
+  });
+
+  it('fails if the user did not create the system', async (): Promise<void> => {
+    const wffSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+
+    const system = new SystemEntity();
+    const user = new UserEntity();
+
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = app.get(TokenService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [wffSymbolId, setvarSymbolId],
+        [alphaSymbolId, wffSymbolId]
+      ],
+      variableTypeHypotheses: [
+        [alphaSymbolId, wffSymbolId],
+        [wffSymbolId, setvarSymbolId]
+      ],
+      logicalHypotheses: [
+        [
+          alphaSymbolId
+        ]
+      ],
+      assertion: [
+        aSymbolId
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
+      error: 'Forbidden',
+      message: 'Write actions require user ownership.',
+      statusCode: HttpStatus.FORBIDDEN
+    });
+  });
+
   it('fails with an invalid payload', async (): Promise<void> => {
     const user = new UserEntity();
 
@@ -210,140 +303,65 @@ describe('Create Statement', (): void => {
   });
 
   it('fails with an invalid payload', async (): Promise<void> => {
-    const symbolId1 = new ObjectId();
-    const symbolId2 = new ObjectId();
-
+    const title = 'Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const system = new SystemEntity();
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
       `token=${token}`
     ]).send({
-      title: 'Test',
+      title,
       description: 'This is a test.',
       distinctVariableRestrictions: [
-        [symbolId1, symbolId2],
-        [symbolId2, symbolId1]
+        [turnstileSymbolId, setvarSymbolId]
       ],
       variableTypeHypotheses: [
-        [symbolId1, symbolId2],
-        [new ObjectId(), symbolId2]
+        [alphaSymbolId, setvarSymbolId]
       ],
       logicalHypotheses: [
-        [symbolId1],
-        [symbolId1]
+        [aSymbolId, alphaSymbolId]
       ],
       assertion: [
-        symbolId1
+        alphaSymbolId,
+        aSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
       error: 'Bad Request',
       message: [
-        'All distinctVariableRestrictions\'s elements must be unique',
-        'All variableTypeHypotheses\'s elements must be unique',
-        'All logicalHypotheses\'s elements must be unique',
       ],
       statusCode: HttpStatus.BAD_REQUEST
-    });
-  });
-
-  it('fails if the system does not exist', async (): Promise<void> => {
-    const wffSymbolId = new ObjectId();
-    const setvarSymbolId = new ObjectId();
-    const alphaSymbolId = new ObjectId();
-    const aSymbolId = new ObjectId();
-
-    const user = new UserEntity();
-
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      title: 'Test',
-      description: 'This is a test.',
-      distinctVariableRestrictions: [
-        [wffSymbolId, setvarSymbolId],
-        [alphaSymbolId, wffSymbolId]
-      ],
-      variableTypeHypotheses: [
-        [alphaSymbolId, wffSymbolId],
-        [wffSymbolId, setvarSymbolId]
-      ],
-      logicalHypotheses: [
-        [
-          alphaSymbolId
-        ]
-      ],
-      assertion: [
-        aSymbolId
-      ]
-    });
-
-    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
-      error: 'Not Found',
-      message: 'System not found.',
-      statusCode: HttpStatus.NOT_FOUND
-    });
-  });
-
-  it('fails if the user did not create the system', async (): Promise<void> => {
-    const wffSymbolId = new ObjectId();
-    const setvarSymbolId = new ObjectId();
-    const alphaSymbolId = new ObjectId();
-    const aSymbolId = new ObjectId();
-
-    const system = new SystemEntity();
-    const user = new UserEntity();
-
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      title: 'Test',
-      description: 'This is a test.',
-      distinctVariableRestrictions: [
-        [wffSymbolId, setvarSymbolId],
-        [alphaSymbolId, wffSymbolId]
-      ],
-      variableTypeHypotheses: [
-        [alphaSymbolId, wffSymbolId],
-        [wffSymbolId, setvarSymbolId]
-      ],
-      logicalHypotheses: [
-        [
-          alphaSymbolId
-        ]
-      ],
-      assertion: [
-        aSymbolId
-      ]
-    });
-
-    expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
-      error: 'Forbidden',
-      message: 'Write actions require user ownership.',
-      statusCode: HttpStatus.FORBIDDEN
     });
   });
 
