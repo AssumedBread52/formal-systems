@@ -11,7 +11,6 @@ import { saveMock } from '@/common/tests/mocks/save.mock';
 import { StatementEntity } from '@/statement/statement.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { SymbolRepositoryMock } from '@/symbol/tests/mocks/symbol-repository.mock';
 import { SystemEntity } from '@/system/system.entity';
 import { SystemRepositoryMock } from '@/system/tests/mocks/system-repository.mock';
 import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
@@ -21,7 +20,6 @@ import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { StatementRepositoryMock } from './mocks/statement-repository.mock';
 
 describe('Create Statement', (): void => {
   const findBy = findByMock();
@@ -350,77 +348,70 @@ describe('Create Statement', (): void => {
   });
 
   it('fails if a statement has the same title', async (): Promise<void> => {
-    const title = 'Test';
-
-    const conflictStatement = new StatementEntity();
-    const turnstile = new SymbolEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
-    const system = new SystemEntity();
+    const title = 'Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const system = new SystemEntity();
+    const conflictStatement = new StatementEntity();
 
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
     conflictStatement.title = title;
-    conflictStatement.systemId = system._id;
-    conflictStatement.createdByUserId = user._id;
-    turnstile.systemId = system._id;
-    turnstile.createdByUserId = user._id;
-    wff.systemId = system._id;
-    wff.createdByUserId = user._id;
-    setvar.systemId = system._id;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = system._id;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = system._id;
-    a.createdByUserId = user._id;
-    system.createdByUserId = user._id;
+    conflictStatement.systemId = systemId;
+    conflictStatement.createdByUserId = createdByUserId;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(conflictStatement);
 
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(conflictStatement);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
-      wff,
-      setvar,
-      alpha,
-      a
-    ]);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
       `token=${token}`
     ]).send({
       title,
       description: 'This is a test.',
       distinctVariableRestrictions: [
-        [alpha._id, a._id]
+        [turnstileSymbolId, setvarSymbolId]
       ],
       variableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [setvar._id, a._id]
+        [alphaSymbolId, setvarSymbolId]
       ],
       logicalHypotheses: [
-        [
-          turnstile._id,
-          alpha._id
-        ]
+        [aSymbolId, alphaSymbolId]
       ],
       assertion: [
-        turnstile._id,
-        a._id
+        alphaSymbolId,
+        aSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.CONFLICT);
+    expect(body).toEqual({
       error: 'Conflict',
       message: 'Statements in the same system must have a unique title.',
       statusCode: HttpStatus.CONFLICT
