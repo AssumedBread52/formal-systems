@@ -64,14 +64,23 @@ export class StatementService {
         new ObjectId(variable)
       ];
     });
-    statement.logicalHypotheses = logicalHypotheses.map((logicalHypothesis: [string, ...string[]]): ObjectId[] => {
-      return logicalHypothesis.map((symbolId: string): ObjectId => {
+    statement.logicalHypotheses = logicalHypotheses.map((logicalHypothesis: [string, ...string[]]): [ObjectId, ...ObjectId[]] => {
+      const [prefix, ...expression] = logicalHypothesis;
+
+      return [
+        new ObjectId(prefix),
+        ...expression.map((symbolId: string): ObjectId => {
+          return new ObjectId(symbolId);
+        })
+      ];
+    });
+    const [prefix, ...expression] = assertion;
+    statement.assertion = [
+      new ObjectId(prefix),
+      ...expression.map((symbolId: string): ObjectId => {
         return new ObjectId(symbolId);
-      });
-    });
-    statement.assertion = assertion.map((symbolId: string): ObjectId => {
-      return new ObjectId(symbolId);
-    });
+      })
+    ];
     statement.systemId = systemId;
     statement.createdByUserId = sessionUserId;
 
@@ -118,8 +127,19 @@ export class StatementService {
     statement.description = newDescription;
     statement.distinctVariableRestrictions = newDistinctVariableRestrictions;
     statement.variableTypeHypotheses = newVariableTypeHypotheses;
-    statement.logicalHypotheses = newLogicalHypotheses;
-    statement.assertion = newAssertion;
+    statement.logicalHypotheses = newLogicalHypotheses.map((logicalHypothesis: ObjectId[]): [ObjectId, ...ObjectId[]] => {
+      const [prefix, ...expression] = logicalHypothesis;
+
+      return [
+        prefix,
+        ...expression
+      ];
+    });
+    const [prefix, ...expression] = newAssertion;
+    statement.assertion = [
+      prefix,
+      ...expression
+    ];
 
     return this.statementRepository.save(statement);
   }

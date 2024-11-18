@@ -14,9 +14,9 @@ export class StatementEntity {
   @Column()
   variableTypeHypotheses: [ObjectId, ObjectId][] = [];
   @Column()
-  logicalHypotheses: ObjectId[][] = [];
+  logicalHypotheses: [ObjectId, ...ObjectId[]][] = [];
   @Column()
-  assertion: ObjectId[] = [];
+  assertion: [ObjectId, ...ObjectId[]] = [new ObjectId()];
   @Column()
   proofAppearances: number = 0;
   @Column()
