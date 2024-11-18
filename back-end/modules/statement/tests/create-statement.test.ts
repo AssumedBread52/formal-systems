@@ -845,71 +845,6 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails if a variable symbol in the assertion does not have a corresponding variable type hypothesis', async (): Promise<void> => {
-    const turnstile = new SymbolEntity();
-    const wff = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
-    const system = new SystemEntity();
-    const user = new UserEntity();
-
-    turnstile.systemId = system._id;
-    turnstile.createdByUserId = user._id;
-    wff.systemId = system._id;
-    wff.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = system._id;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = system._id;
-    a.createdByUserId = user._id;
-    system.createdByUserId = user._id;
-
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
-      wff,
-      alpha,
-      a
-    ]);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      title: 'Test',
-      description: 'This is a test.',
-      distinctVariableRestrictions: [
-        [alpha._id, a._id]
-      ],
-      variableTypeHypotheses: [
-        [wff._id, alpha._id]
-      ],
-      logicalHypotheses: [
-        [
-          turnstile._id,
-          alpha._id
-        ]
-      ],
-      assertion: [
-        turnstile._id,
-        a._id
-      ]
-    });
-
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
-      error: 'Unprocessable Entity',
-      message: 'All variable symbols in all logical hypotheses and the assertion must have a corresponding variable type hypothesis.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
   it('fails if a statement has the same title', async (): Promise<void> => {
     const title = 'Test';
 
@@ -988,10 +923,115 @@ describe('Create Statement', (): void => {
     });
   });
 
+  it('fails if a variable symbol in the assertion does not have a corresponding variable type hypothesis', async (): Promise<void> => {
+    const title = 'Test Statement';
+    const description = 'This is a test.';
+    const turnstileSymbolId = new ObjectId();
+    const wffSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const wffSymbol = new SymbolEntity();
+    const setvarSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    wffSymbol._id = wffSymbolId;
+    wffSymbol.systemId = systemId;
+    wffSymbol.createdByUserId = createdByUserId;
+    setvarSymbol._id = setvarSymbolId;
+    setvarSymbol.systemId = systemId;
+    setvarSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      wffSymbol,
+      setvarSymbol,
+      alphaSymbol,
+      aSymbol
+    ]);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title,
+      description,
+      distinctVariableRestrictions: [
+        [alphaSymbolId, aSymbolId]
+      ],
+      variableTypeHypotheses: [
+        [wffSymbolId, alphaSymbolId]
+      ],
+      logicalHypotheses: [
+        [turnstileSymbolId, alphaSymbolId]
+      ],
+      assertion: [
+        turnstileSymbolId,
+        aSymbolId
+      ]
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, alphaSymbolId, wffSymbolId, alphaSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'All variable symbols in all logical hypotheses and the assertion must have a corresponding variable type hypothesis.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
   it('succeeds', async (): Promise<void> => {
     const statementId = new ObjectId();
     const title = 'Test Statement';
     const description = 'This is a test.';
+    const proofAppearanceCount = 0;
     const turnstileSymbolId = new ObjectId();
     const wffSymbolId = new ObjectId();
     const setvarSymbolId = new ObjectId();
@@ -1106,6 +1146,7 @@ describe('Create Statement', (): void => {
       variableTypeHypotheses,
       logicalHypotheses,
       assertion,
+      proofAppearanceCount,
       systemId,
       createdByUserId
     });
@@ -1125,6 +1166,7 @@ describe('Create Statement', (): void => {
         [turnstileSymbolId.toString(), alphaSymbolId.toString()]
       ],
       assertion: [turnstileSymbolId.toString(), aSymbolId.toString()],
+      proofAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: createdByUserId.toString()
     });

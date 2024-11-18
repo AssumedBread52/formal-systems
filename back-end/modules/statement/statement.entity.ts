@@ -18,9 +18,7 @@ export class StatementEntity {
   @Column()
   assertion: [ObjectId, ...ObjectId[]] = [new ObjectId()];
   @Column()
-  proofAppearances: number = 0;
-  @Column()
-  proofSteps: number = 0;
+  proofAppearanceCount: number = 0;
   @Column()
   systemId: ObjectId = new ObjectId();
   @Column()
