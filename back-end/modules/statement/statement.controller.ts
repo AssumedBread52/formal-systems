@@ -5,15 +5,10 @@ import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
-import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
-import { SystemEntity } from '@/system/system.entity';
-import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
-import { MongoRepository } from 'typeorm';
 import { StatementNotFoundException } from './exceptions/statement-not-found.exception';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
-import { NewStatementPayload } from './payloads/new-statement.payload';
 import { SearchPayload } from './payloads/search.payload';
 import { StatementPayload } from './payloads/statement.payload';
 import { StatementEntity } from './statement.entity';
@@ -21,7 +16,7 @@ import { StatementService } from './statement.service';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
-  constructor(private statementService: StatementService, private symbolReadService: SymbolReadService, @InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
+  constructor(private statementService: StatementService, private symbolReadService: SymbolReadService) {
   }
 
   @UseGuards(JwtGuard)
@@ -92,29 +87,9 @@ export class StatementController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async postStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @Body(new ValidationPipe({ transform: true })) newStatementPayload: NewStatementPayload): Promise<void> {
-    const system = await this.systemRepository.findOneBy({
-      _id: systemId
-    });
+  async postStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<StatementPayload> {
+    const createdStatement = await this.statementService.create(sessionUserId, systemId, payload);
 
-    if (!system) {
-      throw new SystemNotFoundException();
-    }
-
-    const { createdByUserId } = system;
-
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new OwnershipException();
-    }
-
-    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = newStatementPayload;
-
-    const symbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
-
-    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds.map((symbolId: string): ObjectId => {
-      return new ObjectId(symbolId);
-    }), {});
-
-    await this.statementService.create(newStatementPayload, systemId, sessionUserId, symbolDictionary);
+    return new StatementPayload(createdStatement);
   }
 };

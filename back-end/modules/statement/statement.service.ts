@@ -1,5 +1,9 @@
+import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SymbolEntity } from '@/symbol/symbol.entity';
+import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
+import { SystemEntity } from '@/system/system.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -14,11 +18,31 @@ import { StatementEntity } from './statement.entity';
 
 @Injectable()
 export class StatementService {
-  constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>) {
+  constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>, @InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>, private symbolReadService: SymbolReadService) {
   }
 
-  async create(newStatementPayload: NewStatementPayload, systemId: ObjectId, sessionUserId: ObjectId, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
-    const { title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = newStatementPayload;
+  async create(sessionUserId: ObjectId, systemId: any, payload: NewStatementPayload): Promise<StatementEntity> {
+    const system = await this.systemRepository.findOneBy({
+      _id: systemId
+    });
+
+    if (!system) {
+      throw new SystemNotFoundException();
+    }
+
+    const { createdByUserId } = system;
+
+    if (createdByUserId.toString() !== sessionUserId.toString()) {
+      throw new OwnershipException();
+    }
+
+    const { title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = payload;
+
+    const symbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
+
+    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds.map((symbolId: string): ObjectId => {
+      return new ObjectId(symbolId);
+    }), {});
 
     this.processabilityCheck(distinctVariableRestrictions.map((distinctVariableRestriction: [string, string]): [ObjectId, ObjectId] => {
       const [first, second] = distinctVariableRestriction;
