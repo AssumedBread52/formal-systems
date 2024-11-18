@@ -541,6 +541,84 @@ describe('Create Statement', (): void => {
     });
   });
 
+  it('fails if a statement has the same title', async (): Promise<void> => {
+    const title = 'Test';
+
+    const conflictStatement = new StatementEntity();
+    const turnstile = new SymbolEntity();
+    const wff = new SymbolEntity();
+    const setvar = new SymbolEntity();
+    const alpha = new SymbolEntity();
+    const a = new SymbolEntity();
+    const system = new SystemEntity();
+    const user = new UserEntity();
+
+    conflictStatement.title = title;
+    conflictStatement.systemId = system._id;
+    conflictStatement.createdByUserId = user._id;
+    turnstile.systemId = system._id;
+    turnstile.createdByUserId = user._id;
+    wff.systemId = system._id;
+    wff.createdByUserId = user._id;
+    setvar.systemId = system._id;
+    setvar.createdByUserId = user._id;
+    alpha.type = SymbolType.Variable;
+    alpha.systemId = system._id;
+    alpha.createdByUserId = user._id;
+    a.type = SymbolType.Variable;
+    a.systemId = system._id;
+    a.createdByUserId = user._id;
+    system.createdByUserId = user._id;
+
+    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
+    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
+    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
+    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+
+    statementRepositoryMock.findOneBy.mockReturnValueOnce(conflictStatement);
+    symbolRepositoryMock.find.mockReturnValueOnce([
+      turnstile,
+      wff,
+      setvar,
+      alpha,
+      a
+    ]);
+    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
+    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+
+    const token = app.get(TokenService).generateToken(user._id);
+
+    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title,
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [alpha._id, a._id]
+      ],
+      variableTypeHypotheses: [
+        [wff._id, alpha._id],
+        [setvar._id, a._id]
+      ],
+      logicalHypotheses: [
+        [
+          turnstile._id,
+          alpha._id
+        ]
+      ],
+      assertion: [
+        turnstile._id,
+        a._id
+      ]
+    });
+
+    expectCorrectResponse(response, HttpStatus.CONFLICT, {
+      error: 'Conflict',
+      message: 'Statements in the same system must have a unique title.',
+      statusCode: HttpStatus.CONFLICT
+    });
+  });
+
   it('fails if any variable type hypothesis has a first element that is a variable symbol', async (): Promise<void> => {
     const wff = new SymbolEntity();
     const setvar = new SymbolEntity();
@@ -665,84 +743,6 @@ describe('Create Statement', (): void => {
       error: 'Unprocessable Entity',
       message: 'Invalid variable type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
-  it('fails if a statement has the same title', async (): Promise<void> => {
-    const title = 'Test';
-
-    const conflictStatement = new StatementEntity();
-    const turnstile = new SymbolEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
-    const system = new SystemEntity();
-    const user = new UserEntity();
-
-    conflictStatement.title = title;
-    conflictStatement.systemId = system._id;
-    conflictStatement.createdByUserId = user._id;
-    turnstile.systemId = system._id;
-    turnstile.createdByUserId = user._id;
-    wff.systemId = system._id;
-    wff.createdByUserId = user._id;
-    setvar.systemId = system._id;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = system._id;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = system._id;
-    a.createdByUserId = user._id;
-    system.createdByUserId = user._id;
-
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(conflictStatement);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
-      wff,
-      setvar,
-      alpha,
-      a
-    ]);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      title,
-      description: 'This is a test.',
-      distinctVariableRestrictions: [
-        [alpha._id, a._id]
-      ],
-      variableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [setvar._id, a._id]
-      ],
-      logicalHypotheses: [
-        [
-          turnstile._id,
-          alpha._id
-        ]
-      ],
-      assertion: [
-        turnstile._id,
-        a._id
-      ]
-    });
-
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
-      error: 'Conflict',
-      message: 'Statements in the same system must have a unique title.',
-      statusCode: HttpStatus.CONFLICT
     });
   });
 
