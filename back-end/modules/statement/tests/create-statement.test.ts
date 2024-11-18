@@ -349,69 +349,6 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails if a symbol used does not exist in the system', async (): Promise<void> => {
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
-    const system = new SystemEntity();
-    const user = new UserEntity();
-
-    wff.systemId = system._id;
-    wff.createdByUserId = user._id;
-    setvar.systemId = system._id;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = system._id;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.createdByUserId = user._id;
-    system.createdByUserId = user._id;
-
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const systemRepositoryMock = app.get(getRepositoryToken(SystemEntity)) as SystemRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      wff,
-      setvar,
-      alpha
-    ]);
-    systemRepositoryMock.findOneBy.mockReturnValueOnce(system);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).post(`/system/${system._id}/statement`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      title: 'Test',
-      description: 'This is a test.',
-      distinctVariableRestrictions: [
-        [wff._id, setvar._id],
-        [alpha._id, wff._id]
-      ],
-      variableTypeHypotheses: [
-        [alpha._id, wff._id],
-        [wff._id, setvar._id]
-      ],
-      logicalHypotheses: [
-        [
-          alpha._id
-        ]
-      ],
-      assertion: [
-        a._id
-      ]
-    });
-
-    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
-      error: 'Not Found',
-      message: 'Symbol not found.',
-      statusCode: HttpStatus.NOT_FOUND
-    });
-  });
-
   it('fails if a statement has the same title', async (): Promise<void> => {
     const title = 'Test';
 
@@ -487,6 +424,97 @@ describe('Create Statement', (): void => {
       error: 'Conflict',
       message: 'Statements in the same system must have a unique title.',
       statusCode: HttpStatus.CONFLICT
+    });
+  });
+
+  it('fails if a symbol used does not exist in the system', async (): Promise<void> => {
+    const title = 'Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const setvarSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    setvarSymbol._id = setvarSymbolId;
+    setvarSymbol.systemId = systemId;
+    setvarSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      setvarSymbol,
+      alphaSymbol
+    ]);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title,
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [turnstileSymbolId, setvarSymbolId]
+      ],
+      variableTypeHypotheses: [
+        [alphaSymbolId, setvarSymbolId]
+      ],
+      logicalHypotheses: [
+        [aSymbolId, alphaSymbolId]
+      ],
+      assertion: [
+        alphaSymbolId,
+        aSymbolId
+      ]
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [alphaSymbolId, aSymbolId, aSymbolId, alphaSymbolId, alphaSymbolId, setvarSymbolId, turnstileSymbolId, setvarSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    expect(body).toEqual({
+      error: 'Not Found',
+      message: 'Symbol not found.',
+      statusCode: HttpStatus.NOT_FOUND
     });
   });
 
