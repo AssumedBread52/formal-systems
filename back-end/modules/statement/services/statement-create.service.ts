@@ -2,7 +2,6 @@ import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { InvalidSymbolPrefixException } from '@/statement/exceptions/invalid-symbol-prefix.exception';
 import { InvalidVariableTypeException } from '@/statement/exceptions/invalid-variable-type.exception';
 import { MissingVariableTypeHypothesisException } from '@/statement/exceptions/missing-variable-type-hypothesis.exception';
-import { StatementUniqueTitleException } from '@/statement/exceptions/statement-unique-title.exception';
 import { NewStatementPayload } from '@/statement/payloads/new-statement.payload';
 import { StatementEntity } from '@/statement/statement.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
@@ -13,10 +12,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
+import { ValidateService } from './validate.service';
 
 @Injectable()
 export class StatementCreateService {
-  constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>, private symbolReadService: SymbolReadService, private systemReadService: SystemReadService) {
+  constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>, private symbolReadService: SymbolReadService, private systemReadService: SystemReadService, private validateService: ValidateService) {
   }
 
   async create(sessionUserId: ObjectId, systemId: any, payload: NewStatementPayload): Promise<StatementEntity> {
@@ -26,7 +26,9 @@ export class StatementCreateService {
       throw new OwnershipException();
     }
 
-    const { title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = payload;
+    const { title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = this.validateService.payloadCheck(payload, NewStatementPayload);
+
+    await this.validateService.conflictCheck(title, _id);
 
     const symbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
 
@@ -55,8 +57,6 @@ export class StatementCreateService {
     }), assertion.map((symbolId: string): ObjectId => {
       return new ObjectId(symbolId);
     }), symbolDictionary);
-
-    await this.conflictCheck(title, systemId);
 
     const statement = new StatementEntity();
 
@@ -99,17 +99,6 @@ export class StatementCreateService {
     statement.createdByUserId = sessionUserId;
 
     return this.statementRepository.save(statement);
-  }
-
-  private async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
-    const collision = await this.statementRepository.findOneBy({
-      title,
-      systemId
-    });
-
-    if (collision) {
-      throw new StatementUniqueTitleException();
-    }
   }
 
   private processabilityCheck(distinctVariableRestrictions: [ObjectId, ObjectId][], variableTypeHypotheses: [ObjectId, ObjectId][], logicalHypotheses: ObjectId[][], assertion: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): void {
