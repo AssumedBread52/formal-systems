@@ -20,7 +20,27 @@ export class StatementService {
   async create(newStatementPayload: NewStatementPayload, systemId: ObjectId, sessionUserId: ObjectId, symbolDictionary: Record<string, SymbolEntity>): Promise<StatementEntity> {
     const { title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = newStatementPayload;
 
-    this.processabilityCheck(distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, symbolDictionary);
+    this.processabilityCheck(distinctVariableRestrictions.map((distinctVariableRestriction: [string, string]): [ObjectId, ObjectId] => {
+      const [first, second] = distinctVariableRestriction;
+
+      return [
+        new ObjectId(first),
+        new ObjectId(second)
+      ];
+    }), variableTypeHypotheses.map((variableTypeHypothesis: [string, string]): [ObjectId, ObjectId] => {
+      const [type, variable] = variableTypeHypothesis;
+
+      return [
+        new ObjectId(type),
+        new ObjectId(variable)
+      ];
+    }), logicalHypotheses.map((logicalHypothesis: [string, ...string[]]): ObjectId[] => {
+      return logicalHypothesis.map((symbolId: string): ObjectId => {
+        return new ObjectId(symbolId);
+      });
+    }), assertion.map((symbolId: string): ObjectId => {
+      return new ObjectId(symbolId);
+    }), symbolDictionary);
 
     await this.conflictCheck(title, systemId);
 
@@ -28,10 +48,30 @@ export class StatementService {
 
     statement.title = title;
     statement.description = description;
-    statement.distinctVariableRestrictions = distinctVariableRestrictions;
-    statement.variableTypeHypotheses = variableTypeHypotheses;
-    statement.logicalHypotheses = logicalHypotheses;
-    statement.assertion = assertion;
+    statement.distinctVariableRestrictions = distinctVariableRestrictions.map((distinctVariableRestriction: [string, string]): [ObjectId, ObjectId] => {
+      const [first, second] = distinctVariableRestriction;
+
+      return [
+        new ObjectId(first),
+        new ObjectId(second)
+      ];
+    });
+    statement.variableTypeHypotheses = variableTypeHypotheses.map((variableTypeHypothesis: [string, string]): [ObjectId, ObjectId] => {
+      const [type, variable] = variableTypeHypothesis;
+
+      return [
+        new ObjectId(type),
+        new ObjectId(variable)
+      ];
+    });
+    statement.logicalHypotheses = logicalHypotheses.map((logicalHypothesis: [string, ...string[]]): ObjectId[] => {
+      return logicalHypothesis.map((symbolId: string): ObjectId => {
+        return new ObjectId(symbolId);
+      });
+    });
+    statement.assertion = assertion.map((symbolId: string): ObjectId => {
+      return new ObjectId(symbolId);
+    });
     statement.systemId = systemId;
     statement.createdByUserId = sessionUserId;
 

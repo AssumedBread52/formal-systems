@@ -111,7 +111,9 @@ export class StatementController {
 
     const symbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
 
-    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds, {});
+    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds.map((symbolId: string): ObjectId => {
+      return new ObjectId(symbolId);
+    }), {});
 
     await this.statementService.create(newStatementPayload, systemId, sessionUserId, symbolDictionary);
   }
