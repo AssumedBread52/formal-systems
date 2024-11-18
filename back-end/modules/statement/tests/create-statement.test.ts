@@ -437,29 +437,12 @@ describe('Create Statement', (): void => {
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
     const system = new SystemEntity();
-    const turnstileSymbol = new SymbolEntity();
-    const setvarSymbol = new SymbolEntity();
-    const alphaSymbol = new SymbolEntity();
 
     user._id = createdByUserId;
     system._id = systemId;
     system.createdByUserId = createdByUserId;
-    turnstileSymbol._id = turnstileSymbolId;
-    turnstileSymbol.systemId = systemId;
-    turnstileSymbol.createdByUserId = createdByUserId;
-    setvarSymbol._id = setvarSymbolId;
-    setvarSymbol.systemId = systemId;
-    setvarSymbol.createdByUserId = createdByUserId;
-    alphaSymbol._id = alphaSymbolId;
-    alphaSymbol.type = SymbolType.Variable;
-    alphaSymbol.systemId = systemId;
-    alphaSymbol.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
-      turnstileSymbol,
-      setvarSymbol,
-      alphaSymbol
-    ]);
+    findBy.mockResolvedValueOnce([]);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
     findOneBy.mockResolvedValueOnce(null);
