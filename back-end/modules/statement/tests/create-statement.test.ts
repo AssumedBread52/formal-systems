@@ -25,7 +25,7 @@ describe('Create Statement', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`);
+    const response = await request(app.getHttpServer()).post('/system/1/statement');
 
     const { statusCode, body } = response;
 
@@ -47,7 +47,7 @@ describe('Create Statement', (): void => {
       setTimeout(resolve, 1000);
     });
 
-    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post('/system/1/statement').set('Cookie', [
       `token=${token}`
     ]);
 
@@ -67,7 +67,7 @@ describe('Create Statement', (): void => {
   it('fails with an invalid token', async (): Promise<void> => {
     const token = app.get(JwtService).sign({});
 
-    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post('/system/1/statement').set('Cookie', [
       `token=${token}`
     ]);
 
@@ -94,7 +94,7 @@ describe('Create Statement', (): void => {
       id: userId
     });
 
-    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`).set('Cookie', [
+    const response = await request(app.getHttpServer()).post('/system/1/statement').set('Cookie', [
       `token=${token}`
     ]);
 
