@@ -115,6 +115,44 @@ describe('Create Statement', (): void => {
     });
   });
 
+  it('fails if the system is not found', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const userId = new ObjectId();
+    const user = new UserEntity();
+
+    user._id = userId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    expect(body).toEqual({
+      error: 'Not Found',
+      message: 'System not found.',
+      statusCode: HttpStatus.NOT_FOUND
+    });
+  });
+
   it('fails if the user did not create the system', async (): Promise<void> => {
     const systemId = new ObjectId();
     const userId = new ObjectId();
