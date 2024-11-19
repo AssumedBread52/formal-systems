@@ -24,6 +24,80 @@ describe('Create Statement', (): void => {
     app = await createTestApp();
   });
 
+  it('fails if not all symbols exist in the system', async (): Promise<void> => {
+    const title = 'Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const wffSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findBy.mockResolvedValueOnce([]);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title,
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [wffSymbolId, turnstileSymbolId]
+      ],
+      variableTypeHypotheses: [
+        [alphaSymbolId, turnstileSymbolId]
+      ],
+      logicalHypotheses: [
+        [alphaSymbolId, turnstileSymbolId]
+      ],
+      assertion: [
+        aSymbolId,
+        turnstileSymbolId
+      ]
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, turnstileSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    expect(body).toEqual({
+      error: 'Not Found',
+      message: 'Symbol not found.',
+      statusCode: HttpStatus.NOT_FOUND
+    });
+  });
+
   it('fails if distinct variable restriction ends with a constant symbol', async (): Promise<void> => {
     const title = 'Test Statement';
     const turnstileSymbolId = new ObjectId();
