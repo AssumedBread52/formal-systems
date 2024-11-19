@@ -55,7 +55,7 @@ export class ValidateService extends BaseValidateService {
       if (SymbolType.Constant !== symbolDictionary[type].type) {
         throw new InvalidSymbolTypeException();
       }
-      
+
       if (SymbolType.Variable !== symbolDictionary[variable].type) {
         throw new InvalidSymbolTypeException();
       }
