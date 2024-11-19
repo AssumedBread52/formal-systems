@@ -79,6 +79,121 @@ describe('Create Statement', (): void => {
     });
   });
 
+  it('fails with in an invalid assertion', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test Statement',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      variableTypeHypotheses: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      logicalHypotheses: [
+        [new ObjectId()]
+      ],
+      assertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in assertion must be a mongodb id',
+        'assertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with in an invalid assertion', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test Statement',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      variableTypeHypotheses: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      logicalHypotheses: [
+        [new ObjectId()]
+      ],
+      assertion: [
+        'invalid'
+      ]
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in assertion must be a mongodb id'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
   it('fails if the title is not unique in the system', async (): Promise<void> => {
     const title = 'Test Statement';
     const systemId = new ObjectId();
