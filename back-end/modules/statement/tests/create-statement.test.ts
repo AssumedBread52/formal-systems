@@ -115,6 +115,39 @@ describe('Create Statement', (): void => {
     });
   });
 
+  it('fails with an invalid system ID', async (): Promise<void> => {
+    const userId = new ObjectId();
+    const user = new UserEntity();
+
+    user._id = userId;
+
+    findOneBy.mockResolvedValueOnce(user);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer()).post('/system/1/statement').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Invalid Object ID.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
   it('fails if the system is not found', async (): Promise<void> => {
     const systemId = new ObjectId();
     const userId = new ObjectId();
