@@ -24,6 +24,61 @@ describe('Create Statement', (): void => {
     app = await createTestApp();
   });
 
+  it('fails if the user did not create the system', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const userId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = userId;
+    system._id = systemId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test Statement',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      variableTypeHypotheses: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      logicalHypotheses: [
+        [new ObjectId()]
+      ],
+      assertion: [
+        new ObjectId()
+      ]
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.FORBIDDEN);
+    expect(body).toEqual({
+      error: 'Forbidden',
+      message: 'Write actions require user ownership.',
+      statusCode: HttpStatus.FORBIDDEN
+    });
+  });
+
   it('fails if the title is not unique in the system', async (): Promise<void> => {
     const title = 'Test Statement';
     const systemId = new ObjectId();
