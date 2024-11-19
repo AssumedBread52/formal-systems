@@ -28,7 +28,6 @@ describe('Create Statement', (): void => {
     const title = 'Test Statement';
     const turnstileSymbolId = new ObjectId();
     const wffSymbolId = new ObjectId();
-    const setvarSymbolId = new ObjectId();
     const alphaSymbolId = new ObjectId();
     const aSymbolId = new ObjectId();
     const systemId = new ObjectId();
@@ -37,7 +36,6 @@ describe('Create Statement', (): void => {
     const system = new SystemEntity();
     const turnstileSymbol = new SymbolEntity();
     const wffSymbol = new SymbolEntity();
-    const setvarSymbol = new SymbolEntity();
     const alphaSymbol = new SymbolEntity();
     const aSymbol = new SymbolEntity();
 
@@ -50,9 +48,6 @@ describe('Create Statement', (): void => {
     wffSymbol._id = wffSymbolId;
     wffSymbol.systemId = systemId;
     wffSymbol.createdByUserId = createdByUserId;
-    setvarSymbol._id = setvarSymbolId;
-    setvarSymbol.systemId = systemId;
-    setvarSymbol.createdByUserId = createdByUserId;
     alphaSymbol._id = alphaSymbolId;
     alphaSymbol.type = SymbolType.Variable;
     alphaSymbol.systemId = systemId;
@@ -65,7 +60,6 @@ describe('Create Statement', (): void => {
     findBy.mockResolvedValueOnce([
       turnstileSymbol,
       wffSymbol,
-      setvarSymbol,
       alphaSymbol,
       aSymbol
     ]);
@@ -102,7 +96,7 @@ describe('Create Statement', (): void => {
     expect(findBy).toHaveBeenCalledTimes(1);
     expect(findBy).toHaveBeenNthCalledWith(1, {
       _id: {
-        $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, setvarSymbolId, aSymbolId, alphaSymbolId, aSymbolId]
+        $in: [aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, alphaSymbolId, aSymbolId]
       },
       systemId
     });
@@ -131,7 +125,6 @@ describe('Create Statement', (): void => {
     const title = 'Test Statement';
     const turnstileSymbolId = new ObjectId();
     const wffSymbolId = new ObjectId();
-    const setvarSymbolId = new ObjectId();
     const alphaSymbolId = new ObjectId();
     const aSymbolId = new ObjectId();
     const systemId = new ObjectId();
@@ -140,7 +133,6 @@ describe('Create Statement', (): void => {
     const system = new SystemEntity();
     const turnstileSymbol = new SymbolEntity();
     const wffSymbol = new SymbolEntity();
-    const setvarSymbol = new SymbolEntity();
     const alphaSymbol = new SymbolEntity();
     const aSymbol = new SymbolEntity();
 
@@ -153,9 +145,6 @@ describe('Create Statement', (): void => {
     wffSymbol._id = wffSymbolId;
     wffSymbol.systemId = systemId;
     wffSymbol.createdByUserId = createdByUserId;
-    setvarSymbol._id = setvarSymbolId;
-    setvarSymbol.systemId = systemId;
-    setvarSymbol.createdByUserId = createdByUserId;
     alphaSymbol._id = alphaSymbolId;
     alphaSymbol.type = SymbolType.Variable;
     alphaSymbol.systemId = systemId;
@@ -168,7 +157,6 @@ describe('Create Statement', (): void => {
     findBy.mockResolvedValueOnce([
       turnstileSymbol,
       wffSymbol,
-      setvarSymbol,
       alphaSymbol,
       aSymbol
     ]);
@@ -206,7 +194,7 @@ describe('Create Statement', (): void => {
     expect(findBy).toHaveBeenCalledTimes(1);
     expect(findBy).toHaveBeenNthCalledWith(1, {
       _id: {
-        $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, setvarSymbolId, aSymbolId, alphaSymbolId, aSymbolId]
+        $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, alphaSymbolId, aSymbolId]
       },
       systemId
     });
