@@ -24,6 +24,97 @@ describe('Create Statement', (): void => {
     app = await createTestApp();
   });
 
+  it('fails without a token', async (): Promise<void> => {
+    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
+  it('fails with an expired token', async (): Promise<void> => {
+    const token = app.get(JwtService).sign({});
+
+    await new Promise((resolve: (value: unknown) => void): void => {
+      setTimeout(resolve, 1000);
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
+  it('fails with an invalid token', async (): Promise<void> => {
+    const token = app.get(JwtService).sign({});
+
+    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
+  it('fails if the user ID in the token payload does not match a user', async (): Promise<void> => {
+    const userId = new ObjectId();
+
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${new ObjectId()}/statement`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
   it('fails if the user did not create the system', async (): Promise<void> => {
     const systemId = new ObjectId();
     const userId = new ObjectId();
@@ -42,12 +133,7 @@ describe('Create Statement', (): void => {
 
     const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
       `token=${token}`
-    ]).send({
-      distinctVariableRestrictions: 'invalid',
-      variableTypeHypotheses: 'invalid',
-      logicalHypotheses: 'invalid',
-      assertion: 'invalid'
-    });
+    ]);
 
     const { statusCode, body } = response;
 
