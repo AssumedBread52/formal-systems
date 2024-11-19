@@ -24,6 +24,72 @@ describe('Create Statement', (): void => {
     app = await createTestApp();
   });
 
+  it('fails if the title is not unique in the system', async (): Promise<void> => {
+    const title = 'Test Statement';
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+    const conflictStatement = new StatementEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+    conflictStatement.title = title;
+    conflictStatement.systemId = systemId;
+    conflictStatement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(conflictStatement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title,
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      variableTypeHypotheses: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      logicalHypotheses: [
+        [new ObjectId()]
+      ],
+      assertion: [
+        new ObjectId()
+      ]
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.CONFLICT);
+    expect(body).toEqual({
+      error: 'Conflict',
+      message: 'Statements in the same system must have a unique title.',
+      statusCode: HttpStatus.CONFLICT
+    });
+  });
+
   it('fails if not all symbols exist in the system', async (): Promise<void> => {
     const title = 'Test Statement';
     const turnstileSymbolId = new ObjectId();
