@@ -24,6 +24,194 @@ describe('Create Statement', (): void => {
     app = await createTestApp();
   });
 
+  it('fails if type hypothesis uses a variable as a type', async (): Promise<void> => {
+    const title = 'Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      alphaSymbol,
+      aSymbol
+    ]);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title,
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [alphaSymbolId, aSymbolId]
+      ],
+      variableTypeHypotheses: [
+        [alphaSymbolId, turnstileSymbolId]
+      ],
+      logicalHypotheses: [
+        [alphaSymbolId, turnstileSymbolId]
+      ],
+      assertion: [
+        aSymbolId,
+        turnstileSymbolId
+      ]
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Invalid symbol type.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails if type hypothesis types a constant symbol', async (): Promise<void> => {
+    const title = 'Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const wffSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const wffSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    wffSymbol._id = wffSymbolId;
+    wffSymbol.systemId = systemId;
+    wffSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      wffSymbol,
+      alphaSymbol,
+      aSymbol
+    ]);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title,
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [alphaSymbolId, aSymbolId]
+      ],
+      variableTypeHypotheses: [
+        [wffSymbolId, turnstileSymbolId]
+      ],
+      logicalHypotheses: [
+        [alphaSymbolId, turnstileSymbolId]
+      ],
+      assertion: [
+        aSymbolId,
+        turnstileSymbolId
+      ]
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Invalid symbol type.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
   it('fails with an invalid symbol prefix in a logical hypothesis', async (): Promise<void> => {
     const title = 'Test Statement';
     const turnstileSymbolId = new ObjectId();
