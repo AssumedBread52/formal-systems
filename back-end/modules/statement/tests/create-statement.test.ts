@@ -43,20 +43,10 @@ describe('Create Statement', (): void => {
     const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
       `token=${token}`
     ]).send({
-      title: 'Test Statement',
-      description: 'This is a test.',
-      distinctVariableRestrictions: [
-        [new ObjectId(), new ObjectId()]
-      ],
-      variableTypeHypotheses: [
-        [new ObjectId(), new ObjectId()]
-      ],
-      logicalHypotheses: [
-        [new ObjectId()]
-      ],
-      assertion: [
-        new ObjectId()
-      ]
+      distinctVariableRestrictions: 'invalid',
+      variableTypeHypotheses: 'invalid',
+      logicalHypotheses: 'invalid',
+      assertion: 'invalid'
     });
 
     const { statusCode, body } = response;
