@@ -79,6 +79,429 @@ describe('Create Statement', (): void => {
     });
   });
 
+  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test Statement',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      variableTypeHypotheses: 'invalid',
+      logicalHypotheses: 'invalid',
+      assertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in variableTypeHypotheses must be a distinct pair of mongodb ids',
+        'variableTypeHypotheses must be an array',
+        'All variableTypeHypotheses\'s elements must be unique',
+        'each value in each value in logicalHypotheses must be a mongodb id',
+        'logicalHypotheses must be an array',
+        'All logicalHypotheses\'s elements must be unique',
+        'each value in logicalHypotheses must contain at least 1 elements',
+        'each value in assertion must be a mongodb id',
+        'assertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test Statement',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      variableTypeHypotheses: [
+        'invalid',
+        'invalid'
+      ],
+      logicalHypotheses: 'invalid',
+      assertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in variableTypeHypotheses must be a distinct pair of mongodb ids',
+        'All variableTypeHypotheses\'s elements must be unique',
+        'each value in each value in logicalHypotheses must be a mongodb id',
+        'logicalHypotheses must be an array',
+        'All logicalHypotheses\'s elements must be unique',
+        'each value in logicalHypotheses must contain at least 1 elements',
+        'each value in assertion must be a mongodb id',
+        'assertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test Statement',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      variableTypeHypotheses: [
+        ['invalid', 'invalid', 'invalid']
+      ],
+      logicalHypotheses: 'invalid',
+      assertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in variableTypeHypotheses must be a distinct pair of mongodb ids',
+        'each value in each value in logicalHypotheses must be a mongodb id',
+        'logicalHypotheses must be an array',
+        'All logicalHypotheses\'s elements must be unique',
+        'each value in logicalHypotheses must contain at least 1 elements',
+        'each value in assertion must be a mongodb id',
+        'assertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test Statement',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      variableTypeHypotheses: [
+        ['invalid']
+      ],
+      logicalHypotheses: 'invalid',
+      assertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in variableTypeHypotheses must be a distinct pair of mongodb ids',
+        'each value in each value in logicalHypotheses must be a mongodb id',
+        'logicalHypotheses must be an array',
+        'All logicalHypotheses\'s elements must be unique',
+        'each value in logicalHypotheses must contain at least 1 elements',
+        'each value in assertion must be a mongodb id',
+        'assertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test Statement',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      variableTypeHypotheses: [
+        ['invalid', 'invalid']
+      ],
+      logicalHypotheses: 'invalid',
+      assertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in variableTypeHypotheses must be a distinct pair of mongodb ids',
+        'each value in each value in logicalHypotheses must be a mongodb id',
+        'logicalHypotheses must be an array',
+        'All logicalHypotheses\'s elements must be unique',
+        'each value in logicalHypotheses must contain at least 1 elements',
+        'each value in assertion must be a mongodb id',
+        'assertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test Statement',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      variableTypeHypotheses: [
+        [new ObjectId(), 'invalid']
+      ],
+      logicalHypotheses: 'invalid',
+      assertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in variableTypeHypotheses must be a distinct pair of mongodb ids',
+        'each value in each value in logicalHypotheses must be a mongodb id',
+        'logicalHypotheses must be an array',
+        'All logicalHypotheses\'s elements must be unique',
+        'each value in logicalHypotheses must contain at least 1 elements',
+        'each value in assertion must be a mongodb id',
+        'assertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+    const symbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).post(`/system/${systemId}/statement`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      title: 'Test Statement',
+      description: 'This is a test.',
+      distinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      variableTypeHypotheses: [
+        [symbolId, symbolId]
+      ],
+      logicalHypotheses: 'invalid',
+      assertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in variableTypeHypotheses must be a distinct pair of mongodb ids',
+        'each value in each value in logicalHypotheses must be a mongodb id',
+        'logicalHypotheses must be an array',
+        'All logicalHypotheses\'s elements must be unique',
+        'each value in logicalHypotheses must contain at least 1 elements',
+        'each value in assertion must be a mongodb id',
+        'assertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
   it('fails with in an invalid logical hypothesis', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
