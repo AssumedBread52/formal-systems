@@ -13,7 +13,7 @@ export class StatementCreateService {
   constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>, private systemReadService: SystemReadService, private validateService: ValidateService) {
   }
 
-  async create(sessionUserId: ObjectId, systemId: any, payload: NewStatementPayload): Promise<StatementEntity> {
+  async create(sessionUserId: ObjectId, systemId: any, payload: any): Promise<StatementEntity> {
     const { _id, createdByUserId } = await this.systemReadService.readById(systemId);
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
@@ -65,7 +65,7 @@ export class StatementCreateService {
         return new ObjectId(symbolId);
       })
     ];
-    statement.systemId = systemId;
+    statement.systemId = _id;
     statement.createdByUserId = sessionUserId;
 
     return this.statementRepository.save(statement);
