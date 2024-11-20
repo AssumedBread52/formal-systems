@@ -3,7 +3,7 @@ import { SymbolEntity } from '@/symbol/symbol.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
-import { MongoRepository, RootFilterOperators } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { InvalidSymbolPrefixException } from './exceptions/invalid-symbol-prefix.exception';
 import { InvalidVariableTypeException } from './exceptions/invalid-variable-type.exception';
 import { MissingVariableTypeHypothesisException } from './exceptions/missing-variable-type-hypothesis.exception';
@@ -20,25 +20,6 @@ export class StatementService {
     return this.statementRepository.findOneBy({
       _id: statementId,
       systemId
-    });
-  }
-
-  readStatements(page: number, count: number, keywords: string[], systemId: ObjectId): Promise<[StatementEntity[], number]> {
-    const where = {
-      systemId
-    } as RootFilterOperators<StatementEntity>;
-
-    if (0 !== keywords.length) {
-      where.$text = {
-        $caseSensitive: false,
-        $search: keywords.join(',')
-      };
-    }
-
-    return this.statementRepository.findAndCount({
-      skip: (page - 1) * count,
-      take: count,
-      where
     });
   }
 

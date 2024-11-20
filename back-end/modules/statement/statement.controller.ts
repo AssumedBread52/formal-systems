@@ -9,15 +9,15 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, Va
 import { ObjectId } from 'mongodb';
 import { StatementNotFoundException } from './exceptions/statement-not-found.exception';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
-import { SearchPayload } from './payloads/search.payload';
 import { StatementPayload } from './payloads/statement.payload';
 import { StatementCreateService } from './services/statement-create.service';
+import { StatementReadService } from './services/statement-read.service';
 import { StatementEntity } from './statement.entity';
 import { StatementService } from './statement.service';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
-  constructor(private statementCreateService: StatementCreateService, private statementService: StatementService, private symbolReadService: SymbolReadService) {
+  constructor(private statementCreateService: StatementCreateService, private statementReadService: StatementReadService, private statementService: StatementService, private symbolReadService: SymbolReadService) {
   }
 
   @UseGuards(JwtGuard)
@@ -41,10 +41,8 @@ export class StatementController {
   }
 
   @Get()
-  async getStatements(@ObjectIdDecorator('systemId') systemId: ObjectId, @Query(new ValidationPipe({ transform: true })) searchPayload: SearchPayload): Promise<PaginatedResultsPayload<StatementEntity, StatementPayload>> {
-    const { page, count, keywords } = searchPayload;
-
-    const [results, total] = await this.statementService.readStatements(page, count, keywords, systemId);
+  async getStatements(@Param('systemId') systemId: string, @Query() payload: any): Promise<PaginatedResultsPayload<StatementEntity, StatementPayload>> {
+    const [results, total] = await this.statementReadService.readStatements(systemId, payload);
 
     return new PaginatedResultsPayload(StatementPayload, results, total);
   }
