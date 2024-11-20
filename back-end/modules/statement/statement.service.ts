@@ -1,10 +1,8 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { plainToClass } from 'class-transformer';
-import { validateSync } from 'class-validator';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 import { InvalidSymbolPrefixException } from './exceptions/invalid-symbol-prefix.exception';
@@ -19,15 +17,7 @@ export class StatementService {
   constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>, private symbolReadService: SymbolReadService) {
   }
 
-  async update(statement: StatementEntity, payload: any): Promise<StatementEntity> {
-    const editStatementPayload = plainToClass(EditStatementPayload, payload);
-
-    const errors = validateSync(editStatementPayload);
-
-    if (0 !== errors.length) {
-      throw new BadRequestException();
-    }
-
+  async update(statement: StatementEntity, editStatementPayload: EditStatementPayload): Promise<StatementEntity> {
     const { title, systemId } = statement;
     const { newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion } = editStatementPayload;
 
