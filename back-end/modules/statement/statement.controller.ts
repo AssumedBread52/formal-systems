@@ -1,7 +1,6 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
-import { ObjectIdDecorator } from '@/common/decorators/object-id.decorator';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
@@ -15,6 +14,8 @@ import { StatementDeleteService } from './services/statement-delete.service';
 import { StatementReadService } from './services/statement-read.service';
 import { StatementEntity } from './statement.entity';
 import { StatementService } from './statement.service';
+import { isMongoId } from 'class-validator';
+import { InvalidObjectIdException } from '@/common/exceptions/invalid-object-id.exception';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
@@ -45,8 +46,12 @@ export class StatementController {
 
   @UseGuards(JwtGuard)
   @Patch(':statementId')
-  async patchStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('statementId') statementId: ObjectId, @Body(new ValidationPipe({ transform: true })) editStatementPayload: EditStatementPayload): Promise<IdPayload> {
-    const statement = await this.statementService.readById(systemId, statementId);
+  async patchStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Body(new ValidationPipe({ transform: true })) editStatementPayload: EditStatementPayload): Promise<IdPayload> {
+    if (!isMongoId(systemId) || !isMongoId(statementId)) {
+      throw new InvalidObjectIdException();
+    }
+
+    const statement = await this.statementService.readById(new ObjectId(systemId), new ObjectId(statementId));
 
     if (!statement) {
       throw new StatementNotFoundException();
@@ -62,11 +67,11 @@ export class StatementController {
 
     const symbolIds = newAssertion.concat(...newDistinctVariableRestrictions, ...newVariableTypeHypotheses, ...newLogicalHypotheses);
 
-    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds, {});
+    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(new ObjectId(systemId), symbolIds, {});
 
     await this.statementService.update(statement, editStatementPayload, symbolDictionary);
 
-    return new IdPayload(statementId);
+    return new IdPayload(new ObjectId(statementId));
   }
 
   @UseGuards(JwtGuard)
