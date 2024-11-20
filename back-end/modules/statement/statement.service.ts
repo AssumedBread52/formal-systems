@@ -1,8 +1,11 @@
+import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { plainToClass } from 'class-transformer';
+import { validateSync } from 'class-validator';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 import { InvalidSymbolPrefixException } from './exceptions/invalid-symbol-prefix.exception';
@@ -11,41 +14,19 @@ import { MissingVariableTypeHypothesisException } from './exceptions/missing-var
 import { StatementUniqueTitleException } from './exceptions/statement-unique-title.exception';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { StatementEntity } from './statement.entity';
-import { OwnershipException } from '@/auth/exceptions/ownership.exception';
-import { StatementNotFoundException } from './exceptions/statement-not-found.exception';
-import { isMongoId, validateSync } from 'class-validator';
-import { InvalidObjectIdException } from '@/common/exceptions/invalid-object-id.exception';
-import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class StatementService {
   constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>, private symbolReadService: SymbolReadService) {
   }
 
-  readById(systemId: ObjectId, statementId: ObjectId): Promise<StatementEntity | null> {
-    return this.statementRepository.findOneBy({
-      _id: statementId,
-      systemId
-    });
-  }
-
-  async update(sessionUserId: ObjectId, containingSystemId: any, statementId: any, payload: any): Promise<StatementEntity> {
-    if (!isMongoId(containingSystemId) || !isMongoId(statementId)) {
-      throw new InvalidObjectIdException();
-    }
-
+  async update(sessionUserId: ObjectId, statement: StatementEntity, payload: any): Promise<StatementEntity> {
     const editStatementPayload = plainToClass(EditStatementPayload, payload);
 
     const errors = validateSync(editStatementPayload);
 
     if (0 !== errors.length) {
       throw new BadRequestException();
-    }
-
-    const statement = await this.readById(new ObjectId(containingSystemId), new ObjectId(statementId));
-
-    if (!statement) {
-      throw new StatementNotFoundException();
     }
 
     const { title, systemId, createdByUserId } = statement;
