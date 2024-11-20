@@ -1,3 +1,4 @@
+import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { StatementEntity } from '@/statement/statement.entity';
 import { StatementService } from '@/statement/statement.service';
 import { Injectable } from '@nestjs/common';
@@ -12,6 +13,12 @@ export class StatementUpdateService {
   async update(sessionUserId: ObjectId, containingSystemId: any, statementId: any, payload: any): Promise<StatementEntity> {
     const statement = await this.statementReadService.readById(containingSystemId, statementId);
 
-    return this.statementService.update(sessionUserId, statement, payload);
+    const { createdByUserId } = statement;
+
+    if (createdByUserId.toString() !== sessionUserId.toString()) {
+      throw new OwnershipException();
+    }
+
+    return this.statementService.update(statement, payload);
   }
 };

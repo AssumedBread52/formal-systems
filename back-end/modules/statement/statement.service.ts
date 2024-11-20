@@ -1,4 +1,3 @@
-import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SymbolEntity } from '@/symbol/symbol.entity';
@@ -20,7 +19,7 @@ export class StatementService {
   constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>, private symbolReadService: SymbolReadService) {
   }
 
-  async update(sessionUserId: ObjectId, statement: StatementEntity, payload: any): Promise<StatementEntity> {
+  async update(statement: StatementEntity, payload: any): Promise<StatementEntity> {
     const editStatementPayload = plainToClass(EditStatementPayload, payload);
 
     const errors = validateSync(editStatementPayload);
@@ -29,15 +28,10 @@ export class StatementService {
       throw new BadRequestException();
     }
 
-    const { title, systemId, createdByUserId } = statement;
+    const { title, systemId } = statement;
     const { newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion } = editStatementPayload;
 
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new OwnershipException();
-    }
-
     const symbolIds = newAssertion.concat(...newDistinctVariableRestrictions, ...newVariableTypeHypotheses, ...newLogicalHypotheses);
-
 
     const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds, {});
 
