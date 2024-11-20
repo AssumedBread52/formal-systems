@@ -8,7 +8,6 @@ import { MongoRepository } from 'typeorm';
 import { InvalidSymbolPrefixException } from './exceptions/invalid-symbol-prefix.exception';
 import { InvalidVariableTypeException } from './exceptions/invalid-variable-type.exception';
 import { MissingVariableTypeHypothesisException } from './exceptions/missing-variable-type-hypothesis.exception';
-import { StatementUniqueTitleException } from './exceptions/statement-unique-title.exception';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { StatementEntity } from './statement.entity';
 
@@ -18,7 +17,7 @@ export class StatementService {
   }
 
   async update(statement: StatementEntity, editStatementPayload: EditStatementPayload): Promise<StatementEntity> {
-    const { title, systemId } = statement;
+    const { systemId } = statement;
     const { newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion } = editStatementPayload;
 
     const symbolIds = newAssertion.concat(...newDistinctVariableRestrictions, ...newVariableTypeHypotheses, ...newLogicalHypotheses);
@@ -26,10 +25,6 @@ export class StatementService {
     const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds, {});
 
     this.processabilityCheck(newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion, symbolDictionary);
-
-    if (title !== newTitle) {
-      await this.conflictCheck(newTitle, systemId);
-    }
 
     statement.title = newTitle;
     statement.description = newDescription;
@@ -50,17 +45,6 @@ export class StatementService {
     ];
 
     return this.statementRepository.save(statement);
-  }
-
-  private async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
-    const collision = await this.statementRepository.findOneBy({
-      title,
-      systemId
-    });
-
-    if (collision) {
-      throw new StatementUniqueTitleException();
-    }
   }
 
   private processabilityCheck(distinctVariableRestrictions: [ObjectId, ObjectId][], variableTypeHypotheses: [ObjectId, ObjectId][], logicalHypotheses: ObjectId[][], assertion: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): void {

@@ -15,13 +15,19 @@ export class StatementUpdateService {
   async update(sessionUserId: ObjectId, containingSystemId: any, statementId: any, payload: any): Promise<StatementEntity> {
     const statement = await this.statementReadService.readById(containingSystemId, statementId);
 
-    const { createdByUserId } = statement;
+    const { title, systemId, createdByUserId } = statement;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
     }
 
     const editStatementPayload = this.validateService.payloadCheck(payload, EditStatementPayload);
+
+    const { newTitle } = editStatementPayload;
+
+    if (title !== newTitle) {
+      await this.validateService.conflictCheck(newTitle, systemId);
+    }
 
     return this.statementService.update(statement, editStatementPayload);
   }
