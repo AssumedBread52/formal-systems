@@ -54,10 +54,6 @@ export class StatementService {
     return this.statementRepository.save(statement);
   }
 
-  delete(statement: StatementEntity): Promise<StatementEntity> {
-    return this.statementRepository.remove(statement);
-  }
-
   private async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
     const collision = await this.statementRepository.findOneBy({
       title,

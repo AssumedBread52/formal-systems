@@ -11,33 +11,22 @@ import { StatementNotFoundException } from './exceptions/statement-not-found.exc
 import { EditStatementPayload } from './payloads/edit-statement.payload';
 import { StatementPayload } from './payloads/statement.payload';
 import { StatementCreateService } from './services/statement-create.service';
+import { StatementDeleteService } from './services/statement-delete.service';
 import { StatementReadService } from './services/statement-read.service';
 import { StatementEntity } from './statement.entity';
 import { StatementService } from './statement.service';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
-  constructor(private statementCreateService: StatementCreateService, private statementReadService: StatementReadService, private statementService: StatementService, private symbolReadService: SymbolReadService) {
+  constructor(private statementCreateService: StatementCreateService, private statementDeleteService: StatementDeleteService, private statementReadService: StatementReadService, private statementService: StatementService, private symbolReadService: SymbolReadService) {
   }
 
   @UseGuards(JwtGuard)
   @Delete(':statementId')
-  async deleteStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('statementId') statementId: ObjectId): Promise<IdPayload> {
-    const statement = await this.statementService.readById(systemId, statementId);
+  async deleteStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string): Promise<StatementPayload> {
+    const statement = await this.statementDeleteService.delete(sessionUserId, systemId, statementId);
 
-    if (!statement) {
-      return new IdPayload(statementId);
-    }
-
-    const { createdByUserId } = statement;
-
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
-      throw new OwnershipException();
-    }
-
-    await this.statementService.delete(statement);
-
-    return new IdPayload(statementId);
+    return new StatementPayload(statement);
   }
 
   @Get()
