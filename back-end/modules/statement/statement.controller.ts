@@ -7,12 +7,12 @@ import { StatementPayload } from './payloads/statement.payload';
 import { StatementCreateService } from './services/statement-create.service';
 import { StatementDeleteService } from './services/statement-delete.service';
 import { StatementReadService } from './services/statement-read.service';
+import { StatementUpdateService } from './services/statement-update.service';
 import { StatementEntity } from './statement.entity';
-import { StatementService } from './statement.service';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
-  constructor(private statementCreateService: StatementCreateService, private statementDeleteService: StatementDeleteService, private statementReadService: StatementReadService, private statementService: StatementService) {
+  constructor(private statementCreateService: StatementCreateService, private statementDeleteService: StatementDeleteService, private statementReadService: StatementReadService, private statementUpdateService: StatementUpdateService) {
   }
 
   @UseGuards(JwtGuard)
@@ -40,7 +40,7 @@ export class StatementController {
   @UseGuards(JwtGuard)
   @Patch(':statementId')
   async patchStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Body() payload: any): Promise<StatementPayload> {
-    const updatedStatement = await this.statementService.update(sessionUserId, systemId, statementId, payload);
+    const updatedStatement = await this.statementUpdateService.update(sessionUserId, systemId, statementId, payload);
 
     return new StatementPayload(updatedStatement);
   }

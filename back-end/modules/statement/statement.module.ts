@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StatementCreateService } from './services/statement-create.service';
 import { StatementDeleteService } from './services/statement-delete.service';
 import { StatementReadService } from './services/statement-read.service';
+import { StatementUpdateService } from './services/statement-update.service';
 import { ValidateService } from './services/validate.service';
 import { StatementController } from './statement.controller';
 import { StatementEntity } from './statement.entity';
@@ -26,6 +27,7 @@ import { StatementService } from './statement.service';
     StatementDeleteService,
     StatementReadService,
     StatementService,
+    StatementUpdateService,
     ValidateService
   ]
 })
