@@ -213,11 +213,11 @@ describe('Delete Symbol', (): void => {
   it('fails if the user did not create the symbol', async (): Promise<void> => {
     const symbolId = new ObjectId();
     const systemId = new ObjectId();
-    const createdByUserId = new ObjectId();
+    const userId = new ObjectId();
     const user = new UserEntity();
     const symbol = new SymbolEntity();
 
-    user._id = createdByUserId;
+    user._id = userId;
     symbol._id = symbolId;
     symbol.systemId = systemId;
 
@@ -225,7 +225,7 @@ describe('Delete Symbol', (): void => {
     findOneBy.mockResolvedValueOnce(symbol);
 
     const token = app.get(JwtService).sign({
-      id: createdByUserId
+      id: userId
     });
 
     const response = await request(app.getHttpServer()).delete(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
@@ -236,7 +236,7 @@ describe('Delete Symbol', (): void => {
 
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: createdByUserId
+      _id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       _id: symbolId,
