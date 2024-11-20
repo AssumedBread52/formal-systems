@@ -1,10 +1,13 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
+import { InvalidObjectIdException } from '@/common/exceptions/invalid-object-id.exception';
 import { IdPayload } from '@/common/payloads/id.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
+import { isMongoId, validateSync } from 'class-validator';
 import { ObjectId } from 'mongodb';
 import { StatementNotFoundException } from './exceptions/statement-not-found.exception';
 import { EditStatementPayload } from './payloads/edit-statement.payload';
@@ -14,8 +17,6 @@ import { StatementDeleteService } from './services/statement-delete.service';
 import { StatementReadService } from './services/statement-read.service';
 import { StatementEntity } from './statement.entity';
 import { StatementService } from './statement.service';
-import { isMongoId } from 'class-validator';
-import { InvalidObjectIdException } from '@/common/exceptions/invalid-object-id.exception';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
@@ -46,9 +47,17 @@ export class StatementController {
 
   @UseGuards(JwtGuard)
   @Patch(':statementId')
-  async patchStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Body(new ValidationPipe({ transform: true })) editStatementPayload: EditStatementPayload): Promise<IdPayload> {
+  async patchStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Body() payload: any): Promise<IdPayload> {
     if (!isMongoId(systemId) || !isMongoId(statementId)) {
       throw new InvalidObjectIdException();
+    }
+
+    const editStatementPayload = plainToClass(EditStatementPayload, payload);
+
+    const errors = validateSync(editStatementPayload);
+
+    if (0 !== errors.length) {
+      throw new BadRequestException();
     }
 
     const statement = await this.statementService.readById(new ObjectId(systemId), new ObjectId(statementId));
