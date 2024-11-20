@@ -106,6 +106,7 @@ describe('Read Statement by ID', (): void => {
     const response = await request(app.getHttpServer()).get(`/system/${systemId}/statement/${statementId}`);
 
     const { statusCode, body } = response;
+
     const [prefix, ...expression] = assertion;
 
     expect(findOneBy).toHaveBeenCalledTimes(1);

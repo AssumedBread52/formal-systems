@@ -1,16 +1,15 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
-import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
+import { findAndCountMock } from '@/common/tests/mocks/find-and-count.mock';
 import { StatementEntity } from '@/statement/statement.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { StatementRepositoryMock } from './mocks/statement-repository.mock';
+import { RootFilterOperators } from 'typeorm';
 
 describe('Read Statements', (): void => {
-  getOrThrowMock();
-
+  const findAndCount = findAndCountMock();
+  const getOrThrow = getOrThrowMock();
   const badQueries = [
     ['?page=a', 'page must not be less than 1', 'page must be an integer number'],
     ['?page=5.4', 'page must be an integer number'],
@@ -34,78 +33,141 @@ describe('Read Statements', (): void => {
     app = await createTestApp();
   });
 
-  it('fails with an invalid system ID', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).get('/system/1/statement');
-
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
-      error: 'Unprocessable Entity',
-      message: 'Invalid Mongodb ID structure.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
   it.each(badQueries)('fails %s', async (badQuery: string, ...message: string[]): Promise<void> => {
-    const response = await request(app.getHttpServer()).get(`/system/${new ObjectId()}/statement${badQuery}`);
+    const response = await request(app.getHttpServer()).get(`/system/1/statement${badQuery}`);
 
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+    const { statusCode, body } = response;
+
+    expect(findAndCount).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
       error: 'Bad Request',
       message,
       statusCode: HttpStatus.BAD_REQUEST
     });
   });
 
+  it('fails with an invalid system ID', async (): Promise<void> => {
+    const response = await request(app.getHttpServer()).get('/system/1/statement');
+
+    const { statusCode, body } = response;
+
+    expect(findAndCount).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Invalid Object ID.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
   it.each(goodQueries)('succeeds %s', async (goodQuery: string): Promise<void> => {
-    const statement = new StatementEntity();
-
-    statement.distinctVariableRestrictions = [
+    const statementId = new ObjectId();
+    const title = 'Test Statement';
+    const description = 'This is a test.';
+    const distinctVariableRestrictions = [
       [new ObjectId(), new ObjectId()]
-    ];
-    statement.variableTypeHypotheses = [
+    ] as [ObjectId, ObjectId][];
+    const variableTypeHypotheses = [
       [new ObjectId(), new ObjectId()]
-    ];
-    statement.logicalHypotheses = [
+    ] as [ObjectId, ObjectId][];
+    const logicalHypotheses = [
       [new ObjectId()]
-    ];
-    statement.assertion = [
+    ] as [ObjectId, ...ObjectId[]][];
+    const assertion = [
       new ObjectId()
-    ];
+    ] as [ObjectId, ...ObjectId[]];
+    const proofAppearanceCount = 1;
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const statement = new StatementEntity();
+    const total = 1;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
+    statement._id = statementId;
+    statement.title = title;
+    statement.description = description;
+    statement.distinctVariableRestrictions = distinctVariableRestrictions;
+    statement.variableTypeHypotheses = variableTypeHypotheses;
+    statement.logicalHypotheses = logicalHypotheses;
+    statement.assertion = assertion;
+    statement.proofAppearanceCount = proofAppearanceCount;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    statementRepositoryMock.findAndCount.mockReturnValueOnce([[statement], 1]);
+    findAndCount.mockResolvedValueOnce([[statement], total]);
 
-    const response = await request(app.getHttpServer()).get(`/system/${new ObjectId()}/statement${goodQuery}`);
+    const response = await request(app.getHttpServer()).get(`/system/${systemId}/statement${goodQuery}`);
 
-    expectCorrectResponse(response, HttpStatus.OK, {
+    const { statusCode, body } = response;
+
+    const [prefix, ...expression] = assertion;
+
+    const urlSearchParams = new URLSearchParams(goodQuery);
+    const page = parseInt(urlSearchParams.get('page') ?? '1');
+    const count = parseInt(urlSearchParams.get('count') ?? '10');
+    const keywords = urlSearchParams.getAll('keywords[]');
+    const where = {
+      systemId
+    } as RootFilterOperators<StatementEntity>;
+
+    if (0 !== keywords.length) {
+      where.$text = {
+        $caseSensitive: false,
+        $search: keywords.join(',')
+      };
+    }
+
+    expect(findAndCount).toHaveBeenCalledTimes(1);
+    expect(findAndCount).toHaveBeenNthCalledWith(1, {
+      skip: (page - 1) * count,
+      take: count,
+      where
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual({
       results: [
         {
-          id: statement._id.toString(),
-          title: statement.title,
-          description: statement.description,
-          distinctVariableRestrictions: statement.distinctVariableRestrictions.map((distinctVariableRestriction: [ObjectId, ObjectId]): [string, string] => {
+          id: statementId.toString(),
+          title,
+          description,
+          distinctVariableRestrictions: distinctVariableRestrictions.map((distinctVariableRestriction: [ObjectId, ObjectId]): [string, string] => {
+            const [first, second] = distinctVariableRestriction;
+
             return [
-              distinctVariableRestriction[0].toString(),
-              distinctVariableRestriction[1].toString()
+              first.toString(),
+              second.toString()
             ];
           }),
-          variableTypeHypotheses: statement.variableTypeHypotheses.map((variableTypeHypothesis: [ObjectId, ObjectId]): [string, string] => {
+          variableTypeHypotheses: variableTypeHypotheses.map((variableTypeHypothesis: [ObjectId, ObjectId]): [string, string] => {
+            const [type, variable] = variableTypeHypothesis;
+
             return [
-              variableTypeHypothesis[0].toString(),
-              variableTypeHypothesis[1].toString()
+              type.toString(),
+              variable.toString()
             ];
           }),
-          logicalHypotheses: statement.logicalHypotheses.map((logicalHypothesis: ObjectId[]): string[] => {
-            return logicalHypothesis.map((symbolId: ObjectId): string => {
+          logicalHypotheses: logicalHypotheses.map((logicalHypothesis: [ObjectId, ...ObjectId[]]): [string, ...string[]] => {
+            const [prefix, ...expression] = logicalHypothesis;
+
+            return [
+              prefix.toString(),
+              ...expression.map((symbolId: ObjectId): string => {
+                return symbolId.toString();
+              })
+            ];
+          }),
+          assertion: [
+            prefix.toString(),
+            ...expression.map((symbolId: ObjectId): string => {
               return symbolId.toString();
-            });
-          }),
-          assertion: statement.assertion.map((symbolId: ObjectId): string => {
-            return symbolId.toString();
-          }),
-          proofAppearances: statement.proofAppearances,
-          proofSteps: statement.proofSteps,
-          systemId: statement.systemId.toString(),
-          createdByUserId: statement.createdByUserId.toString()
+            })
+          ],
+          proofAppearanceCount,
+          systemId: systemId.toString(),
+          createdByUserId: createdByUserId.toString()
         }
       ],
       total: 1
