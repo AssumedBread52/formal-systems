@@ -226,7 +226,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid title and description', async (): Promise<void> => {
+  it('fails with an invalid title and description', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -287,7 +287,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid distinct variable restriction', async (): Promise<void> => {
+  it('fails with an invalid distinct variable restriction', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -348,7 +348,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid distinct variable restriction', async (): Promise<void> => {
+  it('fails with an invalid distinct variable restriction', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -411,7 +411,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid distinct variable restriction', async (): Promise<void> => {
+  it('fails with an invalid distinct variable restriction', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -472,7 +472,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid distinct variable restriction', async (): Promise<void> => {
+  it('fails with an invalid distinct variable restriction', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -533,7 +533,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid distinct variable restriction', async (): Promise<void> => {
+  it('fails with an invalid distinct variable restriction', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -594,7 +594,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid distinct variable restriction', async (): Promise<void> => {
+  it('fails with an invalid distinct variable restriction', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -655,7 +655,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid distinct variable restriction', async (): Promise<void> => {
+  it('fails with an invalid distinct variable restriction', async (): Promise<void> => {
     const symbolId = new ObjectId();
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
@@ -717,7 +717,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+  it('fails with an invalid variable type hypothesis', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -777,7 +777,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+  it('fails with an invalid variable type hypothesis', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -839,7 +839,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+  it('fails with an invalid variable type hypothesis', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -899,7 +899,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+  it('fails with an invalid variable type hypothesis', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -959,7 +959,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+  it('fails with an invalid variable type hypothesis', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -1019,7 +1019,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+  it('fails with an invalid variable type hypothesis', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -1079,7 +1079,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid variable type hypothesis', async (): Promise<void> => {
+  it('fails with an invalid variable type hypothesis', async (): Promise<void> => {
     const symbolId = new ObjectId();
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
@@ -1140,7 +1140,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid logical hypothesis', async (): Promise<void> => {
+  it('fails with an invalid logical hypothesis', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -1199,7 +1199,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid logical hypothesis', async (): Promise<void> => {
+  it('fails with an invalid logical hypothesis', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -1260,7 +1260,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid logical hypothesis', async (): Promise<void> => {
+  it('fails with an invalid logical hypothesis', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -1320,7 +1320,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid assertion', async (): Promise<void> => {
+  it('fails with an invalid assertion', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -1377,7 +1377,7 @@ describe('Create Statement', (): void => {
     });
   });
 
-  it('fails with in an invalid assertion', async (): Promise<void> => {
+  it('fails with an invalid assertion', async (): Promise<void> => {
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();

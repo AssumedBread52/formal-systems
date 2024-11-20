@@ -16,7 +16,7 @@ describe('Read Symbol by ID', (): void => {
     app = await createTestApp();
   });
 
-  it('fails with in invalid symbol ID', async (): Promise<void> => {
+  it('fails with an invalid symbol ID', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).get('/system/1/symbol/1');
 
     const { statusCode, body } = response;
@@ -31,7 +31,7 @@ describe('Read Symbol by ID', (): void => {
     });
   });
 
-  it('fails with in invalid system ID', async (): Promise<void> => {
+  it('fails with an invalid system ID', async (): Promise<void> => {
     const response = await request(app.getHttpServer()).get(`/system/1/symbol/${new ObjectId()}`);
 
     const { statusCode, body } = response;
