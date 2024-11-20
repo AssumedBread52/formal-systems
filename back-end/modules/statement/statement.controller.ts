@@ -48,12 +48,8 @@ export class StatementController {
   }
 
   @Get(':statementId')
-  async getById(@ObjectIdDecorator('systemId') systemId: ObjectId, @ObjectIdDecorator('statementId') statementId: ObjectId): Promise<StatementPayload> {
-    const statement = await this.statementService.readById(systemId, statementId);
-
-    if (!statement) {
-      throw new StatementNotFoundException();
-    }
+  async getById(@Param('systemId') systemId: string, @Param('statementId') statementId: string): Promise<StatementPayload> {
+    const statement = await this.statementReadService.readById(systemId, statementId);
 
     return new StatementPayload(statement);
   }

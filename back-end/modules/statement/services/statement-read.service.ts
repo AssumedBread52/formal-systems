@@ -1,3 +1,4 @@
+import { StatementNotFoundException } from '@/statement/exceptions/statement-not-found.exception';
 import { SearchPayload } from '@/statement/payloads/search.payload';
 import { StatementEntity } from '@/statement/statement.entity';
 import { Injectable } from '@nestjs/common';
@@ -8,6 +9,19 @@ import { ValidateService } from './validate.service';
 @Injectable()
 export class StatementReadService {
   constructor(@InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>, private validateService: ValidateService) {
+  }
+
+  async readById(systemId: any, statementId: any): Promise<StatementEntity> {
+    const statement = await this.statementRepository.findOneBy({
+      _id: this.validateService.idCheck(statementId),
+      systemId: this.validateService.idCheck(systemId)
+    });
+
+    if (!statement) {
+      throw new StatementNotFoundException();
+    }
+
+    return statement;
   }
 
   readStatements(containingSystemId: any, payload: any): Promise<[StatementEntity[], number]> {
