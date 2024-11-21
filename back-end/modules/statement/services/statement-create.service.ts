@@ -28,6 +28,8 @@ export class StatementCreateService {
 
     await this.validateService.structureCheck(_id, newStatementPayload);
 
+    const [prefix, ...expression] = assertion;
+
     const statement = new StatementEntity();
 
     statement.title = title;
@@ -58,7 +60,6 @@ export class StatementCreateService {
         })
       ];
     });
-    const [prefix, ...expression] = assertion;
     statement.assertion = [
       new ObjectId(prefix),
       ...expression.map((symbolId: string): ObjectId => {
