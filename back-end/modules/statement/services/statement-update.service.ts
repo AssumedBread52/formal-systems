@@ -1,4 +1,5 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
+import { InUseException } from '@/statement/exceptions/in-use.exception';
 import { EditStatementPayload } from '@/statement/payloads/edit-statement.payload';
 import { StatementEntity } from '@/statement/statement.entity';
 import { Injectable } from '@nestjs/common';
@@ -16,10 +17,14 @@ export class StatementUpdateService {
   async update(sessionUserId: ObjectId, containingSystemId: any, statementId: any, payload: any): Promise<StatementEntity> {
     const statement = await this.statementReadService.readById(containingSystemId, statementId);
 
-    const { title, systemId, createdByUserId } = statement;
+    const { title, proofAppearanceCount, systemId, createdByUserId } = statement;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
+    }
+
+    if (proofAppearanceCount > 0) {
+      throw new InUseException();
     }
 
     const editStatementPayload = this.validateService.payloadCheck(payload, EditStatementPayload);
