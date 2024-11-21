@@ -9,7 +9,6 @@ import { StatementUpdateService } from './services/statement-update.service';
 import { ValidateService } from './services/validate.service';
 import { StatementController } from './statement.controller';
 import { StatementEntity } from './statement.entity';
-import { StatementService } from './statement.service';
 
 @Module({
   imports: [
@@ -26,7 +25,6 @@ import { StatementService } from './statement.service';
     StatementCreateService,
     StatementDeleteService,
     StatementReadService,
-    StatementService,
     StatementUpdateService,
     ValidateService
   ]
