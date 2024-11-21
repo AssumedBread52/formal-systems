@@ -170,7 +170,7 @@ describe('Read Statements', (): void => {
           createdByUserId: createdByUserId.toString()
         }
       ],
-      total: 1
+      total
     });
   });
 
