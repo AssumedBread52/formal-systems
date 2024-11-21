@@ -1,8 +1,6 @@
 import { IsDistinctPairDecorator } from '@/common/decorators/is-distinct-pair.decorator';
 import { IsExpressionDecorator } from '@/common/decorators/is-expression.decorator';
-import { Transform, TransformFnParams } from 'class-transformer';
-import { ArrayMinSize, ArrayUnique, IsArray, IsNotEmpty, isArray, isMongoId } from 'class-validator';
-import { ObjectId } from 'mongodb';
+import { ArrayMinSize, ArrayUnique, IsArray, isArray, IsNotEmpty } from 'class-validator';
 
 export class EditStatementPayload {
   @IsNotEmpty()
@@ -27,30 +25,7 @@ export class EditStatementPayload {
   @IsDistinctPairDecorator({
     each: true
   })
-  @Transform((params: TransformFnParams): any => {
-    if (!isArray(params.value)) {
-      return params.value;
-    }
-
-    for (let element of params.value) {
-      if (!isArray(element)) {
-        return params.value;
-      }
-
-      for (let item of element) {
-        if (!isMongoId(item)) {
-          return params.value;
-        }
-      }
-    }
-
-    return params.value.map((item: string[]): ObjectId[] => {
-      return item.map((id: string): ObjectId => {
-        return new ObjectId(id);
-      });
-    });
-  })
-  newDistinctVariableRestrictions: [ObjectId, ObjectId][] = [];
+  newDistinctVariableRestrictions: [string, string][] = [];
   @ArrayUnique((element: any): string => {
     if (!isArray(element) || 2 !== element.length) {
       return '';
@@ -62,30 +37,7 @@ export class EditStatementPayload {
   @IsDistinctPairDecorator({
     each: true
   })
-  @Transform((params: TransformFnParams): any => {
-    if (!isArray(params.value)) {
-      return params.value;
-    }
-
-    for (let element of params.value) {
-      if (!isArray(element)) {
-        return params.value;
-      }
-
-      for (let item of element) {
-        if (!isMongoId(item)) {
-          return params.value;
-        }
-      }
-    }
-
-    return params.value.map((item: string[]): ObjectId[] => {
-      return item.map((id: string): ObjectId => {
-        return new ObjectId(id);
-      });
-    });
-  })
-  newVariableTypeHypotheses: [ObjectId, ObjectId][] = [];
+  newVariableTypeHypotheses: [string, string][] = [];
   @ArrayMinSize(1, {
     each: true
   })
@@ -94,54 +46,16 @@ export class EditStatementPayload {
       return '';
     }
 
-    return element.map((id: any): string => {
-      return `${id}`;
+    return element.map((item: any): string => {
+      return `${item}`;
     }).join(',');
   })
   @IsArray()
   @IsExpressionDecorator({
     each: true
   })
-  @Transform((params: TransformFnParams): any => {
-    if (!isArray(params.value)) {
-      return params.value;
-    }
-
-    for (let element of params.value) {
-      if (!isArray(element)) {
-        return params.value;
-      }
-
-      for (let item of element) {
-        if (!isMongoId(item)) {
-          return params.value;
-        }
-      }
-    }
-
-    return params.value.map((item: string[]): ObjectId[] => {
-      return item.map((id: string): ObjectId => {
-        return new ObjectId(id);
-      });
-    });
-  })
-  newLogicalHypotheses: ObjectId[][] = [];
+  newLogicalHypotheses: [string, ...string[]][] = [];
   @ArrayMinSize(1)
   @IsExpressionDecorator()
-  @Transform((params: TransformFnParams): any => {
-    if (!isArray(params.value)) {
-      return params.value;
-    }
-
-    for (let element of params.value) {
-      if (!isMongoId(element)) {
-        return params.value;
-      }
-    }
-
-    return params.value.map((element: string): ObjectId => {
-      return new ObjectId(element);
-    });
-  })
-  newAssertion: ObjectId[] = [];
+  newAssertion: [string, ...string[]] = [''];
 };

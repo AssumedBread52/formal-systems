@@ -22,47 +22,68 @@ export class StatementService {
 
     const symbolIds = newAssertion.concat(...newDistinctVariableRestrictions, ...newVariableTypeHypotheses, ...newLogicalHypotheses);
 
-    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds, {});
+    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds.map((symbolId: string): ObjectId => {
+      return new ObjectId(symbolId);
+    }), {});
 
     this.processabilityCheck(newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion, symbolDictionary);
 
     statement.title = newTitle;
     statement.description = newDescription;
-    statement.distinctVariableRestrictions = newDistinctVariableRestrictions;
-    statement.variableTypeHypotheses = newVariableTypeHypotheses;
-    statement.logicalHypotheses = newLogicalHypotheses.map((logicalHypothesis: ObjectId[]): [ObjectId, ...ObjectId[]] => {
+    statement.distinctVariableRestrictions = newDistinctVariableRestrictions.map((newDistinctVariableRestriction: [string, string]): [ObjectId, ObjectId] => {
+      const [first, second] = newDistinctVariableRestriction;
+
+      return [
+        new ObjectId(first),
+        new ObjectId(second)
+      ];
+    });
+    statement.variableTypeHypotheses = newVariableTypeHypotheses.map((newVariableTypeHypothesis: [string, string]): [ObjectId, ObjectId] => {
+      const [type, variable] = newVariableTypeHypothesis;
+
+      return [
+        new ObjectId(type),
+        new ObjectId(variable)
+      ];
+    });
+    statement.logicalHypotheses = newLogicalHypotheses.map((logicalHypothesis: [string, ...string[]]): [ObjectId, ...ObjectId[]] => {
       const [prefix, ...expression] = logicalHypothesis;
 
       return [
-        prefix,
-        ...expression
+        new ObjectId(prefix),
+        ...expression.map((symbolId: string): ObjectId => {
+          return new ObjectId(symbolId);
+        })
       ];
     });
     const [prefix, ...expression] = newAssertion;
     statement.assertion = [
-      prefix,
-      ...expression
+      new ObjectId(prefix),
+      ...expression.map((symbolId: string): ObjectId => {
+        return new ObjectId(symbolId);
+      })
     ];
 
     return this.statementRepository.save(statement);
   }
 
-  private processabilityCheck(distinctVariableRestrictions: [ObjectId, ObjectId][], variableTypeHypotheses: [ObjectId, ObjectId][], logicalHypotheses: ObjectId[][], assertion: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): void {
-    distinctVariableRestrictions.forEach((distinctVariableRestriction: [ObjectId, ObjectId]): void => {
-      if (SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[0].toString()].type) {
+  private processabilityCheck(distinctVariableRestrictions: [string, string][], variableTypeHypotheses: [string, string][], logicalHypotheses: [string, ...string[]][], assertion: [string, ...string[]], symbolDictionary: Record<string, SymbolEntity>): void {
+    distinctVariableRestrictions.forEach((distinctVariableRestriction: [string, string]): void => {
+      const [first, second] = distinctVariableRestriction;
+
+      if (SymbolType.Variable !== symbolDictionary[first].type) {
         throw new InvalidVariableTypeException();
       }
 
-      if (SymbolType.Variable !== symbolDictionary[distinctVariableRestriction[1].toString()].type) {
+      if (SymbolType.Variable !== symbolDictionary[second].type) {
         throw new InvalidVariableTypeException();
       }
     });
 
-    const types = variableTypeHypotheses.reduce((types: Record<string, string>, variableTypeHypothesis: [ObjectId, ObjectId]): Record<string, string> => {
-      const constant = variableTypeHypothesis[0].toString();
-      const variable = variableTypeHypothesis[1].toString();
+    const types = variableTypeHypotheses.reduce((types: Record<string, string>, variableTypeHypothesis: [string, string]): Record<string, string> => {
+      const [type, variable] = variableTypeHypothesis;
 
-      if (SymbolType.Constant !== symbolDictionary[constant].type) {
+      if (SymbolType.Constant !== symbolDictionary[type].type) {
         throw new InvalidVariableTypeException();
       }
       
@@ -70,20 +91,23 @@ export class StatementService {
         throw new InvalidVariableTypeException();
       }
 
-      types[variable] = constant;
+      types[variable] = type;
 
       return types;
     }, {});
 
-    [...logicalHypotheses, assertion].forEach((expression: ObjectId[]): void => {
-      if (symbolDictionary[expression[0].toString()].type !== SymbolType.Constant) {
+    [...logicalHypotheses, assertion].forEach((prefixedExpression: [string, ...string[]]): void => {
+      const [prefix, ...expression] = prefixedExpression;
+      if (symbolDictionary[prefix].type !== SymbolType.Constant) {
         throw new InvalidSymbolPrefixException();
       }
 
-      expression.forEach((symbolId: ObjectId): void => {
-        const id = symbolId.toString();
+      expression.forEach((symbolId: string): void => {
+        if (SymbolType.Variable !== symbolDictionary[symbolId].type) {
+          return;
+        }
 
-        if (SymbolType.Variable === symbolDictionary[id].type && !types[id]) {
+        if (!types[symbolId]) {
           throw new MissingVariableTypeHypothesisException();
         }
       });
