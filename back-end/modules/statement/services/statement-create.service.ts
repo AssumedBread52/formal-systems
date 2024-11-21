@@ -26,7 +26,7 @@ export class StatementCreateService {
 
     await this.validateService.conflictCheck(title, _id);
 
-    await this.validateService.structureCheck(_id, newStatementPayload);
+    await this.validateService.newStructureCheck(_id, newStatementPayload);
 
     const [prefix, ...expression] = assertion;
 

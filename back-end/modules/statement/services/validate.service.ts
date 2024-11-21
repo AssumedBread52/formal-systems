@@ -2,6 +2,7 @@ import { BaseValidateService } from '@/common/services/base-validate.service';
 import { InvalidSymbolTypeException } from '@/statement/exceptions/invalid-symbol-type.exception';
 import { MissingVariableTypeHypothesisException } from '@/statement/exceptions/missing-variable-type-hypothesis.exception';
 import { StatementUniqueTitleException } from '@/statement/exceptions/statement-unique-title.exception';
+import { EditStatementPayload } from '@/statement/payloads/edit-statement.payload';
 import { NewStatementPayload } from '@/statement/payloads/new-statement.payload';
 import { StatementEntity } from '@/statement/statement.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
@@ -28,9 +29,19 @@ export class ValidateService extends BaseValidateService {
     }
   }
 
-  async structureCheck(systemId: ObjectId, newStatementPayload: NewStatementPayload): Promise<void> {
+  async newStructureCheck(systemId: ObjectId, newStatementPayload: NewStatementPayload): Promise<void> {
     const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = newStatementPayload;
 
+    await this.structureCheck(systemId, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion);
+  }
+
+  async editStructureCheck(systemId: ObjectId, editStatementPayload: EditStatementPayload): Promise<void> {
+    const { newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion } = editStatementPayload;
+
+    await this.structureCheck(systemId, newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion);
+  }
+
+  private async structureCheck(systemId: ObjectId, distinctVariableRestrictions: [string, string][], variableTypeHypotheses: [string, string][], logicalHypotheses: [string, ...string[]][], assertion: [string, ...string[]]): Promise<void> {
     const symbolIds = assertion.concat(...logicalHypotheses, ...variableTypeHypotheses, ...distinctVariableRestrictions);
 
     const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, symbolIds.map((symbolId: string): ObjectId => {

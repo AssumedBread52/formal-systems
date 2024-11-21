@@ -29,6 +29,8 @@ export class StatementUpdateService {
       await this.validateService.conflictCheck(newTitle, systemId);
     }
 
+    await this.validateService.editStructureCheck(systemId, editStatementPayload);
+
     return this.statementService.update(statement, editStatementPayload);
   }
 };
