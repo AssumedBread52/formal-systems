@@ -4,11 +4,11 @@ import { EntitySubscriberInterface, EventSubscriber, RemoveEvent } from 'typeorm
 
 @EventSubscriber()
 export class CleanUpSystemStatementsSubscriber implements EntitySubscriberInterface<SystemEntity> {
-  listenTo(): string | Function {
+  listenTo(): Function | string {
     return SystemEntity;
   }
 
-  async afterRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
+  async beforeRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
     const { _id } = databaseEntity;
@@ -19,6 +19,6 @@ export class CleanUpSystemStatementsSubscriber implements EntitySubscriberInterf
       systemId: _id
     });
 
-    statementRepository.remove(statements);
+    await statementRepository.remove(statements);
   }
 };
