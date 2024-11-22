@@ -1,24 +1,22 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
-import { TokenService } from '@/auth/services/token.service';
-import { testExpiredToken } from '@/auth/tests/helpers/test-expired-token';
-import { testInvalidToken } from '@/auth/tests/helpers/test-invalid-token';
-import { testMissingToken } from '@/auth/tests/helpers/test-missing-token';
-import { expectCorrectResponse } from '@/common/tests/helpers/expect-correct-response';
+import { findByMock } from '@/common/tests/mocks/find-by.mock';
+import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
+import { saveMock } from '@/common/tests/mocks/save.mock';
 import { StatementEntity } from '@/statement/statement.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { SymbolRepositoryMock } from '@/symbol/tests/mocks/symbol-repository.mock';
-import { UserRepositoryMock } from '@/user/tests/mocks/user-repository.mock';
 import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { StatementRepositoryMock } from './mocks/statement-repository.mock';
 
 describe('Update Statement', (): void => {
-  getOrThrowMock();
+  const findBy = findByMock();
+  const findOneBy = findOneByMock();
+  const getOrThrow = getOrThrowMock();
+  const save = saveMock();
   let app: INestApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -26,77 +24,311 @@ describe('Update Statement', (): void => {
   });
 
   it('fails without a token', async (): Promise<void> => {
-    await testMissingToken(app, 'patch', '/system/1/statement/1');
+    const response = await request(app.getHttpServer()).patch('/system/1/statement/1');
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
   });
 
   it('fails with an expired token', async (): Promise<void> => {
-    await testExpiredToken(app, 'patch', '/system/1/statement/1');
-  });
+    const token = app.get(JwtService).sign({});
 
-  it('fails with an invalid token', async (): Promise<void> => {
-    await testInvalidToken(app, 'patch', '/system/1/statement/1');
-  });
-
-  it('fails with an invalid statement ID', async (): Promise<void> => {
-    const user = new UserEntity();
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
+    await new Promise((resolve: (value: unknown) => void): void => {
+      setTimeout(resolve, 1000);
+    });
 
     const response = await request(app.getHttpServer()).patch('/system/1/statement/1').set('Cookie', [
       `token=${token}`
-    ]).send({
-      newDistinctVariableRestrictions: 'invalid',
-      newVariableTypeHypotheses: 'invalid',
-      newLogicalHypotheses: 'invalid',
-      newAssertion: 'invalid'
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      message: 'Unauthorized',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
+  it('fails with an invalid token', async (): Promise<void> => {
+    const token = app.get(JwtService).sign({});
+
+    const response = await request(app.getHttpServer()).patch('/system/1/statement/1').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(0);
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
+  it('fails if the user ID in the token payload does not match a user', async (): Promise<void> => {
+    const userId = new ObjectId();
+
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: userId
     });
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const response = await request(app.getHttpServer()).patch('/system/1/statement/1').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
+    expect(body).toEqual({
+      error: 'Unauthorized',
+      message: 'Invalid token.',
+      statusCode: HttpStatus.UNAUTHORIZED
+    });
+  });
+
+  it('fails with an invalid statement ID', async (): Promise<void> => {
+    const userId = new ObjectId();
+    const user = new UserEntity();
+
+    user._id = userId;
+
+    findOneBy.mockResolvedValueOnce(user);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer()).patch('/system/1/statement/1').set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'Invalid Mongodb ID structure.',
+      message: 'Invalid Object ID.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
   it('fails with an invalid system ID', async (): Promise<void> => {
+    const userId = new ObjectId();
     const user = new UserEntity();
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = userId;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
 
     const response = await request(app.getHttpServer()).patch(`/system/1/statement/${new ObjectId()}`).set('Cookie', [
       `token=${token}`
-    ]).send({
-      newDistinctVariableRestrictions: 'invalid',
-      newVariableTypeHypotheses: 'invalid',
-      newLogicalHypotheses: 'invalid',
-      newAssertion: 'invalid'
-    });
+    ]);
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'Invalid Mongodb ID structure.',
+      message: 'Invalid Object ID.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
-  it('fails with an invalid payload', async (): Promise<void> => {
+  it('fails if the statement does not exist', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const userId = new ObjectId();
     const user = new UserEntity();
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = userId;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    expect(body).toEqual({
+      error: 'Not Found',
+      message: 'Statement not found.',
+      statusCode: HttpStatus.NOT_FOUND
+    });
+  });
+
+  it('fails if the user did not create the statement', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const userId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = userId;
+    statement._id = statementId;
+    statement.proofAppearanceCount = 1;
+    statement.systemId = systemId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: userId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.FORBIDDEN);
+    expect(body).toEqual({
+      error: 'Forbidden',
+      message: 'Write actions require user ownership.',
+      statusCode: HttpStatus.FORBIDDEN
+    });
+  });
+
+  it('fails if the statement is already in use', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.proofAppearanceCount = 1;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Statements in use cannot under go write actions.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails with an invalid title and description payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
       newDistinctVariableRestrictions: 'invalid',
@@ -105,7 +337,21 @@ describe('Update Statement', (): void => {
       newAssertion: 'invalid'
     });
 
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
       error: 'Bad Request',
       message: [
         'newTitle should not be empty',
@@ -127,27 +373,992 @@ describe('Update Statement', (): void => {
     });
   });
 
-  it('fails with an invalid payload', async (): Promise<void> => {
+  it('fails with an invalid distinct variable restrictions payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const statement = new StatementEntity();
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: 'invalid',
+      newVariableTypeHypotheses: 'invalid',
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'newDistinctVariableRestrictions must be an array',
+        'All newDistinctVariableRestrictions\'s elements must be unique',
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'newVariableTypeHypotheses must be an array',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid distinct variable restrictions payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
         'invalid',
         'invalid'
       ],
+      newVariableTypeHypotheses: 'invalid',
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'All newDistinctVariableRestrictions\'s elements must be unique',
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'newVariableTypeHypotheses must be an array',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid distinct variable restrictions payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        ['invalid', 'invalid', 'invalid']
+      ],
+      newVariableTypeHypotheses: 'invalid',
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'newVariableTypeHypotheses must be an array',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid distinct variable restrictions payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        ['invalid']
+      ],
+      newVariableTypeHypotheses: 'invalid',
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'newVariableTypeHypotheses must be an array',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid distinct variable restrictions payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        ['invalid', 'invalid']
+      ],
+      newVariableTypeHypotheses: 'invalid',
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'newVariableTypeHypotheses must be an array',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid distinct variable restrictions payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), 'invalid']
+      ],
+      newVariableTypeHypotheses: 'invalid',
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'newVariableTypeHypotheses must be an array',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid distinct variable restrictions payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const symbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [symbolId, symbolId]
+      ],
+      newVariableTypeHypotheses: 'invalid',
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'newVariableTypeHypotheses must be an array',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid variable type hypotheses payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newVariableTypeHypotheses: 'invalid',
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'newVariableTypeHypotheses must be an array',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid variable type hypotheses payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
       newVariableTypeHypotheses: [
         'invalid',
         'invalid'
+      ],
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'All newVariableTypeHypotheses\'s elements must be unique',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid variable type hypotheses payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newVariableTypeHypotheses: [
+        ['invalid', 'invalid', 'invalid']
+      ],
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid variable type hypotheses payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newVariableTypeHypotheses: [
+        ['invalid']
+      ],
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid variable type hypotheses payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newVariableTypeHypotheses: [
+        ['invalid', 'invalid']
+      ],
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid variable type hypotheses payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newVariableTypeHypotheses: [
+        [new ObjectId(), 'invalid']
+      ],
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid variable type hypotheses payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const symbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newVariableTypeHypotheses: [
+        [symbolId, symbolId]
+      ],
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid logical hypotheses payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newVariableTypeHypotheses: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newLogicalHypotheses: 'invalid',
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'newLogicalHypotheses must be an array',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newLogicalHypotheses must contain at least 1 elements',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid logical hypotheses payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newVariableTypeHypotheses: [
+        [new ObjectId(), new ObjectId()]
       ],
       newLogicalHypotheses: [
         'invalid',
@@ -156,13 +1367,23 @@ describe('Update Statement', (): void => {
       newAssertion: 'invalid'
     });
 
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
       error: 'Bad Request',
       message: [
-        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
-        'All newDistinctVariableRestrictions\'s elements must be unique',
-        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
-        'All newVariableTypeHypotheses\'s elements must be unique',
         'each value in each value in newLogicalHypotheses must be a mongodb id',
         'All newLogicalHypotheses\'s elements must be unique',
         'each value in newLogicalHypotheses must contain at least 1 elements',
@@ -173,255 +1394,330 @@ describe('Update Statement', (): void => {
     });
   });
 
-  it('fails with an invalid payload', async (): Promise<void> => {
-    const symbolId = new ObjectId();
-
+  it('fails with an invalid logical hypotheses payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const statement = new StatementEntity();
 
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle: 'New Test Statement',
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
-        ['invalid', 'invalid', 'invalid'],
-        ['invalid'],
-        [symbolId, 'invalid'],
-        ['invalid', symbolId],
-        [symbolId, symbolId]
+        [new ObjectId(), new ObjectId()]
       ],
       newVariableTypeHypotheses: [
-        ['invalid', 'invalid', 'invalid'],
-        ['invalid'],
-        [symbolId, 'invalid'],
-        ['invalid', symbolId],
-        [symbolId, symbolId]
+        [new ObjectId(), new ObjectId()]
       ],
       newLogicalHypotheses: [
         ['invalid'],
         ['invalid']
+      ],
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in each value in newLogicalHypotheses must be a mongodb id',
+        'All newLogicalHypotheses\'s elements must be unique',
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid assertion payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newVariableTypeHypotheses: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newLogicalHypotheses: [
+        [new ObjectId()]
+      ],
+      newAssertion: 'invalid'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
+      error: 'Bad Request',
+      message: [
+        'each value in newAssertion must be a mongodb id',
+        'newAssertion must contain at least 1 elements'
+      ],
+      statusCode: HttpStatus.BAD_REQUEST
+    });
+  });
+
+  it('fails with an invalid assertion payload', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle: 'New Test Statement',
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newVariableTypeHypotheses: [
+        [new ObjectId(), new ObjectId()]
+      ],
+      newLogicalHypotheses: [
+        [new ObjectId()]
       ],
       newAssertion: [
         'invalid'
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(body).toEqual({
       error: 'Bad Request',
       message: [
-        'each value in newDistinctVariableRestrictions must be a distinct pair of mongodb ids',
-        'All newDistinctVariableRestrictions\'s elements must be unique',
-        'each value in newVariableTypeHypotheses must be a distinct pair of mongodb ids',
-        'All newVariableTypeHypotheses\'s elements must be unique',
-        'each value in each value in newLogicalHypotheses must be a mongodb id',
-        'All newLogicalHypotheses\'s elements must be unique',
         'each value in newAssertion must be a mongodb id'
       ],
       statusCode: HttpStatus.BAD_REQUEST
     });
   });
 
-  it('fails with an invalid payload', async (): Promise<void> => {
-    const symbolId1 = new ObjectId();
-    const symbolId2 = new ObjectId();
-
+  it('fails if the title is not unique in the system', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
-
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newTitle: 'New Test',
-      newDescription: 'This is a new test.',
-      newDistinctVariableRestrictions: [
-        [symbolId1, symbolId2],
-        [symbolId2, symbolId1]
-      ],
-      newVariableTypeHypotheses: [
-        [symbolId1, symbolId2],
-        [new ObjectId(), symbolId2]
-      ],
-      newLogicalHypotheses: [
-        [symbolId1],
-        [symbolId1]
-      ],
-      newAssertion: [
-        symbolId1
-      ]
-    });
-
-    expectCorrectResponse(response, HttpStatus.BAD_REQUEST, {
-      error: 'Bad Request',
-      message: [
-        'All newDistinctVariableRestrictions\'s elements must be unique',
-        'All newVariableTypeHypotheses\'s elements must be unique',
-        'All newLogicalHypotheses\'s elements must be unique'
-      ],
-      statusCode: HttpStatus.BAD_REQUEST
-    });
-  });
-
-  it('fails if the statement does not exist', async (): Promise<void> => {
-    const wffSymbolId = new ObjectId();
-    const setvarSymbolId = new ObjectId();
-    const alphaSymbolId = new ObjectId();
-    const aSymbolId = new ObjectId();
-
-    const user = new UserEntity();
-
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).patch(`/system/${new ObjectId()}/statement/${new ObjectId()}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newTitle: 'New Test',
-      newDescription: 'This is a new test.',
-      newDistinctVariableRestrictions: [
-        [wffSymbolId, setvarSymbolId],
-        [alphaSymbolId, wffSymbolId]
-      ],
-      newVariableTypeHypotheses: [
-        [alphaSymbolId, wffSymbolId],
-        [wffSymbolId, setvarSymbolId]
-      ],
-      newLogicalHypotheses: [
-        [
-          alphaSymbolId
-        ]
-      ],
-      newAssertion: [
-        aSymbolId
-      ]
-    });
-
-    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
-      error: 'Not Found',
-      message: 'Statement not found.',
-      statusCode: HttpStatus.NOT_FOUND
-    });
-  });
-
-  it('fails if the user did not create the statement', async (): Promise<void> => {
-    const wffSymbolId = new ObjectId();
-    const setvarSymbolId = new ObjectId();
-    const alphaSymbolId = new ObjectId();
-    const aSymbolId = new ObjectId();
-
     const statement = new StatementEntity();
-    const user = new UserEntity();
+    const conflictStatement = new StatementEntity();
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+    conflictStatement.title = newTitle;
+    conflictStatement.systemId = systemId;
+    conflictStatement.createdByUserId = createdByUserId;
 
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(conflictStatement);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle,
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
-        [wffSymbolId, setvarSymbolId],
-        [alphaSymbolId, wffSymbolId]
+        [new ObjectId(), new ObjectId()]
       ],
       newVariableTypeHypotheses: [
-        [alphaSymbolId, wffSymbolId],
-        [wffSymbolId, setvarSymbolId]
+        [new ObjectId(), new ObjectId()]
       ],
       newLogicalHypotheses: [
-        [
-          alphaSymbolId
-        ]
+        [new ObjectId()]
       ],
       newAssertion: [
-        aSymbolId
+        new ObjectId()
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.FORBIDDEN, {
-      error: 'Forbidden',
-      message: 'Write actions require user ownership.',
-      statusCode: HttpStatus.FORBIDDEN
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.CONFLICT);
+    expect(body).toEqual({
+      error: 'Conflict',
+      message: 'Statements in the same system must have a unique title.',
+      statusCode: HttpStatus.CONFLICT
     });
   });
 
   it('fails if a symbol used does not exist in the system', async (): Promise<void> => {
-    const statement = new StatementEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const wffSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const statement = new StatementEntity();
 
-    statement.createdByUserId = user._id;
-    wff.systemId = statement.systemId;
-    wff.createdByUserId = user._id;
-    setvar.systemId = statement.systemId;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = statement.systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.createdByUserId = user._id;
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
+    findBy.mockResolvedValueOnce([]);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(null);
 
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      wff,
-      setvar,
-      alpha
-    ]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle,
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
-        [wff._id, setvar._id],
-        [alpha._id, wff._id]
+        [wffSymbolId, turnstileSymbolId]
       ],
       newVariableTypeHypotheses: [
-        [alpha._id, wff._id],
-        [wff._id, setvar._id]
+        [alphaSymbolId, turnstileSymbolId]
       ],
       newLogicalHypotheses: [
-        [
-          alpha._id
-        ]
+        [alphaSymbolId, turnstileSymbolId]
       ],
       newAssertion: [
-        a._id
+        aSymbolId,
+        turnstileSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.NOT_FOUND, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, turnstileSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    expect(body).toEqual({
       error: 'Not Found',
       message: 'Symbol not found.',
       statusCode: HttpStatus.NOT_FOUND
@@ -429,368 +1725,571 @@ describe('Update Statement', (): void => {
   });
 
   it('fails if any distinct variable restriction has a first element that is a constant symbol', async (): Promise<void> => {
-    const statement = new StatementEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const wffSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const wffSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+    const statement = new StatementEntity();
 
-    statement.createdByUserId = user._id;
-    wff.systemId = statement.systemId;
-    wff.createdByUserId = user._id;
-    setvar.systemId = statement.systemId;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = statement.systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = statement.systemId;
-    a.createdByUserId = user._id;
+    user._id = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    wffSymbol._id = wffSymbolId;
+    wffSymbol.systemId = systemId;
+    wffSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      wff,
-      setvar,
-      alpha,
-      a
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      wffSymbol,
+      alphaSymbol,
+      aSymbol
     ]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle,
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
-        [wff._id, setvar._id],
-        [alpha._id, wff._id]
+        [wffSymbolId, turnstileSymbolId]
       ],
       newVariableTypeHypotheses: [
-        [alpha._id, wff._id],
-        [wff._id, setvar._id]
+        [alphaSymbolId, turnstileSymbolId]
       ],
       newLogicalHypotheses: [
-        [
-          alpha._id
-        ]
+        [alphaSymbolId, turnstileSymbolId]
       ],
       newAssertion: [
-        a._id
+        aSymbolId,
+        turnstileSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, turnstileSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'Invalid variable type.',
+      message: 'Invalid symbol type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
   it('fails if any distinct variable restriction has a second element that is a constant symbol', async (): Promise<void> => {
-    const statement = new StatementEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+    const statement = new StatementEntity();
 
-    statement.createdByUserId = user._id;
-    wff.systemId = statement.systemId;
-    wff.createdByUserId = user._id;
-    setvar.systemId = statement.systemId;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = statement.systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = statement.systemId;
-    a.createdByUserId = user._id;
+    user._id = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      wff,
-      setvar,
-      alpha,
-      a
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      alphaSymbol,
+      aSymbol
     ]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle,
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
-        [alpha._id, wff._id]
+        [alphaSymbolId, turnstileSymbolId]
       ],
       newVariableTypeHypotheses: [
-        [alpha._id, wff._id],
-        [wff._id, setvar._id]
+        [alphaSymbolId, turnstileSymbolId]
       ],
       newLogicalHypotheses: [
-        [
-          alpha._id
-        ]
+        [alphaSymbolId, turnstileSymbolId]
       ],
       newAssertion: [
-        a._id
+        aSymbolId,
+        turnstileSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'Invalid variable type.',
+      message: 'Invalid symbol type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
-  it('fails if any variable type hypothesis has a first element that is a variable symbol', async (): Promise<void> => {
-    const statement = new StatementEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
+  it('fails if any variable type hypothesis uses a variable symbol as a type', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+    const statement = new StatementEntity();
 
-    statement.createdByUserId = user._id;
-    wff.systemId = statement.systemId;
-    wff.createdByUserId = user._id;
-    setvar.systemId = statement.systemId;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = statement.systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = statement.systemId;
-    a.createdByUserId = user._id;
+    user._id = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      wff,
-      setvar,
-      alpha,
-      a
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      alphaSymbol,
+      aSymbol
     ]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle,
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
-        [alpha._id, a._id]
+        [alphaSymbolId, aSymbolId]
       ],
       newVariableTypeHypotheses: [
-        [alpha._id, wff._id],
-        [wff._id, setvar._id]
+        [alphaSymbolId, turnstileSymbolId]
       ],
       newLogicalHypotheses: [
-        [
-          alpha._id
-        ]
+        [alphaSymbolId, turnstileSymbolId]
       ],
       newAssertion: [
-        a._id
+        aSymbolId,
+        turnstileSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'Invalid variable type.',
+      message: 'Invalid symbol type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
-  it('fails if any variable type hypothesis has a second element that is a constant symbol', async (): Promise<void> => {
-    const statement = new StatementEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
+  it('fails if a variable type hypothesis types a constant symbol', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const wffSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const wffSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+    const statement = new StatementEntity();
 
-    statement.createdByUserId = user._id;
-    wff.systemId = statement.systemId;
-    wff.createdByUserId = user._id;
-    setvar.systemId = statement.systemId;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = statement.systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = statement.systemId;
-    a.createdByUserId = user._id;
+    user._id = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    wffSymbol._id = wffSymbolId;
+    wffSymbol.systemId = systemId;
+    wffSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      wff,
-      setvar,
-      alpha,
-      a
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      wffSymbol,
+      alphaSymbol,
+      aSymbol
     ]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle,
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
-        [alpha._id, a._id]
+        [alphaSymbolId, aSymbolId]
       ],
       newVariableTypeHypotheses: [
-        [wff._id, setvar._id]
+        [wffSymbolId, turnstileSymbolId]
       ],
       newLogicalHypotheses: [
-        [
-          alpha._id
-        ]
+        [alphaSymbolId, turnstileSymbolId]
       ],
       newAssertion: [
-        a._id
+        aSymbolId,
+        turnstileSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'Invalid variable type.',
+      message: 'Invalid symbol type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
   it('fails if any logical hypothesis is not prefixed by a constant symbol', async (): Promise<void> => {
-    const statement = new StatementEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+    const statement = new StatementEntity();
 
-    statement.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = statement.systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = statement.systemId;
-    a.createdByUserId = user._id;
+    user._id = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      alpha,
-      a
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      alphaSymbol,
+      aSymbol
     ]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle,
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
-        [alpha._id, a._id]
+        [alphaSymbolId, aSymbolId]
       ],
-      newVariableTypeHypotheses: [
-      ],
+      newVariableTypeHypotheses: [],
       newLogicalHypotheses: [
-        [
-          alpha._id
-        ]
+        [alphaSymbolId, turnstileSymbolId]
       ],
       newAssertion: [
-        a._id
+        aSymbolId,
+        turnstileSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'All logical hypotheses and the assertion must start with a constant symbol.',
+      message: 'Invalid symbol type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
   it('fails if a variable symbol in any logical hypothesis does not have a corresponding variable type hypothesis', async (): Promise<void> => {
-    const statement = new StatementEntity();
-    const turnstile = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+    const statement = new StatementEntity();
 
-    statement.createdByUserId = user._id;
-    turnstile.systemId = statement.systemId;
-    turnstile.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = statement.systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = statement.systemId;
-    a.createdByUserId = user._id;
+    user._id = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
-      alpha,
-      a
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      alphaSymbol,
+      aSymbol
     ]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle,
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
-        [alpha._id, a._id]
+        [alphaSymbolId, aSymbolId]
       ],
-      newVariableTypeHypotheses: [
-      ],
+      newVariableTypeHypotheses: [],
       newLogicalHypotheses: [
-        [
-          turnstile._id,
-          alpha._id
-        ]
+        [turnstileSymbolId, alphaSymbolId, turnstileSymbolId]
       ],
       newAssertion: [
-        a._id
+        aSymbolId,
+        turnstileSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
       message: 'All variable symbols in all logical hypotheses and the assertion must have a corresponding variable type hypothesis.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
@@ -798,280 +2297,360 @@ describe('Update Statement', (): void => {
   });
 
   it('fails if the assertion is not prefixed by a constant symbol', async (): Promise<void> => {
-    const statement = new StatementEntity();
-    const turnstile = new SymbolEntity();
-    const wff = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const wffSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const wffSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+    const statement = new StatementEntity();
 
-    statement.createdByUserId = user._id;
-    turnstile.systemId = statement.systemId;
-    turnstile.createdByUserId = user._id;
-    wff.systemId = statement.systemId;
-    wff.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = statement.systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = statement.systemId;
-    a.createdByUserId = user._id;
+    user._id = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    wffSymbol._id = wffSymbolId;
+    wffSymbol.systemId = systemId;
+    wffSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
-      wff,
-      alpha,
-      a
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      wffSymbol,
+      alphaSymbol,
+      aSymbol
     ]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle,
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
-        [alpha._id, a._id]
+        [alphaSymbolId, aSymbolId]
       ],
       newVariableTypeHypotheses: [
-        [wff._id, alpha._id]
+        [wffSymbolId, alphaSymbolId]
       ],
       newLogicalHypotheses: [
-        [
-          turnstile._id,
-          alpha._id
-        ]
+        [turnstileSymbolId, alphaSymbolId, turnstileSymbolId]
       ],
       newAssertion: [
-        a._id
+        aSymbolId,
+        turnstileSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
-      message: 'All logical hypotheses and the assertion must start with a constant symbol.',
+      message: 'Invalid symbol type.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
   it('fails if a variable symbol in the assertion does not have a corresponding variable type hypothesis', async (): Promise<void> => {
-    const statement = new StatementEntity();
-    const turnstile = new SymbolEntity();
-    const wff = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const wffSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const wffSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+    const statement = new StatementEntity();
 
-    statement.createdByUserId = user._id;
-    turnstile.systemId = statement.systemId;
-    turnstile.createdByUserId = user._id;
-    wff.systemId = statement.systemId;
-    wff.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = statement.systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = statement.systemId;
-    a.createdByUserId = user._id;
+    user._id = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    wffSymbol._id = wffSymbolId;
+    wffSymbol.systemId = systemId;
+    wffSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+    statement._id = statementId;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
-      wff,
-      alpha,
-      a
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      wffSymbol,
+      alphaSymbol,
+      aSymbol
     ]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(null);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newTitle: 'New Test',
+      newTitle,
       newDescription: 'This is a new test.',
       newDistinctVariableRestrictions: [
-        [alpha._id, a._id]
+        [alphaSymbolId, aSymbolId]
       ],
       newVariableTypeHypotheses: [
-        [wff._id, alpha._id]
+        [wffSymbolId, alphaSymbolId]
       ],
       newLogicalHypotheses: [
-        [
-          turnstile._id,
-          alpha._id
-        ]
+        [turnstileSymbolId, alphaSymbolId, turnstileSymbolId]
       ],
       newAssertion: [
-        turnstile._id,
-        a._id
+        turnstileSymbolId,
+        aSymbolId,
+        turnstileSymbolId
       ]
     });
 
-    expectCorrectResponse(response, HttpStatus.UNPROCESSABLE_ENTITY, {
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
       error: 'Unprocessable Entity',
       message: 'All variable symbols in all logical hypotheses and the assertion must have a corresponding variable type hypothesis.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });
 
-  it('fails if the new assertion is already in use', async (): Promise<void> => {
-    const newTitle = 'Test';
-    const conflictStatement = new StatementEntity();
-    const statement = new StatementEntity();
-    const turnstile = new SymbolEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
+  it('succeeds', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const newDescription = 'This is a new test.';
+    const turnstileSymbolId = new ObjectId();
+    const wffSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const proofAppearanceCount = 0;
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
     const user = new UserEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const wffSymbol = new SymbolEntity();
+    const setvarSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+    const statement = new StatementEntity();
+    const updatedStatement = new StatementEntity();
+    const newDistinctVariableRestrictions = [
+      [alphaSymbolId, aSymbolId]
+    ] as [ObjectId, ObjectId][];
+    const newVariableTypeHypotheses = [
+      [wffSymbolId, alphaSymbolId],
+      [setvarSymbolId, aSymbolId]
+    ] as [ObjectId, ObjectId][];
+    const newLogicalHypotheses = [
+      [turnstileSymbolId, alphaSymbolId, turnstileSymbolId]
+    ] as [ObjectId, ...ObjectId[]][];
+    const newAssertion = [turnstileSymbolId, aSymbolId, turnstileSymbolId] as [ObjectId, ...ObjectId[]];
 
-    conflictStatement.title = newTitle;
-    conflictStatement.systemId = statement.systemId;
-    conflictStatement.createdByUserId = user._id;
-    statement.createdByUserId = user._id;
-    turnstile.systemId = statement.systemId;
-    turnstile.createdByUserId = user._id;
-    wff.systemId = statement.systemId;
-    wff.createdByUserId = user._id;
-    setvar.systemId = statement.systemId;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = statement.systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = statement.systemId;
-    a.createdByUserId = user._id;
+    user._id = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    wffSymbol._id = wffSymbolId;
+    wffSymbol.systemId = systemId;
+    wffSymbol.createdByUserId = createdByUserId;
+    setvarSymbol._id = setvarSymbolId;
+    setvarSymbol.systemId = systemId;
+    setvarSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+    statement._id = statementId;
+    statement.proofAppearanceCount = proofAppearanceCount;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+    updatedStatement._id = statementId;
+    updatedStatement.title = newTitle;
+    updatedStatement.description = newDescription;
+    updatedStatement.distinctVariableRestrictions = newDistinctVariableRestrictions;
+    updatedStatement.variableTypeHypotheses = newVariableTypeHypotheses;
+    updatedStatement.logicalHypotheses = newLogicalHypotheses;
+    updatedStatement.assertion = newAssertion;
+    updatedStatement.proofAppearanceCount = proofAppearanceCount;
+    updatedStatement.systemId = systemId;
+    updatedStatement.createdByUserId = createdByUserId;
 
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(conflictStatement)
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
-      wff,
-      setvar,
-      alpha,
-      a
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      wffSymbol,
+      setvarSymbol,
+      alphaSymbol,
+      aSymbol
     ]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(null);
+    save.mockResolvedValueOnce(updatedStatement);
 
-    const token = app.get(TokenService).generateToken(user._id);
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
 
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
       `token=${token}`
     ]).send({
       newTitle,
-      newDescription: 'This is a new test.',
-      newDistinctVariableRestrictions: [
-        [alpha._id, a._id]
+      newDescription,
+      newDistinctVariableRestrictions,
+      newVariableTypeHypotheses,
+      newLogicalHypotheses,
+      newAssertion
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, setvarSymbolId, aSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenNthCalledWith(1, {
+      _id: statementId,
+      title: newTitle,
+      description: newDescription,
+      distinctVariableRestrictions: newDistinctVariableRestrictions,
+      variableTypeHypotheses: newVariableTypeHypotheses,
+      logicalHypotheses: newLogicalHypotheses,
+      assertion: newAssertion,
+      proofAppearanceCount,
+      systemId,
+      createdByUserId
+    });
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual({
+      id: statementId.toString(),
+      title: newTitle,
+      description: newDescription,
+      distinctVariableRestrictions: [
+        [alphaSymbolId.toString(), aSymbolId.toString()]
       ],
-      newVariableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [setvar._id, a._id]
+      variableTypeHypotheses: [
+        [wffSymbolId.toString(), alphaSymbolId.toString()],
+        [setvarSymbolId.toString(), aSymbolId.toString()]
       ],
-      newLogicalHypotheses: [
+      logicalHypotheses: [
         [
-          turnstile._id,
-          alpha._id
+          turnstileSymbolId.toString(),
+          alphaSymbolId.toString(),
+          turnstileSymbolId.toString()
         ]
       ],
-      newAssertion: [
-        turnstile._id,
-        a._id
-      ]
-    });
-
-    expectCorrectResponse(response, HttpStatus.CONFLICT, {
-      error: 'Conflict',
-      message: 'Statements in the same system must have a unique title.',
-      statusCode: HttpStatus.CONFLICT
-    });
-  });
-
-  it('succeeds', async (): Promise<void> => {
-    const statement = new StatementEntity();
-    const turnstile = new SymbolEntity();
-    const wff = new SymbolEntity();
-    const setvar = new SymbolEntity();
-    const alpha = new SymbolEntity();
-    const a = new SymbolEntity();
-    const user = new UserEntity();
-
-    statement.assertion = [
-      turnstile._id,
-      alpha._id
-    ];
-    statement.createdByUserId = user._id;
-    turnstile.systemId = statement.systemId;
-    turnstile.createdByUserId = user._id;
-    wff.systemId = statement.systemId;
-    wff.createdByUserId = user._id;
-    setvar.systemId = statement.systemId;
-    setvar.createdByUserId = user._id;
-    alpha.type = SymbolType.Variable;
-    alpha.systemId = statement.systemId;
-    alpha.createdByUserId = user._id;
-    a.type = SymbolType.Variable;
-    a.systemId = statement.systemId;
-    a.createdByUserId = user._id;
-
-    const statementRepositoryMock = app.get(getRepositoryToken(StatementEntity)) as StatementRepositoryMock;
-    const symbolRepositoryMock = app.get(getRepositoryToken(SymbolEntity)) as SymbolRepositoryMock;
-    const userRepositoryMock = app.get(getRepositoryToken(UserEntity)) as UserRepositoryMock;
-
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(statement);
-    statementRepositoryMock.findOneBy.mockReturnValueOnce(null);
-    symbolRepositoryMock.find.mockReturnValueOnce([
-      turnstile,
-      wff,
-      setvar,
-      alpha,
-      a
-    ]);
-    userRepositoryMock.findOneBy.mockReturnValueOnce(user);
-
-    const token = app.get(TokenService).generateToken(user._id);
-
-    const response = await request(app.getHttpServer()).patch(`/system/${statement.systemId}/statement/${statement._id}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newTitle: 'New Test',
-      newDescription: 'This is a new test.',
-      newDistinctVariableRestrictions: [
-        [alpha._id, a._id]
+      assertion: [
+        turnstileSymbolId.toString(),
+        aSymbolId.toString(),
+        turnstileSymbolId.toString()
       ],
-      newVariableTypeHypotheses: [
-        [wff._id, alpha._id],
-        [setvar._id, a._id]
-      ],
-      newLogicalHypotheses: [
-        [
-          turnstile._id,
-          alpha._id
-        ]
-      ],
-      newAssertion: [
-        turnstile._id,
-        a._id
-      ]
-    });
-
-    expectCorrectResponse(response, HttpStatus.OK, {
-      id: statement._id.toString()
+      proofAppearanceCount,
+      systemId: systemId.toString(),
+      createdByUserId: createdByUserId.toString()
     });
   });
 
