@@ -5,7 +5,7 @@ import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, Re
 
 @EventSubscriber()
 export class UserStatementCountSubscriber implements EntitySubscriberInterface<StatementEntity> {
-  listenTo(): string | Function {
+  listenTo(): Function | string {
     return StatementEntity;
   }
 
