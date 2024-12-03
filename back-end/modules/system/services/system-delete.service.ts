@@ -1,4 +1,5 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
+import { InUseException } from '@/system/exceptions/in-use.exception';
 import { SystemEntity } from '@/system/system.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,10 +15,14 @@ export class SystemDeleteService {
   async delete(sessionUserId: ObjectId, systemId: any): Promise<SystemEntity> {
     const system = await this.systemReadService.readById(systemId);
 
-    const { _id, createdByUserId } = system;
+    const { _id, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = system;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
+    }
+
+    if (constantSymbolCount > 0 || variableSymbolCount > 0 || axiomCount > 0 || theoremCount > 0 || deductionCount > 0) {
+      throw new InUseException();
     }
 
     await this.systemRepository.remove(system);

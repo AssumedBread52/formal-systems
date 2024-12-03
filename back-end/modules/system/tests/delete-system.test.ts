@@ -214,15 +214,215 @@ describe('Delete System', (): void => {
     });
   });
 
+  it('fails if the system has any constant symbols', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.constantSymbolCount = 6;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(remove).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Systems in use cannot under go write actions.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails if the system has any variable symbols', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.variableSymbolCount = 3;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(remove).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Systems in use cannot under go write actions.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails if the system has any axioms', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.axiomCount = 6;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(remove).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Systems in use cannot under go write actions.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails if the system has any theorems', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.theoremCount = 1;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(remove).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Systems in use cannot under go write actions.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails if the system has any deductions', async (): Promise<void> => {
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const system = new SystemEntity();
+
+    user._id = createdByUserId;
+    system._id = systemId;
+    system.deductionCount = 2;
+    system.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(remove).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Systems in use cannot under go write actions.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
   it('succeeds', async (): Promise<void> => {
     const systemId = new ObjectId();
     const title = 'Test System';
     const description = 'This is a test.';
-    const constantSymbolCount = 6;
-    const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 2;
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
     const system = new SystemEntity();
@@ -231,11 +431,6 @@ describe('Delete System', (): void => {
     system._id = systemId;
     system.title = title;
     system.description = description;
-    system.constantSymbolCount = constantSymbolCount;
-    system.variableSymbolCount = variableSymbolCount;
-    system.axiomCount = axiomCount;
-    system.theoremCount = theoremCount;
-    system.deductionCount = deductionCount;
     system.createdByUserId = createdByUserId;
 
     findOneBy.mockResolvedValueOnce(user);
@@ -267,11 +462,11 @@ describe('Delete System', (): void => {
       id: systemId.toString(),
       title,
       description,
-      constantSymbolCount,
-      variableSymbolCount,
-      axiomCount,
-      theoremCount,
-      deductionCount,
+      constantSymbolCount: 0,
+      variableSymbolCount: 0,
+      axiomCount: 0,
+      theoremCount: 0,
+      deductionCount: 0,
       createdByUserId: createdByUserId.toString()
     });
   });
