@@ -12,13 +12,13 @@ export class UserStatementCountSubscriber implements EntitySubscriberInterface<S
   async afterInsert(event: InsertEvent<StatementEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    this.adjustUserStatementCounts(connection, entity, true);
+    await this.adjustUserStatementCounts(connection, entity, true);
   }
 
   async afterRemove(event: RemoveEvent<StatementEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
-    this.adjustUserStatementCounts(connection, databaseEntity, false);
+    await this.adjustUserStatementCounts(connection, databaseEntity, false);
   }
 
   private async adjustUserStatementCounts(connection: DataSource, statement: StatementEntity, increment: boolean): Promise<void> {
