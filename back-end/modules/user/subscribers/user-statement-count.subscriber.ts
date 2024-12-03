@@ -12,19 +12,18 @@ export class UserStatementCountSubscriber implements EntitySubscriberInterface<S
   async afterInsert(event: InsertEvent<StatementEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    this.adjustStatementCounts(connection, entity);
+    this.adjustUserStatementCounts(connection, entity, true);
   }
 
   async afterRemove(event: RemoveEvent<StatementEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
-    this.adjustStatementCounts(connection, databaseEntity);
+    this.adjustUserStatementCounts(connection, databaseEntity, false);
   }
 
-  private async adjustStatementCounts(connection: DataSource, statement: StatementEntity): Promise<void> {
+  private async adjustUserStatementCounts(connection: DataSource, statement: StatementEntity, increment: boolean): Promise<void> {
     const { createdByUserId } = statement;
 
-    const statementRepository = connection.getMongoRepository(StatementEntity);
     const userRepository = connection.getMongoRepository(UserEntity);
 
     const user = await userRepository.findOneBy({
@@ -35,10 +34,12 @@ export class UserStatementCountSubscriber implements EntitySubscriberInterface<S
       throw new UserNotFoundException();
     }
 
-    user.axiomCount = await statementRepository.count({
-      createdByUserId
-    });
+    if (increment) {
+      user.axiomCount++;
+    } else {
+      user.axiomCount--;
+    }
 
-    userRepository.save(user);
+    await userRepository.save(user);
   }
 };
