@@ -13,13 +13,13 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
   async afterInsert(event: InsertEvent<SymbolEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    this.adjustSymbolCounts(connection, entity);
+    await this.adjustSystemSymbolCounts(connection, entity, true);
   }
 
   async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
-    this.adjustSymbolCounts(connection, databaseEntity);
+    await this.adjustSystemSymbolCounts(connection, databaseEntity, false);
   }
 
   async afterUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
@@ -35,13 +35,13 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
       return;
     }
 
-    this.adjustSymbolCounts(connection, databaseEntity);
+    await this.adjustSystemSymbolCounts(connection, databaseEntity, false);
+    await this.adjustSystemSymbolCounts(connection, entity as SymbolEntity, true);
   }
 
-  private async adjustSymbolCounts(connection: DataSource, symbol: SymbolEntity): Promise<void> {
-    const { systemId } = symbol;
+  private async adjustSystemSymbolCounts(connection: DataSource, symbol: SymbolEntity, increment: boolean): Promise<void> {
+    const { type, systemId } = symbol;
 
-    const symbolRepository = connection.getMongoRepository(SymbolEntity);
     const systemRepository = connection.getMongoRepository(SystemEntity);
 
     const system = await systemRepository.findOneBy({
@@ -52,15 +52,23 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
       throw new SystemNotFoundException();
     }
 
-    system.constantSymbolCount = await symbolRepository.count({
-      type: SymbolType.Constant,
-      systemId
-    });
-    system.variableSymbolCount = await symbolRepository.count({
-      type: SymbolType.Variable,
-      systemId
-    });
+    switch (type) {
+      case SymbolType.Constant:
+        if (increment) {
+          system.constantSymbolCount++;
+        } else {
+          system.constantSymbolCount--;
+        }
+        break;
+      case SymbolType.Variable:
+        if (increment) {
+          system.variableSymbolCount++;
+        } else {
+          system.variableSymbolCount--;
+        }
+        break;
+    }
 
-    systemRepository.save(system);
+    await systemRepository.save(system);
   }
 };
