@@ -264,51 +264,6 @@ describe('Update Statement', (): void => {
     });
   });
 
-  it('fails if the statement is already in use', async (): Promise<void> => {
-    const statementId = new ObjectId();
-    const systemId = new ObjectId();
-    const createdByUserId = new ObjectId();
-    const user = new UserEntity();
-    const statement = new StatementEntity();
-
-    user._id = createdByUserId;
-    statement._id = statementId;
-    statement.proofAppearanceCount = 1;
-    statement.systemId = systemId;
-    statement.createdByUserId = createdByUserId;
-
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(statement);
-
-    const token = app.get(JwtService).sign({
-      id: createdByUserId
-    });
-
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
-      `token=${token}`
-    ]);
-
-    const { statusCode, body } = response;
-
-    expect(findBy).toHaveBeenCalledTimes(0);
-    expect(findOneBy).toHaveBeenCalledTimes(2);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: createdByUserId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: statementId,
-      systemId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-    expect(body).toEqual({
-      error: 'Unprocessable Entity',
-      message: 'Statements in use cannot under go write actions.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
   it('fails with an invalid title and description payload', async (): Promise<void> => {
     const statementId = new ObjectId();
     const systemId = new ObjectId();
@@ -2493,6 +2448,111 @@ describe('Update Statement', (): void => {
     expect(body).toEqual({
       error: 'Unprocessable Entity',
       message: 'All variable symbols in all logical hypotheses and the assertion must have a corresponding variable type hypothesis.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails if the statement is already in use', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const newTitle = 'New Test Statement';
+    const turnstileSymbolId = new ObjectId();
+    const wffSymbolId = new ObjectId();
+    const setvarSymbolId = new ObjectId();
+    const alphaSymbolId = new ObjectId();
+    const aSymbolId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const turnstileSymbol = new SymbolEntity();
+    const wffSymbol = new SymbolEntity();
+    const setvarSymbol = new SymbolEntity();
+    const alphaSymbol = new SymbolEntity();
+    const aSymbol = new SymbolEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    turnstileSymbol._id = turnstileSymbolId;
+    turnstileSymbol.systemId = systemId;
+    turnstileSymbol.createdByUserId = createdByUserId;
+    wffSymbol._id = wffSymbolId;
+    wffSymbol.systemId = systemId;
+    wffSymbol.createdByUserId = createdByUserId;
+    setvarSymbol._id = setvarSymbolId;
+    setvarSymbol.systemId = systemId;
+    setvarSymbol.createdByUserId = createdByUserId;
+    alphaSymbol._id = alphaSymbolId;
+    alphaSymbol.type = SymbolType.Variable;
+    alphaSymbol.systemId = systemId;
+    alphaSymbol.createdByUserId = createdByUserId;
+    aSymbol._id = aSymbolId;
+    aSymbol.type = SymbolType.Variable;
+    aSymbol.systemId = systemId;
+    aSymbol.createdByUserId = createdByUserId;
+    statement._id = statementId;
+    statement.proofAppearanceCount = 1;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findBy.mockResolvedValueOnce([
+      turnstileSymbol,
+      wffSymbol,
+      setvarSymbol,
+      alphaSymbol,
+      aSymbol
+    ]);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+    findOneBy.mockResolvedValueOnce(null);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]).send({
+      newTitle,
+      newDescription: 'This is a new test.',
+      newDistinctVariableRestrictions: [
+        [alphaSymbolId, aSymbolId]
+      ],
+      newVariableTypeHypotheses: [
+        [wffSymbolId, alphaSymbolId],
+        [setvarSymbolId, aSymbolId]
+      ],
+      newLogicalHypotheses: [
+        [turnstileSymbolId, alphaSymbolId, turnstileSymbolId]
+      ],
+      newAssertion: [turnstileSymbolId, aSymbolId, turnstileSymbolId]
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      _id: {
+        $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, setvarSymbolId, aSymbolId, alphaSymbolId, aSymbolId]
+      },
+      systemId
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Statements in use cannot under go write actions.',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY
     });
   });

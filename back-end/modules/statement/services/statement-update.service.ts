@@ -23,10 +23,6 @@ export class StatementUpdateService {
       throw new OwnershipException();
     }
 
-    if (proofAppearanceCount > 0) {
-      throw new InUseException();
-    }
-
     const editStatementPayload = this.validateService.payloadCheck(payload, EditStatementPayload);
 
     const { newTitle, newDescription, newDistinctVariableRestrictions, newVariableTypeHypotheses, newLogicalHypotheses, newAssertion } = editStatementPayload;
@@ -36,6 +32,10 @@ export class StatementUpdateService {
     }
 
     await this.validateService.editStructureCheck(systemId, editStatementPayload);
+
+    if (proofAppearanceCount > 0) {
+      throw new InUseException();
+    }
 
     const [newPrefix, ...newExpression] = newAssertion;
 
