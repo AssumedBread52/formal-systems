@@ -12,19 +12,18 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
   async afterInsert(event: InsertEvent<SystemEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    this.adjustSystemCount(connection, entity);
+    await this.test(connection, entity, true);
   }
 
   async afterRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
-    this.adjustSystemCount(connection, databaseEntity);
+    await this.test(connection, databaseEntity, false);
   }
 
-  private async adjustSystemCount(connection: DataSource, system: SystemEntity): Promise<void> {
+  private async test(connection: DataSource, system: SystemEntity, increment: boolean): Promise<void> {
     const { createdByUserId } = system;
 
-    const systemRepository = connection.getMongoRepository(SystemEntity);
     const userRepository = connection.getMongoRepository(UserEntity);
 
     const user = await userRepository.findOneBy({
@@ -35,10 +34,12 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
       throw new UserNotFoundException();
     }
 
-    user.systemCount = await systemRepository.count({
-      createdByUserId
-    });
+    if (increment) {
+      user.systemCount++;
+    } else {
+      user.systemCount--;
+    }
 
-    userRepository.save(user);
+    await userRepository.save(user);
   }
 };
