@@ -13,13 +13,13 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
   async afterInsert(event: InsertEvent<SymbolEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    this.adjustSymbolCounts(connection, entity);
+    await this.adjustUserSymbolCounts(connection, entity, true);
   }
 
   async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
-    this.adjustSymbolCounts(connection, databaseEntity);
+    await this.adjustUserSymbolCounts(connection, databaseEntity, false);
   }
 
   async afterUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
@@ -35,13 +35,13 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
       return;
     }
 
-    this.adjustSymbolCounts(connection, databaseEntity);
+    await this.adjustUserSymbolCounts(connection, databaseEntity, false);
+    await this.adjustUserSymbolCounts(connection, entity as SymbolEntity, true);
   }
 
-  private async adjustSymbolCounts(connection: DataSource, symbol: SymbolEntity): Promise<void> {
-    const { createdByUserId } = symbol;
+  private async adjustUserSymbolCounts(connection: DataSource, symbol: SymbolEntity, increment: boolean): Promise<void> {
+    const { type, createdByUserId } = symbol;
 
-    const symbolRepository = connection.getMongoRepository(SymbolEntity);
     const userRepository = connection.getMongoRepository(UserEntity);
 
     const user = await userRepository.findOneBy({
@@ -52,15 +52,23 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
       throw new UserNotFoundException();
     }
 
-    user.constantSymbolCount = await symbolRepository.count({
-      type: SymbolType.Constant,
-      createdByUserId
-    });
-    user.variableSymbolCount = await symbolRepository.count({
-      type: SymbolType.Variable,
-      createdByUserId
-    });
+    switch (type) {
+      case SymbolType.Constant:
+        if (increment) {
+          user.constantSymbolCount++;
+        } else {
+          user.constantSymbolCount--;
+        }
+        break;
+      case SymbolType.Variable:
+        if (increment) {
+          user.variableSymbolCount++;
+        } else {
+          user.variableSymbolCount--;
+        }
+        break;
+    }
 
-    userRepository.save(user);
+    await userRepository.save(user);
   }
 };
