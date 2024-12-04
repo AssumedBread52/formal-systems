@@ -22,7 +22,7 @@ export class SystemStatementCountSubscriber implements EntitySubscriberInterface
   }
 
   private async adjustSystemStatementCounts(connection: DataSource, statement: StatementEntity, increment: boolean): Promise<void> {
-    const { createdByUserId } = statement;
+    const { logicalHypotheses, proofCount, createdByUserId } = statement;
 
     const systemRepository = connection.getMongoRepository(SystemEntity);
 
@@ -34,10 +34,24 @@ export class SystemStatementCountSubscriber implements EntitySubscriberInterface
       throw new SystemNotFoundException();
     }
 
-    if (increment) {
-      system.axiomCount++;
+    if (0 === proofCount) {
+      if (increment) {
+        system.axiomCount++;
+      } else {
+        system.axiomCount--;
+      }
+    } else if (0 === logicalHypotheses.length) {
+      if (increment) {
+        system.theoremCount++;
+      } else {
+        system.theoremCount--;
+      }
     } else {
-      system.axiomCount--;
+      if (increment) {
+        system.deductionCount++;
+      } else {
+        system.deductionCount--;
+      }
     }
 
     await systemRepository.save(system);

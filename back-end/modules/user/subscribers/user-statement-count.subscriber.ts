@@ -22,7 +22,7 @@ export class UserStatementCountSubscriber implements EntitySubscriberInterface<S
   }
 
   private async adjustUserStatementCounts(connection: DataSource, statement: StatementEntity, increment: boolean): Promise<void> {
-    const { createdByUserId } = statement;
+    const { logicalHypotheses, proofCount, createdByUserId } = statement;
 
     const userRepository = connection.getMongoRepository(UserEntity);
 
@@ -34,10 +34,24 @@ export class UserStatementCountSubscriber implements EntitySubscriberInterface<S
       throw new UserNotFoundException();
     }
 
-    if (increment) {
-      user.axiomCount++;
+    if (0 === proofCount) {
+      if (increment) {
+        user.axiomCount++;
+      } else {
+        user.axiomCount--;
+      }
+    } else if (0 === logicalHypotheses.length) {
+      if (increment) {
+        user.theoremCount++;
+      } else {
+        user.theoremCount--;
+      }
     } else {
-      user.axiomCount--;
+      if (increment) {
+        user.deductionCount++;
+      } else {
+        user.deductionCount--;
+      }
     }
 
     await userRepository.save(user);

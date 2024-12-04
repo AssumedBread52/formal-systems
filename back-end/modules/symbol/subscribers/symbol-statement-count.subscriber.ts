@@ -21,7 +21,7 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
   }
 
   private async adjustSymbolStatementCounts(connection: DataSource, statement: StatementEntity, increment: boolean): Promise<void> {
-    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = statement;
+    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, proofCount } = statement;
 
     const symbolIds = assertion.concat(...logicalHypotheses, ...variableTypeHypotheses, ...distinctVariableRestrictions);
 
@@ -38,10 +38,24 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
     }
 
     symbols.forEach((symbol: SymbolEntity): void => {
-      if (increment) {
-        symbol.axiomAppearances++;
+      if (0 === proofCount) {
+        if (increment) {
+          symbol.axiomAppearances++;
+        } else {
+          symbol.axiomAppearances--;
+        }
+      } else if (0 === logicalHypotheses.length) {
+        if (increment) {
+          symbol.theoremAppearances++;
+        } else {
+          symbol.theoremAppearances--;
+        }
       } else {
-        symbol.axiomAppearances--;
+        if (increment) {
+          symbol.deductionAppearances++;
+        } else {
+          symbol.deductionAppearances--;
+        }
       }
     });
 
