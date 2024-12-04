@@ -1,49 +1,33 @@
 import { StatementEntity } from '@/statement/statement.entity';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { ObjectId } from 'mongodb';
-import { EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
+import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent } from 'typeorm';
 
 @EventSubscriber()
 export class SymbolStatementCountSubscriber implements EntitySubscriberInterface<StatementEntity> {
-  listenTo(): string | Function {
+  listenTo(): Function | string {
     return StatementEntity;
   }
 
   async afterInsert(event: InsertEvent<StatementEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, systemId } = entity;
-
-    const symbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
-
-    const symbolRepository = connection.getMongoRepository(SymbolEntity);
-
-    const symbols = await symbolRepository.find({
-      _id: {
-        $in: symbolIds
-      },
-      systemId
-    });
-
-    symbols.forEach((symbol: SymbolEntity): void => {
-      symbol.axiomAppearances++;
-    });
-
-    Promise.all(symbols.map((symbol: SymbolEntity): Promise<SymbolEntity> => {
-      return symbolRepository.save(symbol);
-    }));
+    await this.adjustSymbolStatementCounts(connection, entity, true);
   }
 
   async afterRemove(event: RemoveEvent<StatementEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
-    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = databaseEntity;
+    await this.adjustSymbolStatementCounts(connection, databaseEntity, false);
+  }
 
-    const symbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
+  private async adjustSymbolStatementCounts(connection: DataSource, statement: StatementEntity, increment: boolean): Promise<void> {
+    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = statement;
+
+    const symbolIds = assertion.concat(...logicalHypotheses, ...variableTypeHypotheses, ...distinctVariableRestrictions);
 
     const symbolRepository = connection.getMongoRepository(SymbolEntity);
 
-    const symbols = await symbolRepository.find({
+    const symbols = await symbolRepository.findBy({
       _id: {
         $in: symbolIds
       }
@@ -54,69 +38,13 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
     }
 
     symbols.forEach((symbol: SymbolEntity): void => {
-      symbol.axiomAppearances--;
-    });
-
-    Promise.all(symbols.map((symbol: SymbolEntity): Promise<SymbolEntity> => {
-      return symbolRepository.save(symbol);
-    }));
-  }
-
-  async afterUpdate(event: UpdateEvent<StatementEntity>): Promise<void> {
-    const { connection, databaseEntity, entity } = event;
-
-    if (!entity) {
-      return;
-    }
-
-    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, systemId } = databaseEntity;
-
-    if (distinctVariableRestrictions.length === entity.distinctVariableRestrictions.length && distinctVariableRestrictions.reduce((check: boolean, distinctVariableRestriction: [ObjectId, ObjectId], currentIndex: number): boolean => {
-      return check && distinctVariableRestriction[0].toString() === entity.distinctVariableRestrictions[currentIndex][0].toString() && distinctVariableRestriction[1].toString() === entity.distinctVariableRestrictions[currentIndex][1].toString();
-    }, true) && variableTypeHypotheses.length === entity.variableTypeHypotheses.length && variableTypeHypotheses.reduce((check: boolean, variableTypeHypothesis: [ObjectId, ObjectId], currentIndex: number): boolean => {
-      return check && variableTypeHypothesis[0].toString() === entity.variableTypeHypotheses[currentIndex][0].toString() && variableTypeHypothesis[1].toString() === entity.variableTypeHypotheses[currentIndex][1].toString();
-    }, true) && logicalHypotheses.length === entity.logicalHypotheses.length && logicalHypotheses.reduce((check: boolean, logicalHypothesis: ObjectId[], currentIndex: number): boolean => {
-      return check && logicalHypothesis.length === entity.logicalHypotheses[currentIndex].length && logicalHypothesis.reduce((symbolCheck: boolean, symbolId: ObjectId, index: number): boolean => {
-        return symbolCheck && symbolId.toString() === entity.logicalHypotheses[currentIndex][index].toString();
-      }, true);
-    }, true) && assertion.length === entity.assertion.length && assertion.reduce((check: boolean, symbolId: ObjectId, currentIndex: number): boolean => {
-      return check && symbolId.toString() === entity.assertion[currentIndex].toString();
-    }, true)) {
-      return;
-    }
-
-    const symbolRepository = connection.getMongoRepository(SymbolEntity);
-
-    const beforeSymbolIds = assertion.concat(...distinctVariableRestrictions, ...variableTypeHypotheses, ...logicalHypotheses);
-    const afterSymbolIds = entity.assertion.concat(...entity.distinctVariableRestrictions, ...entity.variableTypeHypotheses, ...entity.logicalHypotheses);
-
-    const symbols = await symbolRepository.find({
-      _id: {
-        $in: beforeSymbolIds.concat(afterSymbolIds)
-      },
-      systemId
-    });
-
-    symbols.forEach((symbol: SymbolEntity): void => {
-      const { _id } = symbol;
-
-      const id = _id.toString();
-
-      if (beforeSymbolIds.reduce((exists: boolean, beforeSymbolId: ObjectId): boolean => {
-        return exists || beforeSymbolId.toString() === id;
-      }, false)) {
+      if (increment) {
+        symbol.axiomAppearances++;
+      } else {
         symbol.axiomAppearances--;
       }
-
-      if (afterSymbolIds.reduce((exists: boolean, afterSymbolId: ObjectId): boolean => {
-        return exists || afterSymbolId.toString() === id;
-      }, false)) {
-        symbol.axiomAppearances++;
-      }
     });
 
-    Promise.all(symbols.map((symbol: SymbolEntity): Promise<SymbolEntity> => {
-      return symbolRepository.save(symbol);
-    }));
+    await symbolRepository.save(symbols);
   }
 };
