@@ -12,33 +12,34 @@ export class SystemStatementCountSubscriber implements EntitySubscriberInterface
   async afterInsert(event: InsertEvent<StatementEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    this.adjustStatementCounts(connection, entity);
+    await this.adjustSystemStatementCounts(connection, entity, true);
   }
 
   async afterRemove(event: RemoveEvent<StatementEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
-    this.adjustStatementCounts(connection, databaseEntity);
+    await this.adjustSystemStatementCounts(connection, databaseEntity, false);
   }
 
-  private async adjustStatementCounts(connection: DataSource, statement: StatementEntity): Promise<void> {
-    const { systemId } = statement;
+  private async adjustSystemStatementCounts(connection: DataSource, statement: StatementEntity, increment: boolean): Promise<void> {
+    const { createdByUserId } = statement;
 
-    const statementRepository = connection.getMongoRepository(StatementEntity);
     const systemRepository = connection.getMongoRepository(SystemEntity);
 
     const system = await systemRepository.findOneBy({
-      _id: systemId
+      _id: createdByUserId
     });
 
     if (!system) {
       throw new SystemNotFoundException();
     }
 
-    system.axiomCount = await statementRepository.count({
-      systemId
-    });
+    if (increment) {
+      system.axiomCount++;
+    } else {
+      system.axiomCount--;
+    }
 
-    systemRepository.save(system);
+    await systemRepository.save(system);
   }
 };
