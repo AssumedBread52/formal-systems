@@ -15,13 +15,13 @@ export class StatementDeleteService {
   async delete(sessionUserId: ObjectId, systemId: any, statementId: any): Promise<StatementEntity> {
     const statement = await this.statementReadService.readById(systemId, statementId);
 
-    const { _id, proofAppearanceCount, createdByUserId } = statement;
+    const { _id, proofCount, proofAppearanceCount, createdByUserId } = statement;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
     }
 
-    if (proofAppearanceCount > 0) {
+    if (proofCount > 0 || proofAppearanceCount > 0) {
       throw new InUseException();
     }
 

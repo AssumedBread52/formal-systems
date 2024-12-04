@@ -2328,6 +2328,7 @@ describe('Create Statement', (): void => {
     const statementId = new ObjectId();
     const title = 'Test Statement';
     const description = 'This is a test.';
+    const proofCount = 0;
     const proofAppearanceCount = 0;
     const turnstileSymbolId = new ObjectId();
     const wffSymbolId = new ObjectId();
@@ -2443,6 +2444,7 @@ describe('Create Statement', (): void => {
       variableTypeHypotheses,
       logicalHypotheses,
       assertion,
+      proofCount,
       proofAppearanceCount,
       systemId,
       createdByUserId
@@ -2471,6 +2473,7 @@ describe('Create Statement', (): void => {
         aSymbolId.toString(),
         turnstileSymbolId.toString()
       ],
+      proofCount,
       proofAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: createdByUserId.toString()

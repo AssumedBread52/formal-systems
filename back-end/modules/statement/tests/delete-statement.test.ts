@@ -267,7 +267,65 @@ describe('Delete Statement', (): void => {
     });
   });
 
-  it('fails if the statement is in use', async (): Promise<void> => {
+  it('fails if the statement has one or more proofs', async (): Promise<void> => {
+    const statementId = new ObjectId();
+    const systemId = new ObjectId();
+    const createdByUserId = new ObjectId();
+    const user = new UserEntity();
+    const statement = new StatementEntity();
+
+    user._id = createdByUserId;
+    statement._id = statementId;
+    statement.title = 'Test Statement';
+    statement.description = 'This is a test.';
+    statement.distinctVariableRestrictions = [
+      [new ObjectId(), new ObjectId()]
+    ];
+    statement.variableTypeHypotheses = [
+      [new ObjectId(), new ObjectId()]
+    ];
+    statement.logicalHypotheses = [
+      [new ObjectId()]
+    ];
+    statement.assertion = [
+      new ObjectId()
+    ];
+    statement.proofCount = 1;
+    statement.systemId = systemId;
+    statement.createdByUserId = createdByUserId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const token = app.get(JwtService).sign({
+      id: createdByUserId
+    });
+
+    const response = await request(app.getHttpServer()).delete(`/system/${systemId}/statement/${statementId}`).set('Cookie', [
+      `token=${token}`
+    ]);
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: createdByUserId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(remove).toHaveBeenCalledTimes(0);
+    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    expect(body).toEqual({
+      error: 'Unprocessable Entity',
+      message: 'Statements in use cannot under go write actions.',
+      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    });
+  });
+
+  it('fails if the statement is used in one or more proofs', async (): Promise<void> => {
     const statementId = new ObjectId();
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
@@ -341,6 +399,7 @@ describe('Delete Statement', (): void => {
     const assertion = [
       new ObjectId()
     ] as [ObjectId, ...ObjectId[]];
+    const proofCount = 0;
     const proofAppearanceCount = 0;
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
@@ -355,6 +414,7 @@ describe('Delete Statement', (): void => {
     statement.variableTypeHypotheses = variableTypeHypotheses;
     statement.logicalHypotheses = logicalHypotheses;
     statement.assertion = assertion;
+    statement.proofCount = proofCount;
     statement.proofAppearanceCount = proofAppearanceCount;
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
@@ -423,6 +483,7 @@ describe('Delete Statement', (): void => {
           return symbolId.toString();
         })
       ],
+      proofCount,
       proofAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: createdByUserId.toString()

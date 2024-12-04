@@ -17,7 +17,7 @@ export class StatementUpdateService {
   async update(sessionUserId: ObjectId, containingSystemId: any, statementId: any, payload: any): Promise<StatementEntity> {
     const statement = await this.statementReadService.readById(containingSystemId, statementId);
 
-    const { title, proofAppearanceCount, systemId, createdByUserId } = statement;
+    const { title, proofCount, proofAppearanceCount, systemId, createdByUserId } = statement;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
@@ -33,7 +33,7 @@ export class StatementUpdateService {
 
     await this.validateService.editStructureCheck(systemId, editStatementPayload);
 
-    if (proofAppearanceCount > 0) {
+    if (proofCount > 0 || proofAppearanceCount > 0) {
       throw new InUseException();
     }
 

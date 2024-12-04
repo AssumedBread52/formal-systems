@@ -79,6 +79,7 @@ describe('Read Statements', (): void => {
     const assertion = [
       new ObjectId()
     ] as [ObjectId, ...ObjectId[]];
+    const proofCount = 1;
     const proofAppearanceCount = 1;
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
@@ -92,6 +93,7 @@ describe('Read Statements', (): void => {
     statement.variableTypeHypotheses = variableTypeHypotheses;
     statement.logicalHypotheses = logicalHypotheses;
     statement.assertion = assertion;
+    statement.proofCount = proofCount;
     statement.proofAppearanceCount = proofAppearanceCount;
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
@@ -165,6 +167,7 @@ describe('Read Statements', (): void => {
               return symbolId.toString();
             })
           ],
+          proofCount,
           proofAppearanceCount,
           systemId: systemId.toString(),
           createdByUserId: createdByUserId.toString()

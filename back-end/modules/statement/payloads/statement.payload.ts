@@ -9,12 +9,13 @@ export class StatementPayload {
   variableTypeHypotheses: [string, string][];
   logicalHypotheses: [string, ...string[]][];
   assertion: [string, ...string[]];
+  proofCount: number;
   proofAppearanceCount: number;
   systemId: string;
   createdByUserId: string;
 
   constructor(statement: StatementEntity) {
-    const { _id, title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, proofAppearanceCount, systemId, createdByUserId } = statement;
+    const { _id, title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, proofCount, proofAppearanceCount, systemId, createdByUserId } = statement;
 
     this.id = _id.toString();
     this.title = title;
@@ -52,6 +53,7 @@ export class StatementPayload {
         return symbolId.toString();
       })
     ];
+    this.proofCount = proofCount;
     this.proofAppearanceCount = proofAppearanceCount;
     this.systemId = systemId.toString();
     this.createdByUserId = createdByUserId.toString();
