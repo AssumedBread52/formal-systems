@@ -12,16 +12,16 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
   async afterInsert(event: InsertEvent<SystemEntity>): Promise<void> {
     const { connection, entity } = event;
 
-    await this.test(connection, entity, true);
+    await this.adjustUserSystemCount(connection, entity, true);
   }
 
   async afterRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
     const { connection, databaseEntity } = event;
 
-    await this.test(connection, databaseEntity, false);
+    await this.adjustUserSystemCount(connection, databaseEntity, false);
   }
 
-  private async test(connection: DataSource, system: SystemEntity, increment: boolean): Promise<void> {
+  private async adjustUserSystemCount(connection: DataSource, system: SystemEntity, increment: boolean): Promise<void> {
     const { createdByUserId } = system;
 
     const userRepository = connection.getMongoRepository(UserEntity);
