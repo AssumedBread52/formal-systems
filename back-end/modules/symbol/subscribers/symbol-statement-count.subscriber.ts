@@ -1,6 +1,6 @@
 import { StatementEntity } from '@/statement/statement.entity';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent } from 'typeorm';
+import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
 @EventSubscriber()
 export class SymbolStatementCountSubscriber implements EntitySubscriberInterface<StatementEntity> {
@@ -18,6 +18,17 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
     const { connection, databaseEntity } = event;
 
     await this.adjustSymbolStatementCounts(connection, databaseEntity, false);
+  }
+
+  async afterUpdate(event: UpdateEvent<StatementEntity>): Promise<void> {
+    const { connection, databaseEntity, entity } = event;
+
+    if (!entity) {
+      return;
+    }
+
+    await this.adjustSymbolStatementCounts(connection, databaseEntity, false);
+    await this.adjustSymbolStatementCounts(connection, entity as StatementEntity, true);
   }
 
   private async adjustSymbolStatementCounts(connection: DataSource, statement: StatementEntity, increment: boolean): Promise<void> {
