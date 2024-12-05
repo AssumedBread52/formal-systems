@@ -15,13 +15,13 @@ export class SymbolDeleteService {
   async delete(sessionUserId: ObjectId, systemId: any, symbolId: any): Promise<SymbolEntity> {
     const symbol = await this.symbolReadService.readById(systemId, symbolId);
 
-    const { _id, axiomAppearances, theoremAppearances, deductionAppearances, createdByUserId } = symbol;
+    const { _id, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, createdByUserId } = symbol;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
     }
 
-    if (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0) {
+    if (axiomAppearanceCount > 0 || theoremAppearanceCount > 0 || deductionAppearanceCount > 0) {
       throw new InUseException();
     }
 

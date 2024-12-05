@@ -17,7 +17,7 @@ export class SymbolUpdateService {
   async update(sessionUserId: ObjectId, containingSystemId: any, symbolId: any, payload: any): Promise<SymbolEntity> {
     const symbol = await this.symbolReadService.readById(containingSystemId, symbolId);
 
-    const { title, type, axiomAppearances, theoremAppearances, deductionAppearances, systemId, createdByUserId } = symbol;
+    const { title, type, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, systemId, createdByUserId } = symbol;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
@@ -31,7 +31,7 @@ export class SymbolUpdateService {
       await this.validateService.conflictCheck(newTitle, systemId);
     }
 
-    if (type !== newType && (axiomAppearances > 0 || theoremAppearances > 0 || deductionAppearances > 0)) {
+    if (type !== newType && (axiomAppearanceCount > 0 || theoremAppearanceCount > 0 || deductionAppearanceCount > 0)) {
       throw new InUseException();
     }
 

@@ -51,21 +51,21 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
     symbols.forEach((symbol: SymbolEntity): void => {
       if (0 === proofCount) {
         if (increment) {
-          symbol.axiomAppearances++;
+          symbol.axiomAppearanceCount++;
         } else {
-          symbol.axiomAppearances--;
+          symbol.axiomAppearanceCount--;
         }
       } else if (0 === logicalHypotheses.length) {
         if (increment) {
-          symbol.theoremAppearances++;
+          symbol.theoremAppearanceCount++;
         } else {
-          symbol.theoremAppearances--;
+          symbol.theoremAppearanceCount--;
         }
       } else {
         if (increment) {
-          symbol.deductionAppearances++;
+          symbol.deductionAppearanceCount++;
         } else {
-          symbol.deductionAppearances--;
+          symbol.deductionAppearanceCount--;
         }
       }
     });

@@ -18,11 +18,11 @@ export class SymbolEntity {
   @Column()
   content: string = '';
   @Column()
-  axiomAppearances: number = 0;
+  axiomAppearanceCount: number = 0;
   @Column()
-  theoremAppearances: number = 0;
+  theoremAppearanceCount: number = 0;
   @Column()
-  deductionAppearances: number = 0;
+  deductionAppearanceCount: number = 0;
   @Column()
   systemId: ObjectId = new ObjectId();
   @Column()

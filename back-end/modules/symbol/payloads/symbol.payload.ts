@@ -7,23 +7,23 @@ export class SymbolPayload {
   description: string;
   type: SymbolType;
   content: string;
-  axiomAppearances: number;
-  theoremAppearances: number;
-  deductionAppearances: number;
+  axiomAppearanceCount: number;
+  theoremAppearanceCount: number;
+  deductionAppearanceCount: number;
   systemId: string;
   createdByUserId: string;
 
   constructor(symbol: SymbolEntity) {
-    const { _id, title, description, type, content, axiomAppearances, theoremAppearances, deductionAppearances, systemId, createdByUserId } = symbol;
+    const { _id, title, description, type, content, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, systemId, createdByUserId } = symbol;
 
     this.id = _id.toString();
     this.title = title;
     this.description = description;
     this.type = type;
     this.content = content;
-    this.axiomAppearances = axiomAppearances;
-    this.theoremAppearances = theoremAppearances;
-    this.deductionAppearances = deductionAppearances;
+    this.axiomAppearanceCount = axiomAppearanceCount;
+    this.theoremAppearanceCount = theoremAppearanceCount;
+    this.deductionAppearanceCount = deductionAppearanceCount;
     this.systemId = systemId.toString();
     this.createdByUserId = createdByUserId.toString();
   }
