@@ -380,9 +380,9 @@ describe('Create Symbol', (): void => {
       description,
       type,
       content,
-      axiomAppearances: 0,
-      deductionAppearances: 0,
-      theoremAppearances: 0,
+      axiomAppearanceCount: 0,
+      deductionAppearanceCount: 0,
+      theoremAppearanceCount: 0,
       systemId,
       createdByUserId
     });
@@ -393,9 +393,9 @@ describe('Create Symbol', (): void => {
       description,
       type,
       content,
-      axiomAppearances: 0,
-      deductionAppearances: 0,
-      theoremAppearances: 0,
+      axiomAppearanceCount: 0,
+      deductionAppearanceCount: 0,
+      theoremAppearanceCount: 0,
       systemId: systemId.toString(),
       createdByUserId: createdByUserId.toString()
     });

@@ -371,9 +371,9 @@ describe('Update Symbol', (): void => {
 
     user._id = createdByUserId;
     symbol._id = symbolId;
-    symbol.axiomAppearances = 1;
-    symbol.theoremAppearances = 1;
-    symbol.deductionAppearances = 1;
+    symbol.axiomAppearanceCount = 1;
+    symbol.theoremAppearanceCount = 1;
+    symbol.deductionAppearanceCount = 1;
     symbol.systemId = systemId;
     symbol.createdByUserId = createdByUserId;
 
@@ -428,9 +428,9 @@ describe('Update Symbol', (): void => {
 
     user._id = createdByUserId;
     symbol._id = symbolId;
-    symbol.axiomAppearances = 0;
-    symbol.theoremAppearances = 1;
-    symbol.deductionAppearances = 1;
+    symbol.axiomAppearanceCount = 0;
+    symbol.theoremAppearanceCount = 1;
+    symbol.deductionAppearanceCount = 1;
     symbol.systemId = systemId;
     symbol.createdByUserId = createdByUserId;
 
@@ -485,9 +485,9 @@ describe('Update Symbol', (): void => {
 
     user._id = createdByUserId;
     symbol._id = symbolId;
-    symbol.axiomAppearances = 0;
-    symbol.theoremAppearances = 0;
-    symbol.deductionAppearances = 1;
+    symbol.axiomAppearanceCount = 0;
+    symbol.theoremAppearanceCount = 0;
+    symbol.deductionAppearanceCount = 1;
     symbol.systemId = systemId;
     symbol.createdByUserId = createdByUserId;
 
@@ -538,9 +538,9 @@ describe('Update Symbol', (): void => {
     const newDescription = 'This is a new test.';
     const newType = SymbolType.Variable;
     const newContent = '\\alpha';
-    const axiomAppearances = 0;
-    const theoremAppearances = 0;
-    const deductionAppearances = 0;
+    const axiomAppearanceCount = 0;
+    const theoremAppearanceCount = 0;
+    const deductionAppearanceCount = 0;
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -549,9 +549,9 @@ describe('Update Symbol', (): void => {
 
     user._id = createdByUserId;
     symbol._id = symbolId;
-    symbol.axiomAppearances = axiomAppearances;
-    symbol.theoremAppearances = theoremAppearances;
-    symbol.deductionAppearances = deductionAppearances;
+    symbol.axiomAppearanceCount = axiomAppearanceCount;
+    symbol.theoremAppearanceCount = theoremAppearanceCount;
+    symbol.deductionAppearanceCount = deductionAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = createdByUserId;
     updatedSymbol._id = symbolId;
@@ -559,9 +559,9 @@ describe('Update Symbol', (): void => {
     updatedSymbol.description = newDescription;
     updatedSymbol.type = newType;
     updatedSymbol.content = newContent;
-    updatedSymbol.axiomAppearances = axiomAppearances;
-    updatedSymbol.theoremAppearances = theoremAppearances;
-    updatedSymbol.deductionAppearances = deductionAppearances;
+    updatedSymbol.axiomAppearanceCount = axiomAppearanceCount;
+    updatedSymbol.theoremAppearanceCount = theoremAppearanceCount;
+    updatedSymbol.deductionAppearanceCount = deductionAppearanceCount;
     updatedSymbol.systemId = systemId;
     updatedSymbol.createdByUserId = createdByUserId;
 
@@ -607,9 +607,9 @@ describe('Update Symbol', (): void => {
       description: newDescription,
       type: newType,
       content: newContent,
-      axiomAppearances,
-      theoremAppearances,
-      deductionAppearances,
+      axiomAppearanceCount,
+      theoremAppearanceCount,
+      deductionAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: createdByUserId.toString()
     });

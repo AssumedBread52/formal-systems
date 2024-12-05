@@ -261,7 +261,7 @@ describe('Delete Symbol', (): void => {
 
     user._id = createdByUserId;
     symbol._id = symbolId;
-    symbol.axiomAppearances = 1;
+    symbol.axiomAppearanceCount = 1;
     symbol.systemId = systemId;
     symbol.createdByUserId = createdByUserId;
 
@@ -305,7 +305,7 @@ describe('Delete Symbol', (): void => {
 
     user._id = createdByUserId;
     symbol._id = symbolId;
-    symbol.theoremAppearances = 1;
+    symbol.theoremAppearanceCount = 1;
     symbol.systemId = systemId;
     symbol.createdByUserId = createdByUserId;
 
@@ -349,7 +349,7 @@ describe('Delete Symbol', (): void => {
 
     user._id = createdByUserId;
     symbol._id = symbolId;
-    symbol.deductionAppearances = 1;
+    symbol.deductionAppearanceCount = 1;
     symbol.systemId = systemId;
     symbol.createdByUserId = createdByUserId;
 
@@ -390,9 +390,9 @@ describe('Delete Symbol', (): void => {
     const description = 'This is a test.';
     const type = SymbolType.Variable;
     const content = '\\alpha';
-    const axiomAppearances = 0;
-    const theoremAppearances = 0;
-    const deductionAppearances = 0;
+    const axiomAppearanceCount = 0;
+    const theoremAppearanceCount = 0;
+    const deductionAppearanceCount = 0;
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const user = new UserEntity();
@@ -404,9 +404,9 @@ describe('Delete Symbol', (): void => {
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
-    symbol.axiomAppearances = axiomAppearances;
-    symbol.theoremAppearances = theoremAppearances;
-    symbol.deductionAppearances = deductionAppearances;
+    symbol.axiomAppearanceCount = axiomAppearanceCount;
+    symbol.theoremAppearanceCount = theoremAppearanceCount;
+    symbol.deductionAppearanceCount = deductionAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = createdByUserId;
 
@@ -442,9 +442,9 @@ describe('Delete Symbol', (): void => {
       description,
       type,
       content,
-      axiomAppearances,
-      theoremAppearances,
-      deductionAppearances,
+      axiomAppearanceCount,
+      theoremAppearanceCount,
+      deductionAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: createdByUserId.toString()
     });

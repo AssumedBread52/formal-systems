@@ -76,9 +76,9 @@ describe('Read Symbol by ID', (): void => {
     const description = 'This is a test.';
     const type = SymbolType.Variable;
     const content = '\\alpha';
-    const axiomAppearances = 6;
-    const theoremAppearances = 1;
-    const deductionAppearances = 2;
+    const axiomAppearanceCount = 6;
+    const theoremAppearanceCount = 1;
+    const deductionAppearanceCount = 2;
     const systemId = new ObjectId();
     const createdByUserId = new ObjectId();
     const symbol = new SymbolEntity();
@@ -88,9 +88,9 @@ describe('Read Symbol by ID', (): void => {
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
-    symbol.axiomAppearances = axiomAppearances;
-    symbol.theoremAppearances = theoremAppearances;
-    symbol.deductionAppearances = deductionAppearances;
+    symbol.axiomAppearanceCount = axiomAppearanceCount;
+    symbol.theoremAppearanceCount = theoremAppearanceCount;
+    symbol.deductionAppearanceCount = deductionAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = createdByUserId;
 
@@ -113,9 +113,9 @@ describe('Read Symbol by ID', (): void => {
       description,
       type,
       content,
-      axiomAppearances,
-      theoremAppearances,
-      deductionAppearances,
+      axiomAppearanceCount,
+      theoremAppearanceCount,
+      deductionAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: createdByUserId.toString()
     });
