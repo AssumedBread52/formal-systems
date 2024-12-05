@@ -38,9 +38,11 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
 
     const symbolRepository = connection.getMongoRepository(SymbolEntity);
 
-    const symbols = await symbolRepository.findBy({
-      _id: {
-        $in: symbolIds
+    const symbols = await symbolRepository.find({
+      where: {
+        _id: {
+          $in: symbolIds
+        }
       }
     });
 

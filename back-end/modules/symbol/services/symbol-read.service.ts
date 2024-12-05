@@ -21,11 +21,13 @@ export class SymbolReadService {
       return true;
     });
 
-    const missingSymbols = await this.symbolRepository.findBy({
-      _id: {
-        $in: missingSymbolIds
-      },
-      systemId
+    const missingSymbols = await this.symbolRepository.find({
+      where: {
+        _id: {
+          $in: missingSymbolIds
+        },
+        systemId
+      }
     });
 
     const newSymbolDictionary = missingSymbols.reduce((dictionary: Record<string, SymbolEntity>, missingSymbol: SymbolEntity): Record<string, SymbolEntity> => {

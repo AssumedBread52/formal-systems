@@ -1,7 +1,7 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
-import { findByMock } from '@/common/tests/mocks/find-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
+import { findMock } from '@/common/tests/mocks/find.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { StatementEntity } from '@/statement/statement.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
@@ -13,7 +13,7 @@ import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
 describe('Update Statement', (): void => {
-  const findBy = findByMock();
+  const find = findMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   const save = saveMock();
@@ -28,7 +28,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(0);
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(0);
@@ -52,7 +52,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(0);
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(0);
@@ -72,7 +72,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(0);
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(0);
@@ -99,7 +99,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
@@ -132,7 +132,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
@@ -165,7 +165,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
@@ -201,7 +201,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
@@ -245,7 +245,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
@@ -294,7 +294,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -360,7 +360,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -427,7 +427,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -492,7 +492,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -556,7 +556,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -620,7 +620,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -684,7 +684,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -749,7 +749,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -813,7 +813,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -879,7 +879,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -943,7 +943,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -1006,7 +1006,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -1069,7 +1069,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -1132,7 +1132,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -1196,7 +1196,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -1259,7 +1259,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -1324,7 +1324,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -1388,7 +1388,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -1450,7 +1450,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -1512,7 +1512,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -1579,7 +1579,7 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(0);
+    expect(find).toHaveBeenCalledTimes(0);
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: createdByUserId
@@ -1619,7 +1619,7 @@ describe('Update Statement', (): void => {
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([]);
+    find.mockResolvedValueOnce([]);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(statement);
     findOneBy.mockResolvedValueOnce(null);
@@ -1650,12 +1650,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, turnstileSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, turnstileSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -1714,7 +1716,7 @@ describe('Update Statement', (): void => {
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
+    find.mockResolvedValueOnce([
       turnstileSymbol,
       wffSymbol,
       alphaSymbol,
@@ -1750,12 +1752,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, turnstileSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, turnstileSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -1809,7 +1813,7 @@ describe('Update Statement', (): void => {
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
+    find.mockResolvedValueOnce([
       turnstileSymbol,
       alphaSymbol,
       aSymbol
@@ -1844,12 +1848,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -1903,7 +1909,7 @@ describe('Update Statement', (): void => {
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
+    find.mockResolvedValueOnce([
       turnstileSymbol,
       alphaSymbol,
       aSymbol
@@ -1938,12 +1944,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -2002,7 +2010,7 @@ describe('Update Statement', (): void => {
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
+    find.mockResolvedValueOnce([
       turnstileSymbol,
       wffSymbol,
       alphaSymbol,
@@ -2038,12 +2046,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -2097,7 +2107,7 @@ describe('Update Statement', (): void => {
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
+    find.mockResolvedValueOnce([
       turnstileSymbol,
       alphaSymbol,
       aSymbol
@@ -2130,12 +2140,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [aSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -2189,7 +2201,7 @@ describe('Update Statement', (): void => {
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
+    find.mockResolvedValueOnce([
       turnstileSymbol,
       alphaSymbol,
       aSymbol
@@ -2222,12 +2234,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, alphaSymbolId, aSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -2286,7 +2300,7 @@ describe('Update Statement', (): void => {
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
+    find.mockResolvedValueOnce([
       turnstileSymbol,
       wffSymbol,
       alphaSymbol,
@@ -2322,12 +2336,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, alphaSymbolId, aSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, alphaSymbolId, aSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -2386,7 +2402,7 @@ describe('Update Statement', (): void => {
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
+    find.mockResolvedValueOnce([
       turnstileSymbol,
       wffSymbol,
       alphaSymbol,
@@ -2423,12 +2439,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, alphaSymbolId, aSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, alphaSymbolId, aSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -2493,7 +2511,7 @@ describe('Update Statement', (): void => {
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
+    find.mockResolvedValueOnce([
       turnstileSymbol,
       wffSymbol,
       setvarSymbol,
@@ -2528,12 +2546,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, setvarSymbolId, aSymbolId, alphaSymbolId, aSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, setvarSymbolId, aSymbolId, alphaSymbolId, aSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -2598,7 +2618,7 @@ describe('Update Statement', (): void => {
     statement.systemId = systemId;
     statement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
+    find.mockResolvedValueOnce([
       turnstileSymbol,
       wffSymbol,
       setvarSymbol,
@@ -2633,12 +2653,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, setvarSymbolId, aSymbolId, alphaSymbolId, aSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, setvarSymbolId, aSymbolId, alphaSymbolId, aSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -2730,7 +2752,7 @@ describe('Update Statement', (): void => {
     updatedStatement.systemId = systemId;
     updatedStatement.createdByUserId = createdByUserId;
 
-    findBy.mockResolvedValueOnce([
+    find.mockResolvedValueOnce([
       turnstileSymbol,
       wffSymbol,
       setvarSymbol,
@@ -2759,12 +2781,14 @@ describe('Update Statement', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findBy).toHaveBeenCalledTimes(1);
-    expect(findBy).toHaveBeenNthCalledWith(1, {
-      _id: {
-        $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, setvarSymbolId, aSymbolId, alphaSymbolId, aSymbolId]
-      },
-      systemId
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find).toHaveBeenNthCalledWith(1, {
+      where: {
+        _id: {
+          $in: [turnstileSymbolId, aSymbolId, turnstileSymbolId, turnstileSymbolId, alphaSymbolId, turnstileSymbolId, wffSymbolId, alphaSymbolId, setvarSymbolId, aSymbolId, alphaSymbolId, aSymbolId]
+        },
+        systemId
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
