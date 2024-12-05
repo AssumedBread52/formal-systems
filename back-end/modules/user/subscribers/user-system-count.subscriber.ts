@@ -1,28 +1,17 @@
+import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
 import { SystemEntity } from '@/system/system.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { UserEntity } from '@/user/user.entity';
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent } from 'typeorm';
+import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()
-export class UserSystemCountSubscriber implements EntitySubscriberInterface<SystemEntity> {
-  listenTo(): Function | string {
-    return SystemEntity;
+export class UserSystemCountSubscriber extends BaseCountSubscriber<SystemEntity> {
+  constructor() {
+    super(SystemEntity);
   }
 
-  async afterInsert(event: InsertEvent<SystemEntity>): Promise<void> {
-    const { connection, entity } = event;
-
-    await this.adjustUserSystemCount(connection, entity, true);
-  }
-
-  async afterRemove(event: RemoveEvent<SystemEntity>): Promise<void> {
-    const { connection, databaseEntity } = event;
-
-    await this.adjustUserSystemCount(connection, databaseEntity, false);
-  }
-
-  private async adjustUserSystemCount(connection: DataSource, system: SystemEntity, increment: boolean): Promise<void> {
-    const { createdByUserId } = system;
+  protected async adjustCount(connection: DataSource, entity: SystemEntity, increment: boolean): Promise<void> {
+    const { createdByUserId } = entity;
 
     const userRepository = connection.getMongoRepository(UserEntity);
 
@@ -42,4 +31,6 @@ export class UserSystemCountSubscriber implements EntitySubscriberInterface<Syst
 
     await userRepository.save(user);
   }
+
+  protected shouldAdjust = undefined;
 };

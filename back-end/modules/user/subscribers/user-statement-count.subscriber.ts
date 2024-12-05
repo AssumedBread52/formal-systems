@@ -1,39 +1,17 @@
+import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
 import { StatementEntity } from '@/statement/statement.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { UserEntity } from '@/user/user.entity';
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
+import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()
-export class UserStatementCountSubscriber implements EntitySubscriberInterface<StatementEntity> {
-  listenTo(): Function | string {
-    return StatementEntity;
+export class UserStatementCountSubscriber extends BaseCountSubscriber<StatementEntity> {
+  constructor() {
+    super(StatementEntity);
   }
 
-  async afterInsert(event: InsertEvent<StatementEntity>): Promise<void> {
-    const { connection, entity } = event;
-
-    await this.adjustUserStatementCounts(connection, entity, true);
-  }
-
-  async afterRemove(event: RemoveEvent<StatementEntity>): Promise<void> {
-    const { connection, databaseEntity } = event;
-
-    await this.adjustUserStatementCounts(connection, databaseEntity, false);
-  }
-
-  async afterUpdate(event: UpdateEvent<StatementEntity>): Promise<void> {
-    const { connection, databaseEntity, entity } = event;
-
-    if (!entity) {
-      return;
-    }
-
-    await this.adjustUserStatementCounts(connection, databaseEntity, false);
-    await this.adjustUserStatementCounts(connection, entity as StatementEntity, true);
-  }
-
-  private async adjustUserStatementCounts(connection: DataSource, statement: StatementEntity, increment: boolean): Promise<void> {
-    const { logicalHypotheses, proofCount, createdByUserId } = statement;
+  protected async adjustCount(connection: DataSource, entity: StatementEntity, increment: boolean): Promise<void> {
+    const { logicalHypotheses, proofCount, createdByUserId } = entity;
 
     const userRepository = connection.getMongoRepository(UserEntity);
 
@@ -66,5 +44,20 @@ export class UserStatementCountSubscriber implements EntitySubscriberInterface<S
     }
 
     await userRepository.save(user);
+  }
+
+  protected shouldAdjust(oldEntity: StatementEntity, newEntity: StatementEntity): boolean {
+    const { logicalHypotheses: oldLogicalHypotheses, proofCount: oldProofCount } = oldEntity;
+    const { logicalHypotheses: newLogicalHypotheses, proofCount: newProofCount } = newEntity;
+
+    if (0 === oldProofCount) {
+      return 0 !== newProofCount;
+    }
+
+    if (0 === oldLogicalHypotheses.length) {
+      return 0 === newProofCount || 0 !== newLogicalHypotheses.length;
+    }
+
+    return 0 === newProofCount || 0 === newLogicalHypotheses.length;
   }
 };

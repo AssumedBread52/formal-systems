@@ -1,38 +1,17 @@
+import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
 import { StatementEntity } from '@/statement/statement.entity';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
+import { ObjectId } from 'mongodb';
+import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()
-export class SymbolStatementCountSubscriber implements EntitySubscriberInterface<StatementEntity> {
-  listenTo(): Function | string {
-    return StatementEntity;
+export class SymbolStatementCountSubscriber extends BaseCountSubscriber<StatementEntity> {
+  constructor() {
+    super(StatementEntity);
   }
 
-  async afterInsert(event: InsertEvent<StatementEntity>): Promise<void> {
-    const { connection, entity } = event;
-
-    await this.adjustSymbolStatementCounts(connection, entity, true);
-  }
-
-  async afterRemove(event: RemoveEvent<StatementEntity>): Promise<void> {
-    const { connection, databaseEntity } = event;
-
-    await this.adjustSymbolStatementCounts(connection, databaseEntity, false);
-  }
-
-  async afterUpdate(event: UpdateEvent<StatementEntity>): Promise<void> {
-    const { connection, databaseEntity, entity } = event;
-
-    if (!entity) {
-      return;
-    }
-
-    await this.adjustSymbolStatementCounts(connection, databaseEntity, false);
-    await this.adjustSymbolStatementCounts(connection, entity as StatementEntity, true);
-  }
-
-  private async adjustSymbolStatementCounts(connection: DataSource, statement: StatementEntity, increment: boolean): Promise<void> {
-    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, proofCount } = statement;
+  protected async adjustCount(connection: DataSource, entity: StatementEntity, increment: boolean): Promise<void> {
+    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, proofCount } = entity;
 
     const symbolIds = assertion.concat(...logicalHypotheses, ...variableTypeHypotheses, ...distinctVariableRestrictions);
 
@@ -45,10 +24,6 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
         }
       }
     });
-
-    if (0 === symbols.length) {
-      return;
-    }
 
     symbols.forEach((symbol: SymbolEntity): void => {
       if (0 === proofCount) {
@@ -73,5 +48,43 @@ export class SymbolStatementCountSubscriber implements EntitySubscriberInterface
     });
 
     await symbolRepository.save(symbols);
+  }
+
+  protected shouldAdjust(oldEntity: StatementEntity, newEntity: StatementEntity): boolean {
+    const { distinctVariableRestrictions: oldDistinctVariableRestrictions, variableTypeHypotheses: oldVariableTypeHypotheses, logicalHypotheses: oldLogicalHypotheses, assertion: oldAssertion, proofCount: oldProofCount } = oldEntity;
+    const { distinctVariableRestrictions: newDistinctVariableRestrictions, variableTypeHypotheses: newVariableTypeHypotheses, logicalHypotheses: newLogicalHypotheses, assertion: newAssertion, proofCount: newProofCount } = newEntity;
+
+    const oldSymbolIds = new Set(oldAssertion.concat(...oldLogicalHypotheses, ...oldVariableTypeHypotheses, ...oldDistinctVariableRestrictions).map((oldSymbolId: ObjectId): string => {
+      return oldSymbolId.toString();
+    }));
+    const newSymbolIds = new Set(newAssertion.concat(...newLogicalHypotheses, ...newVariableTypeHypotheses, ...newDistinctVariableRestrictions).map((newSymbolId: ObjectId): string => {
+      return newSymbolId.toString();
+    }));
+
+    if (oldSymbolIds.size !== newSymbolIds.size) {
+      return true;
+    }
+
+    for (const oldSymbolId of oldSymbolIds) {
+      if (!newSymbolIds.has(oldSymbolId)) {
+        return true;
+      }
+    }
+
+    if (0 === oldProofCount) {
+      if (0 !== newProofCount) {
+        return true;
+      }
+    } else if (0 === oldLogicalHypotheses.length) {
+      if (0 === newProofCount || 0 !== newLogicalHypotheses.length) {
+        return true;
+      }
+    } else {
+      if (0 === newProofCount || 0 === newLogicalHypotheses.length) {
+        return true;
+      }
+    }
+
+    return false;
   }
 };

@@ -1,44 +1,22 @@
+import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
 import { StatementEntity } from '@/statement/statement.entity';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemEntity } from '@/system/system.entity';
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
+import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()
-export class SystemStatementCountSubscriber implements EntitySubscriberInterface<StatementEntity> {
-  listenTo(): Function | string {
-    return StatementEntity;
+export class SystemStatementCountSubscriber extends BaseCountSubscriber<StatementEntity> {
+  constructor() {
+    super(StatementEntity);
   }
 
-  async afterInsert(event: InsertEvent<StatementEntity>): Promise<void> {
-    const { connection, entity } = event;
-
-    await this.adjustSystemStatementCounts(connection, entity, true);
-  }
-
-  async afterRemove(event: RemoveEvent<StatementEntity>): Promise<void> {
-    const { connection, databaseEntity } = event;
-
-    await this.adjustSystemStatementCounts(connection, databaseEntity, false);
-  }
-
-  async afterUpdate(event: UpdateEvent<StatementEntity>): Promise<void> {
-    const { connection, databaseEntity, entity } = event;
-
-    if (!entity) {
-      return;
-    }
-
-    await this.adjustSystemStatementCounts(connection, databaseEntity, false);
-    await this.adjustSystemStatementCounts(connection, entity as StatementEntity, true);
-  }
-
-  private async adjustSystemStatementCounts(connection: DataSource, statement: StatementEntity, increment: boolean): Promise<void> {
-    const { logicalHypotheses, proofCount, createdByUserId } = statement;
+  protected async adjustCount(connection: DataSource, entity: StatementEntity, increment: boolean): Promise<void> {
+    const { logicalHypotheses, proofCount, systemId } = entity;
 
     const systemRepository = connection.getMongoRepository(SystemEntity);
 
     const system = await systemRepository.findOneBy({
-      _id: createdByUserId
+      _id: systemId
     });
 
     if (!system) {
@@ -66,5 +44,20 @@ export class SystemStatementCountSubscriber implements EntitySubscriberInterface
     }
 
     await systemRepository.save(system);
+  }
+
+  protected shouldAdjust(oldEntity: StatementEntity, newEntity: StatementEntity): boolean {
+    const { logicalHypotheses: oldLogicalHypotheses, proofCount: oldProofCount } = oldEntity;
+    const { logicalHypotheses: newLogicalHypotheses, proofCount: newProofCount } = newEntity;
+
+    if (0 === oldProofCount) {
+      return 0 !== newProofCount;
+    }
+
+    if (0 === oldLogicalHypotheses.length) {
+      return 0 === newProofCount || 0 !== newLogicalHypotheses.length;
+    }
+
+    return 0 === newProofCount || 0 === newLogicalHypotheses.length;
   }
 };

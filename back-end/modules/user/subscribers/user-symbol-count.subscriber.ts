@@ -1,46 +1,18 @@
+import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { UserEntity } from '@/user/user.entity';
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
+import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()
-export class UserSymbolCountSubscriber implements EntitySubscriberInterface<SymbolEntity> {
-  listenTo(): Function | string {
-    return SymbolEntity;
+export class UserSymbolCountSubscriber extends BaseCountSubscriber<SymbolEntity> {
+  constructor() {
+    super(SymbolEntity);
   }
 
-  async afterInsert(event: InsertEvent<SymbolEntity>): Promise<void> {
-    const { connection, entity } = event;
-
-    await this.adjustUserSymbolCounts(connection, entity, true);
-  }
-
-  async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
-    const { connection, databaseEntity } = event;
-
-    await this.adjustUserSymbolCounts(connection, databaseEntity, false);
-  }
-
-  async afterUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
-    const { connection, databaseEntity, entity } = event;
-
-    if (!entity) {
-      return;
-    }
-
-    const { type } = databaseEntity;
-
-    if (type === entity.type) {
-      return;
-    }
-
-    await this.adjustUserSymbolCounts(connection, databaseEntity, false);
-    await this.adjustUserSymbolCounts(connection, entity as SymbolEntity, true);
-  }
-
-  private async adjustUserSymbolCounts(connection: DataSource, symbol: SymbolEntity, increment: boolean): Promise<void> {
-    const { type, createdByUserId } = symbol;
+  protected async adjustCount(connection: DataSource, entity: SymbolEntity, increment: boolean): Promise<void> {
+    const { type, createdByUserId } = entity;
 
     const userRepository = connection.getMongoRepository(UserEntity);
 
@@ -70,5 +42,12 @@ export class UserSymbolCountSubscriber implements EntitySubscriberInterface<Symb
     }
 
     await userRepository.save(user);
+  }
+
+  protected shouldAdjust(oldEntity: SymbolEntity, newEntity: SymbolEntity): boolean {
+    const { type: oldType } = oldEntity;
+    const { type: newType } = newEntity;
+
+    return oldType !== newType;
   }
 };

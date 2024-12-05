@@ -1,46 +1,18 @@
+import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemEntity } from '@/system/system.entity';
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
+import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()
-export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<SymbolEntity> {
-  listenTo(): Function | string {
-    return SymbolEntity;
+export class SystemSymbolCountSubscriber extends BaseCountSubscriber<SymbolEntity> {
+  constructor() {
+    super(SymbolEntity);
   }
 
-  async afterInsert(event: InsertEvent<SymbolEntity>): Promise<void> {
-    const { connection, entity } = event;
-
-    await this.adjustSystemSymbolCounts(connection, entity, true);
-  }
-
-  async afterRemove(event: RemoveEvent<SymbolEntity>): Promise<void> {
-    const { connection, databaseEntity } = event;
-
-    await this.adjustSystemSymbolCounts(connection, databaseEntity, false);
-  }
-
-  async afterUpdate(event: UpdateEvent<SymbolEntity>): Promise<void> {
-    const { connection, databaseEntity, entity } = event;
-
-    if (!entity) {
-      return;
-    }
-
-    const { type } = databaseEntity;
-
-    if (type === entity.type) {
-      return;
-    }
-
-    await this.adjustSystemSymbolCounts(connection, databaseEntity, false);
-    await this.adjustSystemSymbolCounts(connection, entity as SymbolEntity, true);
-  }
-
-  private async adjustSystemSymbolCounts(connection: DataSource, symbol: SymbolEntity, increment: boolean): Promise<void> {
-    const { type, systemId } = symbol;
+  protected async adjustCount(connection: DataSource, entity: SymbolEntity, increment: boolean): Promise<void> {
+    const { type, systemId } = entity;
 
     const systemRepository = connection.getMongoRepository(SystemEntity);
 
@@ -70,5 +42,12 @@ export class SystemSymbolCountSubscriber implements EntitySubscriberInterface<Sy
     }
 
     await systemRepository.save(system);
+  }
+
+  protected shouldAdjust(oldEntity: SymbolEntity, newEntity: SymbolEntity): boolean {
+    const { type: oldType } = oldEntity;
+    const { type: newType } = newEntity;
+
+    return oldType !== newType;
   }
 };
