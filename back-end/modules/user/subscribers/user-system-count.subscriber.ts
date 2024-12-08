@@ -10,7 +10,7 @@ export class UserSystemCountSubscriber extends BaseCountSubscriber<SystemEntity>
     super(SystemEntity);
   }
 
-  protected async adjustCount(connection: DataSource, entity: SystemEntity, increment: boolean): Promise<void> {
+  protected async adjustCount(connection: DataSource, entity: SystemEntity, shouldIncrement: boolean): Promise<void> {
     const { createdByUserId } = entity;
 
     const userRepository = connection.getMongoRepository(UserEntity);
@@ -23,7 +23,7 @@ export class UserSystemCountSubscriber extends BaseCountSubscriber<SystemEntity>
       throw new UserNotFoundException();
     }
 
-    if (increment) {
+    if (shouldIncrement) {
       user.systemCount++;
     } else {
       user.systemCount--;

@@ -10,7 +10,7 @@ export class SymbolStatementCountSubscriber extends BaseCountSubscriber<Statemen
     super(StatementEntity);
   }
 
-  protected async adjustCount(connection: DataSource, entity: StatementEntity, increment: boolean): Promise<void> {
+  protected async adjustCount(connection: DataSource, entity: StatementEntity, shouldIncrement: boolean): Promise<void> {
     const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, proofCount } = entity;
 
     const symbolIds = assertion.concat(...logicalHypotheses, ...variableTypeHypotheses, ...distinctVariableRestrictions);
@@ -27,19 +27,19 @@ export class SymbolStatementCountSubscriber extends BaseCountSubscriber<Statemen
 
     symbols.forEach((symbol: SymbolEntity): void => {
       if (0 === proofCount) {
-        if (increment) {
+        if (shouldIncrement) {
           symbol.axiomAppearanceCount++;
         } else {
           symbol.axiomAppearanceCount--;
         }
       } else if (0 === logicalHypotheses.length) {
-        if (increment) {
+        if (shouldIncrement) {
           symbol.theoremAppearanceCount++;
         } else {
           symbol.theoremAppearanceCount--;
         }
       } else {
-        if (increment) {
+        if (shouldIncrement) {
           symbol.deductionAppearanceCount++;
         } else {
           symbol.deductionAppearanceCount--;

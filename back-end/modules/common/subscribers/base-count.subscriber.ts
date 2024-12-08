@@ -41,7 +41,7 @@ export abstract class BaseCountSubscriber<Entity> implements EntitySubscriberInt
     await this.adjustCount(connection, entity, true);
   }
 
-  protected abstract adjustCount(connection: DataSource, entity: Entity, increment: boolean): Promise<void>;
+  protected abstract adjustCount(connection: DataSource, entity: Entity, shouldIncrement: boolean): Promise<void>;
 
   protected abstract shouldAdjust?(oldEntity: Entity, newEntity: Entity): boolean;
 };

@@ -11,7 +11,7 @@ export class UserSymbolCountSubscriber extends BaseCountSubscriber<SymbolEntity>
     super(SymbolEntity);
   }
 
-  protected async adjustCount(connection: DataSource, entity: SymbolEntity, increment: boolean): Promise<void> {
+  protected async adjustCount(connection: DataSource, entity: SymbolEntity, shouldIncrement: boolean): Promise<void> {
     const { type, createdByUserId } = entity;
 
     const userRepository = connection.getMongoRepository(UserEntity);
@@ -26,14 +26,14 @@ export class UserSymbolCountSubscriber extends BaseCountSubscriber<SymbolEntity>
 
     switch (type) {
       case SymbolType.Constant:
-        if (increment) {
+        if (shouldIncrement) {
           user.constantSymbolCount++;
         } else {
           user.constantSymbolCount--;
         }
         break;
       case SymbolType.Variable:
-        if (increment) {
+        if (shouldIncrement) {
           user.variableSymbolCount++;
         } else {
           user.variableSymbolCount--;

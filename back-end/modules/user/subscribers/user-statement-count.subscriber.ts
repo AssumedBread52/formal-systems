@@ -10,7 +10,7 @@ export class UserStatementCountSubscriber extends BaseCountSubscriber<StatementE
     super(StatementEntity);
   }
 
-  protected async adjustCount(connection: DataSource, entity: StatementEntity, increment: boolean): Promise<void> {
+  protected async adjustCount(connection: DataSource, entity: StatementEntity, shouldIncrement: boolean): Promise<void> {
     const { logicalHypotheses, proofCount, createdByUserId } = entity;
 
     const userRepository = connection.getMongoRepository(UserEntity);
@@ -24,19 +24,19 @@ export class UserStatementCountSubscriber extends BaseCountSubscriber<StatementE
     }
 
     if (0 === proofCount) {
-      if (increment) {
+      if (shouldIncrement) {
         user.axiomCount++;
       } else {
         user.axiomCount--;
       }
     } else if (0 === logicalHypotheses.length) {
-      if (increment) {
+      if (shouldIncrement) {
         user.theoremCount++;
       } else {
         user.theoremCount--;
       }
     } else {
-      if (increment) {
+      if (shouldIncrement) {
         user.deductionCount++;
       } else {
         user.deductionCount--;
