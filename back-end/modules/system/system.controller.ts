@@ -18,9 +18,9 @@ export class SystemController {
   @UseGuards(JwtGuard)
   @Delete(':systemId')
   async deleteSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string): Promise<SystemPayload> {
-    const system = await this.systemDeleteService.delete(sessionUserId, systemId);
+    const deletedSystem = await this.systemDeleteService.delete(sessionUserId, systemId);
 
-    return new SystemPayload(system);
+    return new SystemPayload(deletedSystem);
   }
 
   @Get()

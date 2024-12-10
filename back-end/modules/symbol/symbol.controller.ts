@@ -18,9 +18,9 @@ export class SymbolController {
   @UseGuards(JwtGuard)
   @Delete(':symbolId')
   async deleteSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolPayload> {
-    const symbol = await this.symbolDeleteService.delete(sessionUserId, systemId, symbolId);
+    const deletedSymbol = await this.symbolDeleteService.delete(sessionUserId, systemId, symbolId);
 
-    return new SymbolPayload(symbol);
+    return new SymbolPayload(deletedSymbol);
   }
 
   @Get()
