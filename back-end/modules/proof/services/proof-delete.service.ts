@@ -1,10 +1,10 @@
+import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { ProofEntity } from '@/proof/proof.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 import { ProofReadService } from './proof-read.service';
-import { ObjectId } from 'mongodb';
-import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 
 @Injectable()
 export class ProofDeleteService {
