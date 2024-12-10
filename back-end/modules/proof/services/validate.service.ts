@@ -1,10 +1,12 @@
 import { BaseValidateService } from '@/common/services/base-validate.service';
 import { ProofUniqueTitleException } from '@/proof/exceptions/proof-unique-title.exception';
 import { ProofEntity } from '@/proof/proof.entity';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 
+@Injectable()
 export class ValidateService extends BaseValidateService {
   constructor(@InjectRepository(ProofEntity) private proofRepository: MongoRepository<ProofEntity>) {
     super();
