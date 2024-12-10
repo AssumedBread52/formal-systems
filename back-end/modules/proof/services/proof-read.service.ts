@@ -1,4 +1,4 @@
-import { ProofNotFoundException } from '@/proof/exceptions/proof-not-found.excpetion';
+import { ProofNotFoundException } from '@/proof/exceptions/proof-not-found.exception';
 import { SearchPayload } from '@/proof/payloads/search.payload';
 import { ProofEntity } from '@/proof/proof.entity';
 import { Injectable } from '@nestjs/common';
