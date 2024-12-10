@@ -5,6 +5,7 @@ import { DatabaseType } from 'typeorm';
 import { AppModule } from './app/app.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
+import { ProofModule } from './proof/proof.module';
 import { StatementModule } from './statement/statement.module';
 import { SymbolStatementCountSubscriber } from './symbol/subscribers/symbol-statement-count.subscriber';
 import { SymbolModule } from './symbol/symbol.module';
@@ -28,6 +29,7 @@ import { UserModule } from './user/user.module';
       ]
     }),
     HealthModule,
+    ProofModule,
     StatementModule,
     SymbolModule,
     SystemModule,
