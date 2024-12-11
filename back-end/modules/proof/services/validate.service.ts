@@ -1,5 +1,6 @@
 import { BaseValidateService } from '@/common/services/base-validate.service';
 import { ProofUniqueTitleException } from '@/proof/exceptions/proof-unique-title.exception';
+import { NewProofPayload } from '@/proof/payloads/new-proof.payload';
 import { ProofEntity } from '@/proof/proof.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,5 +23,9 @@ export class ValidateService extends BaseValidateService {
     if (collision) {
       throw new ProofUniqueTitleException();
     }
+  }
+
+  async newProofCheck(statementId: ObjectId, newProofPayload: NewProofPayload): Promise<void> {
+    console.log(statementId, newProofPayload);
   }
 };

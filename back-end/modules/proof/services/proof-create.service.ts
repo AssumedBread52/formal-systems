@@ -22,14 +22,33 @@ export class ProofCreateService {
 
     const newProofPayload = this.validateService.payloadCheck(payload, NewProofPayload);
 
-    const { title, description } = newProofPayload;
+    const { title, description, steps } = newProofPayload;
 
     await this.validateService.conflictCheck(title, systemId, _id);
+
+    await this.validateService.newProofCheck(_id, newProofPayload);
 
     const proof = new ProofEntity();
 
     proof.title = title;
     proof.description = description;
+    proof.steps = steps.map((step: [string, [string, string[]][]]): [ObjectId, [ObjectId, ObjectId[]][]] => {
+      const [statementId, substitutions] = step;
+
+      return [
+        new ObjectId(statementId),
+        substitutions.map((substitution: [string, string[]]): [ObjectId, ObjectId[]] => {
+          const [variableSymbolId, expression] = substitution;
+
+          return [
+            new ObjectId(variableSymbolId),
+            expression.map((symbolId: string): ObjectId => {
+              return new ObjectId(symbolId);
+            })
+          ];
+        })
+      ];
+    });
     proof.statementId = _id;
     proof.systemId = systemId;
     proof.createdByUserId = sessionUserId;
