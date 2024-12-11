@@ -1,5 +1,6 @@
 import { BaseValidateService } from '@/common/services/base-validate.service';
 import { ProofUniqueTitleException } from '@/proof/exceptions/proof-unique-title.exception';
+import { EditProofPayload } from '@/proof/payloads/edit-proof.payload';
 import { NewProofPayload } from '@/proof/payloads/new-proof.payload';
 import { ProofEntity } from '@/proof/proof.entity';
 import { Injectable } from '@nestjs/common';
@@ -27,5 +28,9 @@ export class ValidateService extends BaseValidateService {
 
   async newProofCheck(statementId: ObjectId, newProofPayload: NewProofPayload): Promise<void> {
     console.log(statementId, newProofPayload);
+  }
+
+  async editProofCheck(statementId: ObjectId, editProofPayload: EditProofPayload): Promise<void> {
+    console.log(statementId, editProofPayload);
   }
 };
