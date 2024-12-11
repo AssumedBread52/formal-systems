@@ -1,3 +1,4 @@
+import { IsProofStepListDecorator } from '@/common/decorators/is-proof-step-list.decorator';
 import { IsNotEmpty } from 'class-validator';
 
 export class EditProofPayload {
@@ -5,6 +6,6 @@ export class EditProofPayload {
   newTitle: string = '';
   @IsNotEmpty()
   newDescription: string = '';
-  // any
-  newSteps: any = null;
+  @IsProofStepListDecorator()
+  newSteps: [string, [string, string[]][]][] = [];
 };
