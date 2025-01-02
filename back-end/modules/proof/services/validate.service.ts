@@ -38,7 +38,7 @@ export class ValidateService extends BaseValidateService {
     await this.proofCheck(statementId, newSteps);
   }
 
-  async proofCheck(statementId: ObjectId, steps: [string, [string, string[]][]][]): Promise<void> {
+  private async proofCheck(statementId: ObjectId, steps: [string, [string, string[]][]][]): Promise<void> {
     console.log(statementId, steps);
   }
 };
