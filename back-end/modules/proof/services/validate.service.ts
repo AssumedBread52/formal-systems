@@ -59,7 +59,7 @@ export class ValidateService extends BaseValidateService {
     }
 
     for (const step of steps) {
-      const [stepStatementId, substitutionMap] = step;
+      const [stepStatementId, substitutions] = step;
 
       const { distinctVariableRestrictions: stepDistinctVariableRestrictions, variableTypeHypotheses: stepVariableTypeHypotheses, logicalHypotheses: stepLogicalHypotheses, assertion: stepAssertion } = await this.statementReadService.readById(systemId, stepStatementId);
     }
