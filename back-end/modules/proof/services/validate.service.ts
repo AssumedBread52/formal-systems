@@ -4,6 +4,7 @@ import { EditProofPayload } from '@/proof/payloads/edit-proof.payload';
 import { NewProofPayload } from '@/proof/payloads/new-proof.payload';
 import { ProofEntity } from '@/proof/proof.entity';
 import { StatementReadService } from '@/statement/services/statement-read.service';
+import { SymbolEntity } from '@/symbol/symbol.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -41,16 +42,14 @@ export class ValidateService extends BaseValidateService {
 
   private async proofCheck(systemId: ObjectId, statementId: ObjectId, steps: [string, [string, string[]][]][]): Promise<void> {
     const closure = [] as string[][];
+    const symbolDictionary = {} as Record<string, SymbolEntity>;
 
     const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = await this.statementReadService.readById(systemId, statementId);
 
     for (const variableTypeHypothesis of variableTypeHypotheses) {
       const [typeSymbolId, variableSymbolId] = variableTypeHypothesis;
 
-      closure.push([
-        typeSymbolId.toString(),
-        variableSymbolId.toString()
-      ]);
+      closure.push([typeSymbolId.toString(), variableSymbolId.toString()]);
     }
 
     for (const logicalHypothesis of logicalHypotheses) {
