@@ -64,6 +64,14 @@ export const IsProofStepListDecorator = (validationOptions?: ValidationOptions):
               }
             }
           }
+
+          if (!arrayUnique(substitutions, (substitution: [string, string[]]): string => {
+            const [variableSymbolId] = substitution;
+
+            return variableSymbolId;
+          })) {
+            return false;
+          }
         }
 
         if (!arrayUnique(value, (step: [string, [string, string[]][]]): string => {
