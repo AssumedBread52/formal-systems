@@ -57,5 +57,8 @@ export class ValidateService extends BaseValidateService {
         return symbolId.toString();
       }));
     }
+
+    for (const step of steps) {
+    }
   }
 };
