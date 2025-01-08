@@ -44,16 +44,19 @@ export class ValidateService extends BaseValidateService {
 
     const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = await this.statementReadService.readById(systemId, statementId);
 
-    variableTypeHypotheses.forEach((variableTypeHypothesis: [ObjectId, ObjectId]): void => {
+    for (const variableTypeHypothesis of variableTypeHypotheses) {
       const [typeSymbolId, variableSymbolId] = variableTypeHypothesis;
 
-      closure.push([typeSymbolId.toString(), variableSymbolId.toString()]);
-    });
+      closure.push([
+        typeSymbolId.toString(),
+        variableSymbolId.toString()
+      ]);
+    }
 
-    logicalHypotheses.forEach((logicalHypothesis: [ObjectId, ...ObjectId[]]): void => {
+    for (const logicalHypothesis of logicalHypotheses) {
       closure.push(logicalHypothesis.map((symbolId: ObjectId): string => {
         return symbolId.toString();
       }));
-    });
+    }
   }
 };
