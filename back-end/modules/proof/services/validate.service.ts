@@ -1,5 +1,6 @@
 import { BaseValidateService } from '@/common/services/base-validate.service';
 import { InvalidSubstitutionException } from '@/proof/exceptions/invalid-substitution.exception';
+import { MissingSubstitutionException } from '@/proof/exceptions/missing-substitution.exception';
 import { ProofUniqueTitleException } from '@/proof/exceptions/proof-unique-title.exception';
 import { EditProofPayload } from '@/proof/payloads/edit-proof.payload';
 import { NewProofPayload } from '@/proof/payloads/new-proof.payload';
@@ -83,6 +84,14 @@ export class ValidateService extends BaseValidateService {
         }
 
         substitionMap[variableSymbolId] = expression;
+      }
+
+      for (const stepVariableTypeHypothesis of stepVariableTypeHypotheses) {
+        const [, variableSymbolId] = stepVariableTypeHypothesis;
+
+        if (!substitionMap[variableSymbolId.toString()]) {
+          throw new MissingSubstitutionException();
+        }
       }
     }
   }
