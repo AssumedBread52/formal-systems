@@ -1,9 +1,12 @@
 import { BaseValidateService } from '@/common/services/base-validate.service';
+import { InvalidSubstitutionException } from '@/proof/exceptions/invalid-substitution.exception';
 import { ProofUniqueTitleException } from '@/proof/exceptions/proof-unique-title.exception';
 import { EditProofPayload } from '@/proof/payloads/edit-proof.payload';
 import { NewProofPayload } from '@/proof/payloads/new-proof.payload';
 import { ProofEntity } from '@/proof/proof.entity';
 import { StatementReadService } from '@/statement/services/statement-read.service';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SymbolEntity } from '@/symbol/symbol.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,7 +15,7 @@ import { MongoRepository } from 'typeorm';
 
 @Injectable()
 export class ValidateService extends BaseValidateService {
-  constructor(@InjectRepository(ProofEntity) private proofRepository: MongoRepository<ProofEntity>, private statementReadService: StatementReadService) {
+  constructor(@InjectRepository(ProofEntity) private proofRepository: MongoRepository<ProofEntity>, private statementReadService: StatementReadService, private symbolReadService: SymbolReadService) {
     super();
   }
 
@@ -62,6 +65,25 @@ export class ValidateService extends BaseValidateService {
       const [stepStatementId, substitutions] = step;
 
       const { distinctVariableRestrictions: stepDistinctVariableRestrictions, variableTypeHypotheses: stepVariableTypeHypotheses, logicalHypotheses: stepLogicalHypotheses, assertion: stepAssertion } = await this.statementReadService.readById(systemId, stepStatementId);
+
+      const substitionMap = {} as Record<string, string[]>;
+      for (const substitution of substitutions) {
+        const [variableSymbolId, expression] = substitution;
+
+        const missingSubstitutionSymbols = await this.symbolReadService.addToSymbolDictionary(systemId, [variableSymbolId].concat(expression).map((symbolId: string): ObjectId => {
+          return new ObjectId(symbolId);
+        }), symbolDictionary);
+
+        for (const symbolId in missingSubstitutionSymbols) {
+          symbolDictionary[symbolId] = missingSubstitutionSymbols[symbolId];
+        }
+
+        if (SymbolType.Variable !== symbolDictionary[variableSymbolId].type) {
+          throw new InvalidSubstitutionException();
+        }
+
+        substitionMap[variableSymbolId] = expression;
+      }
     }
   }
 };
