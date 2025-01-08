@@ -30,7 +30,7 @@ export class ProofUpdateService {
       await this.validateService.conflictCheck(newTitle, systemId, statementId);
     }
 
-    await this.validateService.editProofCheck(statementId, editProofPayload);
+    await this.validateService.editProofCheck(systemId, statementId, editProofPayload);
 
     proof.title = newTitle;
     proof.description = newDescription;

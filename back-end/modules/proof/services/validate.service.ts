@@ -26,19 +26,18 @@ export class ValidateService extends BaseValidateService {
     }
   }
 
-  async newProofCheck(statementId: ObjectId, newProofPayload: NewProofPayload): Promise<void> {
+  async newProofCheck(systemId: ObjectId, statementId: ObjectId, newProofPayload: NewProofPayload): Promise<void> {
     const { steps } = newProofPayload;
 
-    await this.proofCheck(statementId, steps);
+    await this.proofCheck(systemId, statementId, steps);
   }
 
-  async editProofCheck(statementId: ObjectId, editProofPayload: EditProofPayload): Promise<void> {
+  async editProofCheck(systemId: ObjectId, statementId: ObjectId, editProofPayload: EditProofPayload): Promise<void> {
     const { newSteps } = editProofPayload;
 
-    await this.proofCheck(statementId, newSteps);
+    await this.proofCheck(systemId, statementId, newSteps);
   }
 
-  private async proofCheck(statementId: ObjectId, steps: [string, [string, string[]][]][]): Promise<void> {
-    console.log(statementId, steps);
+  private async proofCheck(systemId: ObjectId, statementId: ObjectId, steps: [string, [string, string[]][]][]): Promise<void> {
   }
 };

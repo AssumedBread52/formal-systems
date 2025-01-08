@@ -26,7 +26,7 @@ export class ProofCreateService {
 
     await this.validateService.conflictCheck(title, systemId, _id);
 
-    await this.validateService.newProofCheck(_id, newProofPayload);
+    await this.validateService.newProofCheck(systemId, _id, newProofPayload);
 
     const proof = new ProofEntity();
 
