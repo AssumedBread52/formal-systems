@@ -3,6 +3,7 @@ import { ProofUniqueTitleException } from '@/proof/exceptions/proof-unique-title
 import { EditProofPayload } from '@/proof/payloads/edit-proof.payload';
 import { NewProofPayload } from '@/proof/payloads/new-proof.payload';
 import { ProofEntity } from '@/proof/proof.entity';
+import { StatementReadService } from '@/statement/services/statement-read.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -10,7 +11,7 @@ import { MongoRepository } from 'typeorm';
 
 @Injectable()
 export class ValidateService extends BaseValidateService {
-  constructor(@InjectRepository(ProofEntity) private proofRepository: MongoRepository<ProofEntity>) {
+  constructor(@InjectRepository(ProofEntity) private proofRepository: MongoRepository<ProofEntity>, private statementReadService: StatementReadService) {
     super();
   }
 
@@ -39,5 +40,20 @@ export class ValidateService extends BaseValidateService {
   }
 
   private async proofCheck(systemId: ObjectId, statementId: ObjectId, steps: [string, [string, string[]][]][]): Promise<void> {
+    const closure = [] as string[][];
+
+    const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = await this.statementReadService.readById(systemId, statementId);
+
+    variableTypeHypotheses.forEach((variableTypeHypothesis: [ObjectId, ObjectId]): void => {
+      const [typeSymbolId, variableSymbolId] = variableTypeHypothesis;
+
+      closure.push([typeSymbolId.toString(), variableSymbolId.toString()]);
+    });
+
+    logicalHypotheses.forEach((logicalHypothesis: [ObjectId, ...ObjectId[]]): void => {
+      closure.push(logicalHypothesis.map((symbolId: ObjectId): string => {
+        return symbolId.toString();
+      }));
+    });
   }
 };
