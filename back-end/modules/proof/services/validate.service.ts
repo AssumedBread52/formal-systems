@@ -1,4 +1,5 @@
 import { BaseValidateService } from '@/common/services/base-validate.service';
+import { IncorrectSubstitutionCountException } from '@/proof/exceptions/incorrect-substitution-count.exception';
 import { InvalidSubstitutionException } from '@/proof/exceptions/invalid-substitution.exception';
 import { MissingSubstitutionException } from '@/proof/exceptions/missing-substitution.exception';
 import { ProofUniqueTitleException } from '@/proof/exceptions/proof-unique-title.exception';
@@ -66,6 +67,10 @@ export class ValidateService extends BaseValidateService {
       const [stepStatementId, substitutions] = step;
 
       const { distinctVariableRestrictions: stepDistinctVariableRestrictions, variableTypeHypotheses: stepVariableTypeHypotheses, logicalHypotheses: stepLogicalHypotheses, assertion: stepAssertion } = await this.statementReadService.readById(systemId, stepStatementId);
+
+      if (substitutions.length !== stepVariableTypeHypotheses.length) {
+        throw new IncorrectSubstitutionCountException();
+      }
 
       const substitutionMap = {} as Record<string, string[]>;
       for (const substitution of substitutions) {
