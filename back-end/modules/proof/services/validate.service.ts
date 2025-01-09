@@ -5,6 +5,7 @@ import { InvalidSubstitutionException } from '@/proof/exceptions/invalid-substit
 import { MissingLogicalHypothesisException } from '@/proof/exceptions/missing-logical-hypothesis.exception';
 import { MissingSubstitutionException } from '@/proof/exceptions/missing-substitution.exception';
 import { MissingVariableTypeHypothesisException } from '@/proof/exceptions/missing-variable-type-hypothesis.exception';
+import { ProofIncompleteException } from '@/proof/exceptions/proof-incomplete.exception';
 import { ProofUniqueTitleException } from '@/proof/exceptions/proof-unique-title.exception';
 import { EditProofPayload } from '@/proof/payloads/edit-proof.payload';
 import { NewProofPayload } from '@/proof/payloads/new-proof.payload';
@@ -204,6 +205,18 @@ export class ValidateService extends BaseValidateService {
       }
 
       closure.push(substitutedAssertion);
+    }
+
+    if (-1 === closure.findIndex((expression: string[]): boolean => {
+      if (assertion.length !== expression.length) {
+        return false;
+      }
+
+      return expression.reduce((isMatching: boolean, symbolId: string, currentIndex): boolean => {
+        return isMatching && symbolId === assertion[currentIndex].toString();
+      }, true);
+    })) {
+      throw new ProofIncompleteException();
     }
   }
 };
