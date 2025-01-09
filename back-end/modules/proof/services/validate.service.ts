@@ -189,6 +189,21 @@ export class ValidateService extends BaseValidateService {
           throw new MissingLogicalHypothesisException();
         }
       }
+
+      const substitutedAssertion = [] as string[];
+      for (const symbolId of stepAssertion) {
+        const currentSymbolId = symbolId.toString();
+
+        if (SymbolType.Variable !== symbolDictionary[currentSymbolId].type) {
+          substitutedAssertion.push(currentSymbolId);
+
+          continue;
+        }
+
+        substitutedAssertion.push(...substitutionMap[currentSymbolId]);
+      }
+
+      closure.push(substitutedAssertion);
     }
   }
 };
