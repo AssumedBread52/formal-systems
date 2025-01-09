@@ -67,7 +67,7 @@ export class ValidateService extends BaseValidateService {
 
       const { distinctVariableRestrictions: stepDistinctVariableRestrictions, variableTypeHypotheses: stepVariableTypeHypotheses, logicalHypotheses: stepLogicalHypotheses, assertion: stepAssertion } = await this.statementReadService.readById(systemId, stepStatementId);
 
-      const substitionMap = {} as Record<string, string[]>;
+      const substitutionMap = {} as Record<string, string[]>;
       for (const substitution of substitutions) {
         const [variableSymbolId, expression] = substitution;
 
@@ -83,13 +83,13 @@ export class ValidateService extends BaseValidateService {
           throw new InvalidSubstitutionException();
         }
 
-        substitionMap[variableSymbolId] = expression;
+        substitutionMap[variableSymbolId] = expression;
       }
 
       for (const stepVariableTypeHypothesis of stepVariableTypeHypotheses) {
         const [, variableSymbolId] = stepVariableTypeHypothesis;
 
-        if (!substitionMap[variableSymbolId.toString()]) {
+        if (!substitutionMap[variableSymbolId.toString()]) {
           throw new MissingSubstitutionException();
         }
       }
