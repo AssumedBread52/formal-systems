@@ -1,4 +1,5 @@
 import { BaseValidateService } from '@/common/services/base-validate.service';
+import { DistinctVariableRestrictionViolationException } from '@/proof/exceptions/distinct-variable-restriction-violation.exception';
 import { IncorrectSubstitutionCountException } from '@/proof/exceptions/incorrect-substitution-count.exception';
 import { InvalidSubstitutionException } from '@/proof/exceptions/invalid-substitution.exception';
 import { MissingSubstitutionException } from '@/proof/exceptions/missing-substitution.exception';
@@ -9,7 +10,6 @@ import { ProofEntity } from '@/proof/proof.entity';
 import { StatementReadService } from '@/statement/services/statement-read.service';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
-import { SymbolEntity } from '@/symbol/symbol.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -47,9 +47,10 @@ export class ValidateService extends BaseValidateService {
 
   private async proofCheck(systemId: ObjectId, statementId: ObjectId, steps: [string, [string, string[]][]][]): Promise<void> {
     const closure = [] as string[][];
-    const symbolDictionary = {} as Record<string, SymbolEntity>;
 
     const { distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion } = await this.statementReadService.readById(systemId, statementId);
+
+    const symbolDictionary = await this.symbolReadService.addToSymbolDictionary(systemId, assertion.concat(...logicalHypotheses, ...variableTypeHypotheses, ...distinctVariableRestrictions), {});
 
     for (const variableTypeHypothesis of variableTypeHypotheses) {
       const [typeSymbolId, variableSymbolId] = variableTypeHypothesis;
@@ -67,6 +68,11 @@ export class ValidateService extends BaseValidateService {
       const [stepStatementId, substitutions] = step;
 
       const { distinctVariableRestrictions: stepDistinctVariableRestrictions, variableTypeHypotheses: stepVariableTypeHypotheses, logicalHypotheses: stepLogicalHypotheses, assertion: stepAssertion } = await this.statementReadService.readById(systemId, stepStatementId);
+
+      const missingStepSymbols = await this.symbolReadService.addToSymbolDictionary(systemId, stepAssertion.concat(...stepLogicalHypotheses, ...stepVariableTypeHypotheses, ...stepDistinctVariableRestrictions), symbolDictionary);
+      for (const missingStepSymbol in missingStepSymbols) {
+        symbolDictionary[missingStepSymbol] = missingStepSymbols[missingStepSymbol];
+      }
 
       if (substitutions.length !== stepVariableTypeHypotheses.length) {
         throw new IncorrectSubstitutionCountException();
@@ -96,6 +102,33 @@ export class ValidateService extends BaseValidateService {
 
         if (!substitutionMap[variableSymbolId.toString()]) {
           throw new MissingSubstitutionException();
+        }
+      }
+
+      for (const stepDistinctVariableRestriction of stepDistinctVariableRestrictions) {
+        const [firstSymbolId, secondSymbolId] = stepDistinctVariableRestriction;
+
+        const firstExpression = substitutionMap[firstSymbolId.toString()];
+        const secondExpression = substitutionMap[secondSymbolId.toString()];
+
+        for (const firstSymbolId of firstExpression) {
+          if (SymbolType.Variable !== symbolDictionary[firstSymbolId].type) {
+            continue;
+          }
+
+          for (const secondSymbolId of secondExpression) {
+            if (SymbolType.Variable !== symbolDictionary[secondSymbolId].type) {
+              continue;
+            }
+
+            if (-1 === distinctVariableRestrictions.findIndex((distinctVariableRestriction: [ObjectId, ObjectId]): boolean => {
+              const [firstId, secondId] = distinctVariableRestriction;
+
+              return (firstSymbolId === firstId.toString() && secondSymbolId === secondId.toString()) || (firstSymbolId === secondId.toString() && secondSymbolId === firstId.toString());
+            })) {
+              throw new DistinctVariableRestrictionViolationException();
+            }
+          }
         }
       }
     }
