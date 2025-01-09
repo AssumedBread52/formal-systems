@@ -2,7 +2,9 @@ import { BaseValidateService } from '@/common/services/base-validate.service';
 import { DistinctVariableRestrictionViolationException } from '@/proof/exceptions/distinct-variable-restriction-violation.exception';
 import { IncorrectSubstitutionCountException } from '@/proof/exceptions/incorrect-substitution-count.exception';
 import { InvalidSubstitutionException } from '@/proof/exceptions/invalid-substitution.exception';
+import { MissingLogicalHypothesisException } from '@/proof/exceptions/missing-logical-hypothesis.exception';
 import { MissingSubstitutionException } from '@/proof/exceptions/missing-substitution.exception';
+import { MissingVariableTypeHypothesisException } from '@/proof/exceptions/missing-variable-type-hypothesis.exception';
 import { ProofUniqueTitleException } from '@/proof/exceptions/proof-unique-title.exception';
 import { EditProofPayload } from '@/proof/payloads/edit-proof.payload';
 import { NewProofPayload } from '@/proof/payloads/new-proof.payload';
@@ -129,6 +131,62 @@ export class ValidateService extends BaseValidateService {
               throw new DistinctVariableRestrictionViolationException();
             }
           }
+        }
+      }
+
+      for (const stepVariableTypeHypothesis of stepVariableTypeHypotheses) {
+        const newExpression = [] as string[];
+
+        for (const symbolId of stepVariableTypeHypothesis) {
+          const currentSymbolId = symbolId.toString();
+
+          if (SymbolType.Variable !== symbolDictionary[currentSymbolId].type) {
+            newExpression.push(currentSymbolId);
+
+            continue;
+          }
+
+          newExpression.push(...substitutionMap[currentSymbolId]);
+        }
+
+        if (-1 === closure.findIndex((expression: string[]): boolean => {
+          if (newExpression.length !== expression.length) {
+            return false;
+          }
+
+          return expression.reduce((isMatching: boolean, symbolId: string, currentIndex: number): boolean => {
+            return isMatching && symbolId === newExpression[currentIndex];
+          }, true);
+        })) {
+          throw new MissingVariableTypeHypothesisException();
+        }
+      }
+
+      for (const stepLogicalHypothesis of stepLogicalHypotheses) {
+        const newExpression = [] as string[];
+
+        for (const symbolId of stepLogicalHypothesis) {
+          const currentSymbolId = symbolId.toString();
+
+          if (SymbolType.Variable !== symbolDictionary[currentSymbolId].type) {
+            newExpression.push(currentSymbolId);
+
+            continue;
+          }
+
+          newExpression.push(...substitutionMap[currentSymbolId]);
+        }
+
+        if (-1 === closure.findIndex((expression: string[]): boolean => {
+          if (newExpression.length !== expression.length) {
+            return false;
+          }
+
+          return expression.reduce((isMatching: boolean, symbolId: string, currentIndex: number): boolean => {
+            return isMatching && symbolId === newExpression[currentIndex];
+          }, true);
+        })) {
+          throw new MissingLogicalHypothesisException();
         }
       }
     }
