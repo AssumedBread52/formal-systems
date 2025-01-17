@@ -13,7 +13,7 @@ export const signUp = (builder: EndpointBuilder<BaseQueryFn, TagTypes, 'api'>): 
       return {
         body: signUpPayload,
         method: 'POST',
-        url: '/auth/sign-up'
+        url: '/user'
       };
     }
   });
