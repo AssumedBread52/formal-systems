@@ -6,9 +6,9 @@ export type Symbol = {
   description: string;
   type: SymbolType;
   content: string;
-  axiomAppearances: number;
-  theoremAppearances: number;
-  deductionAppearances: number;
+  axiomAppearanceCount: number;
+  theoremAppearanceCount: number;
+  deductionAppearanceCount: number;
   systemId: string;
   createdByUserId: string;
 };

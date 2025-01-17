@@ -13,18 +13,18 @@ export const StatementPage = async (props: ServerSideProps): Promise<ReactElemen
 
   const { 'system-id': systemId = '', 'statement-id': statementId = '' } = params;
 
-  const { proofAppearances, proofSteps } = await fetchStatement(systemId, statementId);
+  const { proofAppearanceCount, proofCount } = await fetchStatement(systemId, statementId);
 
   return (
     <AntdRow gutter={[0, 16]}>
       <AntdCol span={24}>
         <AntdCard title='Metrics'>
           <AntdDescriptions bordered>
-            <AntdDescriptionsItem label='Proof Appearances Count'>
-              {proofAppearances}
+            <AntdDescriptionsItem label='Proof Appearance Count'>
+              {proofAppearanceCount}
             </AntdDescriptionsItem>
-            <AntdDescriptionsItem label='Proof Steps'>
-              {proofSteps}
+            <AntdDescriptionsItem label='Proof Count'>
+              {proofCount}
             </AntdDescriptionsItem>
           </AntdDescriptions>
         </AntdCard>

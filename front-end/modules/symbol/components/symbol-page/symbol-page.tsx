@@ -13,7 +13,7 @@ export const SymbolPage = async (props: ServerSideProps): Promise<ReactElement> 
 
   const { 'system-id': systemId = '', 'symbol-id': symbolId = '' } = params;
 
-  const { id, title, description, type, content, axiomAppearances, theoremAppearances, deductionAppearances, createdByUserId } = await fetchSymbol(systemId, symbolId);
+  const { id, title, description, type, content, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, createdByUserId } = await fetchSymbol(systemId, symbolId);
 
   return (
     <AntdCard>
@@ -22,16 +22,16 @@ export const SymbolPage = async (props: ServerSideProps): Promise<ReactElement> 
       <AntdCard title='Metrics'>
         <AntdDescriptions bordered>
           <AntdDescriptionsItem label='Appearance Count'>
-            {axiomAppearances + theoremAppearances + deductionAppearances}
+            {axiomAppearanceCount + theoremAppearanceCount + deductionAppearanceCount}
           </AntdDescriptionsItem>
           <AntdDescriptionsItem label='Appearance in Axioms Count'>
-            {axiomAppearances}
+            {axiomAppearanceCount}
           </AntdDescriptionsItem>
           <AntdDescriptionsItem label='Appearance in Theorems Count'>
-            {theoremAppearances}
+            {theoremAppearanceCount}
           </AntdDescriptionsItem>
           <AntdDescriptionsItem label='Appearance in Deductions Count'>
-            {deductionAppearances}
+            {deductionAppearanceCount}
           </AntdDescriptionsItem>
         </AntdDescriptions>
       </AntdCard>

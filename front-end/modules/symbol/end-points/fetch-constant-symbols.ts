@@ -9,7 +9,12 @@ export const fetchConstantSymbols = (builder: EndpointBuilder<BaseQueryFn, TagTy
       Tags.Symbol
     ],
     query: (systemId: string): string => {
-      return `/system/${systemId}/symbol/constant`;
+      return `/system/${systemId}/symbol?types[]=Constant`;
+    },
+    transformResponse: (response): Symbol[] => {
+      const { results } = response as { results: Symbol[]; };
+
+      return results;
     }
   });
 };

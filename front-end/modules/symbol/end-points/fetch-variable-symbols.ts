@@ -9,7 +9,12 @@ export const fetchVariableSymbols = (builder: EndpointBuilder<BaseQueryFn, TagTy
       Tags.Symbol
     ],
     query: (systemId: string): string => {
-      return `/system/${systemId}/symbol/variable`;
+      return `/system/${systemId}/symbol?types[]=Variable`;
+    },
+    transformResponse: (response): Symbol[] => {
+      const { results } = response as { results: Symbol[]; };
+
+      return results;
     }
   });
 };

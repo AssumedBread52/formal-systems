@@ -6,8 +6,8 @@ export type Statement = {
   variableTypeHypotheses: [string, string][];
   logicalHypotheses: string[][];
   assertion: string[];
-  proofAppearances: number;
-  proofSteps: number;
+  proofCount: number;
+  proofAppearanceCount: number;
   systemId: string;
   createdByUserId: string;
 };
