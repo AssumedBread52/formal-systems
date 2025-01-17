@@ -1,3 +1,5 @@
+import { StatementModule } from '@/statement/statement.module';
+import { SymbolModule } from '@/symbol/symbol.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProofController } from './proof.controller';
@@ -10,6 +12,8 @@ import { ValidateService } from './services/validate.service';
 
 @Module({
   imports: [
+    StatementModule,
+    SymbolModule,
     TypeOrmModule.forFeature([
       ProofEntity
     ])

@@ -27,6 +27,9 @@ import { StatementEntity } from './statement.entity';
     StatementReadService,
     StatementUpdateService,
     ValidateService
+  ],
+  exports: [
+    StatementReadService
   ]
 })
 export class StatementModule {
