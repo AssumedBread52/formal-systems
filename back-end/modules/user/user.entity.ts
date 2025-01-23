@@ -25,4 +25,6 @@ export class UserEntity {
   theoremCount: number = 0;
   @Column()
   deductionCount: number = 0;
+  @Column()
+  proofCount: number = 0;
 };

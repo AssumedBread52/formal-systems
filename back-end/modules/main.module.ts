@@ -12,6 +12,7 @@ import { SymbolModule } from './symbol/symbol.module';
 import { SystemStatementCountSubscriber } from './system/subscribers/system-statement-count.subscriber';
 import { SystemSymbolCountSubscriber } from './system/subscribers/system-symbol-count.subscriber';
 import { SystemModule } from './system/system.module';
+import { UserProofCountSubscriber } from './user/subscribers/user-proof-count.subscriber';
 import { UserStatementCountSubscriber } from './user/subscribers/user-statement-count.subscriber';
 import { UserSymbolCountSubscriber } from './user/subscribers/user-symbol-count.subscriber';
 import { UserSystemCountSubscriber } from './user/subscribers/user-system-count.subscriber';
@@ -57,6 +58,7 @@ import { UserModule } from './user/user.module';
           SymbolStatementCountSubscriber,
           SystemStatementCountSubscriber,
           SystemSymbolCountSubscriber,
+          UserProofCountSubscriber,
           UserStatementCountSubscriber,
           UserSymbolCountSubscriber,
           UserSystemCountSubscriber

@@ -11,9 +11,10 @@ export class UserPayload {
   axiomCount: number;
   theoremCount: number;
   deductionCount: number;
+  proofCount: number;
 
   constructor(user: UserEntity) {
-    const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount } = user;
+    const { _id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = user;
 
     this.id = _id.toString();
     this.firstName = firstName;
@@ -25,5 +26,6 @@ export class UserPayload {
     this.axiomCount = axiomCount;
     this.theoremCount = theoremCount;
     this.deductionCount = deductionCount;
+    this.proofCount = proofCount;
   }
 };
