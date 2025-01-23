@@ -10,11 +10,12 @@ export class SymbolPayload {
   axiomAppearanceCount: number;
   theoremAppearanceCount: number;
   deductionAppearanceCount: number;
+  proofAppearanceCount: number;
   systemId: string;
   createdByUserId: string;
 
   constructor(symbol: SymbolEntity) {
-    const { _id, title, description, type, content, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, systemId, createdByUserId } = symbol;
+    const { _id, title, description, type, content, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, proofAppearanceCount, systemId, createdByUserId } = symbol;
 
     this.id = _id.toString();
     this.title = title;
@@ -24,6 +25,7 @@ export class SymbolPayload {
     this.axiomAppearanceCount = axiomAppearanceCount;
     this.theoremAppearanceCount = theoremAppearanceCount;
     this.deductionAppearanceCount = deductionAppearanceCount;
+    this.proofAppearanceCount = proofAppearanceCount;
     this.systemId = systemId.toString();
     this.createdByUserId = createdByUserId.toString();
   }

@@ -24,6 +24,8 @@ export class SymbolEntity {
   @Column()
   deductionAppearanceCount: number = 0;
   @Column()
+  proofAppearanceCount: number = 0;
+  @Column()
   systemId: ObjectId = new ObjectId();
   @Column()
   createdByUserId: ObjectId = new ObjectId();
