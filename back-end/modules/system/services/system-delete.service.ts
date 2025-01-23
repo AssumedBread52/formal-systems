@@ -15,13 +15,13 @@ export class SystemDeleteService {
   async delete(sessionUserId: ObjectId, systemId: any): Promise<SystemEntity> {
     const system = await this.systemReadService.readById(systemId);
 
-    const { _id, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = system;
+    const { _id, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = system;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
     }
 
-    if (constantSymbolCount > 0 || variableSymbolCount > 0 || axiomCount > 0 || theoremCount > 0 || deductionCount > 0) {
+    if (constantSymbolCount > 0 || variableSymbolCount > 0 || axiomCount > 0 || theoremCount > 0 || deductionCount > 0 || proofCount > 0) {
       throw new InUseException();
     }
 

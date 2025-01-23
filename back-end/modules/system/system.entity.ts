@@ -20,5 +20,7 @@ export class SystemEntity {
   @Column()
   deductionCount: number = 0;
   @Column()
+  proofCount: number = 0;
+  @Column()
   createdByUserId: ObjectId = new ObjectId();
 };

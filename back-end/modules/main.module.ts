@@ -9,6 +9,7 @@ import { ProofModule } from './proof/proof.module';
 import { StatementModule } from './statement/statement.module';
 import { SymbolStatementCountSubscriber } from './symbol/subscribers/symbol-statement-count.subscriber';
 import { SymbolModule } from './symbol/symbol.module';
+import { SystemProofCountSubscriber } from './system/subscribers/system-proof-count.subscriber';
 import { SystemStatementCountSubscriber } from './system/subscribers/system-statement-count.subscriber';
 import { SystemSymbolCountSubscriber } from './system/subscribers/system-symbol-count.subscriber';
 import { SystemModule } from './system/system.module';
@@ -56,6 +57,7 @@ import { UserModule } from './user/user.module';
 
         const subscribers = [
           SymbolStatementCountSubscriber,
+          SystemProofCountSubscriber,
           SystemStatementCountSubscriber,
           SystemSymbolCountSubscriber,
           UserProofCountSubscriber,

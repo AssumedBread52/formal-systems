@@ -10,9 +10,10 @@ export class SystemPayload {
   theoremCount: number;
   deductionCount: number;
   createdByUserId: string;
+  proofCount: number;
 
   constructor(system: SystemEntity) {
-    const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, createdByUserId } = system;
+    const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = system;
 
     this.id = _id.toString();
     this.title = title;
@@ -22,6 +23,7 @@ export class SystemPayload {
     this.axiomCount = axiomCount;
     this.theoremCount = theoremCount;
     this.deductionCount = deductionCount;
+    this.proofCount = proofCount;
     this.createdByUserId = createdByUserId.toString();
   }
 };
