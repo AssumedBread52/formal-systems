@@ -9,8 +9,8 @@ export class SystemPayload {
   axiomCount: number;
   theoremCount: number;
   deductionCount: number;
-  createdByUserId: string;
   proofCount: number;
+  createdByUserId: string;
 
   constructor(system: SystemEntity) {
     const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = system;
