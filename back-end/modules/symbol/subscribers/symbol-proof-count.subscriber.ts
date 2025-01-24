@@ -15,7 +15,7 @@ export class SymbolProofCountSubscriber extends BaseCountSubscriber<ProofEntity>
 
     const symbolIds = [] as ObjectId[];
     for (const step of steps) {
-      const[, substitutions] = step;
+      const [, substitutions] = step;
 
       for (const substitution of substitutions) {
         const [variableSymbolId, expression] = substitution;
