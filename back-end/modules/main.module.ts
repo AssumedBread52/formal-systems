@@ -7,8 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
 import { ProofModule } from './proof/proof.module';
 import { StatementModule } from './statement/statement.module';
-import { StatementProofAppearanceCountSubsciber } from './statement/subscribers/statement-proof-appearance-count.subscriber';
-import { StatementProofCountSubsciber } from './statement/subscribers/statement-proof-count.subscriber';
+import { StatementProofAppearanceCountSubscriber } from './statement/subscribers/statement-proof-appearance-count.subscriber';
+import { StatementProofCountSubscriber } from './statement/subscribers/statement-proof-count.subscriber';
 import { SymbolProofCountSubscriber } from './symbol/subscribers/symbol-proof-count.subscriber';
 import { SymbolStatementCountSubscriber } from './symbol/subscribers/symbol-statement-count.subscriber';
 import { SymbolModule } from './symbol/symbol.module';
@@ -59,8 +59,8 @@ import { UserModule } from './user/user.module';
         const url = `${scheme}://${username}:${encodeURIComponent(password)}@${host}:${port}/${name}?authSource=admin`;
 
         const subscribers = [
-          StatementProofAppearanceCountSubsciber,
-          StatementProofCountSubsciber,
+          StatementProofAppearanceCountSubscriber,
+          StatementProofCountSubscriber,
           SymbolProofCountSubscriber,
           SymbolStatementCountSubscriber,
           SystemProofCountSubscriber,

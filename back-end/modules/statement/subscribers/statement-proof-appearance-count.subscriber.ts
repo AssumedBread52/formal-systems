@@ -5,7 +5,7 @@ import { ObjectId } from 'mongodb';
 import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()
-export class StatementProofAppearanceCountSubsciber extends BaseCountSubscriber<ProofEntity> {
+export class StatementProofAppearanceCountSubscriber extends BaseCountSubscriber<ProofEntity> {
   constructor() {
     super(ProofEntity);
   }

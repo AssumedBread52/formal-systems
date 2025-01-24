@@ -5,7 +5,7 @@ import { StatementEntity } from '@/statement/statement.entity';
 import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()
-export class StatementProofCountSubsciber extends BaseCountSubscriber<ProofEntity> {
+export class StatementProofCountSubscriber extends BaseCountSubscriber<ProofEntity> {
   constructor() {
     super(ProofEntity);
   }
