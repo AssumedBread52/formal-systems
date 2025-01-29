@@ -56,44 +56,44 @@ else
 fi
 
 function generate_ssh_files() {
-  if [ ! -d ./$1/secure ]; then
-    mkdir -p ./$1/secure
+  if [ ! -d ./$1/security ]; then
+    mkdir -p ./$1/security
   fi
 
-  if [ ! -f ./$1/secure/private-key.pem ]; then
-    openssl genrsa -out ./$1/secure/private-key.pem 4096
+  if [ ! -f ./$1/security/private-key.pem ]; then
+    openssl genrsa -out ./$1/security/private-key.pem 4096
   fi
 
-  if [ ! -f ./$1/secure/certificate-signature-request.pem ]; then
-    openssl req -new -key ./$1/secure/private-key.pem -out ./$1/secure/certificate-signature-request.pem -subj "/C=US/ST=Texas/L=Houston/O=Me, Myself, and I/CN=$1"
+  if [ ! -f ./$1/security/certificate-signature-request.pem ]; then
+    openssl req -new -key ./$1/security/private-key.pem -out ./$1/security/certificate-signature-request.pem -subj "/C=US/ST=Texas/L=Houston/O=Me, Myself, and I/CN=$1"
   fi
 
-  if [ ! -f ./$1/secure/config.ext ]; then
-    echo -n "" > ./$1/secure/config.ext
-    echo "authorityKeyIdentifier=keyid,issuer" >> ./$1/secure/config.ext
-    echo "basicConstraints=CA:FALSE" >> ./$1/secure/config.ext
-    echo "keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment" >> ./$1/secure/config.ext
-    echo "subjectAltName = @alt_names" >> ./$1/secure/config.ext
-    echo "" >> ./$1/secure/config.ext
-    echo "[alt_names]" >> ./$1/secure/config.ext
-    echo "DNS.1 = $1" >> ./$1/secure/config.ext
-    echo -n "DNS.2 = localhost" >> ./$1/secure/config.ext
+  if [ ! -f ./$1/security/config.ext ]; then
+    echo -n "" > ./$1/security/config.ext
+    echo "authorityKeyIdentifier=keyid,issuer" >> ./$1/security/config.ext
+    echo "basicConstraints=CA:FALSE" >> ./$1/security/config.ext
+    echo "keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment" >> ./$1/security/config.ext
+    echo "subjectAltName = @alt_names" >> ./$1/security/config.ext
+    echo "" >> ./$1/security/config.ext
+    echo "[alt_names]" >> ./$1/security/config.ext
+    echo "DNS.1 = $1" >> ./$1/security/config.ext
+    echo -n "DNS.2 = localhost" >> ./$1/security/config.ext
   fi
 
   EXPIRY_STATUS="Certificate will expire"
-  if [ -f ./$1/secure/certificate-authority-public-certificate.pem ]; then
-    EXPIRY_STATUS=$(openssl x509 -checkend 86400 -noout -in ./$1/secure/public-certificate.pem)
+  if [ -f ./$1/security/certificate-authority-public-certificate.pem ]; then
+    EXPIRY_STATUS=$(openssl x509 -checkend 86400 -noout -in ./$1/security/public-certificate.pem)
   fi
   if [ "$EXPIRY_STATUS" = "Certificate will expire" ]; then
-    cp ./certificate-authority/public-certificate.pem ./$1/secure/certificate-authority-public-certificate.pem
+    cp ./certificate-authority/public-certificate.pem ./$1/security/certificate-authority-public-certificate.pem
   fi
 
-  if [ ! -f ./$1/secure/public-certificate.pem ]; then
-    openssl x509 -req -in ./$1/secure/certificate-signature-request.pem -CA ./certificate-authority/public-certificate.pem -CAkey ./certificate-authority/private-key.pem -CAcreateserial -out ./$1/secure/public-certificate.pem -days 2 -sha256 -extfile ./$1/secure/config.ext
+  if [ ! -f ./$1/security/public-certificate.pem ]; then
+    openssl x509 -req -in ./$1/security/certificate-signature-request.pem -CA ./certificate-authority/public-certificate.pem -CAkey ./certificate-authority/private-key.pem -CAcreateserial -out ./$1/security/public-certificate.pem -days 2 -sha256 -extfile ./$1/security/config.ext
   else
-    EXPIRY_STATUS=$(openssl x509 -checkend 86400 -noout -in ./$1/secure/public-certificate.pem)
+    EXPIRY_STATUS=$(openssl x509 -checkend 86400 -noout -in ./$1/security/public-certificate.pem)
     if [ "$EXPIRY_STATUS" = "Certificate will expire" ]; then
-      openssl x509 -req -in ./$1/secure/certificate-signature-request.pem -CA ./certificate-authority/public-certificate.pem -CAkey ./certificate-authority/private-key.pem -CAcreateserial -out ./$1/secure/public-certificate.pem -days 2 -sha256 -extfile ./$1/secure/config.ext
+      openssl x509 -req -in ./$1/security/certificate-signature-request.pem -CA ./certificate-authority/public-certificate.pem -CAkey ./certificate-authority/private-key.pem -CAcreateserial -out ./$1/security/public-certificate.pem -days 2 -sha256 -extfile ./$1/security/config.ext
     fi
   fi
 }

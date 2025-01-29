@@ -8,9 +8,9 @@ const bootstrap = async (): Promise<void> => {
   const app = await NestFactory.create(MainModule, {
     abortOnError: false,
     httpsOptions: {
-      cert: readFileSync('./secure/public-certificate.pem'),
-      key: readFileSync('./secure/private-key.pem'),
-      ca: readFileSync('./secure/certificate-authority-public-certificate.pem')
+      cert: readFileSync('./security/public-certificate.pem'),
+      key: readFileSync('./security/private-key.pem'),
+      ca: readFileSync('./security/certificate-authority-public-certificate.pem')
     }
   });
 
