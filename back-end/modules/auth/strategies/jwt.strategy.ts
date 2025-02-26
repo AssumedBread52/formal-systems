@@ -9,7 +9,7 @@ import { plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { Request } from 'express';
 import { ObjectId } from 'mongodb';
-import { Strategy, StrategyOptions } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { BaseStrategy } from './base.strategy';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrat
       jwtFromRequest: JwtStrategy.extractJwt,
       ignoreExpiration: false,
       secretOrKey: configService.getOrThrow<string>('JSON_WEB_TOKEN_SECRET')
-    } as StrategyOptions);
+    });
   }
 
   validate(payload: any): Promise<UserEntity> {
