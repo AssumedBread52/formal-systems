@@ -6,7 +6,7 @@ export class DatabaseCheckService {
   constructor(private typeOrmHealthIndicator: TypeOrmHealthIndicator) {
   }
 
-  check(): Promise<HealthIndicatorResult> {
+  check(): Promise<HealthIndicatorResult<'database'>> {
     return this.typeOrmHealthIndicator.pingCheck('database');
   }
 };
