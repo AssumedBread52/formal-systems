@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "CommonJS",
@@ -18,11 +18,12 @@
     "target": "ES2019"
   },
   "include": [
-    "**/*.ts"
+    "./**/*.ts"
   ],
   "exclude": [
-    ".nest",
-    "coverage",
-    "node_modules"
+    "./.nest",
+    "./coverage",
+    "./node_modules",
+    "./security"
   ]
 }
