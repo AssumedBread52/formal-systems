@@ -1,7 +1,6 @@
 import { createTestApp } from '@/app/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { HealthCheckError } from '@nestjs/terminus';
 import * as request from 'supertest';
 import { pingCheckMock } from './mocks/ping-check.mock';
 
@@ -14,7 +13,7 @@ describe('Health Check', (): void => {
     app = await createTestApp();
   });
 
-  it('performs a successful health check', async (): Promise<void> => {
+  it('passes a health check', async (): Promise<void> => {
     pingCheck.mockResolvedValueOnce({
       database: {
         status: 'up'
@@ -46,12 +45,12 @@ describe('Health Check', (): void => {
   });
 
   it('fails a health check', async (): Promise<void> => {
-    pingCheck.mockRejectedValueOnce(new HealthCheckError('Ignored Error message', {
+    pingCheck.mockResolvedValueOnce({
       database: {
         message: 'Returned error message',
         status: 'down'
       }
-    }));
+    });
 
     const response = await request(app.getHttpServer()).get('/health');
 
