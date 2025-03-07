@@ -2,7 +2,7 @@
   "exclude": [
     "./.nest",
     "./coverage",
-    "./modules/**/tests/*",
+    "./modules/**/tests",
     "./node_modules",
     "./security"
   ],
