@@ -1,10 +1,10 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  coverageDirectory: './coverage/',
+  coverageDirectory: './coverage',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/modules/$1'
   },
-  rootDir: './',
+  rootDir: '.',
   transform: {
     '^.+\\.ts$': 'ts-jest'
   }
