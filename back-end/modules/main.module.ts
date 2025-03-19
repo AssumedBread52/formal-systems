@@ -4,7 +4,6 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DatabaseType } from 'typeorm';
 import { AppModule } from './app/app.module';
 import { AuthModule } from './auth/auth.module';
-import { CommonModule } from './common/common.module';
 import { HealthModule } from './health/health.module';
 import { ProofModule } from './proof/proof.module';
 import { StatementModule } from './statement/statement.module';
@@ -27,7 +26,6 @@ import { UserModule } from './user/user.module';
   imports: [
     AppModule,
     AuthModule,
-    CommonModule,
     ConfigModule.forRoot({
       cache: true,
       envFilePath: [
