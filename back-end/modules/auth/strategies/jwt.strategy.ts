@@ -31,9 +31,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrat
       throw new InvalidTokenException();
     }
 
-    const { id } = tokenPayload;
+    const { userId } = tokenPayload;
 
-    return this.validateService.validateUserById(new ObjectId(id));
+    return this.validateService.validateUserById(new ObjectId(userId));
   }
 
   private static extractJwt(request: Request): string | null {

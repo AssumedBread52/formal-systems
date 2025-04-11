@@ -2,7 +2,7 @@ import { IsInt, IsMongoId, IsPositive } from 'class-validator';
 
 export class TokenPayload {
   @IsMongoId()
-  id: string = '';
+  userId: string = '';
   @IsInt()
   @IsPositive()
   iat: number = 0;

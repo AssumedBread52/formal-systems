@@ -9,7 +9,7 @@ export class TokenService {
 
   generateToken(userId: ObjectId): string {
     return this.jwtService.sign({
-      id: userId
+      userId
     });
   }
 };
