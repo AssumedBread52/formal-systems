@@ -1,7 +1,7 @@
 import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
 import { StatementEntity } from '@/statement/statement.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
-import { UserEntity } from '@/user/user.entity';
 import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()

@@ -1,5 +1,5 @@
 import { ValidateService } from '@/auth/services/validate.service';
-import { UserEntity } from '@/user/user.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';

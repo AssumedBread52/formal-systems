@@ -4,11 +4,11 @@ import { CookieService } from '@/auth/services/cookie.service';
 import { TokenService } from '@/auth/services/token.service';
 import { Body, Controller, Get, Param, Patch, Post, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
+import { UserEntity } from './entities/user.entity';
 import { UserPayload } from './payloads/user.payload';
 import { UserCreateService } from './services/user-create.service';
 import { UserReadService } from './services/user-read.service';
 import { UserUpdateService } from './services/user-update.service';
-import { UserEntity } from './user.entity';
 
 @Controller('user')
 export class UserController {

@@ -1,6 +1,6 @@
 import { InvalidCredentialsException } from '@/auth/exceptions/invalid-credentials.exception';
 import { InvalidTokenException } from '@/auth/exceptions/invalid-token.exception';
-import { UserEntity } from '@/user/user.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compareSync } from 'bcryptjs';

@@ -1,5 +1,5 @@
+import { UserEntity } from '@/user/entities/user.entity';
 import { EditProfilePayload } from '@/user/payloads/edit-profile.payload';
-import { UserEntity } from '@/user/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hashSync } from 'bcryptjs';

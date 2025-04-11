@@ -1,7 +1,7 @@
 import { InvalidTokenException } from '@/auth/exceptions/invalid-token.exception';
 import { TokenPayload } from '@/auth/payloads/token.payload';
 import { ValidateService } from '@/auth/services/validate.service';
-import { UserEntity } from '@/user/user.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';

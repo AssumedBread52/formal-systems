@@ -1,8 +1,8 @@
 import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
-import { UserEntity } from '@/user/user.entity';
 import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()

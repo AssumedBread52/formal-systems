@@ -1,6 +1,6 @@
 import { BaseValidateService } from '@/common/services/base-validate.service';
+import { UserEntity } from '@/user/entities/user.entity';
 import { UserUniqueEmailAddressException } from '@/user/exceptions/user-unique-email-address.exception';
-import { UserEntity } from '@/user/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
