@@ -10,10 +10,9 @@ import { validateSync } from 'class-validator';
 import { Request } from 'express';
 import { ObjectId } from 'mongodb';
 import { Strategy } from 'passport-jwt';
-import { BaseStrategy } from './base.strategy';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) implements BaseStrategy {
+export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private validateService: ValidateService, configService: ConfigService) {
     super({
       jwtFromRequest: JwtStrategy.extractJwt,
