@@ -1,8 +1,7 @@
-import { UserEntity } from '@/user/entities/user.entity';
-import { Module } from '@nestjs/common';
+import { UserModule } from '@/user/user.module';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { CookieService } from './services/cookie.service';
 import { TokenService } from './services/token.service';
@@ -11,6 +10,9 @@ import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
+    forwardRef((): typeof UserModule => {
+      return UserModule;
+    }),
     ConfigModule,
     JwtModule.registerAsync({
       imports: [
@@ -30,10 +32,7 @@ import { LocalStrategy } from './strategies/local.strategy';
           }
         };
       }
-    }),
-    TypeOrmModule.forFeature([
-      UserEntity
-    ])
+    })
   ],
   controllers: [
     AuthController

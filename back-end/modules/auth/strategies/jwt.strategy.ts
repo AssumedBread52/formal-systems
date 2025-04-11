@@ -1,20 +1,17 @@
 import { InvalidTokenException } from '@/auth/exceptions/invalid-token.exception';
 import { TokenPayload } from '@/auth/payloads/token.payload';
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { UserEntity } from '@/user/entities/user.entity';
+import { UserReadService } from '@/user/services/user-read.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { InjectRepository } from '@nestjs/typeorm';
-import { plainToClass } from 'class-transformer';
-import { validateSync } from 'class-validator';
 import { Request } from 'express';
-import { ObjectId } from 'mongodb';
 import { Strategy } from 'passport-jwt';
-import { MongoRepository } from 'typeorm';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(@InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>, configService: ConfigService) {
+  constructor(private userReadService: UserReadService, configService: ConfigService) {
     super({
       jwtFromRequest: JwtStrategy.extractJwt,
       ignoreExpiration: false,
@@ -22,26 +19,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any): Promise<UserEntity> {
-    const tokenPayload = plainToClass(TokenPayload, payload);
+  override async validate(payload: any): Promise<UserEntity> {
+    try {
+      const { userId } = validatePayload(payload, TokenPayload);
 
-    const errors = validateSync(tokenPayload);
-
-    if (0 !== errors.length) {
+      return await this.userReadService.readById(userId);
+    } catch {
       throw new InvalidTokenException();
     }
-
-    const { userId } = tokenPayload;
-
-    const user = await this.userRepository.findOneBy({
-      _id: new ObjectId(userId)
-    });
-
-    if (!user) {
-      throw new InvalidTokenException();
-    }
-
-    return user;
   }
 
   private static extractJwt(request: Request): string | null {

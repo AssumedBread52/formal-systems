@@ -1,5 +1,5 @@
 import { AuthModule } from '@/auth/auth.module';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongoUserEntity } from './entities/mongo-user.entity';
 import { MongoAdapter } from './services/port/adapters/mongo.adapter';
@@ -11,7 +11,9 @@ import { UserController } from './user.controller';
 
 @Module({
   imports: [
-    AuthModule,
+    forwardRef((): typeof AuthModule => {
+      return AuthModule;
+    }),
     TypeOrmModule.forFeature([
       MongoUserEntity
     ])
@@ -25,6 +27,9 @@ import { UserController } from './user.controller';
     UserPort,
     UserReadService,
     UserUpdateService
+  ],
+  exports: [
+    UserReadService
   ]
 })
 export class UserModule {
