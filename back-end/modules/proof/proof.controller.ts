@@ -17,7 +17,7 @@ export class ProofController {
 
   @UseGuards(JwtGuard)
   @Delete(':proofId')
-  async deleteProof(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Param('proofId') proofId: string): Promise<ProofPayload> {
+  async deleteProof(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Param('proofId') proofId: string): Promise<ProofPayload> {
     const deletedProof = await this.proofDeleteService.delete(sessionUserId, systemId, statementId, proofId);
 
     return new ProofPayload(deletedProof);
@@ -39,7 +39,7 @@ export class ProofController {
 
   @UseGuards(JwtGuard)
   @Patch(':proofId')
-  async patchProof(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Param('proofId') proofId: string, @Body() payload: any): Promise<ProofPayload> {
+  async patchProof(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Param('proofId') proofId: string, @Body() payload: any): Promise<ProofPayload> {
     const updatedProof = await this.proofUpdateService.update(sessionUserId, systemId, statementId, proofId, payload);
 
     return new ProofPayload(updatedProof);
@@ -47,7 +47,7 @@ export class ProofController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async postProof(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Body() payload: any): Promise<ProofPayload> {
+  async postProof(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Body() payload: any): Promise<ProofPayload> {
     const createdProof = await this.proofCreateService.create(sessionUserId, systemId, statementId, payload);
 
     return new ProofPayload(createdProof);

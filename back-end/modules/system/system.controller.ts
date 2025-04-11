@@ -17,7 +17,7 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Delete(':systemId')
-  async deleteSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string): Promise<SystemPayload> {
+  async deleteSystem(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string): Promise<SystemPayload> {
     const deletedSystem = await this.systemDeleteService.delete(sessionUserId, systemId);
 
     return new SystemPayload(deletedSystem);
@@ -39,7 +39,7 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Patch(':systemId')
-  async patchSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<SystemPayload> {
+  async patchSystem(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<SystemPayload> {
     const updatedSystem = await this.systemUpdateService.update(sessionUserId, systemId, payload);
 
     return new SystemPayload(updatedSystem);
@@ -47,7 +47,7 @@ export class SystemController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async postSystem(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Body() payload: any): Promise<SystemPayload> {
+  async postSystem(@SessionUserDecorator('id') sessionUserId: ObjectId, @Body() payload: any): Promise<SystemPayload> {
     const createdSystem = await this.systemCreateService.create(sessionUserId, payload);
 
     return new SystemPayload(createdSystem);

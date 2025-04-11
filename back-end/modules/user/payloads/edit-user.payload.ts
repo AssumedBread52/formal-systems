@@ -1,13 +1,13 @@
-import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsStrongPassword } from 'class-validator';
 
-export class EditProfilePayload {
+export class EditUserPayload {
   @IsNotEmpty()
   newFirstName: string = '';
   @IsNotEmpty()
   newLastName: string = '';
   @IsEmail()
   newEmail: string = '';
-  @IsNotEmpty()
   @IsOptional()
+  @IsStrongPassword()
   newPassword?: string;
 };

@@ -1,6 +1,5 @@
 import { Controller, HttpCode, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { ObjectId } from 'mongodb';
 import { SessionUserDecorator } from './decorators/session-user.decorator';
 import { JwtGuard } from './guards/jwt.guard';
 import { LocalGuard } from './guards/local.guard';
@@ -15,7 +14,7 @@ export class AuthController {
   @UseGuards(JwtGuard)
   @Post('refresh-token')
   @HttpCode(HttpStatus.NO_CONTENT)
-  refreshToken(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): void {
+  refreshToken(@SessionUserDecorator('id') sessionUserId: string, @Res({ passthrough: true }) response: Response): void {
     const token = this.tokenService.generateToken(sessionUserId);
 
     this.cookieService.setAuthCookies(response, token);
@@ -24,7 +23,7 @@ export class AuthController {
   @UseGuards(LocalGuard)
   @Post('sign-in')
   @HttpCode(HttpStatus.NO_CONTENT)
-  signIn(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Res({ passthrough: true }) response: Response): void {
+  signIn(@SessionUserDecorator('id') sessionUserId: string, @Res({ passthrough: true }) response: Response): void {
     const token = this.tokenService.generateToken(sessionUserId);
 
     this.cookieService.setAuthCookies(response, token);

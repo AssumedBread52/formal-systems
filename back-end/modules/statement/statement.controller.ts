@@ -17,7 +17,7 @@ export class StatementController {
 
   @UseGuards(JwtGuard)
   @Delete(':statementId')
-  async deleteStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string): Promise<StatementPayload> {
+  async deleteStatement(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string): Promise<StatementPayload> {
     const deletedStatement = await this.statementDeleteService.delete(sessionUserId, systemId, statementId);
 
     return new StatementPayload(deletedStatement);
@@ -39,7 +39,7 @@ export class StatementController {
 
   @UseGuards(JwtGuard)
   @Patch(':statementId')
-  async patchStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Body() payload: any): Promise<StatementPayload> {
+  async patchStatement(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('statementId') statementId: string, @Body() payload: any): Promise<StatementPayload> {
     const updatedStatement = await this.statementUpdateService.update(sessionUserId, systemId, statementId, payload);
 
     return new StatementPayload(updatedStatement);
@@ -47,7 +47,7 @@ export class StatementController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async postStatement(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<StatementPayload> {
+  async postStatement(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<StatementPayload> {
     const createdStatement = await this.statementCreateService.create(sessionUserId, systemId, payload);
 
     return new StatementPayload(createdStatement);

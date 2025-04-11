@@ -1,30 +1,20 @@
 import { UserEntity } from '@/user/entities/user.entity';
-import { NewUserPayload } from '@/user/payloads/new-user.payload';
+import { UserUniqueEmailAddressException } from '@/user/exceptions/user-unique-email-address.exception';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { hashSync } from 'bcryptjs';
-import { MongoRepository } from 'typeorm';
-import { ValidateService } from './validate.service';
+import { UserPort } from './port/user.port';
 
 @Injectable()
 export class UserCreateService {
-  constructor(@InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>, private validateService: ValidateService) {
+  constructor(private userPort: UserPort) {
   }
 
-  async create(payload: any): Promise<UserEntity> {
-    const newUserPayload = this.validateService.payloadCheck(payload, NewUserPayload);
+  async create(newUserPayload: any): Promise<UserEntity> {
+    const conflictUser = await this.userPort.readByEmail(newUserPayload);
 
-    const { firstName, lastName, email, password } = newUserPayload;
+    if (conflictUser) {
+      throw new UserUniqueEmailAddressException();
+    }
 
-    await this.validateService.conflictCheck(email);
-
-    const user = new UserEntity();
-
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashSync(password, 12);
-
-    return this.userRepository.save(user);
+    return this.userPort.create(newUserPayload);
   }
 };

@@ -1,33 +1,30 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { UserEntity } from '@/user/entities/user.entity';
-import { EditProfilePayload } from '@/user/payloads/edit-profile.payload';
+import { UserUniqueEmailAddressException } from '@/user/exceptions/user-unique-email-address.exception';
+import { EditEmailPayload } from '@/user/payloads/edit-email.payload';
+import { EmailPayload } from '@/user/payloads/email.payload';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { hashSync } from 'bcryptjs';
-import { MongoRepository } from 'typeorm';
-import { ValidateService } from './validate.service';
+import { UserPort } from './port/user.port';
 
 @Injectable()
 export class UserUpdateService {
-  constructor(@InjectRepository(UserEntity) private userRepository: MongoRepository<UserEntity>, private validateService: ValidateService) {
+  constructor(private userPort: UserPort) {
   }
 
-  async update(user: UserEntity, payload: any): Promise<UserEntity> {
-    const editProfilePayload = this.validateService.payloadCheck(payload, EditProfilePayload);
-
-    const { email } = user;
-    const { newFirstName, newLastName, newEmail, newPassword } = editProfilePayload;
+  async update(user: any, editUserPayload: any): Promise<UserEntity> {
+    const { email } = validatePayload(user, EmailPayload);
+    const { newEmail } = validatePayload(editUserPayload, EditEmailPayload);
 
     if (email !== newEmail) {
-      await this.validateService.conflictCheck(newEmail);
+      const conflictUser = await this.userPort.readByEmail({
+        email: newEmail
+      });
+
+      if (conflictUser) {
+        throw new UserUniqueEmailAddressException();
+      }
     }
 
-    user.firstName = newFirstName;
-    user.lastName = newLastName;
-    user.email = newEmail;
-    if (newPassword) {
-      user.hashedPassword = hashSync(newPassword, 12);
-    }
-
-    return this.userRepository.save(user);
+    return this.userPort.update(user, editUserPayload);
   }
 };

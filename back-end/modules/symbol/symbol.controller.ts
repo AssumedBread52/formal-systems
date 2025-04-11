@@ -17,7 +17,7 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Delete(':symbolId')
-  async deleteSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolPayload> {
+  async deleteSymbol(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolPayload> {
     const deletedSymbol = await this.symbolDeleteService.delete(sessionUserId, systemId, symbolId);
 
     return new SymbolPayload(deletedSymbol);
@@ -39,7 +39,7 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Patch(':symbolId')
-  async patchSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string, @Body() payload: any): Promise<SymbolPayload> {
+  async patchSymbol(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string, @Body() payload: any): Promise<SymbolPayload> {
     const updatedSymbol = await this.symbolUpdateService.update(sessionUserId, systemId, symbolId, payload);
 
     return new SymbolPayload(updatedSymbol);
@@ -47,7 +47,7 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async postSymbol(@SessionUserDecorator('_id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<SymbolPayload> {
+  async postSymbol(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<SymbolPayload> {
     const createdSymbol = await this.symbolCreateService.create(sessionUserId, systemId, payload);
 
     return new SymbolPayload(createdSymbol);

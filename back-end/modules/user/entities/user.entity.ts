@@ -1,30 +1,41 @@
-import { ObjectId } from 'mongodb';
-import { Column, Entity, ObjectIdColumn } from 'typeorm';
+import { AdapterType } from '@/user/enums/adapter-type.enum';
+import { Exclude } from 'class-transformer';
+import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsPositive, Matches } from 'class-validator';
 
-@Entity('user')
 export class UserEntity {
-  @ObjectIdColumn()
-  _id: ObjectId = new ObjectId();
-  @Column()
+  @Exclude()
+  @IsEnum(AdapterType)
+  type: AdapterType = AdapterType.Mongo;
+  @IsNotEmpty()
+  id: string = '';
+  @IsNotEmpty()
   firstName: string = '';
-  @Column()
+  @IsNotEmpty()
   lastName: string = '';
-  @Column()
+  @IsEmail()
   email: string = '';
-  @Column()
+  @Exclude()
+  @Matches(/\$2b\$12\$.+/)
   hashedPassword: string = '';
-  @Column()
+  @IsInt()
+  @IsPositive()
   systemCount: number = 0;
-  @Column()
+  @IsInt()
+  @IsPositive()
   constantSymbolCount: number = 0;
-  @Column()
+  @IsInt()
+  @IsPositive()
   variableSymbolCount: number = 0;
-  @Column()
+  @IsInt()
+  @IsPositive()
   axiomCount: number = 0;
-  @Column()
+  @IsInt()
+  @IsPositive()
   theoremCount: number = 0;
-  @Column()
+  @IsInt()
+  @IsPositive()
   deductionCount: number = 0;
-  @Column()
+  @IsInt()
+  @IsPositive()
   proofCount: number = 0;
 };

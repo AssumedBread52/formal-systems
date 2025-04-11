@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsStrongPassword } from 'class-validator';
 
 export class NewUserPayload {
   @IsNotEmpty()
@@ -7,6 +7,6 @@ export class NewUserPayload {
   lastName: string = '';
   @IsEmail()
   email: string = '';
-  @IsNotEmpty()
+  @IsStrongPassword()
   password: string = '';
 };
