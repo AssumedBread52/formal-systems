@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { CookieService } from './services/cookie.service';
 import { TokenService } from './services/token.service';
-import { ValidateService } from './services/validate.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
@@ -43,8 +42,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     CookieService,
     JwtStrategy,
     LocalStrategy,
-    TokenService,
-    ValidateService
+    TokenService
   ],
   exports: [
     CookieService,
