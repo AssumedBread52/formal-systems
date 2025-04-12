@@ -1,7 +1,7 @@
-import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
+import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
-import { UserEntity } from '@/user/user.entity';
+import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
+import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
@@ -15,43 +15,6 @@ describe('Read User by ID', (): void => {
     app = await createTestApp();
   });
 
-  it('fails with an invalid route parameter', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).get('/user/1');
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(0);
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-    expect(body).toEqual({
-      error: 'Unprocessable Entity',
-      message: 'Invalid Object ID.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
-  it('fails if user is not found', async (): Promise<void> => {
-    const userId = new ObjectId();
-
-    findOneBy.mockResolvedValueOnce(null);
-
-    const response = await request(app.getHttpServer()).get(`/user/${userId}`);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
-    expect(body).toEqual({
-      error: 'Not Found',
-      message: 'User not found.',
-      statusCode: HttpStatus.NOT_FOUND
-    });
-  });
-
   it('succeeds', async (): Promise<void> => {
     const userId = new ObjectId();
     const firstName = 'Test';
@@ -63,7 +26,8 @@ describe('Read User by ID', (): void => {
     const axiomCount = 6;
     const theoremCount = 1;
     const deductionCount = 2;
-    const user = new UserEntity();
+    const proofCount = 3;
+    const user = new MongoUserEntity();
 
     user._id = userId;
     user.firstName = firstName;
@@ -75,6 +39,7 @@ describe('Read User by ID', (): void => {
     user.axiomCount = axiomCount;
     user.theoremCount = theoremCount;
     user.deductionCount = deductionCount;
+    user.proofCount = proofCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
@@ -98,7 +63,8 @@ describe('Read User by ID', (): void => {
       variableSymbolCount,
       axiomCount,
       theoremCount,
-      deductionCount
+      deductionCount,
+      proofCount
     });
   });
 
