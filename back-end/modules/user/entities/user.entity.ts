@@ -15,7 +15,7 @@ export class UserEntity {
   @IsEmail()
   email: string = '';
   @Exclude()
-  @Matches(/\$2b\$12\$.+/)
+  @Matches(/^\$2b\$12\$.+$/)
   hashedPassword: string = '';
   @IsInt()
   @Min(0)

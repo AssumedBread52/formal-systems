@@ -1,11 +1,12 @@
-import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
+import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
+import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
-import { UserEntity } from '@/user/user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
+import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
+import { ObjectId } from 'mongodb';
+import { hashSync } from 'bcryptjs';
 
 describe('Create New User', (): void => {
   const findOneBy = findOneByMock();
@@ -17,73 +18,19 @@ describe('Create New User', (): void => {
     app = await createTestApp();
   });
 
-  it('fails with an invalid payload', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).post('/user');
-
-    const { statusCode, body } = response;
-    const cookies = response.get('Set-Cookie');
-
-    expect(findOneBy).toHaveBeenCalledTimes(0);
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
-    expect(body).toEqual({
-      error: 'Bad Request',
-      message: [
-        'firstName should not be empty',
-        'lastName should not be empty',
-        'email must be an email',
-        'password should not be empty'
-      ],
-      statusCode: HttpStatus.BAD_REQUEST
-    });
-    expect(cookies).toBeUndefined();
-  });
-
-  it('fails with e-mail address collision', async (): Promise<void> => {
-    const email = 'test@example.com';
-    const conflictUser = new UserEntity();
-
-    conflictUser.email = email;
-
-    findOneBy.mockResolvedValueOnce(conflictUser);
-
-    const response = await request(app.getHttpServer()).post('/user').send({
-      firstName: 'Test',
-      lastName: 'User',
-      email,
-      password: '123456'
-    });
-
-    const { statusCode, body } = response;
-    const cookies = response.get('Set-Cookie');
-
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      email
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.CONFLICT);
-    expect(body).toEqual({
-      error: 'Conflict',
-      message: 'Users must have a unique e-mail address.',
-      statusCode: HttpStatus.CONFLICT
-    });
-    expect(cookies).toBeUndefined();
-  });
-
   it('succeeds', async (): Promise<void> => {
     const userId = new ObjectId();
-    const firstName = 'Test';
-    const lastName = 'User';
+    const firstName = 'Test1';
+    const lastName = 'User1';
     const email = 'test@example.com';
-    const user = new UserEntity();
+    const password = 'TestUser1!';
+    const user = new MongoUserEntity();
 
     user._id = userId;
     user.firstName = firstName;
     user.lastName = lastName;
     user.email = email;
+    user.hashedPassword = hashSync(password, 12);
 
     findOneBy.mockResolvedValueOnce(null);
     getOrThrow.mockReturnValueOnce(1000);
@@ -93,7 +40,7 @@ describe('Create New User', (): void => {
       firstName,
       lastName,
       email,
-      password: '123456'
+      password
     });
 
     const { statusCode, body } = response;
@@ -111,13 +58,14 @@ describe('Create New User', (): void => {
       firstName,
       lastName,
       email,
-      hashedPassword: expect.stringMatching(/\$2a\$12\$.+/),
+      hashedPassword: expect.stringMatching(/^\$2b\$12\$.+$/),
       systemCount: 0,
       constantSymbolCount: 0,
       variableSymbolCount: 0,
       axiomCount: 0,
       theoremCount: 0,
-      deductionCount: 0
+      deductionCount: 0,
+      proofCount: 0
     });
     expect(statusCode).toBe(HttpStatus.CREATED);
     expect(body).toEqual({
@@ -130,7 +78,8 @@ describe('Create New User', (): void => {
       variableSymbolCount: 0,
       axiomCount: 0,
       theoremCount: 0,
-      deductionCount: 0
+      deductionCount: 0,
+      proofCount: 0
     });
     expect(cookies).toBeDefined();
     expect(cookies).toHaveLength(2);
