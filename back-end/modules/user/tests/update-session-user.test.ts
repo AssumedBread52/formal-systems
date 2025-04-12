@@ -32,7 +32,6 @@ describe('Update Session User', (): void => {
     const newLastName = 'User2';
     const newEmail = 'test2@example.com';
     const newPassword = 'TestUser2!';
-    const newHashedPassword = hashSync(newPassword, 12);
     const originalUser = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
 
@@ -52,7 +51,7 @@ describe('Update Session User', (): void => {
     updatedUser.firstName = newFirstName;
     updatedUser.lastName = newLastName;
     updatedUser.email = newEmail;
-    updatedUser.hashedPassword = newHashedPassword;
+    updatedUser.hashedPassword = hashSync(newPassword, 12);
     updatedUser.systemCount = systemCount;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
