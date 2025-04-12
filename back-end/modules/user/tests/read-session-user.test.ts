@@ -27,6 +27,7 @@ describe('Read Session User', (): void => {
     const axiomCount = 6;
     const theoremCount = 1;
     const deductionCount = 2;
+    const proofCount = 3;
     const user = new MongoUserEntity();
 
     user._id = userId;
@@ -39,6 +40,7 @@ describe('Read Session User', (): void => {
     user.axiomCount = axiomCount;
     user.theoremCount = theoremCount;
     user.deductionCount = deductionCount;
+    user.proofCount = proofCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
@@ -68,7 +70,8 @@ describe('Read Session User', (): void => {
       variableSymbolCount,
       axiomCount,
       theoremCount,
-      deductionCount
+      deductionCount,
+      proofCount
     });
   });
 
