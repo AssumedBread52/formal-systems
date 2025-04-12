@@ -1,5 +1,5 @@
-import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
+import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { pingCheckMock } from './mocks/ping-check.mock';
