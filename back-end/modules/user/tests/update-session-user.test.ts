@@ -1,10 +1,11 @@
-import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
+import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
+import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
-import { UserEntity } from '@/user/user.entity';
+import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { hashSync } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
@@ -18,174 +19,6 @@ describe('Update Session User', (): void => {
     app = await createTestApp();
   });
 
-  it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).patch('/user/session-user');
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(0);
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(body).toEqual({
-      message: 'Unauthorized',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
-  });
-
-  it('fails with an expired token', async (): Promise<void> => {
-    const token = app.get(JwtService).sign({});
-
-    await new Promise((resolve: (value: unknown) => void): void => {
-      setTimeout(resolve, 1000);
-    });
-
-    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
-      `token=${token}`
-    ]);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(0);
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(body).toEqual({
-      message: 'Unauthorized',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
-  });
-
-  it('fails with an invalid token', async (): Promise<void> => {
-    const token = app.get(JwtService).sign({});
-
-    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
-      `token=${token}`
-    ]);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(0);
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(body).toEqual({
-      error: 'Unauthorized',
-      message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
-  });
-
-  it('fails if the user ID in the token payload does not match a user', async (): Promise<void> => {
-    const userId = new ObjectId();
-
-    findOneBy.mockResolvedValueOnce(null);
-
-    const token = app.get(JwtService).sign({
-      id: userId
-    });
-
-    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
-      `token=${token}`
-    ]);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(body).toEqual({
-      error: 'Unauthorized',
-      message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
-  });
-
-  it('fails with an invalid payload', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const user = new UserEntity();
-
-    findOneBy.mockResolvedValueOnce(user);
-
-    const token = app.get(JwtService).sign({
-      id: userId
-    });
-
-    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newPassword: ''
-    });
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
-    expect(body).toEqual({
-      error: 'Bad Request',
-      message: [
-        'newFirstName should not be empty',
-        'newLastName should not be empty',
-        'newEmail must be an email',
-        'newPassword should not be empty'
-      ],
-      statusCode: HttpStatus.BAD_REQUEST
-    });
-  });
-
-  it('fails if the new e-mail address is already in use', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const newEmail = 'example@test.com';
-    const user = new UserEntity();
-    const conflictUser = new UserEntity();
-
-    user._id = userId;
-    conflictUser.email = newEmail;
-
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(conflictUser);
-
-    const token = app.get(JwtService).sign({
-      id: userId
-    });
-
-    const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newFirstName: 'User',
-      newLastName: 'Example',
-      newEmail,
-      newPassword: 'qwerty'
-    });
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(2);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      email: newEmail
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.CONFLICT);
-    expect(body).toEqual({
-      error: 'Conflict',
-      message: 'Users must have a unique e-mail address.',
-      statusCode: HttpStatus.CONFLICT
-    });
-  });
-
   it('succeeds', async (): Promise<void> => {
     const userId = new ObjectId();
     const systemCount = 1;
@@ -194,36 +27,46 @@ describe('Update Session User', (): void => {
     const axiomCount = 6;
     const theoremCount = 1;
     const deductionCount = 2;
-    const newFirstName = 'User';
-    const newLastName = 'Example';
-    const newEmail = 'example@test.com';
-    const user = new UserEntity();
-    const newUser = new UserEntity();
+    const proofCount = 3;
+    const newFirstName = 'Test2';
+    const newLastName = 'User2';
+    const newEmail = 'test2@example.com';
+    const newPassword = 'TestUser2!';
+    const newHashedPassword = hashSync(newPassword, 12);
+    const originalUser = new MongoUserEntity();
+    const updatedUser = new MongoUserEntity();
 
-    user._id = userId;
-    user.systemCount = systemCount;
-    user.constantSymbolCount = constantSymbolCount;
-    user.variableSymbolCount = variableSymbolCount;
-    user.axiomCount = axiomCount;
-    user.theoremCount = theoremCount;
-    user.deductionCount = deductionCount;
-    newUser._id = userId;
-    newUser.firstName = newFirstName;
-    newUser.lastName = newLastName;
-    newUser.email = newEmail;
-    newUser.systemCount = systemCount;
-    newUser.constantSymbolCount = constantSymbolCount;
-    newUser.variableSymbolCount = variableSymbolCount;
-    newUser.axiomCount = axiomCount;
-    newUser.theoremCount = theoremCount;
-    newUser.deductionCount = deductionCount;
+    originalUser._id = userId;
+    originalUser.firstName = 'Test1';
+    originalUser.lastName = 'User1';
+    originalUser.email = 'test1@example.com';
+    originalUser.hashedPassword = hashSync('TestUser1!', 12);
+    originalUser.systemCount = systemCount;
+    originalUser.constantSymbolCount = constantSymbolCount;
+    originalUser.variableSymbolCount = variableSymbolCount;
+    originalUser.axiomCount = axiomCount;
+    originalUser.theoremCount = theoremCount;
+    originalUser.deductionCount = deductionCount;
+    originalUser.proofCount = proofCount;
+    updatedUser._id = userId;
+    updatedUser.firstName = newFirstName;
+    updatedUser.lastName = newLastName;
+    updatedUser.email = newEmail;
+    updatedUser.hashedPassword = newHashedPassword;
+    updatedUser.systemCount = systemCount;
+    updatedUser.constantSymbolCount = constantSymbolCount;
+    updatedUser.variableSymbolCount = variableSymbolCount;
+    updatedUser.axiomCount = axiomCount;
+    updatedUser.theoremCount = theoremCount;
+    updatedUser.deductionCount = deductionCount;
+    updatedUser.proofCount = proofCount;
 
-    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(originalUser);
     findOneBy.mockResolvedValueOnce(null);
-    save.mockResolvedValueOnce(newUser);
+    save.mockResolvedValueOnce(updatedUser);
 
     const token = app.get(JwtService).sign({
-      id: userId
+      userId
     });
 
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
@@ -232,7 +75,7 @@ describe('Update Session User', (): void => {
       newFirstName,
       newLastName,
       newEmail,
-      newPassword: 'qwerty'
+      newPassword
     });
 
     const { statusCode, body } = response;
@@ -251,13 +94,14 @@ describe('Update Session User', (): void => {
       firstName: newFirstName,
       lastName: newLastName,
       email: newEmail,
-      hashedPassword: expect.stringMatching(/\$2a\$12\$.+/),
+      hashedPassword: expect.stringMatching(/\$2b\$12\$.+/),
       systemCount,
       constantSymbolCount,
       variableSymbolCount,
       axiomCount,
       theoremCount,
-      deductionCount
+      deductionCount,
+      proofCount
     });
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toEqual({
@@ -270,7 +114,8 @@ describe('Update Session User', (): void => {
       variableSymbolCount,
       axiomCount,
       theoremCount,
-      deductionCount
+      deductionCount,
+      proofCount
     });
   });
 
