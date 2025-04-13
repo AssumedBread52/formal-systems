@@ -93,7 +93,7 @@ describe('Update Session User', (): void => {
       firstName: newFirstName,
       lastName: newLastName,
       email: newEmail,
-      hashedPassword: expect.stringMatching(/\$2b\$12\$.+/),
+      hashedPassword: expect.stringMatching(/^\$2b\$12\$.+$/),
       systemCount,
       constantSymbolCount,
       variableSymbolCount,
