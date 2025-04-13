@@ -1,6 +1,6 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { UserEntity } from '@/user/entities/user.entity';
-import { UserUniqueEmailAddressException } from '@/user/exceptions/user-unique-email-address.exception';
+import { UniqueEmailAddressException } from '@/user/exceptions/unique-email-address.exception';
 import { EditEmailPayload } from '@/user/payloads/edit-email.payload';
 import { EmailPayload } from '@/user/payloads/email.payload';
 import { Injectable } from '@nestjs/common';
@@ -21,7 +21,7 @@ export class UserUpdateService {
       });
 
       if (conflictUser) {
-        throw new UserUniqueEmailAddressException();
+        throw new UniqueEmailAddressException();
       }
     }
 

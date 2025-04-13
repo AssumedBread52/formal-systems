@@ -1,6 +1,6 @@
 import { ConflictException } from '@nestjs/common';
 
-export class UserUniqueEmailAddressException extends ConflictException {
+export class UniqueEmailAddressException extends ConflictException {
   constructor() {
     super('Users must have a unique e-mail address.');
   }

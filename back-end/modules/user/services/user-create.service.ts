@@ -1,5 +1,5 @@
 import { UserEntity } from '@/user/entities/user.entity';
-import { UserUniqueEmailAddressException } from '@/user/exceptions/user-unique-email-address.exception';
+import { UniqueEmailAddressException } from '@/user/exceptions/unique-email-address.exception';
 import { Injectable } from '@nestjs/common';
 import { UserPort } from './port/user.port';
 
@@ -12,7 +12,7 @@ export class UserCreateService {
     const conflictUser = await this.userPort.readByEmail(newUserPayload);
 
     if (conflictUser) {
-      throw new UserUniqueEmailAddressException();
+      throw new UniqueEmailAddressException();
     }
 
     return this.userPort.create(newUserPayload);
