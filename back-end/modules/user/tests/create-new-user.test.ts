@@ -2,11 +2,11 @@ import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
 import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
-import { ObjectId } from 'mongodb';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { hashSync } from 'bcryptjs';
+import { ObjectId } from 'mongodb';
+import * as request from 'supertest';
 
 describe('Create New User', (): void => {
   const findOneBy = findOneByMock();
