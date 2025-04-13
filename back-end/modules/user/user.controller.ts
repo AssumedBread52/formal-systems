@@ -23,14 +23,14 @@ export class UserController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':userId')
-  async getById(@Param('userId') userId: string): Promise<UserEntity> {
+  getById(@Param('userId') userId: string): Promise<UserEntity> {
     return this.userReadService.readById(userId);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtGuard)
   @Patch('session-user')
-  async patchSessionUser(@SessionUserDecorator() sessionUser: UserEntity, @Body() payload: any): Promise<UserEntity> {
+  patchSessionUser(@SessionUserDecorator() sessionUser: UserEntity, @Body() payload: any): Promise<UserEntity> {
     return this.userUpdateService.update(sessionUser, payload);
   }
 
