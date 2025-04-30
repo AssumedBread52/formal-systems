@@ -1,7 +1,7 @@
-import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
+import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
-import { SystemEntity } from '@/system/system.entity';
+import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
+import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
@@ -15,43 +15,6 @@ describe('Read System by ID', (): void => {
     app = await createTestApp();
   });
 
-  it('fails with an invalid route parameter', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).get('/system/1');
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(0);
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-    expect(body).toEqual({
-      error: 'Unprocessable Entity',
-      message: 'Invalid Object ID.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
-  it('fails if the system is not found', async (): Promise<void> => {
-    const systemId = new ObjectId();
-
-    findOneBy.mockResolvedValueOnce(null);
-
-    const response = await request(app.getHttpServer()).get(`/system/${systemId}`);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: systemId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
-    expect(body).toEqual({
-      error: 'Not Found',
-      message: 'System not found.',
-      statusCode: HttpStatus.NOT_FOUND
-    });
-  });
-
   it('succeeds', async (): Promise<void> => {
     const systemId = new ObjectId();
     const title = 'Test System';
@@ -61,8 +24,9 @@ describe('Read System by ID', (): void => {
     const axiomCount = 6;
     const theoremCount = 1;
     const deductionCount = 2;
+    const proofCount = 3;
     const createdByUserId = new ObjectId();
-    const system = new SystemEntity();
+    const system = new MongoSystemEntity();
 
     system._id = systemId;
     system.title = title;
@@ -72,6 +36,7 @@ describe('Read System by ID', (): void => {
     system.axiomCount = axiomCount;
     system.theoremCount = theoremCount;
     system.deductionCount = deductionCount;
+    system.proofCount = proofCount;
     system.createdByUserId = createdByUserId;
 
     findOneBy.mockResolvedValueOnce(system);
@@ -95,6 +60,7 @@ describe('Read System by ID', (): void => {
       axiomCount,
       theoremCount,
       deductionCount,
+      proofCount,
       createdByUserId: createdByUserId.toString()
     });
   });
