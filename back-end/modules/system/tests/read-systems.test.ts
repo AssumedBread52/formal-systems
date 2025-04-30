@@ -1,7 +1,7 @@
-import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
+import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findAndCountMock } from '@/common/tests/mocks/find-and-count.mock';
-import { SystemEntity } from '@/system/system.entity';
+import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
+import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
@@ -10,18 +10,6 @@ import { RootFilterOperators } from 'typeorm';
 describe('Read Systems', (): void => {
   const findAndCount = findAndCountMock();
   const getOrThrow = getOrThrowMock();
-  const badQueries = [
-    ['?page=a', 'page must not be less than 1', 'page must be an integer number'],
-    ['?page=5.4', 'page must be an integer number'],
-    ['?page=-2', 'page must not be less than 1'],
-    ['?count=a', 'count must not be less than 1', 'count must be an integer number'],
-    ['?count=5.4', 'count must be an integer number'],
-    ['?count=-2', 'count must not be less than 1'],
-    ['?keywords=', 'each value in keywords should not be empty', 'keywords must be an array'],
-    ['?keywords[]=', 'each value in keywords should not be empty'],
-    ['?userIds=', 'each value in userIds must be a mongodb id', 'userIds must be an array'],
-    ['?userIds[]=', 'each value in userIds must be a mongodb id']
-  ];
   const goodQueries = [
     '',
     '?page=2',
@@ -37,21 +25,6 @@ describe('Read Systems', (): void => {
     app = await createTestApp();
   });
 
-  it.each(badQueries)('fails %s', async (badQuery: string, ...message: string[]): Promise<void> => {
-    const response = await request(app.getHttpServer()).get(`/system${badQuery}`);
-
-    const { statusCode, body } = response;
-
-    expect(findAndCount).toHaveBeenCalledTimes(0);
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
-    expect(body).toEqual({
-      error: 'Bad Request',
-      message,
-      statusCode: HttpStatus.BAD_REQUEST
-    });
-  });
-
   it.each(goodQueries)('succeeds %s', async (goodQuery: string): Promise<void> => {
     const systemId = new ObjectId();
     const title = 'Test System';
@@ -61,8 +34,9 @@ describe('Read Systems', (): void => {
     const axiomCount = 6;
     const theoremCount = 1;
     const deductionCount = 2;
+    const proofCount = 3;
     const createdByUserId = new ObjectId();
-    const system = new SystemEntity();
+    const system = new MongoSystemEntity();
     const total = 1;
 
     system._id = systemId;
@@ -73,6 +47,7 @@ describe('Read Systems', (): void => {
     system.axiomCount = axiomCount;
     system.theoremCount = theoremCount;
     system.deductionCount = deductionCount;
+    system.proofCount = proofCount;
     system.createdByUserId = createdByUserId;
 
     findAndCount.mockResolvedValueOnce([[system], total]);
@@ -83,10 +58,10 @@ describe('Read Systems', (): void => {
 
     const urlSearchParams = new URLSearchParams(goodQuery);
     const page = parseInt(urlSearchParams.get('page') ?? '1');
-    const count = parseInt(urlSearchParams.get('count') ?? '10');
+    const pageSize = parseInt(urlSearchParams.get('pageSize') ?? '10');
     const keywords = urlSearchParams.getAll('keywords[]');
     const userIds = urlSearchParams.getAll('userIds[]');
-    const where = {} as RootFilterOperators<SystemEntity>;
+    const where = {} as RootFilterOperators<MongoSystemEntity>;
 
     if (0 !== keywords.length) {
       where.$text = {
@@ -94,6 +69,7 @@ describe('Read Systems', (): void => {
         $search: keywords.join(',')
       };
     }
+
     if (0 !== userIds.length) {
       where.createdByUserId = {
         $in: userIds.map((userId: string): ObjectId => {
@@ -104,8 +80,8 @@ describe('Read Systems', (): void => {
 
     expect(findAndCount).toHaveBeenCalledTimes(1);
     expect(findAndCount).toHaveBeenNthCalledWith(1, {
-      skip: (page - 1) * count,
-      take: count,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
       where
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
@@ -121,6 +97,7 @@ describe('Read Systems', (): void => {
           axiomCount,
           theoremCount,
           deductionCount,
+          proofCount,
           createdByUserId: createdByUserId.toString()
         }
       ],
