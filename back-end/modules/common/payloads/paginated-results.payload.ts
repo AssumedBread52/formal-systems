@@ -1,13 +1,9 @@
-import { ClassConstructor } from 'class-transformer';
-
-export class PaginatedResultsPayload<Entity, Payload> {
-  results: Payload[];
+export class PaginatedResultsPayload<Entity> {
+  results: Entity[];
   total: number;
 
-  constructor(PayloadConstructor: ClassConstructor<Payload>, entities: Entity[], total: number) {
-    this.results = entities.map((entity: Entity): Payload => {
-      return new PayloadConstructor(entity);
-    });
+  constructor(entities: Entity[], total: number) {
+    this.results = entities;
     this.total = total;
   }
 };
