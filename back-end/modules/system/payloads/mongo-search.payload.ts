@@ -1,26 +1,26 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsNotEmpty, Min } from 'class-validator';
+import { IsArray, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
 
-export class SearchPayload {
+export class MongoSearchPayload {
   @IsInt()
-  @Min(1)
+  @Min(0)
   @Type((): typeof Number => {
     return Number;
   })
-  page: number = 1;
+  skip: number = 0;
   @IsInt()
-  @Min(1)
+  @Min(0)
   @Type((): typeof Number => {
     return Number;
   })
-  pageSize: number = 1;
+  take: number = 0;
   @IsArray()
   @IsNotEmpty({
     each: true
   })
   keywords: string[] = [];
   @IsArray()
-  @IsNotEmpty({
+  @IsMongoId({
     each: true
   })
   userIds: string[] = [];

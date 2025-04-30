@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsInt, IsNotEmpty, Min } from 'class-validator';
 
-export class SearchPayload {
+export class DefaultSearchPayload {
   @IsInt()
   @Min(1)
   @Type((): typeof Number => {
@@ -13,7 +13,7 @@ export class SearchPayload {
   @Type((): typeof Number => {
     return Number;
   })
-  pageSize: number = 1;
+  pageSize: number = 10;
   @IsArray()
   @IsNotEmpty({
     each: true

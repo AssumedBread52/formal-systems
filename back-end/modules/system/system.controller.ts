@@ -1,14 +1,14 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
+import { SystemEntity } from './entities/system.entity';
 import { SystemPayload } from './payloads/system.payload';
 import { SystemCreateService } from './services/system-create.service';
 import { SystemDeleteService } from './services/system-delete.service';
 import { SystemReadService } from './services/system-read.service';
 import { SystemUpdateService } from './services/system-update.service';
-import { SystemEntity } from './system.entity';
 
 @Controller('system')
 export class SystemController {
@@ -24,17 +24,14 @@ export class SystemController {
   }
 
   @Get()
-  async getSystems(@Query() payload: any): Promise<PaginatedResultsPayload<SystemEntity, SystemPayload>> {
-    const [results, total] = await this.systemReadService.readSystems(payload);
-
-    return new PaginatedResultsPayload(SystemPayload, results, total);
+  async getSystems(@Query() payload: any): Promise<PaginatedResultsPayload<SystemEntity>> {
+    return this.systemReadService.readSystems(payload);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':systemId')
-  async getById(@Param('systemId') systemId: string): Promise<SystemPayload> {
-    const system = await this.systemReadService.readById(systemId);
-
-    return new SystemPayload(system);
+  async getById(@Param('systemId') systemId: string): Promise<SystemEntity> {
+    return this.systemReadService.readById(systemId);
   }
 
   @UseGuards(JwtGuard)

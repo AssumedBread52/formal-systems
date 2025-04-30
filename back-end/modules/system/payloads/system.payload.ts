@@ -1,4 +1,4 @@
-import { SystemEntity } from '@/system/system.entity';
+import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 
 export class SystemPayload {
   id: string;
@@ -12,7 +12,7 @@ export class SystemPayload {
   proofCount: number;
   createdByUserId: string;
 
-  constructor(system: SystemEntity) {
+  constructor(system: MongoSystemEntity) {
     const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = system;
 
     this.id = _id.toString();

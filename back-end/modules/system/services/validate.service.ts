@@ -1,6 +1,6 @@
 import { BaseValidateService } from '@/common/services/base-validate.service';
+import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemUniqueTitleException } from '@/system/exceptions/system-unique-title.exception';
-import { SystemEntity } from '@/system/system.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -8,7 +8,7 @@ import { MongoRepository } from 'typeorm';
 
 @Injectable()
 export class ValidateService extends BaseValidateService {
-  constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>) {
+  constructor(@InjectRepository(MongoSystemEntity) private systemRepository: MongoRepository<MongoSystemEntity>) {
     super();
   }
 

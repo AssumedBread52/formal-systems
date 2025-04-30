@@ -1,20 +1,19 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
+import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
+import { SystemEntity } from '@/system/entities/system.entity';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
-import { SearchPayload } from '@/system/payloads/search.payload';
-import { SystemEntity } from '@/system/system.entity';
+import { DefaultSearchPayload } from '@/system/payloads/default-search.payload';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ObjectId } from 'mongodb';
-import { MongoRepository, RootFilterOperators } from 'typeorm';
-import { ValidateService } from './validate.service';
+import { SystemPort } from './port/system.port';
 
 @Injectable()
 export class SystemReadService {
-  constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>, private validateService: ValidateService) {
+  constructor(private systemPort: SystemPort) {
   }
 
-  async readById(systemId: any): Promise<SystemEntity> {
-    const system = await this.systemRepository.findOneBy({
-      _id: this.validateService.idCheck(systemId)
+  async readById(systemId: string): Promise<SystemEntity> {
+    const system = await this.systemPort.readById({
+      systemId
     });
 
     if (!system) {
@@ -24,31 +23,11 @@ export class SystemReadService {
     return system;
   }
 
-  readSystems(payload: any): Promise<[SystemEntity[], number]> {
-    const searchPayload = this.validateService.payloadCheck(payload, SearchPayload);
+  async readSystems(payload: any): Promise<PaginatedResultsPayload<SystemEntity>> {
+    const searchPayload = validatePayload(payload, DefaultSearchPayload);
 
-    const where = {} as RootFilterOperators<SystemEntity>;
-    const { page, count, keywords, userIds } = searchPayload;
+    const [systems, total] = await this.systemPort.readSystems(searchPayload);
 
-    if (0 !== keywords.length) {
-      where.$text = {
-        $caseSensitive: false,
-        $search: keywords.join(',')
-      };
-    }
-
-    if (0 !== userIds.length) {
-      where.createdByUserId = {
-        $in: userIds.map((userId: string): ObjectId => {
-          return new ObjectId(userId);
-        })
-      };
-    }
-
-    return this.systemRepository.findAndCount({
-      skip: (page - 1) * count,
-      take: count,
-      where
-    });
+    return new PaginatedResultsPayload(systems, total);
   }
 };

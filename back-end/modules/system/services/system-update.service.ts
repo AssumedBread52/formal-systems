@@ -1,6 +1,6 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
+import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
-import { SystemEntity } from '@/system/system.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -10,10 +10,10 @@ import { ValidateService } from './validate.service';
 
 @Injectable()
 export class SystemUpdateService {
-  constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>, private systemReadService: SystemReadService, private validateService: ValidateService) {
+  constructor(@InjectRepository(MongoSystemEntity) private systemRepository: MongoRepository<MongoSystemEntity>, private systemReadService: SystemReadService, private validateService: ValidateService) {
   }
 
-  async update(sessionUserId: ObjectId, systemId: any, payload: any): Promise<SystemEntity> {
+  async update(sessionUserId: ObjectId, systemId: any, payload: any): Promise<MongoSystemEntity> {
     const system = await this.systemReadService.readById(systemId);
 
     const { title, createdByUserId } = system;

@@ -1,19 +1,24 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
+import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { InUseException } from '@/system/exceptions/in-use.exception';
-import { SystemEntity } from '@/system/system.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
-import { SystemReadService } from './system-read.service';
 
 @Injectable()
 export class SystemDeleteService {
-  constructor(@InjectRepository(SystemEntity) private systemRepository: MongoRepository<SystemEntity>, private systemReadService: SystemReadService) {
+  constructor(@InjectRepository(MongoSystemEntity) private systemRepository: MongoRepository<MongoSystemEntity>) {
   }
 
-  async delete(sessionUserId: ObjectId, systemId: any): Promise<SystemEntity> {
-    const system = await this.systemReadService.readById(systemId);
+  async delete(sessionUserId: ObjectId, systemId: any): Promise<MongoSystemEntity> {
+    const system = await this.systemRepository.findOneBy({
+      _id: new ObjectId(systemId)
+    });
+
+    if (!system) {
+      throw new Error();
+    }
 
     const { _id, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = system;
 
