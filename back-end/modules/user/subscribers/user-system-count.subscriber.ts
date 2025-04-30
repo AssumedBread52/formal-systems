@@ -1,19 +1,19 @@
 import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
-import { SystemEntity } from '@/system/system.entity';
-import { UserEntity } from '@/user/entities/user.entity';
+import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
+import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()
-export class UserSystemCountSubscriber extends BaseCountSubscriber<SystemEntity> {
+export class UserSystemCountSubscriber extends BaseCountSubscriber<MongoSystemEntity> {
   constructor() {
-    super(SystemEntity);
+    super(MongoSystemEntity);
   }
 
-  protected async adjustCount(connection: DataSource, entity: SystemEntity, shouldIncrement: boolean): Promise<void> {
+  protected async adjustCount(connection: DataSource, entity: MongoSystemEntity, shouldIncrement: boolean): Promise<void> {
     const { createdByUserId } = entity;
 
-    const userRepository = connection.getMongoRepository(UserEntity);
+    const userRepository = connection.getMongoRepository(MongoUserEntity);
 
     const user = await userRepository.findOneBy({
       _id: createdByUserId

@@ -1,7 +1,7 @@
 import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
-import { UserEntity } from '@/user/entities/user.entity';
+import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { DataSource, EventSubscriber } from 'typeorm';
 
@@ -14,7 +14,7 @@ export class UserSymbolCountSubscriber extends BaseCountSubscriber<SymbolEntity>
   protected async adjustCount(connection: DataSource, entity: SymbolEntity, shouldIncrement: boolean): Promise<void> {
     const { type, createdByUserId } = entity;
 
-    const userRepository = connection.getMongoRepository(UserEntity);
+    const userRepository = connection.getMongoRepository(MongoUserEntity);
 
     const user = await userRepository.findOneBy({
       _id: createdByUserId

@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
 @Entity('system')
-export class SystemEntity {
+export class MongoSystemEntity {
   @ObjectIdColumn()
   _id: ObjectId = new ObjectId();
   @Column()
