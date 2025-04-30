@@ -23,6 +23,7 @@ export class SystemController {
     return new SystemPayload(deletedSystem);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   async getSystems(@Query() payload: any): Promise<PaginatedResultsPayload<SystemEntity>> {
     return this.systemReadService.readSystems(payload);
