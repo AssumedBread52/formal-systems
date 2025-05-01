@@ -63,9 +63,13 @@ export class MongoAdapter extends SystemAdapter {
 
     const originalSystem = this.convertFromDomainEntity(systemEntity);
 
-    await this.mongoRepository.remove(originalSystem);
+    const { _id } = originalSystem;
 
-    return systemEntity;
+    const deletedSystem = await this.mongoRepository.remove(originalSystem);
+
+    deletedSystem._id = _id;
+
+    return this.convertToDomainEntity(deletedSystem);
   }
 
   private convertFromDomainEntity(system: SystemEntity): MongoSystemEntity {
