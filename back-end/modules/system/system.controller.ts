@@ -34,12 +34,11 @@ export class SystemController {
     return this.systemReadService.readById(systemId);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtGuard)
   @Patch(':systemId')
-  async patchSystem(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<SystemPayload> {
-    const updatedSystem = await this.systemUpdateService.update(sessionUserId, systemId, payload);
-
-    return new SystemPayload(updatedSystem);
+  patchSystem(@SessionUserDecorator('id') sessionUserId: string, @Param('systemId') systemId: string, @Body() payload: any): Promise<SystemEntity> {
+    return this.systemUpdateService.update(sessionUserId, systemId, payload);
   }
 
   @UseGuards(JwtGuard)

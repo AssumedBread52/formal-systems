@@ -1,38 +1,38 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
-import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
-import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
+import { validatePayload } from '@/common/helpers/validate-payload';
+import { EditTitlePayload } from '@/common/payloads/edit-title.payload';
+import { SystemEntity } from '@/system/entities/system.entity';
+import { UniqueTitleException } from '@/system/exceptions/unique-title.exception';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ObjectId } from 'mongodb';
-import { MongoRepository } from 'typeorm';
+import { SystemPort } from './port/system.port';
 import { SystemReadService } from './system-read.service';
-import { ValidateService } from './validate.service';
 
 @Injectable()
 export class SystemUpdateService {
-  constructor(@InjectRepository(MongoSystemEntity) private systemRepository: MongoRepository<MongoSystemEntity>, private systemReadService: SystemReadService, private validateService: ValidateService) {
+  constructor(private systemPort: SystemPort, private systemReadService: SystemReadService) {
   }
 
-  async update(sessionUserId: ObjectId, systemId: any, payload: any): Promise<MongoSystemEntity> {
+  async update(sessionUserId: string, systemId: any, editSystemPayload: any): Promise<SystemEntity> {
+    const { newTitle } = validatePayload(editSystemPayload, EditTitlePayload);
     const system = await this.systemReadService.readById(systemId);
 
     const { title, createdByUserId } = system;
 
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
+    if (createdByUserId !== sessionUserId) {
       throw new OwnershipException();
     }
 
-    const editSystemPayload = this.validateService.payloadCheck(payload, EditSystemPayload);
-
-    const { newTitle, newDescription } = editSystemPayload;
-
     if (title !== newTitle) {
-      await this.validateService.conflictCheck(newTitle, sessionUserId);
+      const conflict = await this.systemPort.readConflict({
+        title: newTitle,
+        createdByUserId
+      });
+
+      if (conflict) {
+        throw new UniqueTitleException();
+      }
     }
 
-    system.title = newTitle;
-    system.description = newDescription;
-
-    return this.systemRepository.save(system);
+    return this.systemPort.update(system, editSystemPayload);
   }
 };

@@ -2,6 +2,8 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { AdapterType } from '@/system/enums/adapter-type.enum';
+import { ConflictPayload } from '@/system/payloads/conflict.payload';
+import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { MongoSearchPayload } from '@/system/payloads/mongo-search.payload';
 import { MongoSystemIdPayload } from '@/system/payloads/mongo-system-id.payload';
 import { Injectable } from '@nestjs/common';
@@ -30,6 +32,15 @@ export class MongoAdapter extends SystemAdapter {
     return this.convertToDomainEntity(system);
   }
 
+  override readConflict(conflictPayload: any): Promise<boolean> {
+    const { title, createdByUserId } = validatePayload(conflictPayload, ConflictPayload);
+
+    return this.mongoRepository.existsBy({
+      title,
+      createdByUserId: new ObjectId(createdByUserId)
+    });
+  }
+
   override async readSystems(searchPayload: any): Promise<[SystemEntity[], number]> {
     const { skip, take, keywords, userIds } = validatePayload(searchPayload, MongoSearchPayload);
     const where = {} as RootFilterOperators<MongoSystemEntity>;
@@ -56,6 +67,20 @@ export class MongoAdapter extends SystemAdapter {
     });
 
     return [list.map(this.convertToDomainEntity), count];
+  }
+
+  override async update(system: any, editSystemPayload: any): Promise<SystemEntity> {
+    const systemEntity = validatePayload(system, SystemEntity);
+    const { newTitle, newDescription } = validatePayload(editSystemPayload, EditSystemPayload);
+
+    const originalSystem = this.convertFromDomainEntity(systemEntity);
+
+    originalSystem.title = newTitle;
+    originalSystem.description = newDescription;
+
+    const updatedSystem = await this.mongoRepository.save(originalSystem);
+
+    return this.convertToDomainEntity(updatedSystem);
   }
 
   override async delete(system: any): Promise<SystemEntity> {

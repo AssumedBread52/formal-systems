@@ -33,6 +33,28 @@ export class SystemPort {
     return null;
   }
 
+  async readConflict(conflictPayload: any): Promise<boolean> {
+    const adapters = this.getAdapters();
+
+    const conflictRequests = adapters.map(async (adapter: SystemAdapter): Promise<boolean> => {
+      try {
+        return await adapter.readConflict(conflictPayload);
+      } catch {
+        return false;
+      }
+    });
+
+    const conflicts = await Promise.all(conflictRequests);
+
+    for (const conflict of conflicts) {
+      if (conflict) {
+        return conflict;
+      }
+    }
+
+    return false;
+  }
+
   async readSystems(searchPayload: any): Promise<[SystemEntity[], number]> {
     const { page, pageSize, keywords, userIds } = validatePayload(searchPayload, SearchPayload);
     const adapters = this.getAdapters();
@@ -57,6 +79,14 @@ export class SystemPort {
     }
 
     return [systems, total];
+  }
+
+  update(system: any, editSystemPayload: any): Promise<SystemEntity> {
+    const systemEntity = validatePayload(system, SystemEntity);
+
+    const adapter = this.getAdapter(systemEntity);
+
+    return adapter.update(system, editSystemPayload);
   }
 
   delete(system: any): Promise<SystemEntity> {
