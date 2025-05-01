@@ -13,7 +13,7 @@ describe('Read Systems', (): void => {
   const goodQueries = [
     '',
     '?page=2',
-    '?count=20',
+    '?pageSize=20',
     '?keywords[]=test',
     '?keywords[]=test&keywords[]=word',
     `?userIds[]=${new ObjectId()}`,
