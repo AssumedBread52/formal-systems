@@ -1,8 +1,8 @@
 import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolEntity } from '@/symbol/symbol.entity';
+import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
-import { SystemEntity } from '@/system/system.entity';
 import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()
@@ -14,7 +14,7 @@ export class SystemSymbolCountSubscriber extends BaseCountSubscriber<SymbolEntit
   protected async adjustCount(connection: DataSource, entity: SymbolEntity, shouldIncrement: boolean): Promise<void> {
     const { type, systemId } = entity;
 
-    const systemRepository = connection.getMongoRepository(SystemEntity);
+    const systemRepository = connection.getMongoRepository(MongoSystemEntity);
 
     const system = await systemRepository.findOneBy({
       _id: systemId

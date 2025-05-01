@@ -1,7 +1,7 @@
 import { BaseCountSubscriber } from '@/common/subscribers/base-count.subscriber';
 import { StatementEntity } from '@/statement/statement.entity';
+import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
-import { SystemEntity } from '@/system/system.entity';
 import { DataSource, EventSubscriber } from 'typeorm';
 
 @EventSubscriber()
@@ -13,7 +13,7 @@ export class SystemStatementCountSubscriber extends BaseCountSubscriber<Statemen
   protected async adjustCount(connection: DataSource, entity: StatementEntity, shouldIncrement: boolean): Promise<void> {
     const { logicalHypotheses, proofCount, systemId } = entity;
 
-    const systemRepository = connection.getMongoRepository(SystemEntity);
+    const systemRepository = connection.getMongoRepository(MongoSystemEntity);
 
     const system = await systemRepository.findOneBy({
       _id: systemId
