@@ -1,5 +1,6 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { SystemEntity } from '@/system/entities/system.entity';
+import { AdapterType } from '@/system/enums/adapter-type.enum';
 import { SearchPayload } from '@/system/payloads/search.payload';
 import { Injectable } from '@nestjs/common';
 import { MongoAdapter } from './adapters/mongo.adapter';
@@ -56,6 +57,23 @@ export class SystemPort {
     }
 
     return [systems, total];
+  }
+
+  delete(system: any): Promise<SystemEntity> {
+    const systemEntity = validatePayload(system, SystemEntity);
+
+    const adapter = this.getAdapter(systemEntity);
+
+    return adapter.delete(system);
+  }
+
+  private getAdapter(system: SystemEntity): SystemAdapter {
+    const { type } = system;
+
+    switch (type) {
+      case AdapterType.Mongo:
+        return this.mongoAdapter;
+    }
   }
 
   private getAdapters(): SystemAdapter[] {

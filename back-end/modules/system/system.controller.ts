@@ -15,12 +15,11 @@ export class SystemController {
   constructor(private systemCreateService: SystemCreateService, private systemDeleteService: SystemDeleteService, private systemReadService: SystemReadService, private systemUpdateService: SystemUpdateService) {
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtGuard)
   @Delete(':systemId')
-  async deleteSystem(@SessionUserDecorator('id') sessionUserId: ObjectId, @Param('systemId') systemId: string): Promise<SystemPayload> {
-    const deletedSystem = await this.systemDeleteService.delete(sessionUserId, systemId);
-
-    return new SystemPayload(deletedSystem);
+  deleteSystem(@SessionUserDecorator('id') sessionUserId: string, @Param('systemId') systemId: string): Promise<SystemEntity> {
+    return this.systemDeleteService.delete(sessionUserId, systemId);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)

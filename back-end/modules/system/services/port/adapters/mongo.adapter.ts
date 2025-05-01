@@ -58,6 +58,35 @@ export class MongoAdapter extends SystemAdapter {
     return [list.map(this.convertToDomainEntity), count];
   }
 
+  override async delete(system: any): Promise<SystemEntity> {
+    const systemEntity = validatePayload(system, SystemEntity);
+
+    const originalSystem = this.convertFromDomainEntity(systemEntity);
+
+    await this.mongoRepository.remove(originalSystem);
+
+    return systemEntity;
+  }
+
+  private convertFromDomainEntity(system: SystemEntity): MongoSystemEntity {
+    const { id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = system;
+
+    const mongoSystem = new MongoSystemEntity();
+
+    mongoSystem._id = new ObjectId(id);
+    mongoSystem.title = title;
+    mongoSystem.description = description;
+    mongoSystem.constantSymbolCount = constantSymbolCount;
+    mongoSystem.variableSymbolCount = variableSymbolCount;
+    mongoSystem.axiomCount = axiomCount;
+    mongoSystem.theoremCount = theoremCount;
+    mongoSystem.deductionCount = deductionCount;
+    mongoSystem.proofCount = proofCount;
+    mongoSystem.createdByUserId = new ObjectId(createdByUserId);
+
+    return mongoSystem;
+  }
+
   private convertToDomainEntity(mongoSystem: MongoSystemEntity): SystemEntity {
     const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = mongoSystem;
 

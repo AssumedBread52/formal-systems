@@ -1,39 +1,28 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
-import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
-import { InUseException } from '@/system/exceptions/in-use.exception';
+import { SystemEntity } from '@/system/entities/system.entity';
+import { NotEmptyException } from '@/system/exceptions/not-empty.exception';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ObjectId } from 'mongodb';
-import { MongoRepository } from 'typeorm';
+import { SystemPort } from './port/system.port';
+import { SystemReadService } from './system-read.service';
 
 @Injectable()
 export class SystemDeleteService {
-  constructor(@InjectRepository(MongoSystemEntity) private systemRepository: MongoRepository<MongoSystemEntity>) {
+  constructor(private systemPort: SystemPort, private systemReadService: SystemReadService) {
   }
 
-  async delete(sessionUserId: ObjectId, systemId: any): Promise<MongoSystemEntity> {
-    const system = await this.systemRepository.findOneBy({
-      _id: new ObjectId(systemId)
-    });
+  async delete(sessionUserId: string, systemId: string): Promise<SystemEntity> {
+    const system = await this.systemReadService.readById(systemId);
 
-    if (!system) {
-      throw new Error();
-    }
+    const { constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = system;
 
-    const { _id, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = system;
-
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
+    if (createdByUserId !== sessionUserId) {
       throw new OwnershipException();
     }
 
-    if (constantSymbolCount > 0 || variableSymbolCount > 0 || axiomCount > 0 || theoremCount > 0 || deductionCount > 0 || proofCount > 0) {
-      throw new InUseException();
+    if (0 < constantSymbolCount || 0 < variableSymbolCount || 0 < axiomCount || 0 < theoremCount || 0 < deductionCount || 0 < proofCount) {
+      throw new NotEmptyException();
     }
 
-    await this.systemRepository.remove(system);
-
-    system._id = _id;
-
-    return system;
+    return this.systemPort.delete(system);
   }
 };
