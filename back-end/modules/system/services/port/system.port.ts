@@ -51,7 +51,7 @@ export class SystemPort {
       systems.push(...results);
       total += count;
 
-      skip -= (count - results.length);
+      skip -= count - results.length;
       take -= results.length;
     }
 
