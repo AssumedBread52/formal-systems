@@ -25,13 +25,13 @@ export class SystemController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  async getSystems(@Query() payload: any): Promise<PaginatedResultsPayload<SystemEntity>> {
+  getSystems(@Query() payload: any): Promise<PaginatedResultsPayload<SystemEntity>> {
     return this.systemReadService.readSystems(payload);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':systemId')
-  async getById(@Param('systemId') systemId: string): Promise<SystemEntity> {
+  getById(@Param('systemId') systemId: string): Promise<SystemEntity> {
     return this.systemReadService.readById(systemId);
   }
 
