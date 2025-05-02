@@ -11,6 +11,13 @@ export class SystemPort {
   constructor(private mongoAdapter: MongoAdapter) {
   }
 
+  create(sessionUserId: string, newSystemPayload: any): Promise<SystemEntity> {
+    return this.mongoAdapter.create({
+      ...newSystemPayload,
+      createdByUserId: sessionUserId
+    });
+  }
+
   async readById(systemIdPayload: any): Promise<SystemEntity | null> {
     const adapters = this.getAdapters();
 
@@ -33,12 +40,15 @@ export class SystemPort {
     return null;
   }
 
-  async readConflict(conflictPayload: any): Promise<boolean> {
+  async readConflict(userId: string, title: string): Promise<boolean> {
     const adapters = this.getAdapters();
 
     const conflictRequests = adapters.map(async (adapter: SystemAdapter): Promise<boolean> => {
       try {
-        return await adapter.readConflict(conflictPayload);
+        return await adapter.readConflict({
+          title,
+          createdByUserId: userId
+        });
       } catch {
         return false;
       }

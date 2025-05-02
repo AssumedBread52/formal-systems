@@ -23,10 +23,7 @@ export class SystemUpdateService {
     }
 
     if (title !== newTitle) {
-      const conflict = await this.systemPort.readConflict({
-        title: newTitle,
-        createdByUserId
-      });
+      const conflict = await this.systemPort.readConflict(createdByUserId, newTitle);
 
       if (conflict) {
         throw new UniqueTitleException();
