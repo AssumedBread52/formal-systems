@@ -1,6 +1,7 @@
 import { SystemEntity } from '@/system/entities/system.entity';
 
 export abstract class SystemAdapter {
+  abstract create(newSystemPayload: any): Promise<SystemEntity>;
   abstract readById(systemIdPayload: any): Promise<SystemEntity | null>;
   abstract readConflict(conflictPayload: any): Promise<boolean>;
   abstract readSystems(searchPayload: any): Promise<[SystemEntity[], number]>;

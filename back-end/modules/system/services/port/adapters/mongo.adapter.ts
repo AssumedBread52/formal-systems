@@ -6,6 +6,7 @@ import { ConflictPayload } from '@/system/payloads/conflict.payload';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { MongoSearchPayload } from '@/system/payloads/mongo-search.payload';
 import { MongoSystemIdPayload } from '@/system/payloads/mongo-system-id.payload';
+import { NewSystemPayload } from '@/system/payloads/new-system.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -16,6 +17,20 @@ import { SystemAdapter } from './system.adapter';
 export class MongoAdapter extends SystemAdapter {
   constructor(@InjectRepository(MongoSystemEntity) private mongoRepository: MongoRepository<MongoSystemEntity>) {
     super();
+  }
+
+  override async create(newSystemPayload: any): Promise<SystemEntity> {
+    const { title, description, createdByUserId } = validatePayload(newSystemPayload, NewSystemPayload);
+
+    const system = new MongoSystemEntity();
+
+    system.title = title;
+    system.description = description;
+    system.createdByUserId = new ObjectId(createdByUserId);
+
+    const newSystem = await this.mongoRepository.save(system);
+
+    return this.convertToDomainEntity(newSystem);
   }
 
   override async readById(systemIdPayload: any): Promise<SystemEntity | null> {
