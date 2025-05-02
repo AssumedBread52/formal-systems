@@ -40,7 +40,7 @@ describe('Create System', (): void => {
     save.mockResolvedValueOnce(system);
 
     const token = app.get(JwtService).sign({
-      id: createdByUserId
+      userId: createdByUserId
     });
 
     const response = await request(app.getHttpServer()).post('/system').set('Cookie', [
