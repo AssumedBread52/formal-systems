@@ -1,29 +1,24 @@
-import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
-import { NewSystemPayload } from '@/system/payloads/new-system.payload';
+import { validatePayload } from '@/common/helpers/validate-payload';
+import { TitlePayload } from '@/common/payloads/title.payload';
+import { SystemEntity } from '@/system/entities/system.entity';
+import { UniqueTitleException } from '@/system/exceptions/unique-title.exception';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ObjectId } from 'mongodb';
-import { MongoRepository } from 'typeorm';
-import { ValidateService } from './validate.service';
+import { SystemPort } from './port/system.port';
 
 @Injectable()
 export class SystemCreateService {
-  constructor(@InjectRepository(MongoSystemEntity) private systemRepository: MongoRepository<MongoSystemEntity>, private validateService: ValidateService) {
+  constructor(private systemPort: SystemPort) {
   }
 
-  async create(sessionUserId: ObjectId, payload: any): Promise<MongoSystemEntity> {
-    const newSystemPayload = this.validateService.payloadCheck(payload, NewSystemPayload);
+  async create(sessionUserId: string, newSystemPayload: any): Promise<SystemEntity> {
+    const { title } = validatePayload(newSystemPayload, TitlePayload);
 
-    const { title, description } = newSystemPayload;
+    const conflict = await this.systemPort.readConflict(sessionUserId, title);
 
-    await this.validateService.conflictCheck(title, sessionUserId);
+    if (conflict) {
+      throw new UniqueTitleException();
+    }
 
-    const system = new MongoSystemEntity();
-
-    system.title = title;
-    system.description = description;
-    system.createdByUserId = sessionUserId;
-
-    return this.systemRepository.save(system);
+    return this.systemPort.create(sessionUserId, newSystemPayload);
   }
 };

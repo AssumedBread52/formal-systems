@@ -2,9 +2,7 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ObjectId } from 'mongodb';
 import { SystemEntity } from './entities/system.entity';
-import { SystemPayload } from './payloads/system.payload';
 import { SystemCreateService } from './services/system-create.service';
 import { SystemDeleteService } from './services/system-delete.service';
 import { SystemReadService } from './services/system-read.service';
@@ -41,11 +39,10 @@ export class SystemController {
     return this.systemUpdateService.update(sessionUserId, systemId, payload);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtGuard)
   @Post()
-  async postSystem(@SessionUserDecorator('id') sessionUserId: ObjectId, @Body() payload: any): Promise<SystemPayload> {
-    const createdSystem = await this.systemCreateService.create(sessionUserId, payload);
-
-    return new SystemPayload(createdSystem);
+  postSystem(@SessionUserDecorator('id') sessionUserId: string, @Body() payload: any): Promise<SystemEntity> {
+    return this.systemCreateService.create(sessionUserId, payload);
   }
 };

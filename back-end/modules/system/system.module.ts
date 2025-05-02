@@ -7,7 +7,6 @@ import { SystemCreateService } from './services/system-create.service';
 import { SystemDeleteService } from './services/system-delete.service';
 import { SystemReadService } from './services/system-read.service';
 import { SystemUpdateService } from './services/system-update.service';
-import { ValidateService } from './services/validate.service';
 import { SystemController } from './system.controller';
 
 @Module({
@@ -25,8 +24,7 @@ import { SystemController } from './system.controller';
     SystemDeleteService,
     SystemPort,
     SystemReadService,
-    SystemUpdateService,
-    ValidateService
+    SystemUpdateService
   ],
   exports: [
     SystemReadService
