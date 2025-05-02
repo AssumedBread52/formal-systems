@@ -12,7 +12,7 @@ export class SystemUpdateService {
   constructor(private systemPort: SystemPort, private systemReadService: SystemReadService) {
   }
 
-  async update(sessionUserId: string, systemId: any, editSystemPayload: any): Promise<SystemEntity> {
+  async update(sessionUserId: string, systemId: string, editSystemPayload: any): Promise<SystemEntity> {
     const { newTitle } = validatePayload(editSystemPayload, EditTitlePayload);
     const system = await this.systemReadService.readById(systemId);
 
