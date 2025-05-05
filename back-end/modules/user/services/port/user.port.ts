@@ -58,6 +58,28 @@ export class UserPort {
     return null;
   }
 
+  async readConflictExists(conflictPayload: any): Promise<boolean> {
+    const adapters = this.getAdapters();
+
+    const conflictCheckRequests = adapters.map(async (adapter: UserAdapter): Promise<boolean> => {
+      try {
+        return await adapter.readConflictExists(conflictPayload);
+      } catch {
+        return false;
+      }
+    });
+
+    const conflictChecks = await Promise.all(conflictCheckRequests);
+
+    for (const conflictCheck of conflictChecks) {
+      if (conflictCheck) {
+        return conflictCheck;
+      }
+    }
+
+    return false;
+  }
+
   update(user: any, editUserPayload: any): Promise<UserEntity> {
     const userEntity = validatePayload(user, UserEntity);
 

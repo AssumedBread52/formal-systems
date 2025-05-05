@@ -2,6 +2,7 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { AdapterType } from '@/user/enums/adapter-type.enum';
+import { ConflictPayload } from '@/user/payloads/conflict.payload';
 import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { EmailPayload } from '@/user/payloads/email.payload';
 import { MongoUserIdPayload } from '@/user/payloads/mongo-user-id.payload';
@@ -60,6 +61,14 @@ export class MongoAdapter extends UserAdapter {
     }
 
     return this.convertToDomainEntity(user);
+  }
+
+  override readConflictExists(conflictPayload: any): Promise<boolean> {
+    const { email } = validatePayload(conflictPayload, ConflictPayload);
+
+    return this.mongoRepository.existsBy({
+      email
+    });
   }
 
   override async update(user: any, editUserPayload: any): Promise<UserEntity> {

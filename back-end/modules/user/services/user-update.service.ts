@@ -16,11 +16,11 @@ export class UserUpdateService {
     const { newEmail } = validatePayload(editUserPayload, EditEmailPayload);
 
     if (email !== newEmail) {
-      const conflictUser = await this.userPort.readByEmail({
+      const conflictExists = await this.userPort.readConflictExists({
         email: newEmail
       });
 
-      if (conflictUser) {
+      if (conflictExists) {
         throw new UniqueEmailAddressException();
       }
     }

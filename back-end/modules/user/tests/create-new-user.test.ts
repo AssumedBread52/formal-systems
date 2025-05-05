@@ -1,5 +1,5 @@
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
-import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
+import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
@@ -9,7 +9,7 @@ import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
 describe('Create New User', (): void => {
-  const findOneBy = findOneByMock();
+  const existsBy = existsByMock();
   const getOrThrow = getOrThrowMock();
   const save = saveMock();
   let app: INestApplication;
@@ -32,7 +32,7 @@ describe('Create New User', (): void => {
     user.email = email;
     user.hashedPassword = hashSync(password, 12);
 
-    findOneBy.mockResolvedValueOnce(null);
+    existsBy.mockResolvedValueOnce(false);
     getOrThrow.mockReturnValueOnce(1000);
     save.mockResolvedValueOnce(user);
 
@@ -46,8 +46,8 @@ describe('Create New User', (): void => {
     const { statusCode, body } = response;
     const cookies = response.get('Set-Cookie');
 
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
       email
     });
     expect(getOrThrow).toHaveBeenCalledTimes(1);

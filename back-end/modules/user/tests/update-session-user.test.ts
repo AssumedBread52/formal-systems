@@ -1,4 +1,5 @@
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
@@ -10,6 +11,7 @@ import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
 describe('Update Session User', (): void => {
+  const existsBy = existsByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   const save = saveMock();
@@ -60,8 +62,8 @@ describe('Update Session User', (): void => {
     updatedUser.deductionCount = deductionCount;
     updatedUser.proofCount = proofCount;
 
+    existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(originalUser);
-    findOneBy.mockResolvedValueOnce(null);
     save.mockResolvedValueOnce(updatedUser);
 
     const token = app.get(JwtService).sign({
@@ -79,12 +81,13 @@ describe('Update Session User', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      email: newEmail
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      email: newEmail
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(1);
