@@ -1,6 +1,6 @@
 import { IsMongoId, IsNotEmpty } from 'class-validator';
 
-export class ConflictPayload {
+export class MongoConflictPayload {
   @IsNotEmpty()
   title: string = '';
   @IsMongoId()

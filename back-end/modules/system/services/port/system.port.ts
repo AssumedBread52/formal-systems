@@ -11,11 +11,8 @@ export class SystemPort {
   constructor(private mongoAdapter: MongoAdapter) {
   }
 
-  create(sessionUserId: string, newSystemPayload: any): Promise<SystemEntity> {
-    return this.mongoAdapter.create({
-      ...newSystemPayload,
-      createdByUserId: sessionUserId
-    });
+  create(newSystemPayload: any): Promise<SystemEntity> {
+    return this.mongoAdapter.create(newSystemPayload);
   }
 
   async readById(systemIdPayload: any): Promise<SystemEntity | null> {
@@ -40,25 +37,22 @@ export class SystemPort {
     return null;
   }
 
-  async readConflict(userId: string, title: string): Promise<boolean> {
+  async readConflictExists(conflictPayload: any): Promise<boolean> {
     const adapters = this.getAdapters();
 
-    const conflictRequests = adapters.map(async (adapter: SystemAdapter): Promise<boolean> => {
+    const conflictCheckRequests = adapters.map(async (adapter: SystemAdapter): Promise<boolean> => {
       try {
-        return await adapter.readConflict({
-          title,
-          createdByUserId: userId
-        });
+        return await adapter.readConflictExists(conflictPayload);
       } catch {
         return false;
       }
     });
 
-    const conflicts = await Promise.all(conflictRequests);
+    const conflictChecks = await Promise.all(conflictCheckRequests);
 
-    for (const conflict of conflicts) {
-      if (conflict) {
-        return conflict;
+    for (const conflictCheck of conflictChecks) {
+      if (conflictCheck) {
+        return conflictCheck;
       }
     }
 
@@ -68,6 +62,7 @@ export class SystemPort {
   async readSystems(searchPayload: any): Promise<[SystemEntity[], number]> {
     const { page, pageSize, keywords, userIds } = validatePayload(searchPayload, SearchPayload);
     const adapters = this.getAdapters();
+
     const systems = [];
     let total = 0;
 

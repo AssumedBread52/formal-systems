@@ -13,12 +13,18 @@ export class SystemCreateService {
   async create(sessionUserId: string, newSystemPayload: any): Promise<SystemEntity> {
     const { title } = validatePayload(newSystemPayload, TitlePayload);
 
-    const conflict = await this.systemPort.readConflict(sessionUserId, title);
+    const conflictExists = await this.systemPort.readConflictExists({
+      title,
+      createdByUserId: sessionUserId
+    });
 
-    if (conflict) {
+    if (conflictExists) {
       throw new UniqueTitleException();
     }
 
-    return this.systemPort.create(sessionUserId, newSystemPayload);
+    return this.systemPort.create({
+      ...newSystemPayload,
+      createdByUserId: sessionUserId
+    });
   }
 };

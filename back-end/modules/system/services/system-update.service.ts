@@ -9,7 +9,7 @@ import { SystemReadService } from './system-read.service';
 
 @Injectable()
 export class SystemUpdateService {
-  constructor(private systemPort: SystemPort, private systemReadService: SystemReadService) {
+  constructor(private systemReadService: SystemReadService, private systemPort: SystemPort) {
   }
 
   async update(sessionUserId: string, systemId: string, editSystemPayload: any): Promise<SystemEntity> {
@@ -23,9 +23,12 @@ export class SystemUpdateService {
     }
 
     if (title !== newTitle) {
-      const conflict = await this.systemPort.readConflict(createdByUserId, newTitle);
+      const conflictExists = await this.systemPort.readConflictExists({
+        title: newTitle,
+        createdByUserId
+      });
 
-      if (conflict) {
+      if (conflictExists) {
         throw new UniqueTitleException();
       }
     }

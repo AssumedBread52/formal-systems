@@ -7,7 +7,7 @@ import { SystemReadService } from './system-read.service';
 
 @Injectable()
 export class SystemDeleteService {
-  constructor(private systemPort: SystemPort, private systemReadService: SystemReadService) {
+  constructor(private systemReadService: SystemReadService, private systemPort: SystemPort) {
   }
 
   async delete(sessionUserId: string, systemId: string): Promise<SystemEntity> {

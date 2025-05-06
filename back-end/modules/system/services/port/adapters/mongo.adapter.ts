@@ -2,8 +2,8 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { AdapterType } from '@/system/enums/adapter-type.enum';
-import { ConflictPayload } from '@/system/payloads/conflict.payload';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
+import { MongoConflictPayload } from '@/system/payloads/mongo-conflict.payload';
 import { MongoSearchPayload } from '@/system/payloads/mongo-search.payload';
 import { MongoSystemIdPayload } from '@/system/payloads/mongo-system-id.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
@@ -47,8 +47,8 @@ export class MongoAdapter extends SystemAdapter {
     return this.convertToDomainEntity(system);
   }
 
-  override readConflict(conflictPayload: any): Promise<boolean> {
-    const { title, createdByUserId } = validatePayload(conflictPayload, ConflictPayload);
+  override readConflictExists(conflictPayload: any): Promise<boolean> {
+    const { title, createdByUserId } = validatePayload(conflictPayload, MongoConflictPayload);
 
     return this.mongoRepository.existsBy({
       title,
