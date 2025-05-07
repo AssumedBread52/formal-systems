@@ -25,8 +25,8 @@ describe('Read User by ID', (): void => {
     const variableSymbolCount = 3;
     const axiomCount = 6;
     const theoremCount = 1;
-    const deductionCount = 2;
-    const proofCount = 3;
+    const deductionCount = 3;
+    const proofCount = 6;
     const user = new MongoUserEntity();
 
     user._id = userId;
