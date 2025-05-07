@@ -10,6 +10,7 @@ import { SystemModule } from '@/system/system.module';
 import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { UserModule } from '@/user/user.module';
 import { INestApplication } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -21,6 +22,7 @@ export const createTestApp = async (): Promise<INestApplication> => {
     imports: [
       AppModule,
       AuthModule,
+      EventEmitterModule.forRoot(),
       HealthModule,
       StatementModule,
       SymbolModule,

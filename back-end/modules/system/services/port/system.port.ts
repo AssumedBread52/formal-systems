@@ -3,16 +3,21 @@ import { SystemEntity } from '@/system/entities/system.entity';
 import { AdapterType } from '@/system/enums/adapter-type.enum';
 import { SearchPayload } from '@/system/payloads/search.payload';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { MongoAdapter } from './adapters/mongo.adapter';
 import { SystemAdapter } from './adapters/system.adapter';
 
 @Injectable()
 export class SystemPort {
-  constructor(private mongoAdapter: MongoAdapter) {
+  constructor(private eventEmitter2: EventEmitter2, private mongoAdapter: MongoAdapter) {
   }
 
-  create(newSystemPayload: any): Promise<SystemEntity> {
-    return this.mongoAdapter.create(newSystemPayload);
+  async create(newSystemPayload: any): Promise<SystemEntity> {
+    const system = await this.mongoAdapter.create(newSystemPayload);
+
+    this.eventEmitter2.emit('system.created', system);
+
+    return system;
   }
 
   async readById(systemIdPayload: any): Promise<SystemEntity | null> {
@@ -94,12 +99,16 @@ export class SystemPort {
     return adapter.update(system, editSystemPayload);
   }
 
-  delete(system: any): Promise<SystemEntity> {
+  async delete(system: any): Promise<SystemEntity> {
     const systemEntity = validatePayload(system, SystemEntity);
 
     const adapter = this.getAdapter(systemEntity);
 
-    return adapter.delete(system);
+    const deletedSystem = await adapter.delete(system);
+
+    this.eventEmitter2.emit('system.deleted', deletedSystem);
+
+    return deletedSystem;
   }
 
   private getAdapter(system: SystemEntity): SystemAdapter {

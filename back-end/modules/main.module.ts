@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DatabaseType } from 'typeorm';
 import { AppModule } from './app/app.module';
@@ -19,7 +20,6 @@ import { SystemModule } from './system/system.module';
 import { UserProofCountSubscriber } from './user/subscribers/user-proof-count.subscriber';
 import { UserStatementCountSubscriber } from './user/subscribers/user-statement-count.subscriber';
 import { UserSymbolCountSubscriber } from './user/subscribers/user-symbol-count.subscriber';
-import { UserSystemCountSubscriber } from './user/subscribers/user-system-count.subscriber';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -33,6 +33,7 @@ import { UserModule } from './user/user.module';
         'database-credentials.env'
       ]
     }),
+    EventEmitterModule.forRoot(),
     HealthModule,
     ProofModule,
     StatementModule,
@@ -68,8 +69,7 @@ import { UserModule } from './user/user.module';
           SystemSymbolCountSubscriber,
           UserProofCountSubscriber,
           UserStatementCountSubscriber,
-          UserSymbolCountSubscriber,
-          UserSystemCountSubscriber
+          UserSymbolCountSubscriber
         ];
 
         return {

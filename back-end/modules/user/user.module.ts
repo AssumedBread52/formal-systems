@@ -2,6 +2,7 @@ import { AuthModule } from '@/auth/auth.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongoUserEntity } from './entities/mongo-user.entity';
+import { SystemCountListener } from './listeners/system-count.listener';
 import { MongoAdapter } from './services/port/adapters/mongo.adapter';
 import { UserPort } from './services/port/user.port';
 import { UserCreateService } from './services/user-create.service';
@@ -23,6 +24,7 @@ import { UserController } from './user.controller';
   ],
   providers: [
     MongoAdapter,
+    SystemCountListener,
     UserCreateService,
     UserPort,
     UserReadService,

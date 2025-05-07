@@ -88,6 +88,14 @@ export class UserPort {
     return adapter.update(user, editUserPayload);
   }
 
+  updateCounts(user: any, newCountsPayload: any): Promise<UserEntity> {
+    const userEntity = validatePayload(user, UserEntity);
+
+    const adapter = this.getAdapter(userEntity);
+
+    return adapter.updateCounts(user, newCountsPayload);
+  }
+
   private getAdapter(user: UserEntity): UserAdapter {
     const { type } = user;
 

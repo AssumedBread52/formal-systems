@@ -6,6 +6,7 @@ import { ConflictPayload } from '@/user/payloads/conflict.payload';
 import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { EmailPayload } from '@/user/payloads/email.payload';
 import { MongoUserIdPayload } from '@/user/payloads/mongo-user-id.payload';
+import { NewCountsPayload } from '@/user/payloads/new-counts.payload';
 import { NewUserPayload } from '@/user/payloads/new-user.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -82,6 +83,39 @@ export class MongoAdapter extends UserAdapter {
     originalUser.email = newEmail;
     if (newPassword) {
       originalUser.hashedPassword = hashSync(newPassword, 12);
+    }
+
+    const updatedUser = await this.mongoRepository.save(originalUser);
+
+    return this.convertToDomainEntity(updatedUser);
+  }
+
+  override async updateCounts(user: any, newCountPayload: any): Promise<UserEntity> {
+    const userEntity = validatePayload(user, UserEntity);
+    const { systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = validatePayload(newCountPayload, NewCountsPayload);
+
+    const originalUser = this.convertFromDomainEntity(userEntity);
+
+    if (typeof systemCount !== 'undefined') {
+      originalUser.systemCount = systemCount;
+    }
+    if (typeof constantSymbolCount !== 'undefined') {
+      originalUser.constantSymbolCount = constantSymbolCount;
+    }
+    if (typeof variableSymbolCount !== 'undefined') {
+      originalUser.variableSymbolCount = variableSymbolCount;
+    }
+    if (typeof axiomCount !== 'undefined') {
+      originalUser.axiomCount = axiomCount;
+    }
+    if (typeof theoremCount !== 'undefined') {
+      originalUser.theoremCount = theoremCount;
+    }
+    if (typeof deductionCount !== 'undefined') {
+      originalUser.deductionCount = deductionCount;
+    }
+    if (typeof proofCount !== 'undefined') {
+      originalUser.proofCount = proofCount;
     }
 
     const updatedUser = await this.mongoRepository.save(originalUser);
