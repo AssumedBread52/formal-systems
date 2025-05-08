@@ -90,9 +90,9 @@ export class MongoAdapter extends UserAdapter {
     return this.convertToDomainEntity(updatedUser);
   }
 
-  override async updateCounts(user: any, newCountPayload: any): Promise<UserEntity> {
+  override async updateCounts(user: any, newCountsPayload: any): Promise<UserEntity> {
     const userEntity = validatePayload(user, UserEntity);
-    const { systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = validatePayload(newCountPayload, NewCountsPayload);
+    const { systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = validatePayload(newCountsPayload, NewCountsPayload);
 
     const originalUser = this.convertFromDomainEntity(userEntity);
 
