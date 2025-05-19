@@ -15,7 +15,7 @@ export class CompositeAdapterRepository implements SystemRepository {
   async create(newSystemPayload: any): Promise<SystemEntity> {
     const system = await this.mongoAdapterRepository.create(newSystemPayload);
 
-    this.eventEmitter2.emit('system.created', system);
+    this.eventEmitter2.emit('system.create.completed', system);
 
     return system;
   }
@@ -106,7 +106,7 @@ export class CompositeAdapterRepository implements SystemRepository {
 
     const deletedSystem = await adapter.delete(system);
 
-    this.eventEmitter2.emit('system.deleted', deletedSystem);
+    this.eventEmitter2.emit('system.delete.completed', deletedSystem);
 
     return deletedSystem;
   }

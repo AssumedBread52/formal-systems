@@ -11,7 +11,7 @@ export class SystemCountListener {
   constructor(private userReadService: UserReadService, private compositeAdapterRepository: CompositeAdapterRepository) {
   }
 
-  @OnEvent('system.created', {
+  @OnEvent('system.create.completed', {
     suppressErrors: false
   })
   async incrementSystemCount(payload: any): Promise<UserEntity> {
@@ -26,7 +26,7 @@ export class SystemCountListener {
     });
   }
 
-  @OnEvent('system.deleted', {
+  @OnEvent('system.delete.completed', {
     suppressErrors: false
   })
   async decrementSystemCount(payload: any): Promise<UserEntity> {
