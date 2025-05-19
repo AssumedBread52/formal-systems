@@ -2,22 +2,22 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { UserEntity } from '@/user/entities/user.entity';
 import { AdapterType } from '@/user/enums/adapter-type.enum';
 import { Injectable } from '@nestjs/common';
-import { MongoAdapter } from './adapters/mongo.adapter';
-import { UserAdapter } from './adapters/user.adapter';
+import { MongoAdapterRepository } from './mongo-adapter.repository';
+import { UserRepository } from './user.repository';
 
 @Injectable()
-export class UserPort {
-  constructor(private mongoAdapter: MongoAdapter) {
+export class CompositeAdapterRepository implements UserRepository {
+  constructor(private mongoAdapterRepository: MongoAdapterRepository) {
   }
 
   create(newUserPayload: any): Promise<UserEntity> {
-    return this.mongoAdapter.create(newUserPayload);
+    return this.mongoAdapterRepository.create(newUserPayload);
   }
 
   async readByEmail(emailPayload: any): Promise<UserEntity | null> {
     const adapters = this.getAdapters();
 
-    const userRequests = adapters.map(async (adapter: UserAdapter): Promise<UserEntity | null> => {
+    const userRequests = adapters.map(async (adapter: UserRepository): Promise<UserEntity | null> => {
       try {
         return await adapter.readByEmail(emailPayload);
       } catch {
@@ -39,7 +39,7 @@ export class UserPort {
   async readById(userIdPayload: any): Promise<UserEntity | null> {
     const adapters = this.getAdapters();
 
-    const userRequests = adapters.map(async (adapter: UserAdapter): Promise<UserEntity | null> => {
+    const userRequests = adapters.map(async (adapter: UserRepository): Promise<UserEntity | null> => {
       try {
         return await adapter.readById(userIdPayload);
       } catch {
@@ -61,7 +61,7 @@ export class UserPort {
   async readConflictExists(conflictPayload: any): Promise<boolean> {
     const adapters = this.getAdapters();
 
-    const conflictCheckRequests = adapters.map(async (adapter: UserAdapter): Promise<boolean> => {
+    const conflictCheckRequests = adapters.map(async (adapter: UserRepository): Promise<boolean> => {
       try {
         return await adapter.readConflictExists(conflictPayload);
       } catch {
@@ -73,7 +73,7 @@ export class UserPort {
 
     for (const conflictCheck of conflictChecks) {
       if (conflictCheck) {
-        return conflictCheck;
+        return true;
       }
     }
 
@@ -96,18 +96,18 @@ export class UserPort {
     return adapter.updateCounts(user, newCountsPayload);
   }
 
-  private getAdapter(user: UserEntity): UserAdapter {
+  private getAdapter(user: UserEntity): UserRepository {
     const { type } = user;
 
     switch (type) {
       case AdapterType.Mongo:
-        return this.mongoAdapter;
+        return this.mongoAdapterRepository;
     }
   }
 
-  private getAdapters(): UserAdapter[] {
+  private getAdapters(): UserRepository[] {
     return [
-      this.mongoAdapter
+      this.mongoAdapterRepository
     ];
   }
 };

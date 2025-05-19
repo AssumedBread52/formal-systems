@@ -13,15 +13,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { hashSync } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
-import { UserAdapter } from './user.adapter';
+import { UserRepository } from './user.repository';
 
 @Injectable()
-export class MongoAdapter extends UserAdapter {
+export class MongoAdapterRepository implements UserRepository {
   constructor(@InjectRepository(MongoUserEntity) private mongoRepository: MongoRepository<MongoUserEntity>) {
-    super();
   }
 
-  override async create(newUserPayload: any): Promise<UserEntity> {
+  async create(newUserPayload: any): Promise<UserEntity> {
     const { firstName, lastName, email, password } = validatePayload(newUserPayload, NewUserPayload);
 
     const user = new MongoUserEntity();
@@ -36,7 +35,7 @@ export class MongoAdapter extends UserAdapter {
     return this.convertToDomainEntity(newUser);
   }
 
-  override async readByEmail(emailPayload: any): Promise<UserEntity | null> {
+  async readByEmail(emailPayload: any): Promise<UserEntity | null> {
     const { email } = validatePayload(emailPayload, EmailPayload);
 
     const user = await this.mongoRepository.findOneBy({
@@ -44,13 +43,13 @@ export class MongoAdapter extends UserAdapter {
     });
 
     if (!user) {
-      return user;
+      return null;
     }
 
     return this.convertToDomainEntity(user);
   }
 
-  override async readById(userIdPayload: any): Promise<UserEntity | null> {
+  async readById(userIdPayload: any): Promise<UserEntity | null> {
     const { userId } = validatePayload(userIdPayload, MongoUserIdPayload);
 
     const user = await this.mongoRepository.findOneBy({
@@ -58,13 +57,13 @@ export class MongoAdapter extends UserAdapter {
     });
 
     if (!user) {
-      return user;
+      return null;
     }
 
     return this.convertToDomainEntity(user);
   }
 
-  override readConflictExists(conflictPayload: any): Promise<boolean> {
+  readConflictExists(conflictPayload: any): Promise<boolean> {
     const { email } = validatePayload(conflictPayload, ConflictPayload);
 
     return this.mongoRepository.existsBy({
@@ -72,7 +71,7 @@ export class MongoAdapter extends UserAdapter {
     });
   }
 
-  override async update(user: any, editUserPayload: any): Promise<UserEntity> {
+  async update(user: any, editUserPayload: any): Promise<UserEntity> {
     const userEntity = validatePayload(user, UserEntity);
     const { newFirstName, newLastName, newEmail, newPassword } = validatePayload(editUserPayload, EditUserPayload);
 
@@ -90,7 +89,7 @@ export class MongoAdapter extends UserAdapter {
     return this.convertToDomainEntity(updatedUser);
   }
 
-  override async updateCounts(user: any, newCountsPayload: any): Promise<UserEntity> {
+  async updateCounts(user: any, newCountsPayload: any): Promise<UserEntity> {
     const userEntity = validatePayload(user, UserEntity);
     const { systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = validatePayload(newCountsPayload, NewCountsPayload);
 
