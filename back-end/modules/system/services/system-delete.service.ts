@@ -1,13 +1,13 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { NotEmptyException } from '@/system/exceptions/not-empty.exception';
+import { CompositeAdapterRepository } from '@/system/repositories/composite-adapter.repository';
 import { Injectable } from '@nestjs/common';
-import { SystemPort } from './port/system.port';
 import { SystemReadService } from './system-read.service';
 
 @Injectable()
 export class SystemDeleteService {
-  constructor(private systemReadService: SystemReadService, private systemPort: SystemPort) {
+  constructor(private systemReadService: SystemReadService, private compositeAdapterRepository: CompositeAdapterRepository) {
   }
 
   async delete(sessionUserId: string, systemId: string): Promise<SystemEntity> {
@@ -23,6 +23,6 @@ export class SystemDeleteService {
       throw new NotEmptyException();
     }
 
-    return this.systemPort.delete(system);
+    return this.compositeAdapterRepository.delete(system);
   }
 };

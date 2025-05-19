@@ -1,6 +1,6 @@
 import { IsMongoId, IsNotEmpty } from 'class-validator';
 
-export class NewSystemPayload {
+export class MongoNewSystemPayload {
   @IsNotEmpty()
   title: string = '';
   @IsNotEmpty()

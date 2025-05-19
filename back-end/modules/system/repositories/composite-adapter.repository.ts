@@ -4,16 +4,16 @@ import { AdapterType } from '@/system/enums/adapter-type.enum';
 import { SearchPayload } from '@/system/payloads/search.payload';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { MongoAdapter } from './adapters/mongo.adapter';
-import { SystemAdapter } from './adapters/system.adapter';
+import { MongoAdapterRepository } from './mongo-adapter.repository';
+import { SystemRepository } from './system.repository';
 
 @Injectable()
-export class SystemPort {
-  constructor(private eventEmitter2: EventEmitter2, private mongoAdapter: MongoAdapter) {
+export class CompositeAdapterRepository implements SystemRepository {
+  constructor(private eventEmitter2: EventEmitter2, private mongoAdapterRepository: MongoAdapterRepository) {
   }
 
   async create(newSystemPayload: any): Promise<SystemEntity> {
-    const system = await this.mongoAdapter.create(newSystemPayload);
+    const system = await this.mongoAdapterRepository.create(newSystemPayload);
 
     this.eventEmitter2.emit('system.created', system);
 
@@ -23,7 +23,7 @@ export class SystemPort {
   async readById(systemIdPayload: any): Promise<SystemEntity | null> {
     const adapters = this.getAdapters();
 
-    const systemRequests = adapters.map(async (adapter: SystemAdapter): Promise<SystemEntity | null> => {
+    const systemRequests = adapters.map(async (adapter: SystemRepository): Promise<SystemEntity | null> => {
       try {
         return await adapter.readById(systemIdPayload);
       } catch {
@@ -45,7 +45,7 @@ export class SystemPort {
   async readConflictExists(conflictPayload: any): Promise<boolean> {
     const adapters = this.getAdapters();
 
-    const conflictCheckRequests = adapters.map(async (adapter: SystemAdapter): Promise<boolean> => {
+    const conflictCheckRequests = adapters.map(async (adapter: SystemRepository): Promise<boolean> => {
       try {
         return await adapter.readConflictExists(conflictPayload);
       } catch {
@@ -57,7 +57,7 @@ export class SystemPort {
 
     for (const conflictCheck of conflictChecks) {
       if (conflictCheck) {
-        return conflictCheck;
+        return true;
       }
     }
 
@@ -111,18 +111,18 @@ export class SystemPort {
     return deletedSystem;
   }
 
-  private getAdapter(system: SystemEntity): SystemAdapter {
+  private getAdapter(system: SystemEntity): SystemRepository {
     const { type } = system;
 
     switch (type) {
       case AdapterType.Mongo:
-        return this.mongoAdapter;
+        return this.mongoAdapterRepository;
     }
   }
 
-  private getAdapters(): SystemAdapter[] {
+  private getAdapters(): SystemRepository[] {
     return [
-      this.mongoAdapter
+      this.mongoAdapterRepository
     ];
   }
 };

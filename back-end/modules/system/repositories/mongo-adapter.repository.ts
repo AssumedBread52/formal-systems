@@ -4,23 +4,22 @@ import { SystemEntity } from '@/system/entities/system.entity';
 import { AdapterType } from '@/system/enums/adapter-type.enum';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { MongoConflictPayload } from '@/system/payloads/mongo-conflict.payload';
+import { MongoNewSystemPayload } from '@/system/payloads/mongo-new-system.payload';
 import { MongoSearchPayload } from '@/system/payloads/mongo-search.payload';
 import { MongoSystemIdPayload } from '@/system/payloads/mongo-system-id.payload';
-import { NewSystemPayload } from '@/system/payloads/new-system.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
-import { SystemAdapter } from './system.adapter';
+import { SystemRepository } from './system.repository';
 
 @Injectable()
-export class MongoAdapter extends SystemAdapter {
+export class MongoAdapterRepository implements SystemRepository {
   constructor(@InjectRepository(MongoSystemEntity) private mongoRepository: MongoRepository<MongoSystemEntity>) {
-    super();
   }
 
-  override async create(newSystemPayload: any): Promise<SystemEntity> {
-    const { title, description, createdByUserId } = validatePayload(newSystemPayload, NewSystemPayload);
+  async create(newSystemPayload: any): Promise<SystemEntity> {
+    const { title, description, createdByUserId } = validatePayload(newSystemPayload, MongoNewSystemPayload);
 
     const system = new MongoSystemEntity();
 
@@ -33,7 +32,7 @@ export class MongoAdapter extends SystemAdapter {
     return this.convertToDomainEntity(newSystem);
   }
 
-  override async readById(systemIdPayload: any): Promise<SystemEntity | null> {
+  async readById(systemIdPayload: any): Promise<SystemEntity | null> {
     const { systemId } = validatePayload(systemIdPayload, MongoSystemIdPayload);
 
     const system = await this.mongoRepository.findOneBy({
@@ -41,13 +40,13 @@ export class MongoAdapter extends SystemAdapter {
     });
 
     if (!system) {
-      return system;
+      return null;
     }
 
     return this.convertToDomainEntity(system);
   }
 
-  override readConflictExists(conflictPayload: any): Promise<boolean> {
+  readConflictExists(conflictPayload: any): Promise<boolean> {
     const { title, createdByUserId } = validatePayload(conflictPayload, MongoConflictPayload);
 
     return this.mongoRepository.existsBy({
@@ -56,7 +55,7 @@ export class MongoAdapter extends SystemAdapter {
     });
   }
 
-  override async readSystems(searchPayload: any): Promise<[SystemEntity[], number]> {
+  async readSystems(searchPayload: any): Promise<[SystemEntity[], number]> {
     const { skip, take, keywords, userIds } = validatePayload(searchPayload, MongoSearchPayload);
     const where = {} as RootFilterOperators<MongoSystemEntity>;
 
@@ -84,7 +83,7 @@ export class MongoAdapter extends SystemAdapter {
     return [list.map(this.convertToDomainEntity), count];
   }
 
-  override async update(system: any, editSystemPayload: any): Promise<SystemEntity> {
+  async update(system: any, editSystemPayload: any): Promise<SystemEntity> {
     const systemEntity = validatePayload(system, SystemEntity);
     const { newTitle, newDescription } = validatePayload(editSystemPayload, EditSystemPayload);
 
@@ -98,7 +97,7 @@ export class MongoAdapter extends SystemAdapter {
     return this.convertToDomainEntity(updatedSystem);
   }
 
-  override async delete(system: any): Promise<SystemEntity> {
+  async delete(system: any): Promise<SystemEntity> {
     const systemEntity = validatePayload(system, SystemEntity);
 
     const originalSystem = this.convertFromDomainEntity(systemEntity);

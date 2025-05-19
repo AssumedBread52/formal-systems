@@ -3,16 +3,16 @@ import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.pay
 import { SystemEntity } from '@/system/entities/system.entity';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { DefaultSearchPayload } from '@/system/payloads/default-search.payload';
+import { CompositeAdapterRepository } from '@/system/repositories/composite-adapter.repository';
 import { Injectable } from '@nestjs/common';
-import { SystemPort } from './port/system.port';
 
 @Injectable()
 export class SystemReadService {
-  constructor(private systemPort: SystemPort) {
+  constructor(private compositeAdapterRepository: CompositeAdapterRepository) {
   }
 
   async readById(systemId: string): Promise<SystemEntity> {
-    const system = await this.systemPort.readById({
+    const system = await this.compositeAdapterRepository.readById({
       systemId
     });
 
@@ -26,7 +26,7 @@ export class SystemReadService {
   async readSystems(payload: any): Promise<PaginatedResultsPayload<SystemEntity>> {
     const searchPayload = validatePayload(payload, DefaultSearchPayload);
 
-    const [systems, total] = await this.systemPort.readSystems(searchPayload);
+    const [systems, total] = await this.compositeAdapterRepository.readSystems(searchPayload);
 
     return new PaginatedResultsPayload(systems, total);
   }

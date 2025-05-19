@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongoSystemEntity } from './entities/mongo-system.entity';
-import { MongoAdapter } from './services/port/adapters/mongo.adapter';
-import { SystemPort } from './services/port/system.port';
+import { CompositeAdapterRepository } from './repositories/composite-adapter.repository';
+import { MongoAdapterRepository } from './repositories/mongo-adapter.repository';
 import { SystemCreateService } from './services/system-create.service';
 import { SystemDeleteService } from './services/system-delete.service';
 import { SystemReadService } from './services/system-read.service';
@@ -19,10 +19,10 @@ import { SystemController } from './system.controller';
     SystemController
   ],
   providers: [
-    MongoAdapter,
+    CompositeAdapterRepository,
+    MongoAdapterRepository,
     SystemCreateService,
     SystemDeleteService,
-    SystemPort,
     SystemReadService,
     SystemUpdateService
   ],
