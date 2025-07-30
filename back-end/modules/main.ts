@@ -9,9 +9,9 @@ const bootstrap = async (): Promise<void> => {
   const app = await NestFactory.create<NestExpressApplication>(MainModule, {
     abortOnError: false,
     httpsOptions: {
+      ca: readFileSync('./security/certificate-authority-public-certificate.pem'),
       cert: readFileSync('./security/public-certificate.pem'),
-      key: readFileSync('./security/private-key.pem'),
-      ca: readFileSync('./security/certificate-authority-public-certificate.pem')
+      key: readFileSync('./security/private-key.pem')
     }
   });
 
