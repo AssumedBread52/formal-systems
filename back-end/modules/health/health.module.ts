@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
-import { HealthController } from './health.controller';
+import { HealthController } from './controllers/health.controller';
 import { DatabaseCheckService } from './services/database-check.service';
 
 @Module({
