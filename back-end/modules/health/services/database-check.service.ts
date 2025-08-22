@@ -3,10 +3,10 @@ import { HealthIndicatorResult, TypeOrmHealthIndicator } from '@nestjs/terminus'
 
 @Injectable()
 export class DatabaseCheckService {
-  constructor(private typeOrmHealthIndicator: TypeOrmHealthIndicator) {
+  public constructor(private readonly typeOrmHealthIndicator: TypeOrmHealthIndicator) {
   }
 
-  check(): Promise<HealthIndicatorResult<'database'>> {
+  public check(): Promise<HealthIndicatorResult<'database'>> {
     return this.typeOrmHealthIndicator.pingCheck('database');
   }
 };

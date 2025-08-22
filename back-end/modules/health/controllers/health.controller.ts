@@ -4,12 +4,12 @@ import { HealthCheck, HealthCheckResult, HealthCheckService } from '@nestjs/term
 
 @Controller('health')
 export class HealthController {
-  constructor(private databaseCheckService: DatabaseCheckService, private healthCheckService: HealthCheckService) {
+  public constructor(private readonly databaseCheckService: DatabaseCheckService, private readonly healthCheckService: HealthCheckService) {
   }
 
   @Get()
   @HealthCheck()
-  check(): Promise<HealthCheckResult> {
+  public check(): Promise<HealthCheckResult> {
     return this.healthCheckService.check([
       this.databaseCheckService.check.bind(this.databaseCheckService)
     ]);
