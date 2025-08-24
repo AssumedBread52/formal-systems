@@ -1,17 +1,15 @@
-import { DatabaseCheckService } from '@/health/services/database-check.service';
+import { IntervalCheckService } from '@/health/services/interval-check.service';
 import { Controller, Get } from '@nestjs/common';
-import { HealthCheck, HealthCheckResult, HealthCheckService } from '@nestjs/terminus';
+import { HealthCheck, HealthCheckResult } from '@nestjs/terminus';
 
 @Controller('health')
 export class HealthController {
-  public constructor(private readonly databaseCheckService: DatabaseCheckService, private readonly healthCheckService: HealthCheckService) {
+  public constructor(private readonly intervalCheckService: IntervalCheckService) {
   }
 
   @Get()
   @HealthCheck()
   public check(): Promise<HealthCheckResult> {
-    return this.healthCheckService.check([
-      this.databaseCheckService.check.bind(this.databaseCheckService)
-    ]);
+    return this.intervalCheckService.runCheck();
   }
 };
