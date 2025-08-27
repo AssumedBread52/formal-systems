@@ -1,6 +1,6 @@
+import { Injectable } from '@nestjs/common';
 import { HealthCheckResult, HealthCheckService } from '@nestjs/terminus';
 import { DatabaseCheckService } from './database-check.service';
-import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class IntervalCheckService {
