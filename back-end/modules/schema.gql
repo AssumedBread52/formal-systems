@@ -1,0 +1,26 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type ComponentStatusPayload {
+  componentType: ComponentType!
+  statusType: StatusType!
+}
+
+enum ComponentType {
+  database
+}
+
+enum StatusType {
+  down
+  up
+}
+
+type HealthStatusPayload {
+  componentStatuses: [ComponentStatusPayload!]!
+  statusType: StatusType!
+}
+
+type Query {
+  healthCheck: HealthStatusPayload!
+}

@@ -1,6 +1,8 @@
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DatabaseType } from 'typeorm';
 import { AppModule } from './app/app.module';
@@ -34,6 +36,14 @@ import { UserModule } from './user/user.module';
       ]
     }),
     EventEmitterModule.forRoot(),
+    GraphQLModule.forRootAsync({
+      driver: ApolloDriver,
+      useFactory: (): Omit<ApolloDriverConfig, 'driver'> => {
+        return {
+          autoSchemaFile: './modules/schema.gql'
+        };
+      }
+    }),
     HealthModule,
     ProofModule,
     StatementModule,

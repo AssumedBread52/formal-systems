@@ -1,15 +1,17 @@
+import { HealthStatusPayload } from '@/health/payloads/health-status.payload';
 import { Injectable } from '@nestjs/common';
-import { HealthCheckResult, HealthCheckService } from '@nestjs/terminus';
 import { DatabaseCheckService } from './database-check.service';
 
 @Injectable()
 export class IntervalCheckService {
-  public constructor(private readonly databaseCheckService: DatabaseCheckService, private readonly healthCheckService: HealthCheckService) {
+  public constructor(private readonly databaseCheckService: DatabaseCheckService) {
   }
 
-  public runCheck(): Promise<HealthCheckResult> {
-    return this.healthCheckService.check([
-      this.databaseCheckService.check.bind(this.databaseCheckService)
+  public async runCheck(): Promise<HealthStatusPayload> {
+    const results = await Promise.all([
+      this.databaseCheckService.check()
     ]);
+
+    return new HealthStatusPayload(results);
   }
 };

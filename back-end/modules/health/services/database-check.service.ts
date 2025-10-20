@@ -1,5 +1,8 @@
+import { ComponentType } from '@/health/enums/component-type.enum';
+import { StatusType } from '@/health/enums/status-type.enum';
+import { ComponentStatusPayload } from '@/health/payloads/component-status.payload';
 import { Injectable } from '@nestjs/common';
-import { HealthIndicatorResult, TypeOrmHealthIndicator } from '@nestjs/terminus';
+import { TypeOrmHealthIndicator } from '@nestjs/terminus';
 
 @Injectable()
 export class DatabaseCheckService {
@@ -8,7 +11,16 @@ export class DatabaseCheckService {
   public constructor(private readonly typeOrmHealthIndicator: TypeOrmHealthIndicator) {
   }
 
-  public check(): Promise<HealthIndicatorResult<'database'>> {
-    return this.typeOrmHealthIndicator.pingCheck(DatabaseCheckService.KEY);
+  public async check(): Promise<ComponentStatusPayload> {
+    const { database } = await this.typeOrmHealthIndicator.pingCheck(DatabaseCheckService.KEY);
+
+    const { status } = database;
+
+    switch (status) {
+      case 'up':
+        return new ComponentStatusPayload(ComponentType.database, StatusType.up);
+      case 'down':
+        return new ComponentStatusPayload(ComponentType.database, StatusType.down);
+    }
   }
 };

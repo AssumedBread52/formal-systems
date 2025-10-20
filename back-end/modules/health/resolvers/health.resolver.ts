@@ -1,16 +1,16 @@
 import { HealthStatusPayload } from '@/health/payloads/health-status.payload';
 import { IntervalCheckService } from '@/health/services/interval-check.service';
-import { Controller, Get } from '@nestjs/common';
-import { HealthCheck } from '@nestjs/terminus';
+import { Query, Resolver } from '@nestjs/graphql';
 
-@Controller('health')
-export class HealthController {
+@Resolver()
+export class HealthResolver {
   public constructor(private readonly intervalCheckService: IntervalCheckService) {
   }
 
-  @Get()
-  @HealthCheck()
-  public check(): Promise<HealthStatusPayload> {
+  @Query((): typeof HealthStatusPayload => {
+    return HealthStatusPayload;
+  })
+  public healthCheck(): Promise<HealthStatusPayload> {
     return this.intervalCheckService.runCheck();
   }
 };
