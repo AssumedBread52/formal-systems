@@ -1,11 +1,12 @@
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
-import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { HttpStatus, INestApplication } from '@nestjs/common';
+import { constants } from 'fs/promises';
 import * as request from 'supertest';
+import { accessMock } from './mocks/access.mock';
 import { pingCheckMock } from './mocks/ping-check.mock';
 
 describe('Health Check', (): void => {
-  const getOrThrow = getOrThrowMock();
+  const access = accessMock();
   const pingCheck = pingCheckMock();
   let app: INestApplication;
 
@@ -13,7 +14,7 @@ describe('Health Check', (): void => {
     app = await createTestApp();
   });
 
-  it('passes a health check', async (): Promise<void> => {
+  it('GET /health database check pass, file check pass', async (): Promise<void> => {
     pingCheck.mockResolvedValueOnce({
       database: {
         status: 'up'
@@ -24,30 +25,29 @@ describe('Health Check', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(access).toHaveBeenCalledTimes(1);
+    expect(access).toHaveBeenNthCalledWith(1, '/app/package.json', constants.R_OK);
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toEqual({
-      details: {
-        database: {
-          status: 'up'
+      componentStatusPayloads: [
+        {
+          componentType: 'database',
+          healthStatus: 'up'
+        },
+        {
+          componentType: 'file',
+          healthStatus: 'up'
         }
-      },
-      error: {},
-      info: {
-        database: {
-          status: 'up'
-        }
-      },
-      status: 'ok'
+      ],
+      healthStatus: 'up'
     });
   });
 
-  it('fails a health check', async (): Promise<void> => {
+  it('GET /health database check fail, file check pass', async (): Promise<void> => {
     pingCheck.mockResolvedValueOnce({
       database: {
-        message: 'Returned error message',
         status: 'down'
       }
     });
@@ -56,25 +56,237 @@ describe('Health Check', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(access).toHaveBeenCalledTimes(1);
+    expect(access).toHaveBeenNthCalledWith(1, '/app/package.json', constants.R_OK);
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.SERVICE_UNAVAILABLE);
     expect(body).toEqual({
-      details: {
-        database: {
-          message: 'Returned error message',
-          status: 'down'
+      componentStatusPayloads: [
+        {
+          componentType: 'database',
+          healthStatus: 'down'
+        },
+        {
+          componentType: 'file',
+          healthStatus: 'up'
         }
-      },
-      error: {
-        database: {
-          message: 'Returned error message',
-          status: 'down'
+      ],
+      healthStatus: 'down'
+    });
+  });
+
+  it('GET /health database check pass, file check fail', async (): Promise<void> => {
+    access.mockRejectedValueOnce(undefined);
+    pingCheck.mockResolvedValueOnce({
+      database: {
+        status: 'up'
+      }
+    });
+
+    const response = await request(app.getHttpServer()).get('/health');
+
+    const { statusCode, body } = response;
+
+    expect(access).toHaveBeenCalledTimes(1);
+    expect(access).toHaveBeenNthCalledWith(1, '/app/package.json', constants.R_OK);
+    expect(pingCheck).toHaveBeenCalledTimes(1);
+    expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
+    expect(statusCode).toBe(HttpStatus.SERVICE_UNAVAILABLE);
+    expect(body).toEqual({
+      componentStatusPayloads: [
+        {
+          componentType: 'database',
+          healthStatus: 'up'
+        },
+        {
+          componentType: 'file',
+          healthStatus: 'down'
         }
-      },
-      info: {},
-      status: 'error'
+      ],
+      healthStatus: 'down'
+    });
+  });
+
+  it('GET /health database check fail, file check fail', async (): Promise<void> => {
+    access.mockRejectedValueOnce(undefined);
+    pingCheck.mockResolvedValueOnce({
+      database: {
+        status: 'down'
+      }
+    });
+
+    const response = await request(app.getHttpServer()).get('/health');
+
+    const { statusCode, body } = response;
+
+    expect(access).toHaveBeenCalledTimes(1);
+    expect(access).toHaveBeenNthCalledWith(1, '/app/package.json', constants.R_OK);
+    expect(pingCheck).toHaveBeenCalledTimes(1);
+    expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
+    expect(statusCode).toBe(HttpStatus.SERVICE_UNAVAILABLE);
+    expect(body).toEqual({
+      componentStatusPayloads: [
+        {
+          componentType: 'database',
+          healthStatus: 'down'
+        },
+        {
+          componentType: 'file',
+          healthStatus: 'down'
+        }
+      ],
+      healthStatus: 'down'
+    });
+  });
+
+  it('POST /graphql query healthCheck database check pass, file check pass', async (): Promise<void> => {
+    pingCheck.mockResolvedValueOnce({
+      database: {
+        status: 'up'
+      }
+    });
+
+    const response = await request(app.getHttpServer()).post('/graphql').send({
+      query: 'query { healthCheck { componentStatusPayloads { componentType healthStatus } healthStatus } }'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(access).toHaveBeenCalledTimes(1);
+    expect(access).toHaveBeenNthCalledWith(1, '/app/package.json', constants.R_OK);
+    expect(pingCheck).toHaveBeenCalledTimes(1);
+    expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual({
+      data: {
+        healthCheck: {
+          componentStatusPayloads: [
+            {
+              componentType: 'database',
+              healthStatus: 'up'
+            },
+            {
+              componentType: 'file',
+              healthStatus: 'up'
+            }
+          ],
+          healthStatus: 'up'
+        }
+      }
+    });
+  });
+
+  it('POST /graphql query healthCheck database check fail, file check pass', async (): Promise<void> => {
+    pingCheck.mockResolvedValueOnce({
+      database: {
+        status: 'down'
+      }
+    });
+
+    const response = await request(app.getHttpServer()).post('/graphql').send({
+      query: 'query { healthCheck { componentStatusPayloads { componentType healthStatus } healthStatus } }'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(access).toHaveBeenCalledTimes(1);
+    expect(access).toHaveBeenNthCalledWith(1, '/app/package.json', constants.R_OK);
+    expect(pingCheck).toHaveBeenCalledTimes(1);
+    expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual({
+      data: {
+        healthCheck: {
+          componentStatusPayloads: [
+            {
+              componentType: 'database',
+              healthStatus: 'down'
+            },
+            {
+              componentType: 'file',
+              healthStatus: 'up'
+            }
+          ],
+          healthStatus: 'down'
+        }
+      }
+    });
+  });
+
+  it('POST /graphql query healthCheck database check pass, file check fail', async (): Promise<void> => {
+    access.mockRejectedValueOnce(undefined);
+    pingCheck.mockResolvedValueOnce({
+      database: {
+        status: 'up'
+      }
+    });
+
+    const response = await request(app.getHttpServer()).post('/graphql').send({
+      query: 'query { healthCheck { componentStatusPayloads { componentType healthStatus } healthStatus } }'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(access).toHaveBeenCalledTimes(1);
+    expect(access).toHaveBeenNthCalledWith(1, '/app/package.json', constants.R_OK);
+    expect(pingCheck).toHaveBeenCalledTimes(1);
+    expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual({
+      data: {
+        healthCheck: {
+          componentStatusPayloads: [
+            {
+              componentType: 'database',
+              healthStatus: 'up'
+            },
+            {
+              componentType: 'file',
+              healthStatus: 'down'
+            }
+          ],
+          healthStatus: 'down'
+        }
+      }
+    });
+  });
+
+  it('GET /health database check fail, file check fail', async (): Promise<void> => {
+    access.mockRejectedValueOnce(undefined);
+    pingCheck.mockResolvedValueOnce({
+      database: {
+        status: 'down'
+      }
+    });
+
+    const response = await request(app.getHttpServer()).post('/graphql').send({
+      query: 'query { healthCheck { componentStatusPayloads { componentType healthStatus } healthStatus } }'
+    });
+
+    const { statusCode, body } = response;
+
+    expect(access).toHaveBeenCalledTimes(1);
+    expect(access).toHaveBeenNthCalledWith(1, '/app/package.json', constants.R_OK);
+    expect(pingCheck).toHaveBeenCalledTimes(1);
+    expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toEqual({
+      data: {
+        healthCheck: {
+          componentStatusPayloads: [
+            {
+              componentType: 'database',
+              healthStatus: 'down'
+            },
+            {
+              componentType: 'file',
+              healthStatus: 'down'
+            }
+          ],
+          healthStatus: 'down'
+        }
+      }
     });
   });
 

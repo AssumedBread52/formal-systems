@@ -9,8 +9,10 @@ import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemModule } from '@/system/system.module';
 import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { UserModule } from '@/user/user.module';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { INestApplication } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { GraphQLModule } from '@nestjs/graphql';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -23,6 +25,14 @@ export const createTestApp = async (): Promise<INestApplication> => {
       AppModule,
       AuthModule,
       EventEmitterModule.forRoot(),
+      GraphQLModule.forRootAsync({
+        driver: ApolloDriver,
+        useFactory: (): Omit<ApolloDriverConfig, 'driver'> => {
+          return {
+            autoSchemaFile: true
+          };
+        }
+      }),
       HealthModule,
       StatementModule,
       SymbolModule,
