@@ -8,12 +8,6 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    "isolatedModules": true,
-    "lib": [
-      "ES2022"
-    ],
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -30,8 +24,7 @@
     },
     "removeComments": true,
     "skipLibCheck": true,
-    "strict": true,
-    "target": "es2022"
+    "strict": true
   },
   "exclude": [
     "./.nest",
