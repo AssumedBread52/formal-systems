@@ -1,5 +1,6 @@
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { constants } from 'fs/promises';
 import * as request from 'supertest';
 import { accessMock } from './mocks/access.mock';
@@ -8,7 +9,7 @@ import { pingCheckMock } from './mocks/ping-check.mock';
 describe('Health Check', (): void => {
   const access = accessMock();
   const pingCheck = pingCheckMock();
-  let app: INestApplication;
+  let app: NestExpressApplication;
 
   beforeAll(async (): Promise<void> => {
     app = await createTestApp();

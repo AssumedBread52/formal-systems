@@ -10,7 +10,6 @@ import { SystemModule } from '@/system/system.module';
 import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { UserModule } from '@/user/user.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { INestApplication } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GraphQLModule } from '@nestjs/graphql';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -19,7 +18,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
 import { MongoRepository } from 'typeorm';
 
-export const createTestApp = async (): Promise<INestApplication> => {
+export const createTestApp = async (): Promise<NestExpressApplication> => {
   const testingModule = await Test.createTestingModule({
     imports: [
       AppModule,
