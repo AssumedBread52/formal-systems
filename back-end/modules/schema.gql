@@ -4,21 +4,21 @@
 
 type ComponentStatusPayload {
   componentType: ComponentType!
-  statusType: StatusType!
+  healthStatus: HealthStatus!
 }
 
 enum ComponentType {
   database
 }
 
-enum StatusType {
+enum HealthStatus {
   down
   up
 }
 
 type HealthStatusPayload {
-  componentStatuses: [ComponentStatusPayload!]!
-  statusType: StatusType!
+  componentStatusPayloads: [ComponentStatusPayload!]!
+  healthStatus: HealthStatus!
 }
 
 type Query {

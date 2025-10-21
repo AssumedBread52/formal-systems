@@ -1,20 +1,20 @@
 import { ComponentType } from '@/health/enums/component-type.enum';
-import { StatusType } from '@/health/enums/status-type.enum';
+import { HealthStatus } from '@/health/enums/health-status.enum';
 import { Field, ObjectType } from '@nestjs/graphql';
 
-@ObjectType()
+ @ObjectType()
 export class ComponentStatusPayload {
   @Field((): typeof ComponentType => {
     return ComponentType;
   })
   public readonly componentType: ComponentType;
-  @Field((): typeof StatusType => {
-    return StatusType;
+  @Field((): typeof HealthStatus => {
+    return HealthStatus;
   })
-  public readonly statusType: StatusType;
+  public readonly healthStatus: HealthStatus;
 
-  public constructor(componentType: ComponentType, statusType: StatusType) {
+  public constructor(componentType: ComponentType, healthStatus: HealthStatus) {
     this.componentType = componentType;
-    this.statusType = statusType;
+    this.healthStatus = healthStatus;
   }
 };

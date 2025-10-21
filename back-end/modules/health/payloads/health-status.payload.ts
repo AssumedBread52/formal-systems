@@ -1,5 +1,5 @@
+import { HealthStatus } from '@/health/enums/health-status.enum';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { StatusType } from '@/health/enums/status-type.enum';
 import { ComponentStatusPayload } from './component-status.payload';
 
 @ObjectType()
@@ -7,22 +7,22 @@ export class HealthStatusPayload {
   @Field((): [typeof ComponentStatusPayload] => {
     return [ComponentStatusPayload];
   })
-  public readonly componentStatuses: ComponentStatusPayload[];
-  @Field((): typeof StatusType => {
-    return StatusType;
+  public readonly componentStatusPayloads: ComponentStatusPayload[];
+  @Field((): typeof HealthStatus => {
+    return HealthStatus;
   })
-  public readonly statusType: StatusType;
+  public readonly healthStatus: HealthStatus;
 
-  public constructor(componentStatuses: ComponentStatusPayload[]) {
-    this.componentStatuses = componentStatuses;
-    this.statusType = componentStatuses.reduce((healthStatus: StatusType, componentStatus: ComponentStatusPayload): StatusType => {
-      if (StatusType.down === healthStatus) {
-        return healthStatus;
+  public constructor(componentStatusPayloads: ComponentStatusPayload[]) {
+    this.componentStatusPayloads = componentStatusPayloads;
+    this.healthStatus = componentStatusPayloads.reduce((serviceHealthStatus: HealthStatus, componentStatusPayload: ComponentStatusPayload): HealthStatus => {
+      if (HealthStatus.down === serviceHealthStatus) {
+        return serviceHealthStatus;
       }
 
-      const { statusType } = componentStatus;
+      const { healthStatus } = componentStatusPayload;
 
-      return statusType;
-    }, StatusType.up);
+      return healthStatus;
+    }, HealthStatus.up);
   }
 };

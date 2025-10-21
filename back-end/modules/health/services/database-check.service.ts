@@ -1,5 +1,5 @@
 import { ComponentType } from '@/health/enums/component-type.enum';
-import { StatusType } from '@/health/enums/status-type.enum';
+import { HealthStatus } from '@/health/enums/health-status.enum';
 import { ComponentStatusPayload } from '@/health/payloads/component-status.payload';
 import { Injectable } from '@nestjs/common';
 import { TypeOrmHealthIndicator } from '@nestjs/terminus';
@@ -18,9 +18,9 @@ export class DatabaseCheckService {
 
     switch (status) {
       case 'up':
-        return new ComponentStatusPayload(ComponentType.database, StatusType.up);
+        return new ComponentStatusPayload(ComponentType.database, HealthStatus.up);
       case 'down':
-        return new ComponentStatusPayload(ComponentType.database, StatusType.down);
+        return new ComponentStatusPayload(ComponentType.database, HealthStatus.down);
     }
   }
 };
