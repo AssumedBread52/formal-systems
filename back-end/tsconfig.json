@@ -8,6 +8,11 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
+    "lib": [
+      "ES2017"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -24,7 +29,8 @@
     },
     "removeComments": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "target": "es2017"
   },
   "exclude": [
     "./.nest",

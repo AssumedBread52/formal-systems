@@ -9,6 +9,7 @@ type ComponentStatusPayload {
 
 enum ComponentType {
   database
+  file
 }
 
 enum HealthStatus {
