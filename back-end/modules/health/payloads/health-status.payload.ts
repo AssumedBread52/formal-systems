@@ -15,6 +15,7 @@ export class HealthStatusPayload {
 
   public constructor(componentStatusPayloads: ComponentStatusPayload[]) {
     this.componentStatusPayloads = componentStatusPayloads;
+
     this.healthStatus = componentStatusPayloads.reduce((serviceHealthStatus: HealthStatus, componentStatusPayload: ComponentStatusPayload): HealthStatus => {
       if (HealthStatus.down === serviceHealthStatus) {
         return serviceHealthStatus;
