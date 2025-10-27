@@ -253,7 +253,7 @@ describe('Health Check', (): void => {
     });
   });
 
-  it('GET /health database check fail, file check fail', async (): Promise<void> => {
+  it('POST /graphql query healthCheck check fail, file check fail', async (): Promise<void> => {
     access.mockRejectedValueOnce(undefined);
     pingCheck.mockResolvedValueOnce({
       database: {
