@@ -14,9 +14,7 @@ export class HealthController {
   public async check(): Promise<HealthStatusPayload> {
     const result = await this.intervalCheckService.runCheck();
 
-    const { healthStatus } = result;
-
-    if (HealthStatus.up !== healthStatus) {
+    if (HealthStatus.up !== result.healthStatus) {
       throw new ServiceUnavailableException(result);
     }
 
