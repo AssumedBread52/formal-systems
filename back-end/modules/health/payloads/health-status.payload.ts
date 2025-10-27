@@ -21,9 +21,7 @@ export class HealthStatusPayload {
         return serviceHealthStatus;
       }
 
-      const { healthStatus } = componentStatusPayload;
-
-      return healthStatus;
+      return componentStatusPayload.healthStatus;
     }, HealthStatus.up);
   }
 };
