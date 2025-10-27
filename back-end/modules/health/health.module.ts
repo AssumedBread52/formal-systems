@@ -10,9 +10,7 @@ import { IntervalCheckService } from './services/interval-check.service';
 @Module({
   imports: [
     ConfigModule,
-    TerminusModule.forRoot({
-      errorLogStyle: 'pretty'
-    })
+    TerminusModule.forRoot()
   ],
   controllers: [
     HealthController
