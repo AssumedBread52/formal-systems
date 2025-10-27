@@ -2,7 +2,7 @@ import { ComponentType } from '@/health/enums/component-type.enum';
 import { HealthStatus } from '@/health/enums/health-status.enum';
 import { Field, ObjectType } from '@nestjs/graphql';
 
- @ObjectType()
+@ObjectType()
 export class ComponentStatusPayload {
   @Field((): typeof ComponentType => {
     return ComponentType;
