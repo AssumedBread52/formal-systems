@@ -31,7 +31,7 @@ describe('Health Check', (): void => {
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toEqual({
+    expect(body).toStrictEqual({
       componentStatusPayloads: [
         {
           componentType: 'database',
@@ -62,7 +62,7 @@ describe('Health Check', (): void => {
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.SERVICE_UNAVAILABLE);
-    expect(body).toEqual({
+    expect(body).toStrictEqual({
       componentStatusPayloads: [
         {
           componentType: 'database',
@@ -94,7 +94,7 @@ describe('Health Check', (): void => {
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.SERVICE_UNAVAILABLE);
-    expect(body).toEqual({
+    expect(body).toStrictEqual({
       componentStatusPayloads: [
         {
           componentType: 'database',
@@ -126,7 +126,7 @@ describe('Health Check', (): void => {
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.SERVICE_UNAVAILABLE);
-    expect(body).toEqual({
+    expect(body).toStrictEqual({
       componentStatusPayloads: [
         {
           componentType: 'database',
@@ -159,7 +159,7 @@ describe('Health Check', (): void => {
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toEqual({
+    expect(body).toStrictEqual({
       data: {
         healthCheck: {
           componentStatusPayloads: [
@@ -196,7 +196,7 @@ describe('Health Check', (): void => {
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toEqual({
+    expect(body).toStrictEqual({
       data: {
         healthCheck: {
           componentStatusPayloads: [
@@ -234,7 +234,7 @@ describe('Health Check', (): void => {
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toEqual({
+    expect(body).toStrictEqual({
       data: {
         healthCheck: {
           componentStatusPayloads: [
@@ -253,7 +253,7 @@ describe('Health Check', (): void => {
     });
   });
 
-  it('POST /graphql query healthCheck check fail, file check fail', async (): Promise<void> => {
+  it('POST /graphql query healthCheck database check fail, file check fail', async (): Promise<void> => {
     access.mockRejectedValueOnce(undefined);
     pingCheck.mockResolvedValueOnce({
       database: {
@@ -272,7 +272,7 @@ describe('Health Check', (): void => {
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
     expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toEqual({
+    expect(body).toStrictEqual({
       data: {
         healthCheck: {
           componentStatusPayloads: [
