@@ -12,15 +12,19 @@ export class DatabaseCheckService {
   }
 
   public async check(): Promise<ComponentStatusPayload> {
-    const { database } = await this.typeOrmHealthIndicator.pingCheck(DatabaseCheckService.KEY);
+    try {
+      const { database } = await this.typeOrmHealthIndicator.pingCheck(DatabaseCheckService.KEY);
 
-    const { status } = database;
+      const { status } = database;
 
-    switch (status) {
-      case 'up':
-        return new ComponentStatusPayload(ComponentType.database, HealthStatus.up);
-      case 'down':
-        return new ComponentStatusPayload(ComponentType.database, HealthStatus.down);
+      switch (status) {
+        case 'up':
+          return new ComponentStatusPayload(ComponentType.database, HealthStatus.up);
+        case 'down':
+          return new ComponentStatusPayload(ComponentType.database, HealthStatus.down);
+      }
+    } catch {
+      return new ComponentStatusPayload(ComponentType.database, HealthStatus.down);
     }
   }
 };
