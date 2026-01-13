@@ -2,11 +2,11 @@ import { IsEmail, IsNotEmpty, IsStrongPassword } from 'class-validator';
 
 export class NewUserPayload {
   @IsNotEmpty()
-  firstName: string = '';
+  public readonly firstName: string = '';
   @IsNotEmpty()
-  lastName: string = '';
+  public readonly lastName: string = '';
   @IsEmail()
-  email: string = '';
+  public readonly email: string = '';
   @IsStrongPassword()
-  password: string = '';
+  public readonly password: string = '';
 };
