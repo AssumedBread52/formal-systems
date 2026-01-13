@@ -4,27 +4,27 @@ import { Column, Entity, ObjectIdColumn } from 'typeorm';
 @Entity('user')
 export class MongoUserEntity {
   @ObjectIdColumn()
-  _id: ObjectId = new ObjectId();
+  public _id: ObjectId = new ObjectId();
   @Column()
-  firstName: string = '';
+  public firstName: string = '';
   @Column()
-  lastName: string = '';
+  public lastName: string = '';
   @Column()
-  email: string = '';
+  public email: string = '';
   @Column()
-  hashedPassword: string = '';
+  public hashedPassword: string = '';
   @Column()
-  systemCount: number = 0;
+  public systemCount: number = 0;
   @Column()
-  constantSymbolCount: number = 0;
+  public constantSymbolCount: number = 0;
   @Column()
-  variableSymbolCount: number = 0;
+  public variableSymbolCount: number = 0;
   @Column()
-  axiomCount: number = 0;
+  public axiomCount: number = 0;
   @Column()
-  theoremCount: number = 0;
+  public theoremCount: number = 0;
   @Column()
-  deductionCount: number = 0;
+  public deductionCount: number = 0;
   @Column()
-  proofCount: number = 0;
+  public proofCount: number = 0;
 };
