@@ -2,12 +2,12 @@ import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { CookieService } from '@/auth/services/cookie.service';
 import { TokenService } from '@/auth/services/token.service';
+import { UserEntity } from '@/user/entities/user.entity';
+import { UserCreateService } from '@/user/services/user-create.service';
+import { UserReadService } from '@/user/services/user-read.service';
+import { UserUpdateService } from '@/user/services/user-update.service';
 import { Body, ClassSerializerInterceptor, Controller, Get, Param, Patch, Post, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Response } from 'express';
-import { UserEntity } from './entities/user.entity';
-import { UserCreateService } from './services/user-create.service';
-import { UserReadService } from './services/user-read.service';
-import { UserUpdateService } from './services/user-update.service';
 
 @Controller('user')
 export class UserController {
