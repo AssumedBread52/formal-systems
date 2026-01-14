@@ -1,41 +1,37 @@
-import { AdapterType } from '@/user/enums/adapter-type.enum';
 import { Exclude } from 'class-transformer';
-import { IsEmail, IsEnum, IsInt, IsNotEmpty, Matches, Min } from 'class-validator';
+import { IsEmail, IsInt, IsMongoId, IsNotEmpty, Matches, Min } from 'class-validator';
 
 export class UserEntity {
-  @Exclude()
-  @IsEnum(AdapterType)
-  type: AdapterType = AdapterType.Mongo;
+  @IsMongoId()
+  public id: string = '';
   @IsNotEmpty()
-  id: string = '';
+  public firstName: string = '';
   @IsNotEmpty()
-  firstName: string = '';
-  @IsNotEmpty()
-  lastName: string = '';
+  public lastName: string = '';
   @IsEmail()
-  email: string = '';
+  public email: string = '';
   @Exclude()
-  @Matches(/^\$2b\$12\$.+$/)
-  hashedPassword: string = '';
+  @Matches(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+  public hashedPassword: string = '';
   @IsInt()
   @Min(0)
-  systemCount: number = 0;
+  public systemCount: number = 0;
   @IsInt()
   @Min(0)
-  constantSymbolCount: number = 0;
+  public constantSymbolCount: number = 0;
   @IsInt()
   @Min(0)
-  variableSymbolCount: number = 0;
+  public variableSymbolCount: number = 0;
   @IsInt()
   @Min(0)
-  axiomCount: number = 0;
+  public axiomCount: number = 0;
   @IsInt()
   @Min(0)
-  theoremCount: number = 0;
+  public theoremCount: number = 0;
   @IsInt()
   @Min(0)
-  deductionCount: number = 0;
+  public deductionCount: number = 0;
   @IsInt()
   @Min(0)
-  proofCount: number = 0;
+  public proofCount: number = 0;
 };
