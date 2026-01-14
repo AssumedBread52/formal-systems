@@ -16,6 +16,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
+import { Request, Response } from 'express';
 import { MongoRepository } from 'typeorm';
 
 export const createTestApp = async (): Promise<NestExpressApplication> => {
@@ -28,7 +29,14 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
         driver: ApolloDriver,
         useFactory: (): Omit<ApolloDriverConfig, 'driver'> => {
           return {
-            autoSchemaFile: true
+            autoSchemaFile: true,
+            context: (params: { req: Request; res: Response; }): { res: Response; } => {
+              const { res } = params;
+
+              return {
+                res
+              };
+            }
           };
         }
       }),

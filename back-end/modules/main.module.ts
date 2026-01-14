@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { Request, Response } from 'express';
 import { DatabaseType } from 'typeorm';
 import { AppModule } from './app/app.module';
 import { AuthModule } from './auth/auth.module';
@@ -40,7 +41,14 @@ import { UserModule } from './user/user.module';
       driver: ApolloDriver,
       useFactory: (): Omit<ApolloDriverConfig, 'driver'> => {
         return {
-          autoSchemaFile: './modules/schema.gql'
+          autoSchemaFile: './modules/schema.gql',
+          context: (params: { req: Request; res: Response; }): { res: Response; } => {
+            const { res } = params;
+
+            return {
+              res
+            };
+          }
         };
       }
     }),
