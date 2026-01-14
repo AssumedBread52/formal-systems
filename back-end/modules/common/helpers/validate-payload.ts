@@ -1,19 +1,23 @@
-import { ValidationPipe } from '@nestjs/common';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 
 export const validatePayload = <Payload extends object>(payload: any, payloadConstructor: ClassConstructor<Payload>): Payload => {
-  const newPayload = plainToInstance(payloadConstructor, payload, {
-    ignoreDecorators: true
-  });
+  try {
+    const newPayload = plainToInstance(payloadConstructor, payload, {
+      ignoreDecorators: true
+    });
 
-  const errors = validateSync(newPayload);
+    const errors = validateSync(newPayload, {
+      forbidNonWhitelisted: true,
+      whitelist: true
+    });
 
-  if (0 < errors.length) {
-    const validationPipe = new ValidationPipe();
+    if (0 < errors.length) {
+      throw new Error('Payload validation errors detected');
+    }
 
-    throw validationPipe.createExceptionFactory()(errors);
+    return newPayload;
+  } catch {
+    throw new Error('Payload validation failed');
   }
-
-  return newPayload;
 };
