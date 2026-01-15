@@ -5,13 +5,13 @@ import { ConflictPayload } from '@/user/payloads/conflict.payload';
 import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { EmailPayload } from '@/user/payloads/email.payload';
 import { MongoUserIdPayload } from '@/user/payloads/mongo-user-id.payload';
+import { NewCountsPayload } from '@/user/payloads/new-counts.payload';
 import { NewUserPayload } from '@/user/payloads/new-user.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hashSync } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
-import { NewCountsPayload } from '../payloads/new-counts.payload';
 
 @Injectable()
 export class UserRepository {
