@@ -78,20 +78,6 @@ export class UserRepository {
     }
   }
 
-  async readByEmail(emailPayload: any): Promise<UserEntity | null> {
-    const { email } = validatePayload(emailPayload, EmailPayload);
-
-    const user = await this.repository.findOneBy({
-      email
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    return this.createDomainEntityFromDatabaseEntity(user);
-  }
-
   async readById(userIdPayload: any): Promise<UserEntity | null> {
     const { userId } = validatePayload(userIdPayload, MongoUserIdPayload);
 
