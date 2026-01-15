@@ -15,7 +15,7 @@ import { MongoRepository } from 'typeorm';
 
 @Injectable()
 export class UserRepository {
-  public constructor(@InjectRepository(MongoUserEntity) private readonly mongoRepository: MongoRepository<MongoUserEntity>) {
+  public constructor(@InjectRepository(MongoUserEntity) private readonly repository: MongoRepository<MongoUserEntity>) {
   }
 
   public async create(newUserPayload: any): Promise<UserEntity> {
@@ -28,7 +28,7 @@ export class UserRepository {
     user.email = email;
     user.hashedPassword = hashSync(password);
 
-    const newUser = await this.mongoRepository.save(user);
+    const newUser = await this.repository.save(user);
 
     return this.convertToDomainEntity(newUser);
   }
@@ -36,7 +36,7 @@ export class UserRepository {
   async readByEmail(emailPayload: any): Promise<UserEntity | null> {
     const { email } = validatePayload(emailPayload, EmailPayload);
 
-    const user = await this.mongoRepository.findOneBy({
+    const user = await this.repository.findOneBy({
       email
     });
 
@@ -50,7 +50,7 @@ export class UserRepository {
   async readById(userIdPayload: any): Promise<UserEntity | null> {
     const { userId } = validatePayload(userIdPayload, MongoUserIdPayload);
 
-    const user = await this.mongoRepository.findOneBy({
+    const user = await this.repository.findOneBy({
       _id: new ObjectId(userId)
     });
 
@@ -64,7 +64,7 @@ export class UserRepository {
   readConflictExists(conflictPayload: any): Promise<boolean> {
     const { email } = validatePayload(conflictPayload, ConflictPayload);
 
-    return this.mongoRepository.existsBy({
+    return this.repository.existsBy({
       email
     });
   }
@@ -82,7 +82,7 @@ export class UserRepository {
       originalUser.hashedPassword = hashSync(newPassword);
     }
 
-    const updatedUser = await this.mongoRepository.save(originalUser);
+    const updatedUser = await this.repository.save(originalUser);
 
     return this.convertToDomainEntity(updatedUser);
   }
@@ -115,7 +115,7 @@ export class UserRepository {
       originalUser.proofCount = proofCount;
     }
 
-    const updatedUser = await this.mongoRepository.save(originalUser);
+    const updatedUser = await this.repository.save(originalUser);
 
     return this.convertToDomainEntity(updatedUser);
   }
