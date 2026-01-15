@@ -1,6 +1,6 @@
 import { InvalidCredentialsException } from '@/auth/exceptions/invalid-credentials.exception';
 import { UserEntity } from '@/user/entities/user.entity';
-import { UserReadService } from '@/user/services/user-read.service';
+import { UserRepository } from '@/user/repositories/user.repository';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { compareSync } from 'bcryptjs';
@@ -8,29 +8,27 @@ import { Strategy } from 'passport-local';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private userReadService: UserReadService) {
+  public constructor(private readonly userRepository: UserRepository) {
     super({
       usernameField: 'email'
     });
   }
 
-  override async validate(email: string, password: string): Promise<UserEntity> {
-    const user = await this.readByEmail(email);
-
-    const { hashedPassword } = user;
-
-    const matched = compareSync(password, hashedPassword);
-
-    if (!matched) {
-      throw new InvalidCredentialsException();
-    }
-
-    return user;
-  }
-
-  private async readByEmail(email: string): Promise<UserEntity> {
+  public override async validate(email: string, password: string): Promise<UserEntity> {
     try {
-      return await this.userReadService.readByEmail(email);
+      const user = await this.userRepository.findOneByEmail({
+        email
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      if (!compareSync(password, user.hashedPassword)) {
+        throw new Error('Invalid password');
+      }
+
+      return user;
     } catch {
       throw new InvalidCredentialsException();
     }
