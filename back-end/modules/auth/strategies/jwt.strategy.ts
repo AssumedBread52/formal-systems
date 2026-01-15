@@ -2,7 +2,7 @@ import { InvalidTokenException } from '@/auth/exceptions/invalid-token.exception
 import { TokenPayload } from '@/auth/payloads/token.payload';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { UserEntity } from '@/user/entities/user.entity';
-import { UserReadService } from '@/user/services/user-read.service';
+import { UserRepository } from '@/user/repositories/user.repository';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
@@ -11,7 +11,7 @@ import { Strategy } from 'passport-jwt';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private userReadService: UserReadService, configService: ConfigService) {
+  public constructor(private readonly userRepository: UserRepository, configService: ConfigService) {
     super({
       jwtFromRequest: JwtStrategy.extractJwt,
       ignoreExpiration: false,
@@ -19,25 +19,35 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  override async validate(payload: any): Promise<UserEntity> {
+  public override async validate(tokenPayload: TokenPayload): Promise<UserEntity> {
     try {
-      const { userId } = validatePayload(payload, TokenPayload);
+      const validatedTokenPayload = validatePayload(tokenPayload, TokenPayload);
 
-      return await this.userReadService.readById(userId);
+      const user = await this.userRepository.findOneById(validatedTokenPayload.userId);
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      return user;
     } catch {
       throw new InvalidTokenException();
     }
   }
 
   private static extractJwt(request: Request): string | null {
-    const { cookies } = request;
+    try {
+      const { cookies } = request;
 
-    const { token } = cookies;
+      const { token } = cookies;
 
-    if (!token) {
+      if (!token) {
+        return null;
+      }
+
+      return token;
+    } catch {
       return null;
     }
-
-    return token;
   }
 };
