@@ -33,8 +33,8 @@ export class UserController {
     return this.userUpdateService.update(sessionUser, payload);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
+  @UseInterceptors(ClassSerializerInterceptor)
   public postUser(@Body(new ValidationPipe({ transform: true })) payload: NewUserPayload, @Res({ passthrough: true }) response: Response): Promise<UserEntity> {
     return this.userService.signUp(payload, response);
   }
