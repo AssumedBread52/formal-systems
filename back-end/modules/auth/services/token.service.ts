@@ -8,7 +8,7 @@ export class TokenService {
   public constructor(private readonly jwtService: JwtService) {
   }
 
-  public generateToken(user: UserEntity): string {
+  public generateUserToken(user: UserEntity): string {
     try {
       const validatedUser = validatePayload(user, UserEntity);
 
