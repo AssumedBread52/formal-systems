@@ -3,12 +3,11 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongoUserEntity } from './entities/mongo-user.entity';
 import { SystemCountListener } from './listeners/system-count.listener';
-import { CompositeAdapterRepository } from './repositories/composite-adapter.repository';
-import { MongoAdapterRepository } from './repositories/mongo-adapter.repository';
 import { UserCreateService } from './services/user-create.service';
 import { UserReadService } from './services/user-read.service';
 import { UserUpdateService } from './services/user-update.service';
-import { UserController } from './user.controller';
+import { UserController } from './controllers/user.controller';
+import { UserRepository } from './repositories/user.repository';
 
 @Module({
   imports: [
@@ -23,8 +22,7 @@ import { UserController } from './user.controller';
     UserController
   ],
   providers: [
-    CompositeAdapterRepository,
-    MongoAdapterRepository,
+    UserRepository,
     SystemCountListener,
     UserCreateService,
     UserReadService,

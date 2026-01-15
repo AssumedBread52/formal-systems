@@ -1,10 +1,164 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
+import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { UserEntity } from '@/user/entities/user.entity';
+import { ConflictPayload } from '@/user/payloads/conflict.payload';
+import { EditUserPayload } from '@/user/payloads/edit-user.payload';
+import { EmailPayload } from '@/user/payloads/email.payload';
+import { MongoUserIdPayload } from '@/user/payloads/mongo-user-id.payload';
+import { NewUserPayload } from '@/user/payloads/new-user.payload';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { hashSync } from 'bcryptjs';
+import { ObjectId } from 'mongodb';
+import { MongoRepository } from 'typeorm';
+import { NewCountsPayload } from '../payloads/new-counts.payload';
 
-export interface UserRepository {
-  create(newUserPayload: any): Promise<UserEntity>;
-  readByEmail(emailPayload: any): Promise<UserEntity | null>;
-  readById(userIdPayload: any): Promise<UserEntity | null>;
-  readConflictExists(conflictPayload: any): Promise<boolean>;
-  update(user: any, editUserPayload: any): Promise<UserEntity>;
-  updateCounts(user: any, newCountsPayload: any): Promise<UserEntity>;
+@Injectable()
+export class UserRepository {
+  public constructor(@InjectRepository(MongoUserEntity) private readonly mongoRepository: MongoRepository<MongoUserEntity>) {
+  }
+
+  public async create(newUserPayload: any): Promise<UserEntity> {
+    const { firstName, lastName, email, password } = validatePayload(newUserPayload, NewUserPayload);
+
+    const user = new MongoUserEntity();
+
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.hashedPassword = hashSync(password);
+
+    const newUser = await this.mongoRepository.save(user);
+
+    return this.convertToDomainEntity(newUser);
+  }
+
+  async readByEmail(emailPayload: any): Promise<UserEntity | null> {
+    const { email } = validatePayload(emailPayload, EmailPayload);
+
+    const user = await this.mongoRepository.findOneBy({
+      email
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return this.convertToDomainEntity(user);
+  }
+
+  async readById(userIdPayload: any): Promise<UserEntity | null> {
+    const { userId } = validatePayload(userIdPayload, MongoUserIdPayload);
+
+    const user = await this.mongoRepository.findOneBy({
+      _id: new ObjectId(userId)
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return this.convertToDomainEntity(user);
+  }
+
+  readConflictExists(conflictPayload: any): Promise<boolean> {
+    const { email } = validatePayload(conflictPayload, ConflictPayload);
+
+    return this.mongoRepository.existsBy({
+      email
+    });
+  }
+
+  async update(user: any, editUserPayload: any): Promise<UserEntity> {
+    const userEntity = validatePayload(user, UserEntity);
+    const { newFirstName, newLastName, newEmail, newPassword } = validatePayload(editUserPayload, EditUserPayload);
+
+    const originalUser = this.convertFromDomainEntity(userEntity);
+
+    originalUser.firstName = newFirstName;
+    originalUser.lastName = newLastName;
+    originalUser.email = newEmail;
+    if (newPassword) {
+      originalUser.hashedPassword = hashSync(newPassword);
+    }
+
+    const updatedUser = await this.mongoRepository.save(originalUser);
+
+    return this.convertToDomainEntity(updatedUser);
+  }
+
+  async updateCounts(user: any, newCountsPayload: any): Promise<UserEntity> {
+    const userEntity = validatePayload(user, UserEntity);
+    const { systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = validatePayload(newCountsPayload, NewCountsPayload);
+
+    const originalUser = this.convertFromDomainEntity(userEntity);
+
+    if (typeof systemCount !== 'undefined') {
+      originalUser.systemCount = systemCount;
+    }
+    if (typeof constantSymbolCount !== 'undefined') {
+      originalUser.constantSymbolCount = constantSymbolCount;
+    }
+    if (typeof variableSymbolCount !== 'undefined') {
+      originalUser.variableSymbolCount = variableSymbolCount;
+    }
+    if (typeof axiomCount !== 'undefined') {
+      originalUser.axiomCount = axiomCount;
+    }
+    if (typeof theoremCount !== 'undefined') {
+      originalUser.theoremCount = theoremCount;
+    }
+    if (typeof deductionCount !== 'undefined') {
+      originalUser.deductionCount = deductionCount;
+    }
+    if (typeof proofCount !== 'undefined') {
+      originalUser.proofCount = proofCount;
+    }
+
+    const updatedUser = await this.mongoRepository.save(originalUser);
+
+    return this.convertToDomainEntity(updatedUser);
+  }
+
+  private convertFromDomainEntity(user: UserEntity): MongoUserEntity {
+    const { id, firstName, lastName, email, hashedPassword, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = user;
+
+    const mongoUser = new MongoUserEntity();
+
+    mongoUser._id = new ObjectId(id);
+    mongoUser.firstName = firstName;
+    mongoUser.lastName = lastName;
+    mongoUser.email = email;
+    mongoUser.hashedPassword = hashedPassword;
+    mongoUser.systemCount = systemCount;
+    mongoUser.constantSymbolCount = constantSymbolCount;
+    mongoUser.variableSymbolCount = variableSymbolCount;
+    mongoUser.axiomCount = axiomCount;
+    mongoUser.theoremCount = theoremCount;
+    mongoUser.deductionCount = deductionCount;
+    mongoUser.proofCount = proofCount;
+
+    return mongoUser;
+  }
+
+  protected convertToDomainEntity(mongoUser: MongoUserEntity): UserEntity {
+    const { _id, firstName, lastName, email, hashedPassword, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = mongoUser;
+
+    const user = new UserEntity();
+
+    user.id = _id.toString();
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.hashedPassword = hashedPassword;
+    user.systemCount = systemCount;
+    user.constantSymbolCount = constantSymbolCount;
+    user.variableSymbolCount = variableSymbolCount;
+    user.axiomCount = axiomCount;
+    user.theoremCount = theoremCount;
+    user.deductionCount = deductionCount;
+    user.proofCount = proofCount;
+
+    return user;
+  }
 };

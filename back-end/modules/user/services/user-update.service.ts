@@ -3,12 +3,12 @@ import { UserEntity } from '@/user/entities/user.entity';
 import { UniqueEmailAddressException } from '@/user/exceptions/unique-email-address.exception';
 import { EditEmailPayload } from '@/user/payloads/edit-email.payload';
 import { EmailPayload } from '@/user/payloads/email.payload';
-import { CompositeAdapterRepository } from '@/user/repositories/composite-adapter.repository';
+import { UserRepository } from '@/user/repositories/user.repository';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UserUpdateService {
-  constructor(private compositeAdapterRepository: CompositeAdapterRepository) {
+  constructor(private userRepository: UserRepository) {
   }
 
   async update(user: any, editUserPayload: any): Promise<UserEntity> {
@@ -16,7 +16,7 @@ export class UserUpdateService {
     const { newEmail } = validatePayload(editUserPayload, EditEmailPayload);
 
     if (email !== newEmail) {
-      const conflictExists = await this.compositeAdapterRepository.readConflictExists({
+      const conflictExists = await this.userRepository.readConflictExists({
         email: newEmail
       });
 
@@ -25,6 +25,6 @@ export class UserUpdateService {
       }
     }
 
-    return this.compositeAdapterRepository.update(user, editUserPayload);
+    return this.userRepository.update(user, editUserPayload);
   }
 };

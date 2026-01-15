@@ -1,15 +1,15 @@
 import { UserEntity } from '@/user/entities/user.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
-import { CompositeAdapterRepository } from '@/user/repositories/composite-adapter.repository';
+import { UserRepository } from '@/user/repositories/user.repository';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UserReadService {
-  constructor(private compositeAdapterRepository: CompositeAdapterRepository) {
+  constructor(private userRepository: UserRepository) {
   }
 
   async readByEmail(email: string): Promise<UserEntity> {
-    const user = await this.compositeAdapterRepository.readByEmail({
+    const user = await this.userRepository.readByEmail({
       email
     });
 
@@ -21,7 +21,7 @@ export class UserReadService {
   }
 
   async readById(userId: string): Promise<UserEntity> {
-    const user = await this.compositeAdapterRepository.readById({
+    const user = await this.userRepository.readById({
       userId
     });
 
