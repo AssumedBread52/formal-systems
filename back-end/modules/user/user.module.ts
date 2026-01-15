@@ -8,6 +8,7 @@ import { UserRepository } from './repositories/user.repository';
 import { UserResolver } from './resolvers/user.resolver';
 import { UserReadService } from './services/user-read.service';
 import { UserUpdateService } from './services/user-update.service';
+import { UserService } from './services/user.service';
 
 @Module({
   imports: [
@@ -26,10 +27,12 @@ import { UserUpdateService } from './services/user-update.service';
     UserReadService,
     UserRepository,
     UserResolver,
+    UserService,
     UserUpdateService
   ],
   exports: [
-    UserReadService
+    UserReadService,
+    UserRepository
   ]
 })
 export class UserModule {

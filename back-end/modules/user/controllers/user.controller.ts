@@ -1,4 +1,4 @@
-import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
+import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { UserEntity } from '@/user/entities/user.entity';
 import { NewUserPayload } from '@/user/payloads/new-user.payload';
@@ -16,7 +16,7 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtGuard)
   @Get('session-user')
-  getSessionUser(@SessionUserDecorator() sessionUser: UserEntity): UserEntity {
+  getSessionUser(@SessionUser() sessionUser: UserEntity): UserEntity {
     return sessionUser;
   }
 
@@ -29,7 +29,7 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtGuard)
   @Patch('session-user')
-  patchSessionUser(@SessionUserDecorator() sessionUser: UserEntity, @Body() payload: any): Promise<UserEntity> {
+  patchSessionUser(@SessionUser() sessionUser: UserEntity, @Body() payload: any): Promise<UserEntity> {
     return this.userUpdateService.update(sessionUser, payload);
   }
 
