@@ -9,6 +9,7 @@ import { NewCountsPayload } from '@/user/payloads/new-counts.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hashSync } from 'bcryptjs';
+import { isMongoId } from 'class-validator';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 
@@ -22,6 +23,28 @@ export class UserRepository {
       const validatedEmailPayload = validatePayload(emailPayload, EmailPayload);
 
       const mongoUser = await this.repository.findOneBy(validatedEmailPayload);
+
+      if (!mongoUser) {
+        return null;
+      }
+
+      const user = this.createDomainEntityFromDatabaseEntity(mongoUser);
+
+      return validatePayload(user, UserEntity);
+    } catch {
+      throw new Error('Finding user failed');
+    }
+  }
+
+  public async findOneById(userId: string): Promise<UserEntity | null> {
+    try {
+      if (!isMongoId(userId)) {
+        throw new Error('Invalid ID format');
+      }
+
+      const mongoUser = await this.repository.findOneBy({
+        _id: new ObjectId(userId)
+      });
 
       if (!mongoUser) {
         return null;
