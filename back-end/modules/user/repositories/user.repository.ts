@@ -6,7 +6,6 @@ import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { EmailPayload } from '@/user/payloads/email.payload';
 import { MongoUserIdPayload } from '@/user/payloads/mongo-user-id.payload';
 import { NewCountsPayload } from '@/user/payloads/new-counts.payload';
-import { NewUserPayload } from '@/user/payloads/new-user.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hashSync } from 'bcryptjs';
@@ -18,19 +17,42 @@ export class UserRepository {
   public constructor(@InjectRepository(MongoUserEntity) private readonly repository: MongoRepository<MongoUserEntity>) {
   }
 
-  public async create(newUserPayload: any): Promise<UserEntity> {
-    const { firstName, lastName, email, password } = validatePayload(newUserPayload, NewUserPayload);
+  public async findOneByEmail(emailPayload: EmailPayload): Promise<UserEntity | null> {
+    try {
+      const validatedEmailPayload = validatePayload(emailPayload, EmailPayload);
 
-    const user = new MongoUserEntity();
+      const mongoUser = await this.repository.findOneBy(validatedEmailPayload);
 
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashSync(password);
+      if (!mongoUser) {
+        return null;
+      }
 
-    const newUser = await this.repository.save(user);
+      const user = this.createDomainEntityFromDatabaseEntity(mongoUser);
 
-    return this.convertToDomainEntity(newUser);
+      return validatePayload(user, UserEntity);
+    } catch {
+      throw new Error('Finding user failed');
+    }
+  }
+
+  public async save(user: UserEntity): Promise<UserEntity> {
+    try {
+      if (!user.id) {
+        user.id = (new ObjectId()).toString();
+      }
+
+      const validatedUser = validatePayload(user, UserEntity);
+
+      const mongoUser = this.createDatabaseEntityFromDomainEntity(validatedUser);
+
+      const savedMongoUser = await this.repository.save(mongoUser);
+
+      const savedUser = this.createDomainEntityFromDatabaseEntity(savedMongoUser);
+
+      return validatePayload(savedUser, UserEntity);
+    } catch {
+      throw new Error('Saving user to database failed');
+    }
   }
 
   async readByEmail(emailPayload: any): Promise<UserEntity | null> {
@@ -44,7 +66,7 @@ export class UserRepository {
       return null;
     }
 
-    return this.convertToDomainEntity(user);
+    return this.createDomainEntityFromDatabaseEntity(user);
   }
 
   async readById(userIdPayload: any): Promise<UserEntity | null> {
@@ -58,7 +80,7 @@ export class UserRepository {
       return null;
     }
 
-    return this.convertToDomainEntity(user);
+    return this.createDomainEntityFromDatabaseEntity(user);
   }
 
   readConflictExists(conflictPayload: any): Promise<boolean> {
@@ -73,7 +95,7 @@ export class UserRepository {
     const userEntity = validatePayload(user, UserEntity);
     const { newFirstName, newLastName, newEmail, newPassword } = validatePayload(editUserPayload, EditUserPayload);
 
-    const originalUser = this.convertFromDomainEntity(userEntity);
+    const originalUser = this.createDatabaseEntityFromDomainEntity(userEntity);
 
     originalUser.firstName = newFirstName;
     originalUser.lastName = newLastName;
@@ -84,14 +106,14 @@ export class UserRepository {
 
     const updatedUser = await this.repository.save(originalUser);
 
-    return this.convertToDomainEntity(updatedUser);
+    return this.createDomainEntityFromDatabaseEntity(updatedUser);
   }
 
   async updateCounts(user: any, newCountsPayload: any): Promise<UserEntity> {
     const userEntity = validatePayload(user, UserEntity);
     const { systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = validatePayload(newCountsPayload, NewCountsPayload);
 
-    const originalUser = this.convertFromDomainEntity(userEntity);
+    const originalUser = this.createDatabaseEntityFromDomainEntity(userEntity);
 
     if (typeof systemCount !== 'undefined') {
       originalUser.systemCount = systemCount;
@@ -117,47 +139,43 @@ export class UserRepository {
 
     const updatedUser = await this.repository.save(originalUser);
 
-    return this.convertToDomainEntity(updatedUser);
+    return this.createDomainEntityFromDatabaseEntity(updatedUser);
   }
 
-  private convertFromDomainEntity(user: UserEntity): MongoUserEntity {
-    const { id, firstName, lastName, email, hashedPassword, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = user;
-
+  private createDatabaseEntityFromDomainEntity(user: UserEntity): MongoUserEntity {
     const mongoUser = new MongoUserEntity();
 
-    mongoUser._id = new ObjectId(id);
-    mongoUser.firstName = firstName;
-    mongoUser.lastName = lastName;
-    mongoUser.email = email;
-    mongoUser.hashedPassword = hashedPassword;
-    mongoUser.systemCount = systemCount;
-    mongoUser.constantSymbolCount = constantSymbolCount;
-    mongoUser.variableSymbolCount = variableSymbolCount;
-    mongoUser.axiomCount = axiomCount;
-    mongoUser.theoremCount = theoremCount;
-    mongoUser.deductionCount = deductionCount;
-    mongoUser.proofCount = proofCount;
+    mongoUser._id = new ObjectId(user.id);
+    mongoUser.firstName = user.firstName;
+    mongoUser.lastName = user.lastName;
+    mongoUser.email = user.email;
+    mongoUser.hashedPassword = user.hashedPassword;
+    mongoUser.systemCount = user.systemCount;
+    mongoUser.constantSymbolCount = user.constantSymbolCount;
+    mongoUser.variableSymbolCount = user.variableSymbolCount;
+    mongoUser.axiomCount = user.axiomCount;
+    mongoUser.theoremCount = user.theoremCount;
+    mongoUser.deductionCount = user.deductionCount;
+    mongoUser.proofCount = user.proofCount;
 
     return mongoUser;
   }
 
-  protected convertToDomainEntity(mongoUser: MongoUserEntity): UserEntity {
-    const { _id, firstName, lastName, email, hashedPassword, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = mongoUser;
-
+  private createDomainEntityFromDatabaseEntity(mongoUser: MongoUserEntity): UserEntity {
     const user = new UserEntity();
 
-    user.id = _id.toString();
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashedPassword;
-    user.systemCount = systemCount;
-    user.constantSymbolCount = constantSymbolCount;
-    user.variableSymbolCount = variableSymbolCount;
-    user.axiomCount = axiomCount;
-    user.theoremCount = theoremCount;
-    user.deductionCount = deductionCount;
-    user.proofCount = proofCount;
+    user.id = mongoUser._id.toString();
+    user.firstName = mongoUser.firstName;
+    user.lastName = mongoUser.lastName;
+    user.email = mongoUser.email;
+    user.hashedPassword = mongoUser.hashedPassword;
+    user.systemCount = mongoUser.systemCount;
+    user.constantSymbolCount = mongoUser.constantSymbolCount;
+    user.variableSymbolCount = mongoUser.variableSymbolCount;
+    user.axiomCount = mongoUser.axiomCount;
+    user.theoremCount = mongoUser.theoremCount;
+    user.deductionCount = mongoUser.deductionCount;
+    user.proofCount = mongoUser.proofCount;
 
     return user;
   }

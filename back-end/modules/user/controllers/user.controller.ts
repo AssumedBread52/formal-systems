@@ -1,17 +1,16 @@
 import { SessionUserDecorator } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
-import { CookieService } from '@/auth/services/cookie.service';
-import { TokenService } from '@/auth/services/token.service';
 import { UserEntity } from '@/user/entities/user.entity';
-import { UserCreateService } from '@/user/services/user-create.service';
+import { NewUserPayload } from '@/user/payloads/new-user.payload';
 import { UserReadService } from '@/user/services/user-read.service';
 import { UserUpdateService } from '@/user/services/user-update.service';
-import { Body, ClassSerializerInterceptor, Controller, Get, Param, Patch, Post, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { UserService } from '@/user/services/user.service';
+import { Body, ClassSerializerInterceptor, Controller, Get, Param, Patch, Post, Res, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { Response } from 'express';
 
 @Controller('user')
 export class UserController {
-  constructor(private cookieService: CookieService, private tokenService: TokenService, private userCreateService: UserCreateService, private userReadService: UserReadService, private userUpdateService: UserUpdateService) {
+  public constructor(private readonly userService: UserService, private userReadService: UserReadService, private userUpdateService: UserUpdateService) {
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
@@ -36,15 +35,7 @@ export class UserController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
-  async postUser(@Body() payload: any, @Res({ passthrough: true }) response: Response): Promise<UserEntity> {
-    const createdUser = await this.userCreateService.create(payload);
-
-    const { id } = createdUser;
-
-    const token = this.tokenService.generateToken(id);
-
-    this.cookieService.setAuthCookies(response, token);
-
-    return createdUser;
+  public postUser(@Body(new ValidationPipe({ transform: true })) payload: NewUserPayload, @Res({ passthrough: true }) response: Response): Promise<UserEntity> {
+    return this.userService.signUp(payload, response);
   }
 };
