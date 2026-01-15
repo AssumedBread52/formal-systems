@@ -2,6 +2,20 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type UserEntity {
+  id: String!
+  firstName: String!
+  lastName: String!
+  email: String!
+  systemCount: Int!
+  constantSymbolCount: Int!
+  variableSymbolCount: Int!
+  axiomCount: Int!
+  theoremCount: Int!
+  deductionCount: Int!
+  proofCount: Int!
+}
+
 type ComponentStatusPayload {
   componentType: ComponentType!
   healthStatus: HealthStatus!
@@ -24,4 +38,17 @@ type HealthStatusPayload {
 
 type Query {
   healthCheck: HealthStatusPayload!
+}
+
+type Mutation {
+  signIn(email: String!, password: String!): UserEntity!
+  signOut: UserEntity!
+  createUser(userPayload: NewUserPayload!): UserEntity!
+}
+
+input NewUserPayload {
+  firstName: String! = ""
+  lastName: String! = ""
+  email: String! = ""
+  password: String! = ""
 }
