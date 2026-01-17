@@ -57,12 +57,15 @@ describe('Sign Out', (): void => {
 
   it('POST /graphql mutation signOut (user search: successful)', async (): Promise<void> => {
     const userId = new ObjectId();
+    const firstName = 'Test1';
+    const lastName = 'User1';
+    const email = 'test1.user1@example.com';
     const user = new MongoUserEntity();
 
     user._id = userId;
-    user.firstName = 'Test1';
-    user.lastName = 'User1';
-    user.email = 'test1.user1@example.com';
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
     user.hashedPassword = hashSync('Test1User1!');
 
     findOneBy.mockResolvedValueOnce(user);
@@ -90,9 +93,9 @@ describe('Sign Out', (): void => {
       data: {
         signOut: {
           id: user._id.toString(),
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
+          firstName,
+          lastName,
+          email,
           systemCount: 0,
           constantSymbolCount: 0,
           variableSymbolCount: 0,

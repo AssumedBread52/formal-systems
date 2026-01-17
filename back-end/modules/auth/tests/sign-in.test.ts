@@ -5,6 +5,7 @@ import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
+import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
 describe('Sign In', (): void => {
@@ -53,11 +54,15 @@ describe('Sign In', (): void => {
   });
 
   it('POST /graphql mutation signIn (configuration read: successful, user search: successful, payload: valid)', async (): Promise<void> => {
+    const userId = new ObjectId();
+    const firstName = 'Test1';
+    const lastName = 'User1';
     const email = 'test1.user1@example.com';
     const password = 'Test1User1!';
     const user = new MongoUserEntity();
 
-    user.firstName = 'Test1';
+    user._id = userId;
+    user.firstName = firstName;
     user.lastName = 'User1';
     user.email = email;
     user.hashedPassword = hashSync(password);
@@ -66,7 +71,7 @@ describe('Sign In', (): void => {
     getOrThrow.mockReturnValueOnce(1000);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'mutation signIn($email: String!, $password: String!) { signIn(email: $email, password: $password) { id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } }',
+      query: 'mutation signIn($email: String!, $password: String!) { signIn(email: $email, password: $password) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount axiomCount theoremCount deductionCount proofCount } }',
       variables: {
         email,
         password
@@ -86,9 +91,9 @@ describe('Sign In', (): void => {
     expect(body).toStrictEqual({
       data: {
         signIn: {
-          id: user._id.toString(),
-          firstName: user.firstName,
-          lastName: user.lastName,
+          id: userId.toString(),
+          firstName,
+          lastName,
           email,
           systemCount: 0,
           constantSymbolCount: 0,

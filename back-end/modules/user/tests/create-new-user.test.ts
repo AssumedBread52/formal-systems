@@ -107,7 +107,7 @@ describe('Create New User', (): void => {
     save.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'mutation createUser($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id, firstName, lastName, email, systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } }',
+      query: 'mutation createUser($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount axiomCount theoremCount deductionCount proofCount } }',
       variables: {
         userPayload: {
           firstName,
