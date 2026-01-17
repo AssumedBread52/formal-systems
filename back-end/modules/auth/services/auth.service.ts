@@ -9,6 +9,16 @@ export class AuthService {
   public constructor(private readonly cookieService: CookieService, private readonly tokenService: TokenService) {
   }
 
+  public refreshToken(sessionUser: UserEntity, response: Response): void {
+    try {
+      const token = this.tokenService.generateUserToken(sessionUser);
+
+      this.cookieService.setAuthCookies(response, token);
+    } catch {
+      throw new InternalServerErrorException('Refresh token failed');
+    }
+  }
+
   public signIn(sessionUser: UserEntity, response: Response): void {
     try {
       const token = this.tokenService.generateUserToken(sessionUser);

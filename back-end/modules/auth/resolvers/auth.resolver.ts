@@ -15,6 +15,16 @@ export class AuthResolver {
   @Mutation((): typeof UserEntity => {
     return UserEntity;
   })
+  @UseGuards(JwtGuard)
+  public refreshToken(@SessionUser() sessionUser: UserEntity, @Context('res') response: Response): UserEntity {
+    this.authService.refreshToken(sessionUser, response);
+
+    return sessionUser;
+  }
+
+  @Mutation((): typeof UserEntity => {
+    return UserEntity;
+  })
   @UseGuards(LocalGuard)
   public signIn(@Args('email') _: string, @Args('password') __: string, @SessionUser() sessionUser: UserEntity, @Context('res') response: Response): UserEntity {
     this.authService.signIn(sessionUser, response);

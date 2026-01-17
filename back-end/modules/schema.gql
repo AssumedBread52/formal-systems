@@ -41,6 +41,7 @@ type Query {
 }
 
 type Mutation {
+  refreshToken: UserEntity!
   signIn(email: String!, password: String!): UserEntity!
   signOut: UserEntity!
   createUser(userPayload: NewUserPayload!): UserEntity!
