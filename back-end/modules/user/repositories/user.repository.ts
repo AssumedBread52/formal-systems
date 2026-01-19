@@ -1,15 +1,12 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { UserEntity } from '@/user/entities/user.entity';
-import { ConflictPayload } from '@/user/payloads/conflict.payload';
-import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { EmailPayload } from '@/user/payloads/email.payload';
 import { MongoUserIdPayload } from '@/user/payloads/mongo-user-id.payload';
 import { NewCountsPayload } from '@/user/payloads/new-counts.payload';
 import { UserIdPayload } from '@/user/payloads/user-id.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { hashSync } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 
@@ -88,32 +85,6 @@ export class UserRepository {
     }
 
     return this.createDomainEntityFromDatabaseEntity(user);
-  }
-
-  readConflictExists(conflictPayload: any): Promise<boolean> {
-    const { email } = validatePayload(conflictPayload, ConflictPayload);
-
-    return this.repository.existsBy({
-      email
-    });
-  }
-
-  async update(user: any, editUserPayload: any): Promise<UserEntity> {
-    const userEntity = validatePayload(user, UserEntity);
-    const { newFirstName, newLastName, newEmail, newPassword } = validatePayload(editUserPayload, EditUserPayload);
-
-    const originalUser = this.createDatabaseEntityFromDomainEntity(userEntity);
-
-    originalUser.firstName = newFirstName;
-    originalUser.lastName = newLastName;
-    originalUser.email = newEmail;
-    if (newPassword) {
-      originalUser.hashedPassword = hashSync(newPassword);
-    }
-
-    const updatedUser = await this.repository.save(originalUser);
-
-    return this.createDomainEntityFromDatabaseEntity(updatedUser);
   }
 
   async updateCounts(user: any, newCountsPayload: any): Promise<UserEntity> {
