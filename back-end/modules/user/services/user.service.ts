@@ -3,7 +3,10 @@ import { TokenService } from '@/auth/services/token.service';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { UserEntity } from '@/user/entities/user.entity';
 import { UniqueEmailAddressException } from '@/user/exceptions/unique-email-address.exception';
+import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
+import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { NewUserPayload } from '@/user/payloads/new-user.payload';
+import { UserIdPayload } from '@/user/payloads/user-id.payload';
 import { UserRepository } from '@/user/repositories/user.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { hashSync } from 'bcryptjs';
@@ -12,6 +15,60 @@ import { Response } from 'express';
 @Injectable()
 export class UserService {
   public constructor(private readonly cookieService: CookieService, private readonly tokenService: TokenService, private readonly userRepository: UserRepository) {
+  }
+
+  public async editProfile(sessionUser: UserEntity, editUserPayload: EditUserPayload): Promise<UserEntity> {
+    try {
+      const validatedSessionUser = validatePayload(sessionUser, UserEntity);
+      const validatedEditUserPayload = validatePayload(editUserPayload, EditUserPayload);
+
+      if (validatedEditUserPayload.newEmail !== validatedSessionUser.email) {
+        const conflict = await this.userRepository.findOneByEmail({
+          email: validatedEditUserPayload.newEmail
+        });
+
+        if (conflict) {
+          throw new UniqueEmailAddressException();
+        }
+      }
+
+      validatedSessionUser.firstName = validatedEditUserPayload.newFirstName;
+      validatedSessionUser.lastName = validatedEditUserPayload.newLastName;
+      validatedSessionUser.email = validatedEditUserPayload.newEmail;
+      if (validatedEditUserPayload.newPassword) {
+        validatedSessionUser.hashedPassword = hashSync(validatedEditUserPayload.newPassword);
+      }
+
+      return this.userRepository.save(validatedSessionUser);
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Editting profile failed');
+    }
+  }
+
+  public async selectById(userIdPayload: UserIdPayload): Promise<UserEntity> {
+    try {
+      const validatedUserIdPayload = validatePayload(userIdPayload, UserIdPayload);
+
+      const user = await this.userRepository.findOneById({
+        userId: validatedUserIdPayload.userId
+      });
+
+      if (!user) {
+        throw new UserNotFoundException();
+      }
+
+      return user;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Selecting user failed');
+    }
   }
 
   public async signUp(newUserPayload: NewUserPayload, response: Response): Promise<UserEntity> {
