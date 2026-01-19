@@ -37,6 +37,8 @@ type HealthStatusPayload {
 }
 
 type Query {
+  sessionUser: UserEntity!
+  user(userId: String!): UserEntity!
   healthCheck: HealthStatusPayload!
 }
 
@@ -45,6 +47,7 @@ type Mutation {
   signIn(email: String!, password: String!): UserEntity!
   signOut: UserEntity!
   createUser(userPayload: NewUserPayload!): UserEntity!
+  updateUser(userPayload: EditUserPayload!): UserEntity!
 }
 
 input NewUserPayload {
@@ -52,4 +55,11 @@ input NewUserPayload {
   lastName: String! = ""
   email: String! = ""
   password: String! = ""
+}
+
+input EditUserPayload {
+  newFirstName: String! = ""
+  newLastName: String! = ""
+  newEmail: String! = ""
+  newPassword: String
 }
