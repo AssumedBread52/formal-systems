@@ -7,7 +7,6 @@ import { SystemCountListener } from './listeners/system-count.listener';
 import { UserRepository } from './repositories/user.repository';
 import { UserResolver } from './resolvers/user.resolver';
 import { UserReadService } from './services/user-read.service';
-import { UserUpdateService } from './services/user-update.service';
 import { UserService } from './services/user.service';
 
 @Module({
@@ -27,8 +26,7 @@ import { UserService } from './services/user.service';
     UserReadService,
     UserRepository,
     UserResolver,
-    UserService,
-    UserUpdateService
+    UserService
   ],
   exports: [
     UserReadService,
