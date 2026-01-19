@@ -29,7 +29,6 @@ import { UserService } from './services/user.service';
     UserService
   ],
   exports: [
-    UserReadService,
     UserRepository
   ]
 })

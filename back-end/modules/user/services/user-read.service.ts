@@ -8,18 +8,6 @@ export class UserReadService {
   constructor(private userRepository: UserRepository) {
   }
 
-  async readByEmail(email: string): Promise<UserEntity> {
-    const user = await this.userRepository.readByEmail({
-      email
-    });
-
-    if (!user) {
-      throw new UserNotFoundException();
-    }
-
-    return user;
-  }
-
   async readById(userId: string): Promise<UserEntity> {
     const user = await this.userRepository.readById({
       userId
