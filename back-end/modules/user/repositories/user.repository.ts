@@ -6,10 +6,10 @@ import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { EmailPayload } from '@/user/payloads/email.payload';
 import { MongoUserIdPayload } from '@/user/payloads/mongo-user-id.payload';
 import { NewCountsPayload } from '@/user/payloads/new-counts.payload';
+import { UserIdPayload } from '@/user/payloads/user-id.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hashSync } from 'bcryptjs';
-import { isMongoId } from 'class-validator';
 import { ObjectId } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 
@@ -36,14 +36,12 @@ export class UserRepository {
     }
   }
 
-  public async findOneById(userId: string): Promise<UserEntity | null> {
+  public async findOneById(userIdPayload: UserIdPayload): Promise<UserEntity | null> {
     try {
-      if (!isMongoId(userId)) {
-        throw new Error('Invalid ID format');
-      }
+      const validatedUserIdPayload = validatePayload(userIdPayload, UserIdPayload);
 
       const mongoUser = await this.repository.findOneBy({
-        _id: new ObjectId(userId)
+        _id: new ObjectId(validatedUserIdPayload.userId)
       });
 
       if (!mongoUser) {
