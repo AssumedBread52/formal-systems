@@ -2,8 +2,6 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { FindPayload } from '@/user/payloads/find.payload';
-import { MongoUserIdPayload } from '@/user/payloads/mongo-user-id.payload';
-import { NewCountsPayload } from '@/user/payloads/new-counts.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -58,53 +56,6 @@ export class UserRepository {
     } catch {
       throw new Error('Saving user to database failed');
     }
-  }
-
-  async readById(userIdPayload: any): Promise<UserEntity | null> {
-    const { userId } = validatePayload(userIdPayload, MongoUserIdPayload);
-
-    const user = await this.repository.findOneBy({
-      _id: new ObjectId(userId)
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    return this.createDomainEntityFromDatabaseEntity(user);
-  }
-
-  async updateCounts(user: any, newCountsPayload: any): Promise<UserEntity> {
-    const userEntity = validatePayload(user, UserEntity);
-    const { systemCount, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount } = validatePayload(newCountsPayload, NewCountsPayload);
-
-    const originalUser = this.createDatabaseEntityFromDomainEntity(userEntity);
-
-    if (typeof systemCount !== 'undefined') {
-      originalUser.systemCount = systemCount;
-    }
-    if (typeof constantSymbolCount !== 'undefined') {
-      originalUser.constantSymbolCount = constantSymbolCount;
-    }
-    if (typeof variableSymbolCount !== 'undefined') {
-      originalUser.variableSymbolCount = variableSymbolCount;
-    }
-    if (typeof axiomCount !== 'undefined') {
-      originalUser.axiomCount = axiomCount;
-    }
-    if (typeof theoremCount !== 'undefined') {
-      originalUser.theoremCount = theoremCount;
-    }
-    if (typeof deductionCount !== 'undefined') {
-      originalUser.deductionCount = deductionCount;
-    }
-    if (typeof proofCount !== 'undefined') {
-      originalUser.proofCount = proofCount;
-    }
-
-    const updatedUser = await this.repository.save(originalUser);
-
-    return this.createDomainEntityFromDatabaseEntity(updatedUser);
   }
 
   private createDatabaseEntityFromDomainEntity(user: UserEntity): MongoUserEntity {
