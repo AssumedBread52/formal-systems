@@ -6,7 +6,6 @@ import { MongoUserEntity } from './entities/mongo-user.entity';
 import { SystemCountListener } from './listeners/system-count.listener';
 import { UserRepository } from './repositories/user.repository';
 import { UserResolver } from './resolvers/user.resolver';
-import { UserReadService } from './services/user-read.service';
 import { UserService } from './services/user.service';
 
 @Module({
@@ -23,7 +22,6 @@ import { UserService } from './services/user.service';
   ],
   providers: [
     SystemCountListener,
-    UserReadService,
     UserRepository,
     UserResolver,
     UserService
