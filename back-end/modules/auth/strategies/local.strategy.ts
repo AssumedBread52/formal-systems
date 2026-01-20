@@ -16,7 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
   public override async validate(email: string, password: string): Promise<UserEntity> {
     try {
-      const user = await this.userRepository.findOneByEmail({
+      const user = await this.userRepository.findOneBy({
         email
       });
 

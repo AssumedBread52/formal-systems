@@ -23,8 +23,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     try {
       const validatedTokenPayload = validatePayload(tokenPayload, TokenPayload);
 
-      const user = await this.userRepository.findOneById({
-        userId: validatedTokenPayload.userId
+      const user = await this.userRepository.findOneBy({
+        id: validatedTokenPayload.userId
       });
 
       if (!user) {

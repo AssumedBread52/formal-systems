@@ -1,10 +1,9 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { UserEntity } from '@/user/entities/user.entity';
-import { EmailPayload } from '@/user/payloads/email.payload';
+import { FindPayload } from '@/user/payloads/find.payload';
 import { MongoUserIdPayload } from '@/user/payloads/mongo-user-id.payload';
 import { NewCountsPayload } from '@/user/payloads/new-counts.payload';
-import { UserIdPayload } from '@/user/payloads/user-id.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -15,31 +14,19 @@ export class UserRepository {
   public constructor(@InjectRepository(MongoUserEntity) private readonly repository: MongoRepository<MongoUserEntity>) {
   }
 
-  public async findOneByEmail(emailPayload: EmailPayload): Promise<UserEntity | null> {
+  public async findOneBy(findPayload: FindPayload): Promise<UserEntity | null> {
     try {
-      const validatedEmailPayload = validatePayload(emailPayload, EmailPayload);
+      const validatedFindPayload = validatePayload(findPayload, FindPayload);
 
-      const mongoUser = await this.repository.findOneBy(validatedEmailPayload);
-
-      if (!mongoUser) {
-        return null;
+      const filters = {} as Partial<MongoUserEntity>;
+      if (validatedFindPayload.id) {
+        filters._id = new ObjectId(validatedFindPayload.id);
+      }
+      if (validatedFindPayload.email) {
+        filters.email = validatedFindPayload.email;
       }
 
-      const user = this.createDomainEntityFromDatabaseEntity(mongoUser);
-
-      return validatePayload(user, UserEntity);
-    } catch {
-      throw new Error('Finding user failed');
-    }
-  }
-
-  public async findOneById(userIdPayload: UserIdPayload): Promise<UserEntity | null> {
-    try {
-      const validatedUserIdPayload = validatePayload(userIdPayload, UserIdPayload);
-
-      const mongoUser = await this.repository.findOneBy({
-        _id: new ObjectId(validatedUserIdPayload.userId)
-      });
+      const mongoUser = await this.repository.findOneBy(filters);
 
       if (!mongoUser) {
         return null;

@@ -23,7 +23,7 @@ export class UserService {
       const validatedEditUserPayload = validatePayload(editUserPayload, EditUserPayload);
 
       if (validatedEditUserPayload.newEmail !== validatedSessionUser.email) {
-        const conflict = await this.userRepository.findOneByEmail({
+        const conflict = await this.userRepository.findOneBy({
           email: validatedEditUserPayload.newEmail
         });
 
@@ -53,8 +53,8 @@ export class UserService {
     try {
       const validatedUserIdPayload = validatePayload(userIdPayload, UserIdPayload);
 
-      const user = await this.userRepository.findOneById({
-        userId: validatedUserIdPayload.userId
+      const user = await this.userRepository.findOneBy({
+        id: validatedUserIdPayload.userId
       });
 
       if (!user) {
@@ -75,7 +75,7 @@ export class UserService {
     try {
       const validatedNewUserPayload = validatePayload(newUserPayload, NewUserPayload);
 
-      const conflict = await this.userRepository.findOneByEmail({
+      const conflict = await this.userRepository.findOneBy({
         email: validatedNewUserPayload.email
       });
 
