@@ -4,23 +4,23 @@ import { Column, Entity, ObjectIdColumn } from 'typeorm';
 @Entity('system')
 export class MongoSystemEntity {
   @ObjectIdColumn()
-  _id: ObjectId = new ObjectId();
+  public _id: ObjectId = new ObjectId();
   @Column()
-  title: string = '';
+  public title: string = '';
   @Column()
-  description: string = '';
+  public description: string = '';
   @Column()
-  constantSymbolCount: number = 0;
+  public constantSymbolCount: number = 0;
   @Column()
-  variableSymbolCount: number = 0;
+  public variableSymbolCount: number = 0;
   @Column()
-  axiomCount: number = 0;
+  public axiomCount: number = 0;
   @Column()
-  theoremCount: number = 0;
+  public theoremCount: number = 0;
   @Column()
-  deductionCount: number = 0;
+  public deductionCount: number = 0;
   @Column()
-  proofCount: number = 0;
+  public proofCount: number = 0;
   @Column()
-  createdByUserId: ObjectId = new ObjectId();
+  public createdByUserId: ObjectId = new ObjectId();
 };
