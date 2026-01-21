@@ -1,12 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongoSystemEntity } from './entities/mongo-system.entity';
-import { CompositeAdapterRepository } from './repositories/composite-adapter.repository';
-import { MongoAdapterRepository } from './repositories/mongo-adapter.repository';
-import { SystemCreateService } from './services/system-create.service';
-import { SystemDeleteService } from './services/system-delete.service';
-import { SystemReadService } from './services/system-read.service';
-import { SystemUpdateService } from './services/system-update.service';
+import { SystemRepository } from './repositories/system.repository';
+import { SystemService } from './services/system.service';
 import { SystemController } from './system.controller';
 
 @Module({
@@ -19,15 +15,11 @@ import { SystemController } from './system.controller';
     SystemController
   ],
   providers: [
-    CompositeAdapterRepository,
-    MongoAdapterRepository,
-    SystemCreateService,
-    SystemDeleteService,
-    SystemReadService,
-    SystemUpdateService
+    SystemRepository,
+    SystemService
   ],
   exports: [
-    SystemReadService
+    SystemRepository
   ]
 })
 export class SystemModule {
