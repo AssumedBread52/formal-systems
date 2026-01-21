@@ -1,5 +1,5 @@
 import { UserModule } from '@/user/user.module';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { AuthController } from './controllers/auth.controller';
@@ -12,9 +12,6 @@ import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
-    forwardRef((): typeof UserModule => {
-      return UserModule;
-    }),
     ConfigModule,
     JwtModule.registerAsync({
       imports: [
@@ -34,7 +31,8 @@ import { LocalStrategy } from './strategies/local.strategy';
           }
         };
       }
-    })
+    }),
+    UserModule
   ],
   controllers: [
     AuthController
