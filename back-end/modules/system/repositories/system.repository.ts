@@ -28,7 +28,7 @@ export class SystemRepository {
 
     const newSystem = await this.repository.save(system);
 
-    const domainEntity = this.convertToDomainEntity(newSystem);
+    const domainEntity = this.createDomainEntityFromDatabaseEntity(newSystem);
 
     this.eventEmitter2.emit('system.created.completed', domainEntity);
 
@@ -46,7 +46,7 @@ export class SystemRepository {
       return null;
     }
 
-    return this.convertToDomainEntity(system);
+    return this.createDomainEntityFromDatabaseEntity(system);
   }
 
   public readConflictExists(conflictPayload: any): Promise<boolean> {
@@ -83,27 +83,27 @@ export class SystemRepository {
       where
     });
 
-    return [list.map(this.convertToDomainEntity), count];
+    return [list.map(this.createDomainEntityFromDatabaseEntity), count];
   }
 
   public async update(system: any, editSystemPayload: any): Promise<SystemEntity> {
     const systemEntity = validatePayload(system, SystemEntity);
     const { newTitle, newDescription } = validatePayload(editSystemPayload, EditSystemPayload);
 
-    const originalSystem = this.convertFromDomainEntity(systemEntity);
+    const originalSystem = this.createDatabaseEntityFromDomainEntity(systemEntity);
 
     originalSystem.title = newTitle;
     originalSystem.description = newDescription;
 
     const updatedSystem = await this.repository.save(originalSystem);
 
-    return this.convertToDomainEntity(updatedSystem);
+    return this.createDomainEntityFromDatabaseEntity(updatedSystem);
   }
 
   public async delete(system: any): Promise<SystemEntity> {
     const systemEntity = validatePayload(system, SystemEntity);
 
-    const originalSystem = this.convertFromDomainEntity(systemEntity);
+    const originalSystem = this.createDatabaseEntityFromDomainEntity(systemEntity);
 
     const { _id } = originalSystem;
 
@@ -111,47 +111,43 @@ export class SystemRepository {
 
     deletedSystem._id = _id;
 
-    const domainEntity = this.convertToDomainEntity(deletedSystem);
+    const domainEntity = this.createDomainEntityFromDatabaseEntity(deletedSystem);
 
     this.eventEmitter2.emit('system.delete.completed', deletedSystem);
 
     return domainEntity;
   }
 
-  private convertFromDomainEntity(system: SystemEntity): MongoSystemEntity {
-    const { id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = system;
-
+  private createDatabaseEntityFromDomainEntity(system: SystemEntity): MongoSystemEntity {
     const mongoSystem = new MongoSystemEntity();
 
-    mongoSystem._id = new ObjectId(id);
-    mongoSystem.title = title;
-    mongoSystem.description = description;
-    mongoSystem.constantSymbolCount = constantSymbolCount;
-    mongoSystem.variableSymbolCount = variableSymbolCount;
-    mongoSystem.axiomCount = axiomCount;
-    mongoSystem.theoremCount = theoremCount;
-    mongoSystem.deductionCount = deductionCount;
-    mongoSystem.proofCount = proofCount;
-    mongoSystem.createdByUserId = new ObjectId(createdByUserId);
+    mongoSystem._id = new ObjectId(system.id);
+    mongoSystem.title = system.title;
+    mongoSystem.description = system.description;
+    mongoSystem.constantSymbolCount = system.constantSymbolCount;
+    mongoSystem.variableSymbolCount = system.variableSymbolCount;
+    mongoSystem.axiomCount = system.axiomCount;
+    mongoSystem.theoremCount = system.theoremCount;
+    mongoSystem.deductionCount = system.deductionCount;
+    mongoSystem.proofCount = system.proofCount;
+    mongoSystem.createdByUserId = new ObjectId(system.createdByUserId);
 
     return mongoSystem;
   }
 
-  private convertToDomainEntity(mongoSystem: MongoSystemEntity): SystemEntity {
-    const { _id, title, description, constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = mongoSystem;
-
+  private createDomainEntityFromDatabaseEntity(mongoSystem: MongoSystemEntity): SystemEntity {
     const system = new SystemEntity();
 
-    system.id = _id.toString();
-    system.title = title;
-    system.description = description;
-    system.constantSymbolCount = constantSymbolCount;
-    system.variableSymbolCount = variableSymbolCount;
-    system.axiomCount = axiomCount;
-    system.theoremCount = theoremCount;
-    system.deductionCount = deductionCount;
-    system.proofCount = proofCount;
-    system.createdByUserId = createdByUserId.toString();
+    system.id = mongoSystem._id.toString();
+    system.title = mongoSystem.title;
+    system.description = mongoSystem.description;
+    system.constantSymbolCount = mongoSystem.constantSymbolCount;
+    system.variableSymbolCount = mongoSystem.variableSymbolCount;
+    system.axiomCount = mongoSystem.axiomCount;
+    system.theoremCount = mongoSystem.theoremCount;
+    system.deductionCount = mongoSystem.deductionCount;
+    system.proofCount = mongoSystem.proofCount;
+    system.createdByUserId = mongoSystem.createdByUserId.toString();
 
     return system;
   }
