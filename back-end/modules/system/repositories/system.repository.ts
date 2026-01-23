@@ -1,7 +1,6 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
-import { AdapterType } from '@/system/enums/adapter-type.enum';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { MongoConflictPayload } from '@/system/payloads/mongo-conflict.payload';
 import { MongoNewSystemPayload } from '@/system/payloads/mongo-new-system.payload';
@@ -143,7 +142,6 @@ export class SystemRepository {
 
     const system = new SystemEntity();
 
-    system.type = AdapterType.Mongo;
     system.id = _id.toString();
     system.title = title;
     system.description = description;
