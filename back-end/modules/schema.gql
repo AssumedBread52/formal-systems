@@ -62,6 +62,7 @@ type Mutation {
   createUser(userPayload: NewUserPayload!): UserEntity!
   updateUser(userPayload: EditUserPayload!): UserEntity!
   createSystem(systemPayload: NewSystemPayload!): SystemEntity!
+  deleteSystem(systemId: String!): SystemEntity!
 }
 
 input NewUserPayload {

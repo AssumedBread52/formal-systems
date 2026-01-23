@@ -117,6 +117,24 @@ export class SystemRepository {
     return [list.map(this.createDomainEntityFromDatabaseEntity), count];
   }
 
+  public async remove(system: SystemEntity): Promise<SystemEntity> {
+    try {
+      const validatedSystem = validatePayload(system, SystemEntity);
+
+      const mongoSystem = this.createDatabaseEntityFromDomainEntity(validatedSystem);
+
+      const systemId = mongoSystem._id;
+
+      const deletedSystem = await this.repository.remove(mongoSystem);
+
+      deletedSystem._id = systemId;
+
+      return this.createDomainEntityFromDatabaseEntity(deletedSystem);
+    } catch {
+      throw new Error('Removing system from database failed');
+    }
+  }
+
   public async update(system: any, editSystemPayload: any): Promise<SystemEntity> {
     const systemEntity = validatePayload(system, SystemEntity);
     const { newTitle, newDescription } = validatePayload(editSystemPayload, EditSystemPayload);

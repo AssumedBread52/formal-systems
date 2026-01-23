@@ -55,20 +55,64 @@ export class SystemService {
     }
   }
 
-  async delete(sessionUserId: string, systemId: string): Promise<SystemEntity> {
-    const system = await this.readById(systemId);
+  public async delete(sessionUserId: string, systemId: string): Promise<SystemEntity> {
+    try {
+      if (!isMongoId(sessionUserId)) {
+        throw new Error('Invalid session user ID');
+      }
 
-    const { constantSymbolCount, variableSymbolCount, axiomCount, theoremCount, deductionCount, proofCount, createdByUserId } = system;
+      if (!isMongoId(systemId)) {
+        throw new Error('Invalid system ID');
+      }
 
-    if (createdByUserId !== sessionUserId) {
-      throw new OwnershipException();
+      const system = await this.systemRepository.findOneBy({
+        id: systemId
+      });
+
+      if (!system) {
+        throw new SystemNotFoundException();
+      }
+
+      if (sessionUserId !== system.createdByUserId) {
+        throw new OwnershipException();
+      }
+
+      if (0 < system.constantSymbolCount) {
+        throw new NotEmptyException();
+      }
+
+      if (0 < system.variableSymbolCount) {
+        throw new NotEmptyException();
+      }
+
+      if (0 < system.axiomCount) {
+        throw new NotEmptyException();
+      }
+
+      if (0 < system.theoremCount) {
+        throw new NotEmptyException();
+      }
+
+      if (0 < system.deductionCount) {
+        throw new NotEmptyException();
+      }
+
+      if (0 < system.proofCount) {
+        throw new NotEmptyException();
+      }
+
+      const deletedSystem = await this.systemRepository.remove(system);
+
+      this.eventEmitter2.emit('system.delete.completed', deletedSystem);
+
+      return deletedSystem;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Deleting system failed');
     }
-
-    if (0 < constantSymbolCount || 0 < variableSymbolCount || 0 < axiomCount || 0 < theoremCount || 0 < deductionCount || 0 < proofCount) {
-      throw new NotEmptyException();
-    }
-
-    return this.systemRepository.delete(system);
   }
 
   async readById(systemId: string): Promise<SystemEntity> {

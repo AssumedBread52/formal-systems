@@ -11,10 +11,10 @@ export class SystemController {
   constructor(private systemService: SystemService) {
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
-  @UseGuards(JwtGuard)
   @Delete(':systemId')
-  deleteSystem(@SessionUser('id') sessionUserId: string, @Param('systemId') systemId: string): Promise<SystemEntity> {
+  @UseGuards(JwtGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public deleteSystem(@SessionUser('id') sessionUserId: string, @Param('systemId') systemId: string): Promise<SystemEntity> {
     return this.systemService.delete(sessionUserId, systemId);
   }
 

@@ -18,4 +18,12 @@ export class SystemResolver {
   public createSystem(@SessionUser('id') sessionUserId: string, @Args('systemPayload', new ValidationPipe({ transform: true })) newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
     return this.systemService.create(sessionUserId, newSystemPayload);
   }
+
+  @Mutation((): typeof SystemEntity => {
+    return SystemEntity;
+  })
+  @UseGuards(JwtGuard)
+  public deleteSystem(@SessionUser('id') sessionUserId: string, @Args('systemId') systemId: string): Promise<SystemEntity> {
+    return this.systemService.delete(sessionUserId, systemId);
+  }
 };
