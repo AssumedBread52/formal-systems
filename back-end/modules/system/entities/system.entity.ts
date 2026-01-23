@@ -1,35 +1,58 @@
-import { AdapterType } from '@/system/enums/adapter-type.enum';
-import { Exclude } from 'class-transformer';
-import { IsEnum, IsInt, IsNotEmpty, Min } from 'class-validator';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
 
+@ObjectType()
 export class SystemEntity {
-  @Exclude()
-  @IsEnum(AdapterType)
-  type: AdapterType = AdapterType.Mongo;
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsMongoId()
+  public id: string = '';
+  @Field()
   @IsNotEmpty()
-  id: string = '';
+  public title: string = '';
+  @Field()
   @IsNotEmpty()
-  title: string = '';
-  @IsNotEmpty()
-  description: string = '';
+  public description: string = '';
+  @Field((): typeof Int => {
+    return Int;
+  })
   @IsInt()
   @Min(0)
-  constantSymbolCount: number = 0;
+  public constantSymbolCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
   @IsInt()
   @Min(0)
-  variableSymbolCount: number = 0;
+  public variableSymbolCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
   @IsInt()
   @Min(0)
-  axiomCount: number = 0;
+  public axiomCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
   @IsInt()
   @Min(0)
-  theoremCount: number = 0;
+  public theoremCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
   @IsInt()
   @Min(0)
-  deductionCount: number = 0;
+  public deductionCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
   @IsInt()
   @Min(0)
-  proofCount: number = 0;
-  @IsNotEmpty()
-  createdByUserId: string = '';
+  public proofCount: number = 0;
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsMongoId()
+  public createdByUserId: string = '';
 };
