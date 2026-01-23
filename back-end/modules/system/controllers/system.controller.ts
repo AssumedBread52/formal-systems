@@ -2,8 +2,9 @@ import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SystemEntity } from '@/system/entities/system.entity';
+import { NewSystemPayload } from '@/system/payloads/new-system.payload';
 import { SystemService } from '@/system/services/system.service';
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system')
 export class SystemController {
@@ -36,10 +37,10 @@ export class SystemController {
     return this.systemService.update(sessionUserId, systemId, payload);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
-  @UseGuards(JwtGuard)
   @Post()
-  postSystem(@SessionUser('id') sessionUserId: string, @Body() payload: any): Promise<SystemEntity> {
-    return this.systemService.create(sessionUserId, payload);
+  @UseGuards(JwtGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public postSystem(@SessionUser('id') sessionUserId: string, @Body(new ValidationPipe({ transform: true })) newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
+    return this.systemService.create(sessionUserId, newSystemPayload);
   }
 };

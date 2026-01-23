@@ -2,36 +2,57 @@ import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { EditTitlePayload } from '@/common/payloads/edit-title.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
-import { TitlePayload } from '@/common/payloads/title.payload';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { NotEmptyException } from '@/system/exceptions/not-empty.exception';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { UniqueTitleException } from '@/system/exceptions/unique-title.exception';
 import { DefaultSearchPayload } from '@/system/payloads/default-search.payload';
+import { NewSystemPayload } from '@/system/payloads/new-system.payload';
 import { SystemRepository } from '@/system/repositories/system.repository';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { isMongoId } from 'class-validator';
 
 @Injectable()
 export class SystemService {
-  public constructor(private readonly systemRepository: SystemRepository) {
+  public constructor(private readonly eventEmitter2: EventEmitter2, private readonly systemRepository: SystemRepository) {
   }
 
-  async create(sessionUserId: string, newSystemPayload: any): Promise<SystemEntity> {
-    const { title } = validatePayload(newSystemPayload, TitlePayload);
+  public async create(sessionUserId: string, newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
+    try {
+      if (!isMongoId(sessionUserId)) {
+        throw new Error('Invalid session user ID');
+      }
 
-    const conflictExists = await this.systemRepository.readConflictExists({
-      title,
-      createdByUserId: sessionUserId
-    });
+      const validatedNewSystemPayload = validatePayload(newSystemPayload, NewSystemPayload);
 
-    if (conflictExists) {
-      throw new UniqueTitleException();
+      const conflict = await this.systemRepository.findOneBy({
+        title: validatedNewSystemPayload.title,
+        createdByUserId: sessionUserId
+      });
+
+      if (conflict) {
+        throw new UniqueTitleException();
+      }
+
+      const system = new SystemEntity();
+
+      system.title = validatedNewSystemPayload.title;
+      system.description = validatedNewSystemPayload.description;
+      system.createdByUserId = sessionUserId;
+
+      const savedSystem = this.systemRepository.save(system);
+
+      this.eventEmitter2.emit('system.create.completed', system);
+
+      return savedSystem;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Creating system failed');
     }
-
-    return this.systemRepository.create({
-      ...newSystemPayload,
-      createdByUserId: sessionUserId
-    });
   }
 
   async delete(sessionUserId: string, systemId: string): Promise<SystemEntity> {

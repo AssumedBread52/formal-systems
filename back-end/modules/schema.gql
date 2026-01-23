@@ -16,6 +16,19 @@ type UserEntity {
   proofCount: Int!
 }
 
+type SystemEntity {
+  id: String!
+  title: String!
+  description: String!
+  constantSymbolCount: Int!
+  variableSymbolCount: Int!
+  axiomCount: Int!
+  theoremCount: Int!
+  deductionCount: Int!
+  proofCount: Int!
+  createdByUserId: String!
+}
+
 type ComponentStatusPayload {
   componentType: ComponentType!
   healthStatus: HealthStatus!
@@ -48,6 +61,7 @@ type Mutation {
   signOut: UserEntity!
   createUser(userPayload: NewUserPayload!): UserEntity!
   updateUser(userPayload: EditUserPayload!): UserEntity!
+  createSystem(systemPayload: NewSystemPayload!): SystemEntity!
 }
 
 input NewUserPayload {
@@ -62,4 +76,9 @@ input EditUserPayload {
   newLastName: String! = ""
   newEmail: String! = ""
   newPassword: String
+}
+
+input NewSystemPayload {
+  title: String! = ""
+  description: String! = ""
 }

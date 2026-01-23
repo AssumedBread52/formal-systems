@@ -2,8 +2,8 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
+import { FindPayload } from '@/system/payloads/find.payload';
 import { MongoConflictPayload } from '@/system/payloads/mongo-conflict.payload';
-import { MongoNewSystemPayload } from '@/system/payloads/mongo-new-system.payload';
 import { MongoSearchPayload } from '@/system/payloads/mongo-search.payload';
 import { MongoSystemIdPayload } from '@/system/payloads/mongo-system-id.payload';
 import { Injectable } from '@nestjs/common';
@@ -17,22 +17,53 @@ export class SystemRepository {
   public constructor(private readonly eventEmitter2: EventEmitter2, @InjectRepository(MongoSystemEntity) private readonly repository: MongoRepository<MongoSystemEntity>) {
   }
 
-  public async create(newSystemPayload: any): Promise<SystemEntity> {
-    const { title, description, createdByUserId } = validatePayload(newSystemPayload, MongoNewSystemPayload);
+  public async findOneBy(findPayload: FindPayload) {
+    try {
+      const validatedFindPayload = validatePayload(findPayload, FindPayload);
 
-    const system = new MongoSystemEntity();
+      const filters = {} as Partial<MongoSystemEntity>;
+      if (validatedFindPayload.id) {
+        filters._id = new ObjectId(validatedFindPayload.id);
+      }
+      if (validatedFindPayload.title) {
+        filters.title = validatedFindPayload.title;
+      }
+      if (validatedFindPayload.createdByUserId) {
+        filters.createdByUserId = new ObjectId(validatedFindPayload.createdByUserId);
+      }
 
-    system.title = title;
-    system.description = description;
-    system.createdByUserId = new ObjectId(createdByUserId);
+      const mongoSystem = await this.repository.findOneBy(filters);
 
-    const newSystem = await this.repository.save(system);
+      if (!mongoSystem) {
+        return null;
+      }
 
-    const domainEntity = this.createDomainEntityFromDatabaseEntity(newSystem);
+      const system = this.createDomainEntityFromDatabaseEntity(mongoSystem);
 
-    this.eventEmitter2.emit('system.created.completed', domainEntity);
+      return validatePayload(system, SystemEntity);
+    } catch {
+      throw new Error('Finding system failed');
+    }
+  }
 
-    return domainEntity;
+  public async save(system: SystemEntity): Promise<SystemEntity> {
+    try {
+      if (!system.id) {
+        system.id = (new ObjectId()).toString();
+      }
+
+      const validatedSystem = validatePayload(system, SystemEntity);
+
+      const mongoSystem = this.createDatabaseEntityFromDomainEntity(validatedSystem);
+
+      const savedMongoSystem = await this.repository.save(mongoSystem);
+
+      const savedSystem = this.createDomainEntityFromDatabaseEntity(savedMongoSystem);
+
+      return validatePayload(savedSystem, SystemEntity);
+    } catch {
+      throw new Error('Saving system to database failed');
+    }
   }
 
   public async readById(systemIdPayload: any): Promise<SystemEntity | null> {
