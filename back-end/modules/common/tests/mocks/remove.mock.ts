@@ -1,6 +1,6 @@
 import { MongoRepository, RemoveOptions } from 'typeorm';
 
-export const removeMock = (): jest.SpyInstance<Promise<any>, [entity: any, options?: RemoveOptions], any> => {
+export const removeMock = (): jest.SpyInstance<Promise<any>, [entity: any, options?: RemoveOptions | undefined], any> => {
   const remove = jest.spyOn(MongoRepository.prototype, 'remove');
 
   beforeEach((): void => {
