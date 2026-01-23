@@ -9,7 +9,7 @@ import { hashSync } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
-describe('Create New User', (): void => {
+describe('Create User', (): void => {
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   const save = saveMock();
