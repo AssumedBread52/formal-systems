@@ -1,43 +1,67 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
+import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { UserRepository } from '@/user/repositories/user.repository';
-import { UserReadService } from '@/user/services/user-read.service';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class SystemCountListener {
-  constructor(private userReadService: UserReadService, private userRepository: UserRepository) {
+  constructor(private userRepository: UserRepository) {
   }
 
   @OnEvent('system.create.completed', {
     suppressErrors: false
   })
-  async incrementSystemCount(payload: any): Promise<UserEntity> {
-    const { createdByUserId } = validatePayload(payload, SystemEntity);
+  public async incrementSystemCount(system: SystemEntity): Promise<UserEntity> {
+    try {
+      const validatedSystem = validatePayload(system, SystemEntity);
 
-    const user = await this.userReadService.readById(createdByUserId);
+      const user = await this.userRepository.findOneBy({
+        id: validatedSystem.createdByUserId
+      });
 
-    const { systemCount } = user;
+      if (!user) {
+        throw new UserNotFoundException();
+      }
 
-    return this.userRepository.updateCounts(user, {
-      systemCount: systemCount + 1
-    });
+      user.systemCount++;
+
+      return this.userRepository.save(user);
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating system count on user failed');
+    }
   }
 
   @OnEvent('system.delete.completed', {
     suppressErrors: false
   })
-  async decrementSystemCount(payload: any): Promise<UserEntity> {
-    const { createdByUserId } = validatePayload(payload, SystemEntity);
+  public async decrementSystemCount(system: SystemEntity): Promise<UserEntity> {
+    try {
+      const validatedSystem = validatePayload(system, SystemEntity);
 
-    const user = await this.userReadService.readById(createdByUserId);
+      const user = await this.userRepository.findOneBy({
+        id: validatedSystem.createdByUserId
+      });
 
-    const { systemCount } = user;
+      if (!user) {
+        throw new UserNotFoundException();
+      }
 
-    return this.userRepository.updateCounts(user, {
-      systemCount: systemCount - 1
-    });
+      user.systemCount--;
+
+      return this.userRepository.save(user);
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating system count on user failed');
+    }
   }
 };
