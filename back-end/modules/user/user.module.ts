@@ -3,7 +3,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './controllers/user.controller';
 import { MongoUserEntity } from './entities/mongo-user.entity';
-import { SystemCountListener } from './listeners/system-count.listener';
+import { CountListener } from './listeners/count.listener';
 import { UserRepository } from './repositories/user.repository';
 import { UserResolver } from './resolvers/user.resolver';
 import { UserService } from './services/user.service';
@@ -21,7 +21,7 @@ import { UserService } from './services/user.service';
     UserController
   ],
   providers: [
-    SystemCountListener,
+    CountListener,
     UserRepository,
     UserResolver,
     UserService

@@ -7,7 +7,7 @@ import { HttpException, Injectable, InternalServerErrorException } from '@nestjs
 import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
-export class SystemCountListener {
+export class CountListener {
   constructor(private userRepository: UserRepository) {
   }
 
