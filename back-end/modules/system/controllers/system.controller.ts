@@ -2,13 +2,14 @@ import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SystemEntity } from '@/system/entities/system.entity';
+import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
 import { SystemService } from '@/system/services/system.service';
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system')
 export class SystemController {
-  constructor(private systemService: SystemService) {
+  public constructor(private readonly systemService: SystemService) {
   }
 
   @Delete(':systemId')
@@ -24,17 +25,17 @@ export class SystemController {
     return this.systemService.readSystems(payload);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':systemId')
-  getById(@Param('systemId') systemId: string): Promise<SystemEntity> {
+  @UseInterceptors(ClassSerializerInterceptor)
+  public getById(@Param('systemId') systemId: string): Promise<SystemEntity> {
     return this.systemService.readById(systemId);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
-  @UseGuards(JwtGuard)
   @Patch(':systemId')
-  patchSystem(@SessionUser('id') sessionUserId: string, @Param('systemId') systemId: string, @Body() payload: any): Promise<SystemEntity> {
-    return this.systemService.update(sessionUserId, systemId, payload);
+  @UseGuards(JwtGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public patchSystem(@SessionUser('id') sessionUserId: string, @Param('systemId') systemId: string, @Body(new ValidationPipe({ transform: true })) editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
+    return this.systemService.update(sessionUserId, systemId, editSystemPayload);
   }
 
   @Post()

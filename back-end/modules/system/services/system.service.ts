@@ -1,12 +1,12 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
-import { EditTitlePayload } from '@/common/payloads/edit-title.payload';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { NotEmptyException } from '@/system/exceptions/not-empty.exception';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { UniqueTitleException } from '@/system/exceptions/unique-title.exception';
 import { DefaultSearchPayload } from '@/system/payloads/default-search.payload';
+import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
 import { SystemRepository } from '@/system/repositories/system.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -115,16 +115,28 @@ export class SystemService {
     }
   }
 
-  async readById(systemId: string): Promise<SystemEntity> {
-    const system = await this.systemRepository.readById({
-      systemId
-    });
+  public async readById(systemId: string): Promise<SystemEntity> {
+    try {
+      if (!isMongoId(systemId)) {
+        throw new Error('Invalid system ID');
+      }
 
-    if (!system) {
-      throw new SystemNotFoundException();
+      const system = await this.systemRepository.findOneBy({
+        id: systemId
+      });
+
+      if (!system) {
+        throw new SystemNotFoundException();
+      }
+
+      return system;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Reading system failed');
     }
-
-    return system;
   }
 
   async readSystems(payload: any): Promise<PaginatedResultsPayload<SystemEntity>> {
@@ -135,27 +147,51 @@ export class SystemService {
     return new PaginatedResultsPayload(systems, total);
   }
 
-  async update(sessionUserId: string, systemId: string, editSystemPayload: any): Promise<SystemEntity> {
-    const { newTitle } = validatePayload(editSystemPayload, EditTitlePayload);
-    const system = await this.readById(systemId);
+  public async update(sessionUserId: string, systemId: string, editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
+    try {
+      if (!isMongoId(sessionUserId)) {
+        throw new Error('Invalid session user ID');
+      }
 
-    const { title, createdByUserId } = system;
+      if (!isMongoId(systemId)) {
+        throw new Error('Invalid system ID');
+      }
 
-    if (createdByUserId !== sessionUserId) {
-      throw new OwnershipException();
-    }
-
-    if (title !== newTitle) {
-      const conflictExists = await this.systemRepository.readConflictExists({
-        title: newTitle,
-        createdByUserId
+      const system = await this.systemRepository.findOneBy({
+        id: systemId
       });
 
-      if (conflictExists) {
-        throw new UniqueTitleException();
+      if (!system) {
+        throw new SystemNotFoundException();
       }
-    }
 
-    return this.systemRepository.update(system, editSystemPayload);
+      if (sessionUserId !== system.createdByUserId) {
+        throw new OwnershipException();
+      }
+
+      const validatedEditSystemPayload = validatePayload(editSystemPayload, EditSystemPayload);
+
+      if (validatedEditSystemPayload.newTitle !== system.title) {
+        const conflict = await this.systemRepository.findOneBy({
+          title: validatedEditSystemPayload.newTitle,
+          createdByUserId: sessionUserId
+        });
+
+        if (conflict) {
+          throw new UniqueTitleException();
+        }
+      }
+
+      system.title = validatedEditSystemPayload.newTitle;
+      system.description = validatedEditSystemPayload.newDescription;
+
+      return this.systemRepository.save(system);
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating system failed');
+    }
   }
 };

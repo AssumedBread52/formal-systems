@@ -5,8 +5,8 @@ import { IsNotEmpty } from 'class-validator';
 export class NewSystemPayload {
   @Field()
   @IsNotEmpty()
-  title: string = '';
+  public readonly title: string = '';
   @Field()
   @IsNotEmpty()
-  description: string = '';
+  public readonly description: string = '';
 };

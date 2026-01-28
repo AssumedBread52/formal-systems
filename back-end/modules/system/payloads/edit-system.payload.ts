@@ -1,8 +1,12 @@
+import { Field, InputType } from '@nestjs/graphql';
 import { IsNotEmpty } from 'class-validator';
 
+@InputType()
 export class EditSystemPayload {
+  @Field()
   @IsNotEmpty()
-  newTitle: string = '';
+  public readonly newTitle: string = '';
+  @Field()
   @IsNotEmpty()
-  newDescription: string = '';
+  public readonly newDescription: string = '';
 };
