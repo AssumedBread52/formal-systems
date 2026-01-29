@@ -46,26 +46,6 @@ export class SystemRepository {
     }
   }
 
-  public async save(system: SystemEntity): Promise<SystemEntity> {
-    try {
-      if (!system.id) {
-        system.id = (new ObjectId()).toString();
-      }
-
-      const validatedSystem = validatePayload(system, SystemEntity);
-
-      const mongoSystem = this.createDatabaseEntityFromDomainEntity(validatedSystem);
-
-      const savedMongoSystem = await this.repository.save(mongoSystem);
-
-      const savedSystem = this.createDomainEntityFromDatabaseEntity(savedMongoSystem);
-
-      return validatePayload(savedSystem, SystemEntity);
-    } catch {
-      throw new Error('Saving system to database failed');
-    }
-  }
-
   public async readById(systemIdPayload: any): Promise<SystemEntity | null> {
     const { systemId } = validatePayload(systemIdPayload, MongoSystemIdPayload);
 
@@ -132,6 +112,26 @@ export class SystemRepository {
       return this.createDomainEntityFromDatabaseEntity(deletedSystem);
     } catch {
       throw new Error('Removing system from database failed');
+    }
+  }
+
+  public async save(system: SystemEntity): Promise<SystemEntity> {
+    try {
+      if (!system.id) {
+        system.id = (new ObjectId()).toString();
+      }
+
+      const validatedSystem = validatePayload(system, SystemEntity);
+
+      const mongoSystem = this.createDatabaseEntityFromDomainEntity(validatedSystem);
+
+      const savedMongoSystem = await this.repository.save(mongoSystem);
+
+      const savedSystem = this.createDomainEntityFromDatabaseEntity(savedMongoSystem);
+
+      return validatePayload(savedSystem, SystemEntity);
+    } catch {
+      throw new Error('Saving system to database failed');
     }
   }
 
