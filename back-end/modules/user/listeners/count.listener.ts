@@ -8,7 +8,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class CountListener {
-  constructor(private userRepository: UserRepository) {
+  public constructor(private readonly userRepository: UserRepository) {
   }
 
   @OnEvent('system.create.completed', {
