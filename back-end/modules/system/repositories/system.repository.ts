@@ -7,14 +7,13 @@ import { MongoConflictPayload } from '@/system/payloads/mongo-conflict.payload';
 import { MongoSearchPayload } from '@/system/payloads/mongo-search.payload';
 import { MongoSystemIdPayload } from '@/system/payloads/mongo-system-id.payload';
 import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
 
 @Injectable()
 export class SystemRepository {
-  public constructor(private readonly eventEmitter2: EventEmitter2, @InjectRepository(MongoSystemEntity) private readonly repository: MongoRepository<MongoSystemEntity>) {
+  public constructor(@InjectRepository(MongoSystemEntity) private readonly repository: MongoRepository<MongoSystemEntity>) {
   }
 
   public async findOneBy(findPayload: FindPayload) {
@@ -147,24 +146,6 @@ export class SystemRepository {
     const updatedSystem = await this.repository.save(originalSystem);
 
     return this.createDomainEntityFromDatabaseEntity(updatedSystem);
-  }
-
-  public async delete(system: any): Promise<SystemEntity> {
-    const systemEntity = validatePayload(system, SystemEntity);
-
-    const originalSystem = this.createDatabaseEntityFromDomainEntity(systemEntity);
-
-    const { _id } = originalSystem;
-
-    const deletedSystem = await this.repository.remove(originalSystem);
-
-    deletedSystem._id = _id;
-
-    const domainEntity = this.createDomainEntityFromDatabaseEntity(deletedSystem);
-
-    this.eventEmitter2.emit('system.delete.completed', deletedSystem);
-
-    return domainEntity;
   }
 
   private createDatabaseEntityFromDomainEntity(system: SystemEntity): MongoSystemEntity {
