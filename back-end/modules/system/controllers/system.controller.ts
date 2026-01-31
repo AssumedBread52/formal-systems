@@ -22,7 +22,7 @@ export class SystemController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   getSystems(@Query() payload: any): Promise<PaginatedResultsPayload<SystemEntity>> {
-    return this.systemService.readSystems(payload);
+    return this.systemService.searchSystems(payload);
   }
 
   @Get(':systemId')

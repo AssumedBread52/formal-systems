@@ -1,13 +1,13 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
-import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { NotEmptyException } from '@/system/exceptions/not-empty.exception';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { UniqueTitleException } from '@/system/exceptions/unique-title.exception';
-import { DefaultSearchPayload } from '@/system/payloads/default-search.payload';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
+import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.payload';
+import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
 import { SystemRepository } from '@/system/repositories/system.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -139,17 +139,24 @@ export class SystemService {
     }
   }
 
-  async readSystems(payload: any): Promise<PaginatedResultsPayload<SystemEntity>> {
-    const searchPayload = validatePayload(payload, DefaultSearchPayload);
+  public async searchSystems(searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
+    try {
+      const validatedSearchSystemsPayload = validatePayload(searchSystemsPayload, SearchSystemsPayload);
 
-    const [systems, total] = await this.systemRepository.findAndCount({
-      skip: (searchPayload.page - 1) * searchPayload.pageSize,
-      take: searchPayload.pageSize,
-      keywords: searchPayload.keywords,
-      userIds: searchPayload.userIds
-    });
+      const take = validatedSearchSystemsPayload.pageSize;
+      const skip = (validatedSearchSystemsPayload.page - 1) * validatedSearchSystemsPayload.pageSize;
 
-    return new PaginatedResultsPayload(systems, total);
+      const [systems, total] = await this.systemRepository.findAndCount({
+        skip,
+        take,
+        keywords: validatedSearchSystemsPayload.keywords,
+        userIds: validatedSearchSystemsPayload.userIds
+      });
+
+      return new PaginatedSystemsPayload(systems, total);
+    } catch {
+      throw new InternalServerErrorException('Reading systems failed');
+    }
   }
 
   public async update(sessionUserId: string, systemId: string, editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
