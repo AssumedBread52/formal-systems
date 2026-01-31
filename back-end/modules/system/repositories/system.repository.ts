@@ -2,9 +2,7 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { FindPayload } from '@/system/payloads/find.payload';
-import { MongoConflictPayload } from '@/system/payloads/mongo-conflict.payload';
 import { MongoSearchPayload } from '@/system/payloads/mongo-search.payload';
-import { MongoSystemIdPayload } from '@/system/payloads/mongo-system-id.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -42,29 +40,6 @@ export class SystemRepository {
     } catch {
       throw new Error('Finding system failed');
     }
-  }
-
-  public async readById(systemIdPayload: any): Promise<SystemEntity | null> {
-    const { systemId } = validatePayload(systemIdPayload, MongoSystemIdPayload);
-
-    const system = await this.repository.findOneBy({
-      _id: new ObjectId(systemId)
-    });
-
-    if (!system) {
-      return null;
-    }
-
-    return this.createDomainEntityFromDatabaseEntity(system);
-  }
-
-  public readConflictExists(conflictPayload: any): Promise<boolean> {
-    const { title, createdByUserId } = validatePayload(conflictPayload, MongoConflictPayload);
-
-    return this.repository.existsBy({
-      title,
-      createdByUserId: new ObjectId(createdByUserId)
-    });
   }
 
   public async readSystems(searchPayload: any): Promise<[SystemEntity[], number]> {
