@@ -5,7 +5,7 @@ import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
 import { SystemService } from '@/system/services/system.service';
 import { UseGuards, ValidationPipe } from '@nestjs/common';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 @Resolver()
 export class SystemResolver {
@@ -28,7 +28,7 @@ export class SystemResolver {
     return this.systemService.delete(sessionUserId, systemId);
   }
 
-  @Mutation((): typeof SystemEntity => {
+  @Query((): typeof SystemEntity => {
     return SystemEntity;
   })
   public system(@Args('systemId') systemId: string): Promise<SystemEntity> {
