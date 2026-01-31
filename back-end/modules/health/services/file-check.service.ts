@@ -2,17 +2,19 @@ import { ComponentType } from '@/health/enums/component-type.enum';
 import { HealthStatus } from '@/health/enums/health-status.enum';
 import { ComponentStatusPayload } from '@/health/payloads/component-status.payload';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { access, constants } from 'fs/promises';
+import { join } from 'path';
+import { cwd } from 'process';
 
 @Injectable()
 export class FileCheckService {
-  public constructor(private readonly configService: ConfigService) {
-  }
+  private static readonly FILE_NAME = 'package-lock.json';
 
   public async check(): Promise<ComponentStatusPayload> {
     try {
-      await access(this.configService.getOrThrow('npm_package_json'), constants.R_OK);
+      const filePath = join(cwd(), FileCheckService.FILE_NAME);
+
+      await access(filePath, constants.R_OK);
 
       return new ComponentStatusPayload(ComponentType.file, HealthStatus.up);
     } catch {
