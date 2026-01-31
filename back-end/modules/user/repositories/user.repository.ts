@@ -5,7 +5,7 @@ import { FindOneByPayload } from '@/user/payloads/find-one-by.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
-import { MongoRepository } from 'typeorm';
+import { Filter, MongoRepository } from 'typeorm';
 
 @Injectable()
 export class UserRepository {
@@ -16,7 +16,7 @@ export class UserRepository {
     try {
       const validatedFindOneByPayload = validatePayload(findOneByPayload, FindOneByPayload);
 
-      const filters = {} as Partial<MongoUserEntity>;
+      const filters = {} as Filter<MongoUserEntity>;
       if (validatedFindOneByPayload.id) {
         filters._id = new ObjectId(validatedFindOneByPayload.id);
       }
