@@ -1,7 +1,6 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
-import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { FindPayload } from '@/system/payloads/find.payload';
 import { MongoConflictPayload } from '@/system/payloads/mongo-conflict.payload';
 import { MongoSearchPayload } from '@/system/payloads/mongo-search.payload';
@@ -132,20 +131,6 @@ export class SystemRepository {
     } catch {
       throw new Error('Saving system to database failed');
     }
-  }
-
-  public async update(system: any, editSystemPayload: any): Promise<SystemEntity> {
-    const systemEntity = validatePayload(system, SystemEntity);
-    const { newTitle, newDescription } = validatePayload(editSystemPayload, EditSystemPayload);
-
-    const originalSystem = this.createDatabaseEntityFromDomainEntity(systemEntity);
-
-    originalSystem.title = newTitle;
-    originalSystem.description = newDescription;
-
-    const updatedSystem = await this.repository.save(originalSystem);
-
-    return this.createDomainEntityFromDatabaseEntity(updatedSystem);
   }
 
   private createDatabaseEntityFromDomainEntity(system: SystemEntity): MongoSystemEntity {
