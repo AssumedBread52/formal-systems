@@ -19,8 +19,8 @@ export class SystemController {
     return this.systemService.delete(sessionUserId, systemId);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
+  @UseInterceptors(ClassSerializerInterceptor)
   getSystems(@Query() payload: any): Promise<PaginatedSystemsPayload> {
     return this.systemService.searchSystems(payload);
   }
