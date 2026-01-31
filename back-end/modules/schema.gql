@@ -53,6 +53,7 @@ type Query {
   sessionUser: UserEntity!
   user(userId: String!): UserEntity!
   healthCheck: HealthStatusPayload!
+  system(systemId: String!): SystemEntity!
 }
 
 type Mutation {
@@ -63,7 +64,6 @@ type Mutation {
   updateUser(userPayload: EditUserPayload!): UserEntity!
   createSystem(systemPayload: NewSystemPayload!): SystemEntity!
   deleteSystem(systemId: String!): SystemEntity!
-  system(systemId: String!): SystemEntity!
   updateSystem(systemId: String!, systemPayload: EditSystemPayload!): SystemEntity!
 }
 
