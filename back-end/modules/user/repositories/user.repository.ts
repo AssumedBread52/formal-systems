@@ -1,7 +1,7 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { UserEntity } from '@/user/entities/user.entity';
-import { FindPayload } from '@/user/payloads/find.payload';
+import { FindOneByPayload } from '@/user/payloads/find-one-by.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -12,16 +12,16 @@ export class UserRepository {
   public constructor(@InjectRepository(MongoUserEntity) private readonly repository: MongoRepository<MongoUserEntity>) {
   }
 
-  public async findOneBy(findPayload: FindPayload): Promise<UserEntity | null> {
+  public async findOneBy(findOneByPayload: FindOneByPayload): Promise<UserEntity | null> {
     try {
-      const validatedFindPayload = validatePayload(findPayload, FindPayload);
+      const validatedFindOneByPayload = validatePayload(findOneByPayload, FindOneByPayload);
 
       const filters = {} as Partial<MongoUserEntity>;
-      if (validatedFindPayload.id) {
-        filters._id = new ObjectId(validatedFindPayload.id);
+      if (validatedFindOneByPayload.id) {
+        filters._id = new ObjectId(validatedFindOneByPayload.id);
       }
-      if (validatedFindPayload.email) {
-        filters.email = validatedFindPayload.email;
+      if (validatedFindOneByPayload.email) {
+        filters.email = validatedFindOneByPayload.email;
       }
 
       const mongoUser = await this.repository.findOneBy(filters);
