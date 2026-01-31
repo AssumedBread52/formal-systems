@@ -93,7 +93,7 @@ describe('Read System by ID', (): void => {
     findOneBy.mockResolvedValueOnce(system);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'mutation system($systemId: String!) { system(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount axiomCount theoremCount deductionCount proofCount createdByUserId } }',
+      query: 'query system($systemId: String!) { system(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount axiomCount theoremCount deductionCount proofCount createdByUserId } }',
       variables: {
         systemId
       }
