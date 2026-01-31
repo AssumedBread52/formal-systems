@@ -1,7 +1,7 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
-import { FindPayload } from '@/system/payloads/find.payload';
+import { FindOneByPayload } from '@/system/payloads/find-one-by.payload';
 import { MongoSearchPayload } from '@/system/payloads/mongo-search.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,19 +13,19 @@ export class SystemRepository {
   public constructor(@InjectRepository(MongoSystemEntity) private readonly repository: MongoRepository<MongoSystemEntity>) {
   }
 
-  public async findOneBy(findPayload: FindPayload) {
+  public async findOneBy(findOneByPayload: FindOneByPayload) {
     try {
-      const validatedFindPayload = validatePayload(findPayload, FindPayload);
+      const validatedFindOneByPayload = validatePayload(findOneByPayload, FindOneByPayload);
 
       const filters = {} as Filter<MongoSystemEntity>;
-      if (validatedFindPayload.id) {
-        filters._id = new ObjectId(validatedFindPayload.id);
+      if (validatedFindOneByPayload.id) {
+        filters._id = new ObjectId(validatedFindOneByPayload.id);
       }
-      if (validatedFindPayload.title) {
-        filters.title = validatedFindPayload.title;
+      if (validatedFindOneByPayload.title) {
+        filters.title = validatedFindOneByPayload.title;
       }
-      if (validatedFindPayload.createdByUserId) {
-        filters.createdByUserId = new ObjectId(validatedFindPayload.createdByUserId);
+      if (validatedFindOneByPayload.createdByUserId) {
+        filters.createdByUserId = new ObjectId(validatedFindOneByPayload.createdByUserId);
       }
 
       const mongoSystem = await this.repository.findOneBy(filters);
