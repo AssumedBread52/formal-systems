@@ -49,11 +49,24 @@ type HealthStatusPayload {
   healthStatus: HealthStatus!
 }
 
+type PaginatedSystemsPayload {
+  results: [SystemEntity!]!
+  total: Int!
+}
+
 type Query {
   sessionUser: UserEntity!
   user(userId: String!): UserEntity!
   healthCheck: HealthStatusPayload!
   system(systemId: String!): SystemEntity!
+  systems(filters: SearchSystemsPayload!): PaginatedSystemsPayload!
+}
+
+input SearchSystemsPayload {
+  page: Int! = 1
+  pageSize: Int! = 10
+  keywords: [String!]! = []
+  userIds: [String!]! = []
 }
 
 type Mutation {

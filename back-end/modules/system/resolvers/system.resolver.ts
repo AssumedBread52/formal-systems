@@ -3,6 +3,8 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
+import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.payload';
+import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
 import { SystemService } from '@/system/services/system.service';
 import { UseGuards, ValidationPipe } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
@@ -33,6 +35,13 @@ export class SystemResolver {
   })
   public system(@Args('systemId') systemId: string): Promise<SystemEntity> {
     return this.systemService.selectById(systemId);
+  }
+
+  @Query((): typeof PaginatedSystemsPayload => {
+    return PaginatedSystemsPayload;
+  })
+  public systems(@Args('filters', new ValidationPipe({ transform: true })) searchPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
+    return this.systemService.searchSystems(searchPayload);
   }
 
   @Mutation((): typeof SystemEntity => {
