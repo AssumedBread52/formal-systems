@@ -115,7 +115,7 @@ export class SystemService {
     }
   }
 
-  public async readById(systemId: string): Promise<SystemEntity> {
+  public async selectById(systemId: string): Promise<SystemEntity> {
     try {
       if (!isMongoId(systemId)) {
         throw new Error('Invalid system ID');
@@ -142,7 +142,12 @@ export class SystemService {
   async readSystems(payload: any): Promise<PaginatedResultsPayload<SystemEntity>> {
     const searchPayload = validatePayload(payload, DefaultSearchPayload);
 
-    const [systems, total] = await this.systemRepository.readSystems(searchPayload);
+    const [systems, total] = await this.systemRepository.findAndCount({
+      skip: (searchPayload.page - 1) * searchPayload.pageSize,
+      take: searchPayload.pageSize,
+      keywords: searchPayload.keywords,
+      userIds: searchPayload.userIds
+    });
 
     return new PaginatedResultsPayload(systems, total);
   }

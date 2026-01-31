@@ -32,7 +32,7 @@ export class SystemResolver {
     return SystemEntity;
   })
   public system(@Args('systemId') systemId: string): Promise<SystemEntity> {
-    return this.systemService.readById(systemId);
+    return this.systemService.selectById(systemId);
   }
 
   @Mutation((): typeof SystemEntity => {

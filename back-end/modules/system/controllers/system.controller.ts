@@ -28,7 +28,7 @@ export class SystemController {
   @Get(':systemId')
   @UseInterceptors(ClassSerializerInterceptor)
   public getById(@Param('systemId') systemId: string): Promise<SystemEntity> {
-    return this.systemService.readById(systemId);
+    return this.systemService.selectById(systemId);
   }
 
   @Patch(':systemId')
