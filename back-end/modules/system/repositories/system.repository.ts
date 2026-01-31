@@ -1,16 +1,56 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
+import { FindAndCountPayload } from '@/system/payloads/find-and-count.payload';
 import { FindOneByPayload } from '@/system/payloads/find-one-by.payload';
-import { MongoSearchPayload } from '@/system/payloads/mongo-search.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
-import { Filter, MongoRepository, RootFilterOperators } from 'typeorm';
+import { Filter, MongoRepository } from 'typeorm';
 
 @Injectable()
 export class SystemRepository {
   public constructor(@InjectRepository(MongoSystemEntity) private readonly repository: MongoRepository<MongoSystemEntity>) {
+  }
+
+  public async findAndCount(findAndCountPayload: FindAndCountPayload): Promise<[SystemEntity[], number]> {
+    try {
+      const validatedFindAndCountPayload = validatePayload(findAndCountPayload, FindAndCountPayload);
+
+      const where = {} as Filter<MongoSystemEntity>;
+
+      if (0 !== validatedFindAndCountPayload.keywords.length) {
+        where.$text = {
+          $caseSensitive: false,
+          $search: validatedFindAndCountPayload.keywords.join(',')
+        };
+      }
+
+      if (0 !== validatedFindAndCountPayload.userIds.length) {
+        where.createdByUserId = {
+          $in: validatedFindAndCountPayload.userIds.map((userId: string): ObjectId => {
+            return new ObjectId(userId);
+          })
+        };
+      }
+
+      const [mongoSystems, total] = await this.repository.findAndCount({
+        take: validatedFindAndCountPayload.take,
+        skip: validatedFindAndCountPayload.skip,
+        where
+      });
+
+      const systems = mongoSystems.map(this.createDomainEntityFromDatabaseEntity);
+
+      return [
+        systems.map((system: SystemEntity): SystemEntity => {
+          return validatePayload(system, SystemEntity);
+        }),
+        total
+      ];
+    } catch {
+      throw new Error('Finding systems failed');
+    }
   }
 
   public async findOneBy(findOneByPayload: FindOneByPayload) {
@@ -40,34 +80,6 @@ export class SystemRepository {
     } catch {
       throw new Error('Finding system failed');
     }
-  }
-
-  public async readSystems(searchPayload: any): Promise<[SystemEntity[], number]> {
-    const { skip, take, keywords, userIds } = validatePayload(searchPayload, MongoSearchPayload);
-    const where = {} as RootFilterOperators<MongoSystemEntity>;
-
-
-    if (0 !== keywords.length) {
-      where.$text = {
-        $caseSensitive: false,
-        $search: keywords.join(',')
-      };
-    }
-    if (0 !== userIds.length) {
-      where['createdByUserId'] = {
-        $in: userIds.map((userId: string): ObjectId => {
-          return new ObjectId(userId);
-        })
-      };
-    }
-
-    const [list, count] = await this.repository.findAndCount({
-      skip,
-      take,
-      where
-    });
-
-    return [list.map(this.createDomainEntityFromDatabaseEntity), count];
   }
 
   public async remove(system: SystemEntity): Promise<SystemEntity> {
