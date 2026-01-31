@@ -6,7 +6,7 @@ import { MongoSearchPayload } from '@/system/payloads/mongo-search.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
-import { MongoRepository, RootFilterOperators } from 'typeorm';
+import { Filter, MongoRepository, RootFilterOperators } from 'typeorm';
 
 @Injectable()
 export class SystemRepository {
@@ -17,7 +17,7 @@ export class SystemRepository {
     try {
       const validatedFindPayload = validatePayload(findPayload, FindPayload);
 
-      const filters = {} as Partial<MongoSystemEntity>;
+      const filters = {} as Filter<MongoSystemEntity>;
       if (validatedFindPayload.id) {
         filters._id = new ObjectId(validatedFindPayload.id);
       }
