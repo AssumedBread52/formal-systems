@@ -4,6 +4,7 @@ import { SystemEntity } from '@/system/entities/system.entity';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
 import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.payload';
+import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
 import { SystemService } from '@/system/services/system.service';
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
@@ -21,8 +22,8 @@ export class SystemController {
 
   @Get()
   @UseInterceptors(ClassSerializerInterceptor)
-  getSystems(@Query() payload: any): Promise<PaginatedSystemsPayload> {
-    return this.systemService.searchSystems(payload);
+  public getSystems(@Query(new ValidationPipe({ transform: true })) searchPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
+    return this.systemService.searchSystems(searchPayload);
   }
 
   @Get(':systemId')
