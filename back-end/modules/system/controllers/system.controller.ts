@@ -1,9 +1,9 @@
 import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
-import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
+import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.payload';
 import { SystemService } from '@/system/services/system.service';
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
@@ -21,7 +21,7 @@ export class SystemController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  getSystems(@Query() payload: any): Promise<PaginatedResultsPayload<SystemEntity>> {
+  getSystems(@Query() payload: any): Promise<PaginatedSystemsPayload> {
     return this.systemService.searchSystems(payload);
   }
 
