@@ -3,8 +3,8 @@ import { IsEmail, IsMongoId, IsOptional } from 'class-validator';
 export class FindOneByPayload {
   @IsMongoId()
   @IsOptional()
-  id?: string;
+  public readonly id?: string;
   @IsEmail()
   @IsOptional()
-  email?: string;
+  public readonly email?: string;
 };
