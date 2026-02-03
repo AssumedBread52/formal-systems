@@ -3,11 +3,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SymbolController } from './controllers/symbol.controller';
 import { SymbolEntity } from './entities/symbol.entity';
-import { SymbolCreateService } from './services/symbol-create.service';
-import { SymbolDeleteService } from './services/symbol-delete.service';
-import { SymbolReadService } from './services/symbol-read.service';
-import { SymbolUpdateService } from './services/symbol-update.service';
-import { ValidateService } from './services/validate.service';
+import { SymbolService } from './services/symbol.service';
 
 @Module({
   imports: [
@@ -20,14 +16,10 @@ import { ValidateService } from './services/validate.service';
     SymbolController
   ],
   providers: [
-    SymbolCreateService,
-    SymbolDeleteService,
-    SymbolReadService,
-    SymbolUpdateService,
-    ValidateService
+    SymbolService
   ],
   exports: [
-    SymbolReadService
+    SymbolService
   ]
 })
 export class SymbolModule {
