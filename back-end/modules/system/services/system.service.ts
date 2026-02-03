@@ -41,9 +41,9 @@ export class SystemService {
       system.description = validatedNewSystemPayload.description;
       system.createdByUserId = sessionUserId;
 
-      const savedSystem = this.systemRepository.save(system);
+      const savedSystem = await this.systemRepository.save(system);
 
-      this.eventEmitter2.emit('system.create.completed', system);
+      this.eventEmitter2.emit('system.create.completed', savedSystem);
 
       return savedSystem;
     } catch (error: unknown) {
