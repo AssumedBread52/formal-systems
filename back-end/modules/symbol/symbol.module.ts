@@ -1,13 +1,13 @@
 import { SystemModule } from '@/system/system.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SymbolController } from './controllers/symbol.controller';
+import { SymbolEntity } from './entities/symbol.entity';
 import { SymbolCreateService } from './services/symbol-create.service';
 import { SymbolDeleteService } from './services/symbol-delete.service';
 import { SymbolReadService } from './services/symbol-read.service';
 import { SymbolUpdateService } from './services/symbol-update.service';
 import { ValidateService } from './services/validate.service';
-import { SymbolController } from './symbol.controller';
-import { SymbolEntity } from './symbol.entity';
 
 @Module({
   imports: [

@@ -1,6 +1,6 @@
 import { BaseValidateService } from '@/common/services/base-validate.service';
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolUniqueTitleException } from '@/symbol/exceptions/symbol-unique-title.exception';
-import { SymbolEntity } from '@/symbol/symbol.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';

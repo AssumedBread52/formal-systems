@@ -1,5 +1,5 @@
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { SymbolEntity } from '@/symbol/symbol.entity';
 
 export class SymbolPayload {
   id: string;

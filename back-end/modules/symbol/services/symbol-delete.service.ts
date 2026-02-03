@@ -1,6 +1,6 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { InUseException } from '@/symbol/exceptions/in-use.exception';
-import { SymbolEntity } from '@/symbol/symbol.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';

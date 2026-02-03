@@ -1,7 +1,8 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
-import { SymbolEntity } from '@/symbol/symbol.entity';
-import { SystemReadService } from '@/system/services/system-read.service';
+import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
+import { SystemRepository } from '@/system/repositories/system.repository';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -10,13 +11,19 @@ import { ValidateService } from './validate.service';
 
 @Injectable()
 export class SymbolCreateService {
-  constructor(@InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>, private systemReadService: SystemReadService, private validateService: ValidateService) {
+  constructor(@InjectRepository(SymbolEntity) private symbolRepository: MongoRepository<SymbolEntity>, private systemRepository: SystemRepository, private validateService: ValidateService) {
   }
 
   async create(sessionUserId: ObjectId, systemId: any, payload: any): Promise<SymbolEntity> {
-    const system = await this.systemReadService.readById(systemId);
+    const system = await this.systemRepository.findOneBy({
+      id: systemId
+    });
 
-    const { _id, createdByUserId } = system;
+    if (!system) {
+      throw new SystemNotFoundException();
+    }
+
+    const { id, createdByUserId } = system;
 
     if (createdByUserId.toString() !== sessionUserId.toString()) {
       throw new OwnershipException();
@@ -26,7 +33,7 @@ export class SymbolCreateService {
 
     const { title, description, type, content } = newSymbolPayload;
 
-    await this.validateService.conflictCheck(title, _id);
+    await this.validateService.conflictCheck(title, new ObjectId(id));
 
     const symbol = new SymbolEntity();
 
@@ -34,7 +41,7 @@ export class SymbolCreateService {
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
-    symbol.systemId = _id;
+    symbol.systemId = new ObjectId(id);
     symbol.createdByUserId = sessionUserId;
 
     return this.symbolRepository.save(symbol);

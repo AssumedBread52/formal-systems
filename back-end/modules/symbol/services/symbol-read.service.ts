@@ -1,6 +1,6 @@
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
 import { SearchPayload } from '@/symbol/payloads/search.payload';
-import { SymbolEntity } from '@/symbol/symbol.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -77,7 +77,7 @@ export class SymbolReadService {
     }
 
     if (0 !== types.length) {
-      where.type = {
+      where['type'] = {
         $in: types
       };
     }

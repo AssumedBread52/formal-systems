@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
-import { SymbolType } from './enums/symbol-type.enum';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 
 @Entity('symbol')
 export class SymbolEntity {
