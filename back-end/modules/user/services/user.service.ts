@@ -6,10 +6,10 @@ import { UniqueEmailAddressException } from '@/user/exceptions/unique-email-addr
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { NewUserPayload } from '@/user/payloads/new-user.payload';
-import { UserIdPayload } from '@/user/payloads/user-id.payload';
 import { UserRepository } from '@/user/repositories/user.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { hashSync } from 'bcryptjs';
+import { isMongoId } from 'class-validator';
 import { Response } from 'express';
 
 @Injectable()
@@ -49,12 +49,14 @@ export class UserService {
     }
   }
 
-  public async selectById(userIdPayload: UserIdPayload): Promise<UserEntity> {
+  public async selectById(userId: string): Promise<UserEntity> {
     try {
-      const validatedUserIdPayload = validatePayload(userIdPayload, UserIdPayload);
+      if (!isMongoId(userId)) {
+        throw new Error('Invalid user ID');
+      }
 
       const user = await this.userRepository.findOneBy({
-        id: validatedUserIdPayload.userId
+        id: userId
       });
 
       if (!user) {

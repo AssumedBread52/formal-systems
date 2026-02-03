@@ -22,9 +22,7 @@ export class UserController {
   @Get(':userId')
   @UseInterceptors(ClassSerializerInterceptor)
   getById(@Param('userId') userId: string): Promise<UserEntity> {
-    return this.userService.selectById({
-      userId
-    });
+    return this.userService.selectById(userId);
   }
 
   @Patch('session-user')

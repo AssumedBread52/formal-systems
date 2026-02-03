@@ -40,8 +40,6 @@ export class UserResolver {
     return UserEntity;
   })
   public user(@Args('userId') userId: string): Promise<UserEntity> {
-    return this.userService.selectById({
-      userId
-    });
+    return this.userService.selectById(userId);
   }
 };
