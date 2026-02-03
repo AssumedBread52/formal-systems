@@ -6,8 +6,8 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
 import { DatabaseType } from 'typeorm';
-import { AppModule } from './app/app.module';
 import { AuthModule } from './auth/auth.module';
+import { DependencyModule } from './dependency/dependency.module';
 import { HealthModule } from './health/health.module';
 import { ProofModule } from './proof/proof.module';
 import { StatementModule } from './statement/statement.module';
@@ -27,7 +27,6 @@ import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
-    AppModule,
     AuthModule,
     ConfigModule.forRoot({
       cache: true,
@@ -36,6 +35,7 @@ import { UserModule } from './user/user.module';
         'database-credentials.env'
       ]
     }),
+    DependencyModule,
     EventEmitterModule.forRoot(),
     GraphQLModule.forRootAsync({
       driver: ApolloDriver,

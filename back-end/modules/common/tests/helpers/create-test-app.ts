@@ -1,5 +1,5 @@
-import { AppModule } from '@/app/app.module';
 import { AuthModule } from '@/auth/auth.module';
+import { DependencyModule } from '@/dependency/dependency.module';
 import { HealthModule } from '@/health/health.module';
 import { StatementEntity } from '@/statement/statement.entity';
 import { StatementModule } from '@/statement/statement.module';
@@ -22,8 +22,8 @@ import { MongoRepository } from 'typeorm';
 export const createTestApp = async (): Promise<NestExpressApplication> => {
   const testingModule = await Test.createTestingModule({
     imports: [
-      AppModule,
       AuthModule,
+      DependencyModule,
       EventEmitterModule.forRoot(),
       GraphQLModule.forRootAsync({
         driver: ApolloDriver,

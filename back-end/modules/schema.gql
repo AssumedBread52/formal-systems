@@ -29,6 +29,17 @@ type SystemEntity {
   createdByUserId: String!
 }
 
+type DependencyPayload {
+  name: String!
+  version: String!
+  type: DependencyType!
+}
+
+enum DependencyType {
+  development
+  operational
+}
+
 type ComponentStatusPayload {
   componentType: ComponentType!
   healthStatus: HealthStatus!
@@ -57,6 +68,7 @@ type PaginatedSystemsPayload {
 type Query {
   sessionUser: UserEntity!
   user(userId: String!): UserEntity!
+  dependencies: [DependencyPayload!]!
   healthCheck: HealthStatusPayload!
   system(systemId: String!): SystemEntity!
   systems(filters: SearchSystemsPayload!): PaginatedSystemsPayload!
