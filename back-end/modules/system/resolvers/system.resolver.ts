@@ -40,8 +40,8 @@ export class SystemResolver {
   @Query((): typeof PaginatedSystemsPayload => {
     return PaginatedSystemsPayload;
   })
-  public systems(@Args('filters', new ValidationPipe({ transform: true })) searchPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
-    return this.systemService.searchSystems(searchPayload);
+  public systems(@Args('filters', new ValidationPipe({ transform: true })) searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
+    return this.systemService.searchSystems(searchSystemsPayload);
   }
 
   @Mutation((): typeof SystemEntity => {
