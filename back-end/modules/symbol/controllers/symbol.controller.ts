@@ -4,6 +4,7 @@ import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.pay
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
+import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { SymbolService } from '@/symbol/services/symbol.service';
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
@@ -21,8 +22,8 @@ export class SymbolController {
 
   @Get()
   @UseInterceptors(ClassSerializerInterceptor)
-  public async getSymbols(@Param('systemId') systemId: string, @Query() payload: any): Promise<PaginatedResultsPayload<SymbolEntity>> {
-    const [results, total] = await this.symbolService.readSymbols(systemId, payload);
+  public async getSymbols(@Param('systemId') systemId: string, @Query(new ValidationPipe({ transform: true })) searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedResultsPayload<SymbolEntity>> {
+    const [results, total] = await this.symbolService.readSymbols(systemId, searchSymbolsPayload);
 
     return new PaginatedResultsPayload(results, total);
   }
