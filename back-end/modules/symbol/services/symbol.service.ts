@@ -3,7 +3,7 @@ import { InvalidObjectIdException } from '@/common/exceptions/invalid-object-id.
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { InUseException } from '@/symbol/exceptions/in-use.exception';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
-import { SymbolUniqueTitleException } from '@/symbol/exceptions/symbol-unique-title.exception';
+import { UniqueTitleException } from '@/symbol/exceptions/unique-title.exception';
 import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
 import { SearchPayload } from '@/symbol/payloads/search.payload';
@@ -187,7 +187,7 @@ export class SymbolService {
     });
 
     if (collision) {
-      throw new SymbolUniqueTitleException();
+      throw new UniqueTitleException();
     }
   }
 
