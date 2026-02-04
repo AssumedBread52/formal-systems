@@ -4,7 +4,6 @@ import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.pay
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolService } from '@/symbol/services/symbol.service';
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ObjectId } from 'mongodb';
 
 @Controller('system/:systemId/symbol')
 export class SymbolController {
@@ -14,7 +13,7 @@ export class SymbolController {
   @Delete(':symbolId')
   @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  public async deleteSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolEntity> {
+  public async deleteSymbol(@SessionUser('id') sessionUserId: string, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolEntity> {
     return this.symbolService.delete(sessionUserId, systemId, symbolId);
   }
 
@@ -35,14 +34,14 @@ export class SymbolController {
   @Patch(':symbolId')
   @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  public patchSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string, @Body() payload: any): Promise<SymbolEntity> {
+  public patchSymbol(@SessionUser('id') sessionUserId: string, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string, @Body() payload: any): Promise<SymbolEntity> {
     return this.symbolService.update(sessionUserId, systemId, symbolId, payload);
   }
 
   @Post()
   @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  public postSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<SymbolEntity> {
+  public postSymbol(@SessionUser('id') sessionUserId: string, @Param('systemId') systemId: string, @Body() payload: any): Promise<SymbolEntity> {
     return this.symbolService.create(sessionUserId, systemId, payload);
   }
 };

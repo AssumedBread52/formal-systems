@@ -21,7 +21,7 @@ export class SymbolService {
   public constructor(@InjectRepository(SymbolEntity) private readonly symbolRepository: MongoRepository<SymbolEntity>, private readonly systemRepository: SystemRepository) {
   }
 
-  async create(sessionUserId: ObjectId, systemId: any, payload: any): Promise<SymbolEntity> {
+  async create(sessionUserId: string, systemId: any, payload: any): Promise<SymbolEntity> {
     const system = await this.systemRepository.findOneBy({
       id: systemId
     });
@@ -32,7 +32,7 @@ export class SymbolService {
 
     const { id, createdByUserId } = system;
 
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
+    if (createdByUserId.toString() !== sessionUserId) {
       throw new OwnershipException();
     }
 
@@ -49,17 +49,17 @@ export class SymbolService {
     symbol.type = type;
     symbol.content = content;
     symbol.systemId = new ObjectId(id);
-    symbol.createdByUserId = sessionUserId;
+    symbol.createdByUserId = new ObjectId(sessionUserId);
 
     return this.symbolRepository.save(symbol);
   }
 
-  async delete(sessionUserId: ObjectId, systemId: any, symbolId: any): Promise<SymbolEntity> {
+  async delete(sessionUserId: string, systemId: any, symbolId: any): Promise<SymbolEntity> {
     const symbol = await this.readById(systemId, symbolId);
 
     const { _id, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, proofAppearanceCount, createdByUserId } = symbol;
 
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
+    if (createdByUserId.toString() !== sessionUserId) {
       throw new OwnershipException();
     }
 
@@ -74,12 +74,12 @@ export class SymbolService {
     return symbol;
   }
 
-  async update(sessionUserId: ObjectId, containingSystemId: any, symbolId: any, payload: any): Promise<SymbolEntity> {
+  async update(sessionUserId: string, containingSystemId: any, symbolId: any, payload: any): Promise<SymbolEntity> {
     const symbol = await this.readById(containingSystemId, symbolId);
 
     const { title, type, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, proofAppearanceCount, systemId, createdByUserId } = symbol;
 
-    if (createdByUserId.toString() !== sessionUserId.toString()) {
+    if (createdByUserId.toString() !== sessionUserId) {
       throw new OwnershipException();
     }
 
