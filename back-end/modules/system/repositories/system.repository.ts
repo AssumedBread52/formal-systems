@@ -35,8 +35,8 @@ export class SystemRepository {
       }
 
       const [mongoSystems, total] = await this.repository.findAndCount({
-        take: validatedFindAndCountPayload.take,
         skip: validatedFindAndCountPayload.skip,
+        take: validatedFindAndCountPayload.take,
         where
       });
 
