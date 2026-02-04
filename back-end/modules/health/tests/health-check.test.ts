@@ -19,7 +19,7 @@ describe('Health Check', (): void => {
     app = await createTestApp();
   });
 
-  it('GET /health (database check pass, file check pass)', async (): Promise<void> => {
+  it('GET /health', async (): Promise<void> => {
     access.mockResolvedValueOnce();
     pingCheck.mockResolvedValueOnce({
       database: {
@@ -52,7 +52,7 @@ describe('Health Check', (): void => {
     });
   });
 
-  it('POST /graphql query healthCheck (database check pass, file check pass)', async (): Promise<void> => {
+  it('POST /graphql query healthCheck', async (): Promise<void> => {
     access.mockResolvedValueOnce();
     pingCheck.mockResolvedValueOnce({
       database: {

@@ -18,7 +18,7 @@ describe('Read Session User', (): void => {
     app = await createTestApp();
   });
 
-  it('GET /user/session-user (token: valid)', async (): Promise<void> => {
+  it('GET /user/session-user', async (): Promise<void> => {
     const userId = new ObjectId();
     const firstName = 'Test1';
     const lastName = 'User1';
@@ -78,7 +78,7 @@ describe('Read Session User', (): void => {
     });
   });
 
-  it('POST /graphql query sessionUser (token: valid)', async (): Promise<void> => {
+  it('POST /graphql query sessionUser', async (): Promise<void> => {
     const userId = new ObjectId();
     const firstName = 'Test1';
     const lastName = 'User1';

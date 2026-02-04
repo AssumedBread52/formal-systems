@@ -21,7 +21,7 @@ describe('Create System', (): void => {
     app = await createTestApp();
   });
 
-  it('POST /system (save: successful, conflict: not found, token: valid)', async (): Promise<void> => {
+  it('POST /system', async (): Promise<void> => {
     const userId = new ObjectId();
     const firstName = 'Test1';
     const lastName = 'User1';
@@ -130,7 +130,7 @@ describe('Create System', (): void => {
     });
   });
 
-  it('POST /graphql mutation createSystem (save: successful, conflict: not found, token: valid)', async (): Promise<void> => {
+  it('POST /graphql mutation createSystem', async (): Promise<void> => {
     const userId = new ObjectId();
     const firstName = 'Test1';
     const lastName = 'User1';

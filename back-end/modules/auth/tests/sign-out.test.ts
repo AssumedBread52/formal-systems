@@ -18,7 +18,7 @@ describe('Sign Out', (): void => {
     app = await createTestApp();
   });
 
-  it('POST /auth/sign-out (user search: successful)', async (): Promise<void> => {
+  it('POST /auth/sign-out', async (): Promise<void> => {
     const userId = new ObjectId();
     const user = new MongoUserEntity();
 
@@ -55,7 +55,7 @@ describe('Sign Out', (): void => {
     expect(cookies![1]).toBe('authStatus=; Path=\/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
   });
 
-  it('POST /graphql mutation signOut (user search: successful)', async (): Promise<void> => {
+  it('POST /graphql mutation signOut', async (): Promise<void> => {
     const userId = new ObjectId();
     const firstName = 'Test1';
     const lastName = 'User1';

@@ -17,7 +17,7 @@ describe('Sign In', (): void => {
     app = await createTestApp();
   });
 
-  it('POST /auth/sign-in (configuration read: successful, user search: successful, payload: valid)', async (): Promise<void> => {
+  it('POST /auth/sign-in', async (): Promise<void> => {
     const email = 'test1.user1@example.com';
     const password = 'Test1User1!';
     const user = new MongoUserEntity();
@@ -53,7 +53,7 @@ describe('Sign In', (): void => {
     expect(cookies![1]).toMatch(/^authStatus=true; Max-Age=1; Path=\/; Expires=(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (0[1-9]|[12]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} ([01]\d|2[0-3]):([0-5]\d):([0-5]\d) GMT; Secure$/);
   });
 
-  it('POST /graphql mutation signIn (configuration read: successful, user search: successful, payload: valid)', async (): Promise<void> => {
+  it('POST /graphql mutation signIn', async (): Promise<void> => {
     const userId = new ObjectId();
     const firstName = 'Test1';
     const lastName = 'User1';

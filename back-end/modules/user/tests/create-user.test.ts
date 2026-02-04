@@ -19,7 +19,7 @@ describe('Create User', (): void => {
     app = await createTestApp();
   });
 
-  it('POST /user (configuration read: successful, save: successful, conflict: not found, payload: valid)', async (): Promise<void> => {
+  it('POST /user', async (): Promise<void> => {
     const userId = new ObjectId();
     const firstName = 'Test1';
     const lastName = 'User1';
@@ -88,7 +88,7 @@ describe('Create User', (): void => {
     expect(cookies![1]).toMatch(/^authStatus=true; Max-Age=1; Path=\/; Expires=(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (0[1-9]|[12]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} ([01]\d|2[0-3]):([0-5]\d):([0-5]\d) GMT; Secure$/);
   });
 
-  it('POST /graphql mutation createUser (configuration read: successful, save: successful, conflict: not found, payload: valid)', async (): Promise<void> => {
+  it('POST /graphql mutation createUser', async (): Promise<void> => {
     const userId = new ObjectId();
     const firstName = 'Test1';
     const lastName = 'User1';

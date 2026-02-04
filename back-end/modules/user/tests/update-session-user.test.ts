@@ -20,7 +20,7 @@ describe('Update Session User', (): void => {
     app = await createTestApp();
   });
 
-  it('PATCH /user/session-user (conflict: not found, token: valid)', async (): Promise<void> => {
+  it('PATCH /user/session-user', async (): Promise<void> => {
     const userId = new ObjectId();
     const systemCount = 1;
     const constantSymbolCount = 6;
@@ -119,7 +119,7 @@ describe('Update Session User', (): void => {
     });
   });
 
-  it('POST /graphql query sessionUser (conflict: not found, token: valid)', async (): Promise<void> => {
+  it('POST /graphql query sessionUser', async (): Promise<void> => {
     const userId = new ObjectId();
     const systemCount = 1;
     const constantSymbolCount = 6;
