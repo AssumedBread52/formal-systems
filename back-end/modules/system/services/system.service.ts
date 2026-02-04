@@ -115,6 +115,26 @@ export class SystemService {
     }
   }
 
+  public async searchSystems(searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
+    try {
+      const validatedSearchSystemsPayload = validatePayload(searchSystemsPayload, SearchSystemsPayload);
+
+      const take = validatedSearchSystemsPayload.pageSize;
+      const skip = (validatedSearchSystemsPayload.page - 1) * validatedSearchSystemsPayload.pageSize;
+
+      const [systems, total] = await this.systemRepository.findAndCount({
+        skip,
+        take,
+        keywords: validatedSearchSystemsPayload.keywords,
+        userIds: validatedSearchSystemsPayload.userIds
+      });
+
+      return new PaginatedSystemsPayload(systems, total);
+    } catch {
+      throw new InternalServerErrorException('Reading systems failed');
+    }
+  }
+
   public async selectById(systemId: string): Promise<SystemEntity> {
     try {
       if (!isMongoId(systemId)) {
@@ -136,26 +156,6 @@ export class SystemService {
       }
 
       throw new InternalServerErrorException('Reading system failed');
-    }
-  }
-
-  public async searchSystems(searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
-    try {
-      const validatedSearchSystemsPayload = validatePayload(searchSystemsPayload, SearchSystemsPayload);
-
-      const take = validatedSearchSystemsPayload.pageSize;
-      const skip = (validatedSearchSystemsPayload.page - 1) * validatedSearchSystemsPayload.pageSize;
-
-      const [systems, total] = await this.systemRepository.findAndCount({
-        skip,
-        take,
-        keywords: validatedSearchSystemsPayload.keywords,
-        userIds: validatedSearchSystemsPayload.userIds
-      });
-
-      return new PaginatedSystemsPayload(systems, total);
-    } catch {
-      throw new InternalServerErrorException('Reading systems failed');
     }
   }
 
