@@ -13,7 +13,7 @@ export class SymbolController {
   @Delete(':symbolId')
   @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  public async deleteSymbol(@SessionUser('id') sessionUserId: string, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolEntity> {
+  public deleteSymbol(@SessionUser('id') sessionUserId: string, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolEntity> {
     return this.symbolService.delete(sessionUserId, systemId, symbolId);
   }
 
