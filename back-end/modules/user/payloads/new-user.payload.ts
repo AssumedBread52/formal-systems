@@ -3,16 +3,24 @@ import { IsEmail, IsNotEmpty, IsStrongPassword } from 'class-validator';
 
 @InputType()
 export class NewUserPayload {
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsNotEmpty()
   public readonly firstName: string = '';
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsNotEmpty()
   public readonly lastName: string = '';
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsEmail()
   public readonly email: string = '';
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsStrongPassword()
   public readonly password: string = '';
 };

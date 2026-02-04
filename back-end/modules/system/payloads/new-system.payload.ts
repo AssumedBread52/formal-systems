@@ -3,10 +3,14 @@ import { IsNotEmpty } from 'class-validator';
 
 @InputType()
 export class NewSystemPayload {
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsNotEmpty()
   public readonly title: string = '';
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsNotEmpty()
   public readonly description: string = '';
 };

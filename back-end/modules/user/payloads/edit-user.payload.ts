@@ -3,13 +3,19 @@ import { IsEmail, IsNotEmpty, IsOptional, IsStrongPassword } from 'class-validat
 
 @InputType()
 export class EditUserPayload {
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsNotEmpty()
   public readonly newFirstName: string = '';
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsNotEmpty()
   public readonly newLastName: string = '';
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsEmail()
   public readonly newEmail: string = '';
   @Field({

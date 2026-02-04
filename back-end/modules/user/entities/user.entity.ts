@@ -9,13 +9,19 @@ export class UserEntity {
   })
   @IsMongoId()
   public id: string = '';
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsNotEmpty()
   public firstName: string = '';
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsNotEmpty()
   public lastName: string = '';
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsEmail()
   public email: string = '';
   @Exclude()

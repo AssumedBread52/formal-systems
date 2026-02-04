@@ -8,10 +8,14 @@ export class SystemEntity {
   })
   @IsMongoId()
   public id: string = '';
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsNotEmpty()
   public title: string = '';
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   @IsNotEmpty()
   public description: string = '';
   @Field((): typeof Int => {

@@ -3,9 +3,13 @@ import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class DependencyPayload {
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   public readonly name: string;
-  @Field()
+  @Field((): typeof String => {
+    return String;
+  })
   public readonly version: string;
   @Field((): typeof DependencyType => {
     return DependencyType;
