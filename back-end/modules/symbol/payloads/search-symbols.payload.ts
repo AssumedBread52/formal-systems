@@ -22,7 +22,7 @@ export class SearchSymbolsPayload {
   @Type((): typeof Number => {
     return Number;
   })
-  public readonly count: number = 10;
+  public readonly pageSize: number = 10;
   @ArrayUnique()
   @Field((): [typeof String] => {
     return [String];
@@ -41,5 +41,5 @@ export class SearchSymbolsPayload {
   @IsEnum(SymbolType, {
     each: true
   })
-  public readonly types: SymbolType[] = [];
+  types: SymbolType[] = [];
 };

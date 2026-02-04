@@ -155,7 +155,7 @@ export class SymbolService {
     const searchPayload = this.payloadCheck(payload, SearchSymbolsPayload);
     const systemId = this.idCheck(containingSystemId);
 
-    const { page, count, keywords, types } = searchPayload;
+    const { page, pageSize, keywords, types } = searchPayload;
     const where = {
       systemId
     } as RootFilterOperators<SymbolEntity>;
@@ -174,8 +174,8 @@ export class SymbolService {
     }
 
     return this.symbolRepository.findAndCount({
-      skip: (page - 1) * count,
-      take: count,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
       where
     });
   }
