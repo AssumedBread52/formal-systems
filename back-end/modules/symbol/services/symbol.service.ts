@@ -151,7 +151,7 @@ export class SymbolService {
     return symbol;
   }
 
-  readSymbols(containingSystemId: any, payload: any): Promise<[SymbolEntity[], number]> {
+  searchSymbols(containingSystemId: any, payload: any): Promise<[SymbolEntity[], number]> {
     const searchPayload = this.payloadCheck(payload, SearchSymbolsPayload);
     const systemId = this.idCheck(containingSystemId);
 

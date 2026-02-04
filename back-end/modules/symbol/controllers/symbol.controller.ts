@@ -23,7 +23,7 @@ export class SymbolController {
   @Get()
   @UseInterceptors(ClassSerializerInterceptor)
   public async getSymbols(@Param('systemId') systemId: string, @Query(new ValidationPipe({ transform: true })) searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedResultsPayload<SymbolEntity>> {
-    const [results, total] = await this.symbolService.readSymbols(systemId, searchSymbolsPayload);
+    const [results, total] = await this.symbolService.searchSymbols(systemId, searchSymbolsPayload);
 
     return new PaginatedResultsPayload(results, total);
   }
