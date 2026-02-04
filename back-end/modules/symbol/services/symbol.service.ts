@@ -6,6 +6,7 @@ import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.ex
 import { UniqueTitleException } from '@/symbol/exceptions/unique-title.exception';
 import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
+import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.payload';
 import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemRepository } from '@/system/repositories/system.repository';
@@ -151,7 +152,7 @@ export class SymbolService {
     return symbol;
   }
 
-  searchSymbols(containingSystemId: any, payload: any): Promise<[SymbolEntity[], number]> {
+  async searchSymbols(containingSystemId: any, payload: any): Promise<PaginatedSymbolsPayload> {
     const searchPayload = this.payloadCheck(payload, SearchSymbolsPayload);
     const systemId = this.idCheck(containingSystemId);
 
@@ -173,11 +174,13 @@ export class SymbolService {
       };
     }
 
-    return this.symbolRepository.findAndCount({
+    const [results, total] = await this.symbolRepository.findAndCount({
       skip: (page - 1) * pageSize,
       take: pageSize,
       where
     });
+
+    return new PaginatedSymbolsPayload(results, total);
   }
 
   async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
