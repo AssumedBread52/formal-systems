@@ -13,7 +13,7 @@ export class SearchSymbolsPayload {
   @Type((): typeof Number => {
     return Number;
   })
-  page: number = 1;
+  public readonly page: number = 1;
   @Field((): typeof Int => {
     return Int;
   })
@@ -22,7 +22,7 @@ export class SearchSymbolsPayload {
   @Type((): typeof Number => {
     return Number;
   })
-  count: number = 10;
+  public readonly count: number = 10;
   @ArrayUnique()
   @Field((): [typeof String] => {
     return [String];
@@ -31,7 +31,7 @@ export class SearchSymbolsPayload {
   @IsNotEmpty({
     each: true
   })
-  keywords: string[] = [];
+  public readonly keywords: string[] = [];
   @ArrayMaxSize(Object.keys(SymbolType).length)
   @ArrayUnique()
   @Field((): [typeof SymbolType] => {
@@ -41,5 +41,5 @@ export class SearchSymbolsPayload {
   @IsEnum(SymbolType, {
     each: true
   })
-  types: SymbolType[] = [];
+  public readonly types: SymbolType[] = [];
 };
