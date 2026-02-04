@@ -9,13 +9,13 @@ import { ObjectId } from 'mongodb';
 
 @Controller('system/:systemId/symbol')
 export class SymbolController {
-  constructor(private symbolService: SymbolService) {
+  public constructor(private symbolService: SymbolService) {
   }
 
   @Delete(':symbolId')
   @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  async deleteSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolPayload> {
+  public async deleteSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolPayload> {
     const deletedSymbol = await this.symbolService.delete(sessionUserId, systemId, symbolId);
 
     return new SymbolPayload(deletedSymbol);
@@ -23,7 +23,7 @@ export class SymbolController {
 
   @Get()
   @UseInterceptors(ClassSerializerInterceptor)
-  async getSymbols(@Param('systemId') systemId: string, @Query() payload: any): Promise<PaginatedResultsPayload<SymbolEntity>> {
+  public async getSymbols(@Param('systemId') systemId: string, @Query() payload: any): Promise<PaginatedResultsPayload<SymbolEntity>> {
     const [results, total] = await this.symbolService.readSymbols(systemId, payload);
 
     return new PaginatedResultsPayload(results, total);
@@ -31,7 +31,7 @@ export class SymbolController {
 
   @Get(':symbolId')
   @UseInterceptors(ClassSerializerInterceptor)
-  async getById(@Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolPayload> {
+  public async getById(@Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolPayload> {
     const symbol = await this.symbolService.readById(systemId, symbolId);
 
     return new SymbolPayload(symbol);
@@ -40,7 +40,7 @@ export class SymbolController {
   @Patch(':symbolId')
   @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  async patchSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string, @Body() payload: any): Promise<SymbolPayload> {
+  public async patchSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string, @Body() payload: any): Promise<SymbolPayload> {
     const updatedSymbol = await this.symbolService.update(sessionUserId, systemId, symbolId, payload);
 
     return new SymbolPayload(updatedSymbol);
@@ -49,7 +49,7 @@ export class SymbolController {
   @Post()
   @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  async postSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<SymbolPayload> {
+  public async postSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<SymbolPayload> {
     const createdSymbol = await this.symbolService.create(sessionUserId, systemId, payload);
 
     return new SymbolPayload(createdSymbol);
