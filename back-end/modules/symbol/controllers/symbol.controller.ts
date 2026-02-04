@@ -4,7 +4,7 @@ import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.pay
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolPayload } from '@/symbol/payloads/symbol.payload';
 import { SymbolService } from '@/symbol/services/symbol.service';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 
 @Controller('system/:systemId/symbol')
@@ -14,6 +14,7 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Delete(':symbolId')
+  @UseInterceptors(ClassSerializerInterceptor)
   async deleteSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolPayload> {
     const deletedSymbol = await this.symbolService.delete(sessionUserId, systemId, symbolId);
 
@@ -21,6 +22,7 @@ export class SymbolController {
   }
 
   @Get()
+  @UseInterceptors(ClassSerializerInterceptor)
   async getSymbols(@Param('systemId') systemId: string, @Query() payload: any): Promise<PaginatedResultsPayload<SymbolEntity>> {
     const [results, total] = await this.symbolService.readSymbols(systemId, payload);
 
@@ -28,6 +30,7 @@ export class SymbolController {
   }
 
   @Get(':symbolId')
+  @UseInterceptors(ClassSerializerInterceptor)
   async getById(@Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolPayload> {
     const symbol = await this.symbolService.readById(systemId, symbolId);
 
@@ -36,6 +39,7 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Patch(':symbolId')
+  @UseInterceptors(ClassSerializerInterceptor)
   async patchSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Param('symbolId') symbolId: string, @Body() payload: any): Promise<SymbolPayload> {
     const updatedSymbol = await this.symbolService.update(sessionUserId, systemId, symbolId, payload);
 
@@ -44,6 +48,7 @@ export class SymbolController {
 
   @UseGuards(JwtGuard)
   @Post()
+  @UseInterceptors(ClassSerializerInterceptor)
   async postSymbol(@SessionUser('id') sessionUserId: ObjectId, @Param('systemId') systemId: string, @Body() payload: any): Promise<SymbolPayload> {
     const createdSymbol = await this.symbolService.create(sessionUserId, systemId, payload);
 
