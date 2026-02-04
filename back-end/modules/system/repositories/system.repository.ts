@@ -53,7 +53,7 @@ export class SystemRepository {
     }
   }
 
-  public async findOneBy(findOneByPayload: FindOneByPayload) {
+  public async findOneBy(findOneByPayload: FindOneByPayload): Promise<SystemEntity | null> {
     try {
       const validatedFindOneByPayload = validatePayload(findOneByPayload, FindOneByPayload);
 
