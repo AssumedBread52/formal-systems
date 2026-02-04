@@ -9,7 +9,7 @@ import { ObjectId } from 'mongodb';
 
 @Controller('system/:systemId/symbol')
 export class SymbolController {
-  public constructor(private symbolService: SymbolService) {
+  public constructor(private readonly symbolService: SymbolService) {
   }
 
   @Delete(':symbolId')
