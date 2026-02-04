@@ -14,7 +14,7 @@ export class SymbolEntity {
     enum: SymbolType,
     type: 'enum'
   })
-  type: SymbolType = SymbolType.Constant;
+  type: SymbolType = SymbolType.constant;
   @Column()
   content: string = '';
   @Column()

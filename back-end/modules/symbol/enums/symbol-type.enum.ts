@@ -1,4 +1,10 @@
+import { registerEnumType } from '@nestjs/graphql';
+
 export enum SymbolType {
-  Constant = 'Constant',
-  Variable = 'Variable'
+  constant = 'constant',
+  variable = 'variable'
 };
+
+registerEnumType(SymbolType, {
+  name: 'SymbolType'
+});

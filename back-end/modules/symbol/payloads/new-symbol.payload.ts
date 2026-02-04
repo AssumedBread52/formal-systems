@@ -7,7 +7,7 @@ export class NewSymbolPayload {
   @IsNotEmpty()
   description: string = '';
   @IsEnum(SymbolType)
-  type: SymbolType = SymbolType.Constant;
+  type: SymbolType = SymbolType.constant;
   @IsNotEmpty()
   content: string = '';
 };
