@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { ArrayMaxSize, IsArray, IsEnum, IsInt, IsNotEmpty, Min } from 'class-validator';
 
 @InputType()
-export class SearchPayload {
+export class SearchSymbolsPayload {
   @Field((): typeof Int => {
     return Int;
   })

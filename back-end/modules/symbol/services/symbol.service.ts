@@ -6,7 +6,7 @@ import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.ex
 import { UniqueTitleException } from '@/symbol/exceptions/unique-title.exception';
 import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
-import { SearchPayload } from '@/symbol/payloads/search.payload';
+import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemRepository } from '@/system/repositories/system.repository';
 import { Injectable, ValidationPipe } from '@nestjs/common';
@@ -152,7 +152,7 @@ export class SymbolService {
   }
 
   readSymbols(containingSystemId: any, payload: any): Promise<[SymbolEntity[], number]> {
-    const searchPayload = this.payloadCheck(payload, SearchPayload);
+    const searchPayload = this.payloadCheck(payload, SearchSymbolsPayload);
     const systemId = this.idCheck(containingSystemId);
 
     const { page, count, keywords, types } = searchPayload;
