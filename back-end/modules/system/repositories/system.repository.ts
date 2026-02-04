@@ -90,11 +90,13 @@ export class SystemRepository {
 
       const systemId = mongoSystem._id;
 
-      const deletedSystem = await this.repository.remove(mongoSystem);
+      const deletedMongoSystem = await this.repository.remove(mongoSystem);
 
-      deletedSystem._id = systemId;
+      deletedMongoSystem._id = systemId;
 
-      return this.createDomainEntityFromDatabaseEntity(deletedSystem);
+      const deletedSystem = this.createDomainEntityFromDatabaseEntity(deletedMongoSystem);
+
+      return validatePayload(deletedSystem, SystemEntity);
     } catch {
       throw new Error('Removing system from database failed');
     }
