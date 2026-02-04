@@ -55,7 +55,7 @@ export class SymbolService {
   }
 
   async delete(sessionUserId: string, systemId: any, symbolId: any): Promise<SymbolEntity> {
-    const symbol = await this.readById(systemId, symbolId);
+    const symbol = await this.selectById(systemId, symbolId);
 
     const { _id, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, proofAppearanceCount, createdByUserId } = symbol;
 
@@ -75,7 +75,7 @@ export class SymbolService {
   }
 
   async update(sessionUserId: string, containingSystemId: any, symbolId: any, payload: any): Promise<SymbolEntity> {
-    const symbol = await this.readById(containingSystemId, symbolId);
+    const symbol = await this.selectById(containingSystemId, symbolId);
 
     const { title, type, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, proofAppearanceCount, systemId, createdByUserId } = symbol;
 
@@ -138,7 +138,7 @@ export class SymbolService {
     return newSymbolDictionary;
   }
 
-  async readById(systemId: any, symbolId: any): Promise<SymbolEntity> {
+  async selectById(systemId: any, symbolId: any): Promise<SymbolEntity> {
     const symbol = await this.symbolRepository.findOneBy({
       _id: this.idCheck(symbolId),
       systemId: this.idCheck(systemId)

@@ -28,7 +28,7 @@ export class SymbolController {
   @Get(':symbolId')
   @UseInterceptors(ClassSerializerInterceptor)
   public getById(@Param('systemId') systemId: string, @Param('symbolId') symbolId: string): Promise<SymbolEntity> {
-    return this.symbolService.readById(systemId, symbolId);
+    return this.symbolService.selectById(systemId, symbolId);
   }
 
   @Patch(':symbolId')
