@@ -2,6 +2,7 @@ import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
+import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -9,7 +10,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
-import { MongoSystemEntity } from '../entities/mongo-system.entity';
 
 describe('Create System', (): void => {
   const findOneBy = findOneByMock();
