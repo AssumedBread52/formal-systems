@@ -8,20 +8,20 @@ export class NewSymbolPayload {
     return String;
   })
   @IsNotEmpty()
-  title: string = '';
+  public readonly title: string = '';
   @Field((): typeof String => {
     return String;
   })
   @IsNotEmpty()
-  description: string = '';
+  public readonly description: string = '';
   @Field((): typeof SymbolType => {
     return SymbolType;
   })
   @IsEnum(SymbolType)
-  type: SymbolType = SymbolType.constant;
+  public readonly type: SymbolType = SymbolType.constant;
   @Field((): typeof String => {
     return String;
   })
   @IsNotEmpty()
-  content: string = '';
+  public readonly content: string = '';
 };
