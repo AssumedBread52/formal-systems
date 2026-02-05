@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SymbolController } from './controllers/symbol.controller';
 import { MongoSymbolEntity } from './entities/mongo-symbol.entity';
 import { SymbolRepository } from './repositories/symbol.repository';
+import { SymbolResolver } from './resolvers/symbol.resolver';
 import { SymbolService } from './services/symbol.service';
 
 @Module({
@@ -18,6 +19,7 @@ import { SymbolService } from './services/symbol.service';
   ],
   providers: [
     SymbolRepository,
+    SymbolResolver,
     SymbolService
   ],
   exports: [

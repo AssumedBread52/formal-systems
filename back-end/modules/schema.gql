@@ -65,13 +65,46 @@ type PaginatedSystemsPayload {
   total: Int!
 }
 
+type SymbolEntity {
+  id: String!
+  title: String!
+  description: String!
+  type: SymbolType!
+  content: String!
+  axiomAppearanceCount: Int!
+  theoremAppearanceCount: Int!
+  deductionAppearanceCount: Int!
+  proofAppearanceCount: Int!
+  systemId: String!
+  createdByUserId: String!
+}
+
+enum SymbolType {
+  constant
+  variable
+}
+
+type PaginatedSymbolsPayload {
+  results: [SymbolEntity!]!
+  total: Int!
+}
+
 type Query {
   sessionUser: UserEntity!
   user(userId: String!): UserEntity!
   dependencies: [DependencyPayload!]!
   healthCheck: HealthStatusPayload!
+  symbol(systemId: String!, symbolId: String!): SymbolEntity!
+  symbols(systemId: String!, filters: SearchSymbolsPayload!): PaginatedSymbolsPayload!
   system(systemId: String!): SystemEntity!
   systems(filters: SearchSystemsPayload!): PaginatedSystemsPayload!
+}
+
+input SearchSymbolsPayload {
+  page: Int! = 1
+  pageSize: Int! = 10
+  keywords: [String!]! = []
+  types: [SymbolType!]! = []
 }
 
 input SearchSystemsPayload {
@@ -87,9 +120,11 @@ type Mutation {
   signOut: UserEntity!
   createUser(userPayload: NewUserPayload!): UserEntity!
   updateUser(userPayload: EditUserPayload!): UserEntity!
+  createSymbol(systemId: String!, symbolPayload: NewSymbolPayload!): SymbolEntity!
+  deleteSymbol(systemId: String!, symbolId: String!): SymbolEntity!
+  updateSystem(systemId: String!, systemPayload: EditSystemPayload!): SystemEntity!
   createSystem(systemPayload: NewSystemPayload!): SystemEntity!
   deleteSystem(systemId: String!): SystemEntity!
-  updateSystem(systemId: String!, systemPayload: EditSystemPayload!): SystemEntity!
 }
 
 input NewUserPayload {
@@ -106,12 +141,19 @@ input EditUserPayload {
   newPassword: String
 }
 
-input NewSystemPayload {
+input NewSymbolPayload {
   title: String! = ""
   description: String! = ""
+  type: SymbolType! = constant
+  content: String! = ""
 }
 
 input EditSystemPayload {
   newTitle: String! = ""
   newDescription: String! = ""
+}
+
+input NewSystemPayload {
+  title: String! = ""
+  description: String! = ""
 }
