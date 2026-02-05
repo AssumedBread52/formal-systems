@@ -1,3 +1,4 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entitiy';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { Injectable } from '@nestjs/common';
@@ -36,7 +37,23 @@ export class SymbolRepository {
   }
 
   public async save(symbol: SymbolEntity): Promise<SymbolEntity> {
-    return this.createDomainEntityFromDatabaseEntity(await this.repository.save(this.createDatabaseEntityFromDomainEntity(symbol)));
+    try {
+      if (!symbol.id) {
+        symbol.id = (new ObjectId()).toString();
+      }
+
+      const validatedSymbol = validatePayload(symbol, SymbolEntity);
+
+      const mongoSymbol = this.createDatabaseEntityFromDomainEntity(validatedSymbol);
+
+      const savedMongoSymbol = await this.repository.save(mongoSymbol);
+
+      const savedSymbol = this.createDomainEntityFromDatabaseEntity(savedMongoSymbol);
+
+      return validatePayload(savedSymbol, SymbolEntity);
+    } catch {
+      throw new Error('Saving symbol to database failed');
+    }
   }
 
   private createDatabaseEntityFromDomainEntity(symbol: SymbolEntity): MongoSymbolEntity {
