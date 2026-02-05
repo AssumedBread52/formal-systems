@@ -33,21 +33,21 @@ describe('Update Session User', (): void => {
     const newLastName = 'NewUser1';
     const newEmail = 'newtest1.newuser1@example.com';
     const newPassword = 'NewTestNewUser1!';
-    const originalUser = new MongoUserEntity();
+    const user = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
 
-    originalUser._id = userId;
-    originalUser.firstName = 'Test1';
-    originalUser.lastName = 'User1';
-    originalUser.email = 'test1.user1@example.com';
-    originalUser.hashedPassword = hashSync('TestUser1!');
-    originalUser.systemCount = systemCount;
-    originalUser.constantSymbolCount = constantSymbolCount;
-    originalUser.variableSymbolCount = variableSymbolCount;
-    originalUser.axiomCount = axiomCount;
-    originalUser.theoremCount = theoremCount;
-    originalUser.deductionCount = deductionCount;
-    originalUser.proofCount = proofCount;
+    user._id = userId;
+    user.firstName = 'Test1';
+    user.lastName = 'User1';
+    user.email = 'test1.user1@example.com';
+    user.hashedPassword = hashSync('TestUser1!');
+    user.systemCount = systemCount;
+    user.constantSymbolCount = constantSymbolCount;
+    user.variableSymbolCount = variableSymbolCount;
+    user.axiomCount = axiomCount;
+    user.theoremCount = theoremCount;
+    user.deductionCount = deductionCount;
+    user.proofCount = proofCount;
     updatedUser._id = userId;
     updatedUser.firstName = newFirstName;
     updatedUser.lastName = newLastName;
@@ -61,7 +61,7 @@ describe('Update Session User', (): void => {
     updatedUser.deductionCount = deductionCount;
     updatedUser.proofCount = proofCount;
 
-    findOneBy.mockResolvedValueOnce(originalUser);
+    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
     save.mockResolvedValueOnce(updatedUser);
 
@@ -132,21 +132,21 @@ describe('Update Session User', (): void => {
     const newLastName = 'NewUser1';
     const newEmail = 'newtest1.newuser1@example.com';
     const newPassword = 'NewTestNewUser1!';
-    const originalUser = new MongoUserEntity();
+    const user = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
 
-    originalUser._id = userId;
-    originalUser.firstName = 'Test1';
-    originalUser.lastName = 'User1';
-    originalUser.email = 'test1.user1@example.com';
-    originalUser.hashedPassword = hashSync('TestUser1!');
-    originalUser.systemCount = systemCount;
-    originalUser.constantSymbolCount = constantSymbolCount;
-    originalUser.variableSymbolCount = variableSymbolCount;
-    originalUser.axiomCount = axiomCount;
-    originalUser.theoremCount = theoremCount;
-    originalUser.deductionCount = deductionCount;
-    originalUser.proofCount = proofCount;
+    user._id = userId;
+    user.firstName = 'Test1';
+    user.lastName = 'User1';
+    user.email = 'test1.user1@example.com';
+    user.hashedPassword = hashSync('TestUser1!');
+    user.systemCount = systemCount;
+    user.constantSymbolCount = constantSymbolCount;
+    user.variableSymbolCount = variableSymbolCount;
+    user.axiomCount = axiomCount;
+    user.theoremCount = theoremCount;
+    user.deductionCount = deductionCount;
+    user.proofCount = proofCount;
     updatedUser._id = userId;
     updatedUser.firstName = newFirstName;
     updatedUser.lastName = newLastName;
@@ -160,7 +160,7 @@ describe('Update Session User', (): void => {
     updatedUser.deductionCount = deductionCount;
     updatedUser.proofCount = proofCount;
 
-    findOneBy.mockResolvedValueOnce(originalUser);
+    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
     save.mockResolvedValueOnce(updatedUser);
 
