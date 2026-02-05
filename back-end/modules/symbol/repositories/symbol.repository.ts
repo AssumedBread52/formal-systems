@@ -1,5 +1,5 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
-import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entitiy';
+import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { FindAndCountPayload } from '@/symbol/payloads/find-and-count.payload';
 import { FindOneByPayload } from '@/symbol/payloads/find-one-by.payload';
