@@ -19,14 +19,14 @@ export class SystemRepository {
 
       const where = {} as Filter<MongoSystemEntity>;
 
-      if (0 !== validatedFindAndCountPayload.keywords.length) {
+      if (0 < validatedFindAndCountPayload.keywords.length) {
         where.$text = {
           $caseSensitive: false,
           $search: validatedFindAndCountPayload.keywords.join(',')
         };
       }
 
-      if (0 !== validatedFindAndCountPayload.userIds.length) {
+      if (0 < validatedFindAndCountPayload.userIds.length) {
         where.createdByUserId = {
           $in: validatedFindAndCountPayload.userIds.map((userId: string): ObjectId => {
             return new ObjectId(userId);

@@ -70,14 +70,14 @@ describe('Read Systems', (): void => {
 
     const where = {} as Filter<MongoSystemEntity>;
 
-    if (0 !== keywords.length) {
+    if (0 < keywords.length) {
       where.$text = {
         $caseSensitive: false,
         $search: keywords.join(',')
       };
     }
 
-    if (0 !== userIds.length) {
+    if (0 < userIds.length) {
       where.createdByUserId = {
         $in: userIds
       };
@@ -162,14 +162,14 @@ describe('Read Systems', (): void => {
 
     const where = {} as Filter<MongoSystemEntity>;
 
-    if (0 !== keywords.length) {
+    if (0 < keywords.length) {
       where.$text = {
         $caseSensitive: false,
         $search: keywords.join(',')
       };
     }
 
-    if (0 !== userIds.length) {
+    if (0 < userIds.length) {
       where.createdByUserId = {
         $in: userIds
       };
