@@ -141,8 +141,8 @@ export class SymbolService {
 
   async selectById(systemId: any, symbolId: any): Promise<SymbolEntity> {
     const symbol = await this.symbolRepository.findOneBy({
-      _id: this.idCheck(symbolId),
-      systemId: this.idCheck(systemId)
+      id: this.idCheck(symbolId).toString(),
+      systemId: this.idCheck(systemId).toString()
     });
 
     if (!symbol) {
@@ -186,7 +186,7 @@ export class SymbolService {
   async conflictCheck(title: string, systemId: string): Promise<void> {
     const collision = await this.symbolRepository.findOneBy({
       title,
-      systemId: new ObjectId(systemId)
+      systemId
     });
 
     if (collision) {
