@@ -48,7 +48,7 @@ export class SymbolResolver {
     return SymbolEntity;
   })
   @UseGuards(JwtGuard)
-  public updateSystem(@SessionUser('id') sessionUserId: string, @Args('systemId') systemId: string, @Args('symbolId') symbolId: string, @Args('symbolPayload', new ValidationPipe({ transform: true })) editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
+  public updateSymbol(@SessionUser('id') sessionUserId: string, @Args('systemId') systemId: string, @Args('symbolId') symbolId: string, @Args('symbolPayload', new ValidationPipe({ transform: true })) editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
     return this.symbolService.update(sessionUserId, systemId, symbolId, editSymbolPayload);
   }
 };
