@@ -41,5 +41,5 @@ export class SearchSymbolsPayload {
   @IsEnum(SymbolType, {
     each: true
   })
-  types: SymbolType[] = [];
+  public readonly types: SymbolType[] = [];
 };
