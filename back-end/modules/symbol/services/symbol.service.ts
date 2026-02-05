@@ -15,7 +15,6 @@ import { Injectable, ValidationPipe } from '@nestjs/common';
 import { ClassConstructor, plainToClass } from 'class-transformer';
 import { isMongoId, validateSync } from 'class-validator';
 import { ObjectId } from 'mongodb';
-import { RootFilterOperators } from 'typeorm';
 
 @Injectable()
 export class SymbolService {
@@ -157,27 +156,13 @@ export class SymbolService {
     const systemId = this.idCheck(containingSystemId);
 
     const { page, pageSize, keywords, types } = searchPayload;
-    const where = {
-      systemId
-    } as RootFilterOperators<SymbolEntity>;
-
-    if (0 !== keywords.length) {
-      where.$text = {
-        $caseSensitive: false,
-        $search: keywords.join(',')
-      };
-    }
-
-    if (0 !== types.length) {
-      where['type'] = {
-        $in: types
-      };
-    }
 
     const [results, total] = await this.symbolRepository.findAndCount({
       skip: (page - 1) * pageSize,
       take: pageSize,
-      where
+      systemId: systemId.toString(),
+      keywords,
+      types
     });
 
     return new PaginatedSymbolsPayload(results, total);

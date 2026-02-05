@@ -1,12 +1,12 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entitiy';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
+import { FindAndCountPayload } from '@/symbol/payloads/find-and-count.payload';
 import { FindOneByPayload } from '@/symbol/payloads/find-one-by.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
 import { Filter, FilterOperators, FindManyOptions, MongoRepository } from 'typeorm';
-import { MongoFindManyOptions } from 'typeorm/find-options/mongodb/MongoFindManyOptions';
 
 @Injectable()
 export class SymbolRepository {
@@ -17,10 +17,44 @@ export class SymbolRepository {
     return (await this.repository.find(options)).map(this.createDomainEntityFromDatabaseEntity);
   }
 
-  public async findAndCount(options?: MongoFindManyOptions<MongoSymbolEntity> | undefined): Promise<[SymbolEntity[], number]> {
-    const [symbols, total] = await this.repository.findAndCount(options);
+  public async findAndCount(findAndCountPayload: FindAndCountPayload): Promise<[SymbolEntity[], number]> {
+    try {
+      const validatedFindAndCountPayload = validatePayload(findAndCountPayload, FindAndCountPayload);
 
-    return [symbols.map(this.createDomainEntityFromDatabaseEntity), total];
+      const where = {
+        systemId: new ObjectId(validatedFindAndCountPayload.systemId)
+      } as Filter<MongoSymbolEntity>;
+
+      if (0 < validatedFindAndCountPayload.keywords.length) {
+        where.$text = {
+          $caseSensitive: false,
+          $search: validatedFindAndCountPayload.keywords.join(',')
+        };
+      }
+
+      if (0 < validatedFindAndCountPayload.types.length) {
+        where.type = {
+          $in: validatedFindAndCountPayload.types
+        };
+      }
+
+      const [mongoSymbols, total] = await this.repository.findAndCount({
+        skip: validatedFindAndCountPayload.skip,
+        take: validatedFindAndCountPayload.take,
+        where
+      });
+
+      const symbols = mongoSymbols.map(this.createDomainEntityFromDatabaseEntity);
+
+      return [
+        symbols.map((symbol: SymbolEntity): SymbolEntity => {
+          return validatePayload(symbol, SymbolEntity);
+        }),
+        total
+      ];
+    } catch {
+      throw new Error('Finding symbols failed');
+    }
   }
 
   public async findOneBy(findOneByPayload: FindOneByPayload): Promise<SymbolEntity | null> {
