@@ -79,24 +79,61 @@ export class SymbolService {
     }
   }
 
-  async delete(sessionUserId: string, systemId: any, symbolId: any): Promise<SymbolEntity> {
-    const symbol = await this.selectById(systemId, symbolId);
+  public async delete(sessionUserId: string, systemId: string, symbolId: string): Promise<SymbolEntity> {
+    try {
+      if (!isMongoId(sessionUserId)) {
+        throw new Error('Invalid session user ID');
+      }
 
-    const { id, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, proofAppearanceCount, createdByUserId } = symbol;
+      if (!isMongoId(systemId)) {
+        throw new Error('Invalid system ID');
+      }
 
-    if (createdByUserId.toString() !== sessionUserId) {
-      throw new OwnershipException();
+      if (!isMongoId(symbolId)) {
+        throw new Error('Invalid symbol ID');
+      }
+
+      const symbol = await this.symbolRepository.findOneBy({
+        id: symbolId,
+        systemId
+      });
+
+      if (!symbol) {
+        throw new SymbolNotFoundException();
+      }
+
+      if (sessionUserId !== symbol.createdByUserId) {
+        throw new OwnershipException();
+      }
+
+      if (0 < symbol.axiomAppearanceCount) {
+        throw new InUseException();
+      }
+
+      if (0 < symbol.theoremAppearanceCount) {
+        throw new InUseException();
+      }
+
+      if (0 < symbol.deductionAppearanceCount) {
+        throw new InUseException();
+      }
+
+      if (0 < symbol.proofAppearanceCount) {
+        throw new InUseException();
+      }
+
+      const deletedSymbol = await this.symbolRepository.remove(symbol);
+
+      this.eventEmitter2.emit('symbol.delete.completed', deletedSymbol);
+
+      return deletedSymbol;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Deleting symbol failed');
     }
-
-    if (axiomAppearanceCount > 0 || theoremAppearanceCount > 0 || deductionAppearanceCount > 0 || proofAppearanceCount > 0) {
-      throw new InUseException();
-    }
-
-    await this.symbolRepository.remove(symbol);
-
-    symbol.id = id;
-
-    return symbol;
   }
 
   async update(sessionUserId: string, containingSystemId: any, symbolId: any, payload: any): Promise<SymbolEntity> {
