@@ -11,10 +11,9 @@ import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { SymbolRepository } from '@/symbol/repositories/symbol.repository';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemRepository } from '@/system/repositories/system.repository';
-import { HttpException, Injectable, InternalServerErrorException, ValidationPipe } from '@nestjs/common';
+import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { ClassConstructor, plainToClass } from 'class-transformer';
-import { isMongoId, validateSync } from 'class-validator';
+import { isMongoId } from 'class-validator';
 import { ObjectId } from 'mongodb';
 
 @Injectable()
@@ -189,33 +188,83 @@ export class SymbolService {
     }
   }
 
-  async update(sessionUserId: string, containingSystemId: any, symbolId: any, payload: any): Promise<SymbolEntity> {
-    const symbol = await this.selectById(containingSystemId, symbolId);
+  public async update(sessionUserId: string, systemId: string, symbolId: string, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
+    try {
+      if (!isMongoId(sessionUserId)) {
+        throw new Error('Invalid session user ID');
+      }
 
-    const { title, type, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, proofAppearanceCount, systemId, createdByUserId } = symbol;
+      if (!isMongoId(systemId)) {
+        throw new Error('Invalid system ID');
+      }
 
-    if (createdByUserId.toString() !== sessionUserId) {
-      throw new OwnershipException();
+      if (!isMongoId(symbolId)) {
+        throw new Error('Invalid symbol ID');
+      }
+
+      const validatedEditSymbolPayload = validatePayload(editSymbolPayload, EditSymbolPayload);
+
+      const symbol = await this.symbolRepository.findOneBy({
+        id: symbolId,
+        systemId
+      });
+
+      if (!symbol) {
+        throw new SymbolNotFoundException();
+      }
+
+      if (sessionUserId !== symbol.createdByUserId) {
+        throw new OwnershipException();
+      }
+
+      if (validatedEditSymbolPayload.newTitle !== symbol.title) {
+        const conflict = await this.symbolRepository.findOneBy({
+          title: validatedEditSymbolPayload.newTitle,
+          systemId
+        });
+
+        if (conflict) {
+          throw new UniqueTitleException();
+        }
+      }
+
+      if (validatedEditSymbolPayload.newType !== symbol.type) {
+        if (0 < symbol.axiomAppearanceCount) {
+          throw new InUseException();
+        }
+
+        if (0 < symbol.theoremAppearanceCount) {
+          throw new InUseException();
+        }
+
+        if (0 < symbol.deductionAppearanceCount) {
+          throw new InUseException();
+        }
+
+        if (0 < symbol.proofAppearanceCount) {
+          throw new InUseException();
+        }
+      }
+
+      this.eventEmitter2.emit('symbol.update.started', symbol);
+
+      symbol.title = validatedEditSymbolPayload.newTitle;
+      symbol.description = validatedEditSymbolPayload.newDescription;
+      symbol.type = validatedEditSymbolPayload.newType;
+      symbol.content = validatedEditSymbolPayload.newContent;
+
+      const savedSymbol = await this.symbolRepository.save(symbol);
+
+      this.eventEmitter2.emit('symbol.update.completed', savedSymbol);
+
+      return savedSymbol;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating symbol failed');
     }
-
-    const editSymbolPayload = this.payloadCheck(payload, EditSymbolPayload);
-
-    const { newTitle, newDescription, newType, newContent } = editSymbolPayload;
-
-    if (title !== newTitle) {
-      await this.conflictCheck(newTitle, systemId);
-    }
-
-    if (type !== newType && (axiomAppearanceCount > 0 || theoremAppearanceCount > 0 || deductionAppearanceCount > 0 || proofAppearanceCount > 0)) {
-      throw new InUseException();
-    }
-
-    symbol.title = newTitle;
-    symbol.description = newDescription;
-    symbol.type = newType;
-    symbol.content = newContent;
-
-    return this.symbolRepository.save(symbol);
   }
 
   async addToSymbolDictionary(systemId: ObjectId, symbolIds: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): Promise<Record<string, SymbolEntity>> {
@@ -251,30 +300,5 @@ export class SymbolService {
     });
 
     return newSymbolDictionary;
-  }
-
-  private async conflictCheck(title: string, systemId: string): Promise<void> {
-    const collision = await this.symbolRepository.findOneBy({
-      title,
-      systemId
-    });
-
-    if (collision) {
-      throw new UniqueTitleException();
-    }
-  }
-
-  private payloadCheck<Payload extends object>(payload: any, payloadConstructor: ClassConstructor<Payload>): Payload {
-    const newPayload = plainToClass(payloadConstructor, payload);
-
-    const errors = validateSync(newPayload);
-
-    if (0 < errors.length) {
-      const validationPipe = new ValidationPipe();
-
-      throw validationPipe.createExceptionFactory()(errors);
-    }
-
-    return newPayload;
   }
 };
