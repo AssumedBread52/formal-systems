@@ -160,6 +160,35 @@ export class SymbolService {
     }
   }
 
+  public async selectById(systemId: string, symbolId: string): Promise<SymbolEntity> {
+    try {
+      if (!isMongoId(systemId)) {
+        throw new Error('Invalid system ID');
+      }
+
+      if (!isMongoId(symbolId)) {
+        throw new Error('Invalid symbol ID');
+      }
+
+      const symbol = await this.symbolRepository.findOneBy({
+        id: symbolId,
+        systemId
+      });
+
+      if (!symbol) {
+        throw new SymbolNotFoundException();
+      }
+
+      return symbol;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Reading symbol failed');
+    }
+  }
+
   async update(sessionUserId: string, containingSystemId: any, symbolId: any, payload: any): Promise<SymbolEntity> {
     const symbol = await this.selectById(containingSystemId, symbolId);
 
@@ -222,35 +251,6 @@ export class SymbolService {
     });
 
     return newSymbolDictionary;
-  }
-
-  public async selectById(systemId: string, symbolId: string): Promise<SymbolEntity> {
-    try {
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
-      if (!isMongoId(symbolId)) {
-        throw new Error('Invalid symbol ID');
-      }
-
-      const symbol = await this.symbolRepository.findOneBy({
-        id: symbolId,
-        systemId
-      });
-
-      if (!symbol) {
-        throw new SymbolNotFoundException();
-      }
-
-      return symbol;
-    } catch (error: unknown) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      throw new InternalServerErrorException('Reading symbol failed');
-    }
   }
 
   private async conflictCheck(title: string, systemId: string): Promise<void> {
