@@ -22,7 +22,6 @@ import { SystemSymbolCountSubscriber } from './system/subscribers/system-symbol-
 import { SystemModule } from './system/system.module';
 import { UserProofCountSubscriber } from './user/subscribers/user-proof-count.subscriber';
 import { UserStatementCountSubscriber } from './user/subscribers/user-statement-count.subscriber';
-import { UserSymbolCountSubscriber } from './user/subscribers/user-symbol-count.subscriber';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -86,8 +85,7 @@ import { UserModule } from './user/user.module';
           SystemStatementCountSubscriber,
           SystemSymbolCountSubscriber,
           UserProofCountSubscriber,
-          UserStatementCountSubscriber,
-          UserSymbolCountSubscriber
+          UserStatementCountSubscriber
         ];
 
         return {
