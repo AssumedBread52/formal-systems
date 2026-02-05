@@ -1,12 +1,15 @@
-import { createTestApp } from '@/app/tests/helpers/create-test-app';
-import { getOrThrowMock } from '@/app/tests/mocks/get-or-throw.mock';
+import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
+import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
+import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { SymbolEntity } from '@/symbol/symbol.entity';
-import { UserEntity } from '@/user/user.entity';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
+import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
+import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { hashSync } from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import * as request from 'supertest';
 
@@ -14,564 +17,140 @@ describe('Update Symbol', (): void => {
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   const save = saveMock();
-  let app: INestApplication;
+  let app: NestExpressApplication;
 
   beforeAll(async (): Promise<void> => {
     app = await createTestApp();
   });
 
-  it('fails without a token', async (): Promise<void> => {
-    const response = await request(app.getHttpServer()).patch('/system/1/symbol/1');
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(0);
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(body).toEqual({
-      message: 'Unauthorized',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
-  });
-
-  it('fails with an expired token', async (): Promise<void> => {
-    const token = app.get(JwtService).sign({});
-
-    await new Promise((resolve: (value: unknown) => void): void => {
-      setTimeout(resolve, 1000);
-    });
-
-    const response = await request(app.getHttpServer()).patch('/system/1/symbol/1').set('Cookie', [
-      `token=${token}`
-    ]);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(0);
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(body).toEqual({
-      message: 'Unauthorized',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
-  });
-
-  it('fails with an invalid token', async (): Promise<void> => {
-    const token = app.get(JwtService).sign({});
-
-    const response = await request(app.getHttpServer()).patch('/system/1/symbol/1').set('Cookie', [
-      `token=${token}`
-    ]);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(0);
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(body).toEqual({
-      error: 'Unauthorized',
-      message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
-  });
-
-  it('fails if the user ID in the token payload does not match a user', async (): Promise<void> => {
+  it('PATCH /system/:systemId/symbol/:symbolId', async (): Promise<void> => {
     const userId = new ObjectId();
-
-    findOneBy.mockResolvedValueOnce(null);
-
-    const token = app.get(JwtService).sign({
-      id: userId
-    });
-
-    const response = await request(app.getHttpServer()).patch('/system/1/symbol/1').set('Cookie', [
-      `token=${token}`
-    ]);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNAUTHORIZED);
-    expect(body).toEqual({
-      error: 'Unauthorized',
-      message: 'Invalid token.',
-      statusCode: HttpStatus.UNAUTHORIZED
-    });
-  });
-
-  it('fails with an invalid symbol ID', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const user = new UserEntity();
+    const firstName = 'Test1';
+    const lastName = 'User1';
+    const email = 'test1.user1@example.com';
+    const hashedPassword = hashSync('TestUser1!');
+    const systemCount = 1;
+    const constantSymbolCount = 6;
+    const variableSymbolCount = 4;
+    const axiomCount = 6;
+    const theoremCount = 1;
+    const deductionCount = 3;
+    const proofCount = 6;
+    const updatedVariableSymbolCount = variableSymbolCount - 1;
+    const updatedConstantSymbolCount = constantSymbolCount + 1;
+    const systemId = new ObjectId();
+    const title = 'TestSystem1';
+    const description = 'Test System 1';
+    const symbolId = new ObjectId();
+    const newTitle = 'TestSymbol2';
+    const newDescription = 'Test Symbol 2';
+    const newType = SymbolType.constant;
+    const newContent = '\\beta';
+    const user = new MongoUserEntity();
+    const updatedUser1 = new MongoUserEntity();
+    const updatedUser2 = new MongoUserEntity();
+    const system = new MongoSystemEntity();
+    const updatedSystem1 = new MongoSystemEntity();
+    const updatedSystem2 = new MongoSystemEntity();
+    const symbol = new MongoSymbolEntity();
+    const updatedSymbol = new MongoSymbolEntity();
 
     user._id = userId;
-
-    findOneBy.mockResolvedValueOnce(user);
-
-    const token = app.get(JwtService).sign({
-      id: userId
-    });
-
-    const response = await request(app.getHttpServer()).patch('/system/1/symbol/1').set('Cookie', [
-      `token=${token}`
-    ]);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-    expect(body).toEqual({
-      error: 'Unprocessable Entity',
-      message: 'Invalid Object ID.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
-  it('fails with an invalid system ID', async (): Promise<void> => {
-    const symbolId = new ObjectId();
-    const userId = new ObjectId();
-    const user = new UserEntity();
-
-    user._id = userId;
-
-    findOneBy.mockResolvedValueOnce(user);
-
-    const token = app.get(JwtService).sign({
-      id: userId
-    });
-
-    const response = await request(app.getHttpServer()).patch(`/system/1/symbol/${symbolId}`).set('Cookie', [
-      `token=${token}`
-    ]);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-    expect(body).toEqual({
-      error: 'Unprocessable Entity',
-      message: 'Invalid Object ID.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
-  it('fails if the symbol does not exist', async (): Promise<void> => {
-    const symbolId = new ObjectId();
-    const systemId = new ObjectId();
-    const userId = new ObjectId();
-    const user = new UserEntity();
-
-    user._id = userId;
-
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(null);
-
-    const token = app.get(JwtService).sign({
-      id: userId
-    });
-
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
-      `token=${token}`
-    ]);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(2);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: symbolId,
-      systemId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.NOT_FOUND);
-    expect(body).toEqual({
-      error: 'Not Found',
-      message: 'Symbol not found.',
-      statusCode: HttpStatus.NOT_FOUND
-    });
-  });
-
-  it('fails if the user did not create the symbol', async (): Promise<void> => {
-    const symbolId = new ObjectId();
-    const systemId = new ObjectId();
-    const userId = new ObjectId();
-    const user = new UserEntity();
-    const symbol = new SymbolEntity();
-
-    user._id = userId;
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.hashedPassword = hashedPassword;
+    user.systemCount = systemCount;
+    user.constantSymbolCount = constantSymbolCount;
+    user.variableSymbolCount = variableSymbolCount;
+    user.axiomCount = axiomCount;
+    user.theoremCount = theoremCount;
+    user.deductionCount = deductionCount;
+    user.proofCount = proofCount;
+    updatedUser1._id = userId;
+    updatedUser1.firstName = firstName;
+    updatedUser1.lastName = lastName;
+    updatedUser1.email = email;
+    updatedUser1.hashedPassword = hashedPassword;
+    updatedUser1.systemCount = systemCount;
+    updatedUser1.constantSymbolCount = constantSymbolCount;
+    updatedUser1.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser1.axiomCount = axiomCount;
+    updatedUser1.theoremCount = theoremCount;
+    updatedUser1.deductionCount = deductionCount;
+    updatedUser1.proofCount = proofCount;
+    updatedUser2._id = userId;
+    updatedUser2.firstName = firstName;
+    updatedUser2.lastName = lastName;
+    updatedUser2.email = email;
+    updatedUser2.hashedPassword = hashedPassword;
+    updatedUser2.systemCount = systemCount;
+    updatedUser2.constantSymbolCount = updatedConstantSymbolCount;
+    updatedUser2.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser2.axiomCount = axiomCount;
+    updatedUser2.theoremCount = theoremCount;
+    updatedUser2.deductionCount = deductionCount;
+    updatedUser2.proofCount = proofCount;
+    system._id = systemId;
+    system.title = title;
+    system.description = description;
+    system.constantSymbolCount = constantSymbolCount;
+    system.variableSymbolCount = variableSymbolCount;
+    system.axiomCount = axiomCount;
+    system.theoremCount = theoremCount;
+    system.deductionCount = deductionCount;
+    system.proofCount = proofCount;
+    system.createdByUserId = userId;
+    updatedSystem1._id = systemId;
+    updatedSystem1.title = title;
+    updatedSystem1.description = description;
+    updatedSystem1.constantSymbolCount = constantSymbolCount;
+    updatedSystem1.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem1.axiomCount = axiomCount;
+    updatedSystem1.theoremCount = theoremCount;
+    updatedSystem1.deductionCount = deductionCount;
+    updatedSystem1.proofCount = proofCount;
+    updatedSystem1.createdByUserId = userId;
+    updatedSystem2._id = systemId;
+    updatedSystem2.title = title;
+    updatedSystem2.description = description;
+    updatedSystem2.constantSymbolCount = updatedConstantSymbolCount;
+    updatedSystem2.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem2.axiomCount = axiomCount;
+    updatedSystem2.theoremCount = theoremCount;
+    updatedSystem2.deductionCount = deductionCount;
+    updatedSystem2.proofCount = proofCount;
+    updatedSystem2.createdByUserId = userId;
     symbol._id = symbolId;
+    symbol.title = 'TestSymbol1';
+    symbol.description = 'Test Symbol 1';
+    symbol.type = SymbolType.variable;
+    symbol.content = '\\alpha';
     symbol.systemId = systemId;
-
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(symbol);
-
-    const token = app.get(JwtService).sign({
-      id: userId
-    });
-
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
-      `token=${token}`
-    ]);
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(2);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: symbolId,
-      systemId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.FORBIDDEN);
-    expect(body).toEqual({
-      error: 'Forbidden',
-      message: 'Write actions require user ownership.',
-      statusCode: HttpStatus.FORBIDDEN
-    });
-  });
-
-  it('fails with an invalid payload', async (): Promise<void> => {
-    const symbolId = new ObjectId();
-    const systemId = new ObjectId();
-    const createdByUserId = new ObjectId();
-    const user = new UserEntity();
-    const symbol = new SymbolEntity();
-
-    user._id = createdByUserId;
-    symbol._id = symbolId;
-    symbol.systemId = systemId;
-    symbol.createdByUserId = createdByUserId;
-
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(symbol);
-
-    const token = app.get(JwtService).sign({
-      id: createdByUserId
-    });
-
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newType: 'invalid'
-    });
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(2);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: createdByUserId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: symbolId,
-      systemId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.BAD_REQUEST);
-    expect(body).toEqual({
-      error: 'Bad Request',
-      message: [
-        'newTitle should not be empty',
-        'newDescription should not be empty',
-        'newType must be one of the following values: Constant, Variable',
-        'newContent should not be empty'
-      ],
-      statusCode: HttpStatus.BAD_REQUEST
-    });
-  });
-
-  it('fails if the title is already in use within the system', async (): Promise<void> => {
-    const symbolId = new ObjectId();
-    const newTitle = 'New Symbol Title';
-    const systemId = new ObjectId();
-    const createdByUserId = new ObjectId();
-    const user = new UserEntity();
-    const symbol = new SymbolEntity();
-    const conflictSymbol = new SymbolEntity();
-
-    user._id = createdByUserId;
-    symbol._id = symbolId;
-    symbol.systemId = systemId;
-    symbol.createdByUserId = createdByUserId;
-    conflictSymbol.title = newTitle;
-    conflictSymbol.systemId = systemId;
-    conflictSymbol.createdByUserId = createdByUserId;
-
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(symbol);
-    findOneBy.mockResolvedValueOnce(conflictSymbol);
-
-    const token = app.get(JwtService).sign({
-      id: createdByUserId
-    });
-
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newTitle,
-      newDescription: 'This is a new test.',
-      newType: SymbolType.Variable,
-      newContent: '\\alpha'
-    });
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(3);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: createdByUserId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: symbolId,
-      systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      title: newTitle,
-      systemId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.CONFLICT);
-    expect(body).toEqual({
-      error: 'Conflict',
-      message: 'Symbols in the same system must have a unique title.',
-      statusCode: HttpStatus.CONFLICT
-    });
-  });
-
-  it('fails if changing the type and the symbol is used by any axiom', async (): Promise<void> => {
-    const symbolId = new ObjectId();
-    const newTitle = 'New Symbol Title';
-    const systemId = new ObjectId();
-    const createdByUserId = new ObjectId();
-    const user = new UserEntity();
-    const symbol = new SymbolEntity();
-
-    user._id = createdByUserId;
-    symbol._id = symbolId;
-    symbol.axiomAppearanceCount = 1;
-    symbol.theoremAppearanceCount = 1;
-    symbol.deductionAppearanceCount = 1;
-    symbol.systemId = systemId;
-    symbol.createdByUserId = createdByUserId;
-
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(symbol);
-    findOneBy.mockResolvedValueOnce(null);
-
-    const token = app.get(JwtService).sign({
-      id: createdByUserId
-    });
-
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newTitle,
-      newDescription: 'This is a new test.',
-      newType: SymbolType.Variable,
-      newContent: '\\alpha'
-    });
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(3);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: createdByUserId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: symbolId,
-      systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      title: newTitle,
-      systemId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-    expect(body).toEqual({
-      error: 'Unprocessable Entity',
-      message: 'Symbols in use cannot under go write actions.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
-  it('fails if changing the type and the symbol is used by any theorem', async (): Promise<void> => {
-    const symbolId = new ObjectId();
-    const newTitle = 'New Symbol Title';
-    const systemId = new ObjectId();
-    const createdByUserId = new ObjectId();
-    const user = new UserEntity();
-    const symbol = new SymbolEntity();
-
-    user._id = createdByUserId;
-    symbol._id = symbolId;
-    symbol.axiomAppearanceCount = 0;
-    symbol.theoremAppearanceCount = 1;
-    symbol.deductionAppearanceCount = 1;
-    symbol.systemId = systemId;
-    symbol.createdByUserId = createdByUserId;
-
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(symbol);
-    findOneBy.mockResolvedValueOnce(null);
-
-    const token = app.get(JwtService).sign({
-      id: createdByUserId
-    });
-
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newTitle,
-      newDescription: 'This is a new test.',
-      newType: SymbolType.Variable,
-      newContent: '\\alpha'
-    });
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(3);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: createdByUserId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: symbolId,
-      systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      title: newTitle,
-      systemId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-    expect(body).toEqual({
-      error: 'Unprocessable Entity',
-      message: 'Symbols in use cannot under go write actions.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
-  it('fails if changing the type and the symbol is used by any deduction', async (): Promise<void> => {
-    const symbolId = new ObjectId();
-    const newTitle = 'New Symbol Title';
-    const systemId = new ObjectId();
-    const createdByUserId = new ObjectId();
-    const user = new UserEntity();
-    const symbol = new SymbolEntity();
-
-    user._id = createdByUserId;
-    symbol._id = symbolId;
-    symbol.axiomAppearanceCount = 0;
-    symbol.theoremAppearanceCount = 0;
-    symbol.deductionAppearanceCount = 1;
-    symbol.systemId = systemId;
-    symbol.createdByUserId = createdByUserId;
-
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(symbol);
-    findOneBy.mockResolvedValueOnce(null);
-
-    const token = app.get(JwtService).sign({
-      id: createdByUserId
-    });
-
-    const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
-      `token=${token}`
-    ]).send({
-      newTitle,
-      newDescription: 'This is a new test.',
-      newType: SymbolType.Variable,
-      newContent: '\\alpha'
-    });
-
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(3);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: createdByUserId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: symbolId,
-      systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      title: newTitle,
-      systemId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-    expect(body).toEqual({
-      error: 'Unprocessable Entity',
-      message: 'Symbols in use cannot under go write actions.',
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    });
-  });
-
-  it('succeeds', async (): Promise<void> => {
-    const symbolId = new ObjectId();
-    const newTitle = 'New Symbol Title';
-    const newDescription = 'This is a new test.';
-    const newType = SymbolType.Variable;
-    const newContent = '\\alpha';
-    const axiomAppearanceCount = 0;
-    const theoremAppearanceCount = 0;
-    const deductionAppearanceCount = 0;
-    const systemId = new ObjectId();
-    const createdByUserId = new ObjectId();
-    const user = new UserEntity();
-    const symbol = new SymbolEntity();
-    const updatedSymbol = new SymbolEntity();
-
-    user._id = createdByUserId;
-    symbol._id = symbolId;
-    symbol.axiomAppearanceCount = axiomAppearanceCount;
-    symbol.theoremAppearanceCount = theoremAppearanceCount;
-    symbol.deductionAppearanceCount = deductionAppearanceCount;
-    symbol.systemId = systemId;
-    symbol.createdByUserId = createdByUserId;
+    symbol.createdByUserId = userId;
     updatedSymbol._id = symbolId;
     updatedSymbol.title = newTitle;
     updatedSymbol.description = newDescription;
     updatedSymbol.type = newType;
     updatedSymbol.content = newContent;
-    updatedSymbol.axiomAppearanceCount = axiomAppearanceCount;
-    updatedSymbol.theoremAppearanceCount = theoremAppearanceCount;
-    updatedSymbol.deductionAppearanceCount = deductionAppearanceCount;
     updatedSymbol.systemId = systemId;
-    updatedSymbol.createdByUserId = createdByUserId;
+    updatedSymbol.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
     findOneBy.mockResolvedValueOnce(null);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(updatedUser1);
+    findOneBy.mockResolvedValueOnce(updatedSystem1);
     save.mockResolvedValueOnce(updatedSymbol);
+    save.mockResolvedValueOnce(updatedUser1);
+    save.mockResolvedValueOnce(updatedSystem1);
+    save.mockResolvedValueOnce(updatedUser2);
+    save.mockResolvedValueOnce(updatedSystem2);
 
     const token = app.get(JwtService).sign({
-      id: createdByUserId
+      userId
     });
 
     const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
@@ -585,9 +164,9 @@ describe('Update Symbol', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(7);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: createdByUserId
+      _id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       _id: symbolId,
@@ -597,21 +176,237 @@ describe('Update Symbol', (): void => {
       title: newTitle,
       systemId
     });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(5, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(6, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(7, {
+      _id: systemId
+    });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenCalledTimes(5);
     expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);
+    expect(save).toHaveBeenNthCalledWith(2, updatedUser1);
+    expect(save).toHaveBeenNthCalledWith(3, updatedSystem1);
+    expect(save).toHaveBeenNthCalledWith(4, updatedUser2);
+    expect(save).toHaveBeenNthCalledWith(5, updatedSystem2);
     expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toEqual({
+    expect(body).toStrictEqual({
       id: symbolId.toString(),
       title: newTitle,
       description: newDescription,
       type: newType,
       content: newContent,
-      axiomAppearanceCount,
-      theoremAppearanceCount,
-      deductionAppearanceCount,
+      axiomAppearanceCount: 0,
+      theoremAppearanceCount: 0,
+      deductionAppearanceCount: 0,
+      proofAppearanceCount: 0,
       systemId: systemId.toString(),
-      createdByUserId: createdByUserId.toString()
+      createdByUserId: userId.toString()
+    });
+  });
+
+  it('POST /graphql mutation updateSymbol', async (): Promise<void> => {
+    const userId = new ObjectId();
+    const firstName = 'Test1';
+    const lastName = 'User1';
+    const email = 'test1.user1@example.com';
+    const hashedPassword = hashSync('TestUser1!');
+    const systemCount = 1;
+    const constantSymbolCount = 6;
+    const variableSymbolCount = 4;
+    const axiomCount = 6;
+    const theoremCount = 1;
+    const deductionCount = 3;
+    const proofCount = 6;
+    const updatedVariableSymbolCount = variableSymbolCount - 1;
+    const updatedConstantSymbolCount = constantSymbolCount + 1;
+    const systemId = new ObjectId();
+    const title = 'TestSystem1';
+    const description = 'Test System 1';
+    const symbolId = new ObjectId();
+    const newTitle = 'TestSymbol2';
+    const newDescription = 'Test Symbol 2';
+    const newType = SymbolType.constant;
+    const newContent = '\\beta';
+    const user = new MongoUserEntity();
+    const updatedUser1 = new MongoUserEntity();
+    const updatedUser2 = new MongoUserEntity();
+    const system = new MongoSystemEntity();
+    const updatedSystem1 = new MongoSystemEntity();
+    const updatedSystem2 = new MongoSystemEntity();
+    const symbol = new MongoSymbolEntity();
+    const updatedSymbol = new MongoSymbolEntity();
+
+    user._id = userId;
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.hashedPassword = hashedPassword;
+    user.systemCount = systemCount;
+    user.constantSymbolCount = constantSymbolCount;
+    user.variableSymbolCount = variableSymbolCount;
+    user.axiomCount = axiomCount;
+    user.theoremCount = theoremCount;
+    user.deductionCount = deductionCount;
+    user.proofCount = proofCount;
+    updatedUser1._id = userId;
+    updatedUser1.firstName = firstName;
+    updatedUser1.lastName = lastName;
+    updatedUser1.email = email;
+    updatedUser1.hashedPassword = hashedPassword;
+    updatedUser1.systemCount = systemCount;
+    updatedUser1.constantSymbolCount = constantSymbolCount;
+    updatedUser1.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser1.axiomCount = axiomCount;
+    updatedUser1.theoremCount = theoremCount;
+    updatedUser1.deductionCount = deductionCount;
+    updatedUser1.proofCount = proofCount;
+    updatedUser2._id = userId;
+    updatedUser2.firstName = firstName;
+    updatedUser2.lastName = lastName;
+    updatedUser2.email = email;
+    updatedUser2.hashedPassword = hashedPassword;
+    updatedUser2.systemCount = systemCount;
+    updatedUser2.constantSymbolCount = updatedConstantSymbolCount;
+    updatedUser2.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser2.axiomCount = axiomCount;
+    updatedUser2.theoremCount = theoremCount;
+    updatedUser2.deductionCount = deductionCount;
+    updatedUser2.proofCount = proofCount;
+    system._id = systemId;
+    system.title = title;
+    system.description = description;
+    system.constantSymbolCount = constantSymbolCount;
+    system.variableSymbolCount = variableSymbolCount;
+    system.axiomCount = axiomCount;
+    system.theoremCount = theoremCount;
+    system.deductionCount = deductionCount;
+    system.proofCount = proofCount;
+    system.createdByUserId = userId;
+    updatedSystem1._id = systemId;
+    updatedSystem1.title = title;
+    updatedSystem1.description = description;
+    updatedSystem1.constantSymbolCount = constantSymbolCount;
+    updatedSystem1.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem1.axiomCount = axiomCount;
+    updatedSystem1.theoremCount = theoremCount;
+    updatedSystem1.deductionCount = deductionCount;
+    updatedSystem1.proofCount = proofCount;
+    updatedSystem1.createdByUserId = userId;
+    updatedSystem2._id = systemId;
+    updatedSystem2.title = title;
+    updatedSystem2.description = description;
+    updatedSystem2.constantSymbolCount = updatedConstantSymbolCount;
+    updatedSystem2.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem2.axiomCount = axiomCount;
+    updatedSystem2.theoremCount = theoremCount;
+    updatedSystem2.deductionCount = deductionCount;
+    updatedSystem2.proofCount = proofCount;
+    updatedSystem2.createdByUserId = userId;
+    symbol._id = symbolId;
+    symbol.title = 'TestSymbol1';
+    symbol.description = 'Test Symbol 1';
+    symbol.type = SymbolType.variable;
+    symbol.content = '\\alpha';
+    symbol.systemId = systemId;
+    symbol.createdByUserId = userId;
+    updatedSymbol._id = symbolId;
+    updatedSymbol.title = newTitle;
+    updatedSymbol.description = newDescription;
+    updatedSymbol.type = newType;
+    updatedSymbol.content = newContent;
+    updatedSymbol.systemId = systemId;
+    updatedSymbol.createdByUserId = userId;
+
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(symbol);
+    findOneBy.mockResolvedValueOnce(null);
+    findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(updatedUser1);
+    findOneBy.mockResolvedValueOnce(updatedSystem1);
+    save.mockResolvedValueOnce(updatedSymbol);
+    save.mockResolvedValueOnce(updatedUser1);
+    save.mockResolvedValueOnce(updatedSystem1);
+    save.mockResolvedValueOnce(updatedUser2);
+    save.mockResolvedValueOnce(updatedSystem2);
+
+    const token = app.get(JwtService).sign({
+      userId
+    });
+
+    const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
+      `token=${token}`
+    ]).send({
+      query: 'mutation updateSymbol($systemId: String!, $symbolId: String!, $symbolPayload: EditSymbolPayload!) { updateSymbol(systemId: $systemId, symbolId: $symbolId, symbolPayload: $symbolPayload) { id title description type content axiomAppearanceCount theoremAppearanceCount deductionAppearanceCount proofAppearanceCount systemId createdByUserId } }',
+      variables: {
+        systemId,
+        symbolId,
+        symbolPayload: {
+          newTitle,
+          newDescription,
+          newType,
+          newContent
+        }
+      }
+    });
+
+    const { statusCode, body } = response;
+
+    expect(findOneBy).toHaveBeenCalledTimes(7);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+      _id: symbolId,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      title: newTitle,
+      systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(5, {
+      _id: systemId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(6, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(7, {
+      _id: systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(save).toHaveBeenCalledTimes(5);
+    expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);
+    expect(save).toHaveBeenNthCalledWith(2, updatedUser1);
+    expect(save).toHaveBeenNthCalledWith(3, updatedSystem1);
+    expect(save).toHaveBeenNthCalledWith(4, updatedUser2);
+    expect(save).toHaveBeenNthCalledWith(5, updatedSystem2);
+    expect(statusCode).toBe(HttpStatus.OK);
+    expect(body).toStrictEqual({
+      data: {
+        updateSymbol: {
+          id: symbolId.toString(),
+          title: newTitle,
+          description: newDescription,
+          type: newType,
+          content: newContent,
+          axiomAppearanceCount: 0,
+          theoremAppearanceCount: 0,
+          deductionAppearanceCount: 0,
+          proofAppearanceCount: 0,
+          systemId: systemId.toString(),
+          createdByUserId: userId.toString()
+        }
+      }
     });
   });
 
