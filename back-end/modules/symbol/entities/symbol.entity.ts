@@ -1,32 +1,66 @@
-import { ObjectId } from 'mongodb';
-import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { IsEnum, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
 
-@Entity('symbol')
+@ObjectType()
 export class SymbolEntity {
-  @ObjectIdColumn()
-  _id: ObjectId = new ObjectId();
-  @Column()
-  title: string = '';
-  @Column()
-  description: string = '';
-  @Column({
-    enum: SymbolType,
-    type: 'enum'
+  @Field((): typeof String => {
+    return String;
   })
-  type: SymbolType = SymbolType.constant;
-  @Column()
-  content: string = '';
-  @Column()
-  axiomAppearanceCount: number = 0;
-  @Column()
-  theoremAppearanceCount: number = 0;
-  @Column()
-  deductionAppearanceCount: number = 0;
-  @Column()
-  proofAppearanceCount: number = 0;
-  @Column()
-  systemId: ObjectId = new ObjectId();
-  @Column()
-  createdByUserId: ObjectId = new ObjectId();
+  @IsMongoId()
+  public id: string = '';
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsNotEmpty()
+  public title: string = '';
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsNotEmpty()
+  public description: string = '';
+  @Field((): typeof SymbolType => {
+    return SymbolType;
+  })
+  @IsEnum(SymbolType)
+  public type: SymbolType = SymbolType.constant;
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsNotEmpty()
+  public content: string = '';
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public axiomAppearanceCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public theoremAppearanceCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public deductionAppearanceCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public proofAppearanceCount: number = 0;
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsMongoId()
+  public systemId: string = '';
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsMongoId()
+  public createdByUserId: string = '';
 };

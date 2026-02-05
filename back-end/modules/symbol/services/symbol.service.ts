@@ -8,18 +8,18 @@ import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
 import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.payload';
 import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
+import { SymbolRepository } from '@/symbol/repositories/symbol.repository';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemRepository } from '@/system/repositories/system.repository';
 import { Injectable, ValidationPipe } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { ClassConstructor, plainToClass } from 'class-transformer';
 import { isMongoId, validateSync } from 'class-validator';
 import { ObjectId } from 'mongodb';
-import { MongoRepository, RootFilterOperators } from 'typeorm';
+import { RootFilterOperators } from 'typeorm';
 
 @Injectable()
 export class SymbolService {
-  public constructor(@InjectRepository(SymbolEntity) private readonly symbolRepository: MongoRepository<SymbolEntity>, private readonly systemRepository: SystemRepository) {
+  public constructor(private readonly symbolRepository: SymbolRepository, private readonly systemRepository: SystemRepository) {
   }
 
   async create(sessionUserId: string, systemId: any, payload: any): Promise<SymbolEntity> {
@@ -41,7 +41,7 @@ export class SymbolService {
 
     const { title, description, type, content } = newSymbolPayload;
 
-    await this.conflictCheck(title, new ObjectId(id));
+    await this.conflictCheck(title, id);
 
     const symbol = new SymbolEntity();
 
@@ -49,8 +49,8 @@ export class SymbolService {
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
-    symbol.systemId = new ObjectId(id);
-    symbol.createdByUserId = new ObjectId(sessionUserId);
+    symbol.systemId = id;
+    symbol.createdByUserId = sessionUserId;
 
     return this.symbolRepository.save(symbol);
   }
@@ -58,7 +58,7 @@ export class SymbolService {
   async delete(sessionUserId: string, systemId: any, symbolId: any): Promise<SymbolEntity> {
     const symbol = await this.selectById(systemId, symbolId);
 
-    const { _id, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, proofAppearanceCount, createdByUserId } = symbol;
+    const { id, axiomAppearanceCount, theoremAppearanceCount, deductionAppearanceCount, proofAppearanceCount, createdByUserId } = symbol;
 
     if (createdByUserId.toString() !== sessionUserId) {
       throw new OwnershipException();
@@ -70,7 +70,7 @@ export class SymbolService {
 
     await this.symbolRepository.remove(symbol);
 
-    symbol._id = _id;
+    symbol.id = id;
 
     return symbol;
   }
@@ -123,9 +123,9 @@ export class SymbolService {
     });
 
     const newSymbolDictionary = missingSymbols.reduce((dictionary: Record<string, SymbolEntity>, missingSymbol: SymbolEntity): Record<string, SymbolEntity> => {
-      const { _id } = missingSymbol;
+      const { id } = missingSymbol;
 
-      dictionary[_id.toString()] = missingSymbol;
+      dictionary[id] = missingSymbol;
 
       return dictionary;
     }, symbolDictionary);
@@ -183,10 +183,10 @@ export class SymbolService {
     return new PaginatedSymbolsPayload(results, total);
   }
 
-  async conflictCheck(title: string, systemId: ObjectId): Promise<void> {
+  async conflictCheck(title: string, systemId: string): Promise<void> {
     const collision = await this.symbolRepository.findOneBy({
       title,
-      systemId
+      systemId: new ObjectId(systemId)
     });
 
     if (collision) {
