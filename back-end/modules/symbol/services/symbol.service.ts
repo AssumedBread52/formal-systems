@@ -136,6 +136,31 @@ export class SymbolService {
     }
   }
 
+  public async searchSymbols(systemId: string, searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedSymbolsPayload> {
+    try {
+      if (!isMongoId(systemId)) {
+        throw new Error('Invalid system ID');
+      }
+
+      const validatedSearchSymbolsPayload = validatePayload(searchSymbolsPayload, SearchSymbolsPayload);
+
+      const take = validatedSearchSymbolsPayload.pageSize;
+      const skip = (validatedSearchSymbolsPayload.page - 1) * validatedSearchSymbolsPayload.pageSize;
+
+      const [symbols, total] = await this.symbolRepository.findAndCount({
+        skip,
+        take,
+        systemId,
+        keywords: validatedSearchSymbolsPayload.keywords,
+        types: validatedSearchSymbolsPayload.types
+      });
+
+      return new PaginatedSymbolsPayload(symbols, total);
+    } catch {
+      throw new InternalServerErrorException('Reading symbols failed');
+    }
+  }
+
   async update(sessionUserId: string, containingSystemId: any, symbolId: any, payload: any): Promise<SymbolEntity> {
     const symbol = await this.selectById(containingSystemId, symbolId);
 
@@ -211,31 +236,6 @@ export class SymbolService {
     }
 
     return symbol;
-  }
-
-  public async searchSymbols(systemId: string, searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedSymbolsPayload> {
-    try {
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
-      const validatedSearchSymbolsPayload = validatePayload(searchSymbolsPayload, SearchSymbolsPayload);
-
-      const take = validatedSearchSymbolsPayload.pageSize;
-      const skip = (validatedSearchSymbolsPayload.page - 1) * validatedSearchSymbolsPayload.pageSize;
-
-      const [symbols, total] = await this.symbolRepository.findAndCount({
-        skip,
-        take,
-        systemId,
-        keywords: validatedSearchSymbolsPayload.keywords,
-        types: validatedSearchSymbolsPayload.types
-      });
-
-      return new PaginatedSymbolsPayload(symbols, total);
-    } catch {
-      throw new InternalServerErrorException('Reading symbols failed');
-    }
   }
 
   private async conflictCheck(title: string, systemId: string): Promise<void> {
