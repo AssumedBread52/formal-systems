@@ -213,21 +213,29 @@ export class SymbolService {
     return symbol;
   }
 
-  async searchSymbols(containingSystemId: any, payload: any): Promise<PaginatedSymbolsPayload> {
-    const searchPayload = this.payloadCheck(payload, SearchSymbolsPayload);
-    const systemId = this.idCheck(containingSystemId);
+  public async searchSymbols(systemId: string, searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedSymbolsPayload> {
+    try {
+      if (!isMongoId(systemId)) {
+        throw new Error('Invalid system ID');
+      }
 
-    const { page, pageSize, keywords, types } = searchPayload;
+      const validatedSearchSymbolsPayload = validatePayload(searchSymbolsPayload, SearchSymbolsPayload);
 
-    const [results, total] = await this.symbolRepository.findAndCount({
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      systemId: systemId.toString(),
-      keywords,
-      types
-    });
+      const take = validatedSearchSymbolsPayload.pageSize;
+      const skip = (validatedSearchSymbolsPayload.page - 1) * validatedSearchSymbolsPayload.pageSize;
 
-    return new PaginatedSymbolsPayload(results, total);
+      const [symbols, total] = await this.symbolRepository.findAndCount({
+        skip,
+        take,
+        systemId,
+        keywords: validatedSearchSymbolsPayload.keywords,
+        types: validatedSearchSymbolsPayload.types
+      });
+
+      return new PaginatedSymbolsPayload(symbols, total);
+    } catch {
+      throw new InternalServerErrorException('Reading symbols failed');
+    }
   }
 
   private async conflictCheck(title: string, systemId: string): Promise<void> {
