@@ -16,6 +16,25 @@ type UserEntity {
   proofCount: Int!
 }
 
+type SymbolEntity {
+  id: String!
+  title: String!
+  description: String!
+  type: SymbolType!
+  content: String!
+  axiomAppearanceCount: Int!
+  theoremAppearanceCount: Int!
+  deductionAppearanceCount: Int!
+  proofAppearanceCount: Int!
+  systemId: String!
+  createdByUserId: String!
+}
+
+enum SymbolType {
+  constant
+  variable
+}
+
 type SystemEntity {
   id: String!
   title: String!
@@ -65,25 +84,6 @@ type PaginatedSystemsPayload {
   total: Int!
 }
 
-type SymbolEntity {
-  id: String!
-  title: String!
-  description: String!
-  type: SymbolType!
-  content: String!
-  axiomAppearanceCount: Int!
-  theoremAppearanceCount: Int!
-  deductionAppearanceCount: Int!
-  proofAppearanceCount: Int!
-  systemId: String!
-  createdByUserId: String!
-}
-
-enum SymbolType {
-  constant
-  variable
-}
-
 type PaginatedSymbolsPayload {
   results: [SymbolEntity!]!
   total: Int!
@@ -122,9 +122,10 @@ type Mutation {
   updateUser(userPayload: EditUserPayload!): UserEntity!
   createSymbol(systemId: String!, symbolPayload: NewSymbolPayload!): SymbolEntity!
   deleteSymbol(systemId: String!, symbolId: String!): SymbolEntity!
-  updateSystem(systemId: String!, systemPayload: EditSystemPayload!): SystemEntity!
+  updateSymbol(systemId: String!, symbolId: String!, symbolPayload: EditSymbolPayload!): SymbolEntity!
   createSystem(systemPayload: NewSystemPayload!): SystemEntity!
   deleteSystem(systemId: String!): SystemEntity!
+  updateSystem(systemId: String!, systemPayload: EditSystemPayload!): SystemEntity!
 }
 
 input NewUserPayload {
@@ -148,12 +149,19 @@ input NewSymbolPayload {
   content: String! = ""
 }
 
-input EditSystemPayload {
+input EditSymbolPayload {
   newTitle: String! = ""
   newDescription: String! = ""
+  newType: SymbolType! = constant
+  newContent: String! = ""
 }
 
 input NewSystemPayload {
   title: String! = ""
   description: String! = ""
+}
+
+input EditSystemPayload {
+  newTitle: String! = ""
+  newDescription: String! = ""
 }
