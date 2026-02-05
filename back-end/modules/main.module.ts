@@ -18,7 +18,6 @@ import { SymbolStatementCountSubscriber } from './symbol/subscribers/symbol-stat
 import { SymbolModule } from './symbol/symbol.module';
 import { SystemProofCountSubscriber } from './system/subscribers/system-proof-count.subscriber';
 import { SystemStatementCountSubscriber } from './system/subscribers/system-statement-count.subscriber';
-import { SystemSymbolCountSubscriber } from './system/subscribers/system-symbol-count.subscriber';
 import { SystemModule } from './system/system.module';
 import { UserProofCountSubscriber } from './user/subscribers/user-proof-count.subscriber';
 import { UserStatementCountSubscriber } from './user/subscribers/user-statement-count.subscriber';
@@ -83,7 +82,6 @@ import { UserModule } from './user/user.module';
           SymbolStatementCountSubscriber,
           SystemProofCountSubscriber,
           SystemStatementCountSubscriber,
-          SystemSymbolCountSubscriber,
           UserProofCountSubscriber,
           UserStatementCountSubscriber
         ];

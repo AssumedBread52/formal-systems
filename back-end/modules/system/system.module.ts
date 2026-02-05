@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SystemController } from './controllers/system.controller';
 import { MongoSystemEntity } from './entities/mongo-system.entity';
+import { CountListener } from './listeners/count.listener';
 import { SystemRepository } from './repositories/system.repository';
 import { SystemResolver } from './resolvers/system.resolver';
 import { SystemService } from './services/system.service';
@@ -16,6 +17,7 @@ import { SystemService } from './services/system.service';
     SystemController
   ],
   providers: [
+    CountListener,
     SystemRepository,
     SystemResolver,
     SystemService
