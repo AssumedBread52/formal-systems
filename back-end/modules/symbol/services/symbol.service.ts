@@ -1,5 +1,4 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
-import { InvalidObjectIdException } from '@/common/exceptions/invalid-object-id.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { InUseException } from '@/symbol/exceptions/in-use.exception';
@@ -225,17 +224,33 @@ export class SymbolService {
     return newSymbolDictionary;
   }
 
-  async selectById(systemId: any, symbolId: any): Promise<SymbolEntity> {
-    const symbol = await this.symbolRepository.findOneBy({
-      id: this.idCheck(symbolId).toString(),
-      systemId: this.idCheck(systemId).toString()
-    });
+  public async selectById(systemId: string, symbolId: string): Promise<SymbolEntity> {
+    try {
+      if (!isMongoId(systemId)) {
+        throw new Error('Invalid system ID');
+      }
 
-    if (!symbol) {
-      throw new SymbolNotFoundException();
+      if (!isMongoId(symbolId)) {
+        throw new Error('Invalid symbol ID');
+      }
+
+      const symbol = await this.symbolRepository.findOneBy({
+        id: symbolId,
+        systemId
+      });
+
+      if (!symbol) {
+        throw new SymbolNotFoundException();
+      }
+
+      return symbol;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Reading symbol failed');
     }
-
-    return symbol;
   }
 
   private async conflictCheck(title: string, systemId: string): Promise<void> {
@@ -247,14 +262,6 @@ export class SymbolService {
     if (collision) {
       throw new UniqueTitleException();
     }
-  }
-
-  private idCheck(id: any): ObjectId {
-    if (!isMongoId(id)) {
-      throw new InvalidObjectIdException();
-    }
-
-    return new ObjectId(id);
   }
 
   private payloadCheck<Payload extends object>(payload: any, payloadConstructor: ClassConstructor<Payload>): Payload {
