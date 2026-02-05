@@ -33,7 +33,23 @@ export class SymbolRepository {
   }
 
   public async remove(symbol: SymbolEntity): Promise<SymbolEntity> {
-    return this.createDomainEntityFromDatabaseEntity(await this.repository.remove(this.createDatabaseEntityFromDomainEntity(symbol)));
+    try {
+      const validatedSymbol = validatePayload(symbol, SymbolEntity);
+
+      const mongoSymbol = this.createDatabaseEntityFromDomainEntity(validatedSymbol);
+
+      const symbolId = mongoSymbol._id;
+
+      const deletedMongoSymbol = await this.repository.remove(mongoSymbol);
+
+      deletedMongoSymbol._id = symbolId;
+
+      const deletedSymbol = this.createDomainEntityFromDatabaseEntity(deletedMongoSymbol);
+
+      return validatePayload(deletedSymbol, SymbolEntity);
+    } catch {
+      throw new Error('Removing symbol from database failed');
+    }
   }
 
   public async save(symbol: SymbolEntity): Promise<SymbolEntity> {
