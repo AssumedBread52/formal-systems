@@ -55,7 +55,7 @@ export class SymbolWriteService {
 
       const savedSymbol = await this.symbolRepository.save(symbol);
 
-      this.eventEmitter2.emit('symbol.create.completed', savedSymbol);
+      await this.eventEmitter2.emitAsync('symbol.create.completed', savedSymbol);
 
       return savedSymbol;
     } catch (error: unknown) {
@@ -100,7 +100,7 @@ export class SymbolWriteService {
 
       const deletedSymbol = await this.symbolRepository.remove(symbol);
 
-      this.eventEmitter2.emit('symbol.delete.completed', deletedSymbol);
+      await this.eventEmitter2.emitAsync('symbol.delete.completed', deletedSymbol);
 
       return deletedSymbol;
     } catch (error: unknown) {
@@ -158,7 +158,7 @@ export class SymbolWriteService {
         }
       }
 
-      this.eventEmitter2.emit('symbol.update.started', symbol);
+      await this.eventEmitter2.emitAsync('symbol.update.started', symbol);
 
       symbol.title = validatedEditSymbolPayload.newTitle;
       symbol.description = validatedEditSymbolPayload.newDescription;
@@ -167,7 +167,7 @@ export class SymbolWriteService {
 
       const savedSymbol = await this.symbolRepository.save(symbol);
 
-      this.eventEmitter2.emit('symbol.update.completed', savedSymbol);
+      await this.eventEmitter2.emitAsync('symbol.update.completed', savedSymbol);
 
       return savedSymbol;
     } catch (error: unknown) {

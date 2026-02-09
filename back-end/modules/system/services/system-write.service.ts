@@ -41,7 +41,7 @@ export class SystemWriteService {
 
       const savedSystem = await this.systemRepository.save(system);
 
-      this.eventEmitter2.emit('system.create.completed', savedSystem);
+      await this.eventEmitter2.emitAsync('system.create.completed', savedSystem);
 
       return savedSystem;
     } catch (error: unknown) {
@@ -81,7 +81,7 @@ export class SystemWriteService {
 
       const deletedSystem = await this.systemRepository.remove(system);
 
-      this.eventEmitter2.emit('system.delete.completed', deletedSystem);
+      await this.eventEmitter2.emitAsync('system.delete.completed', deletedSystem);
 
       return deletedSystem;
     } catch (error: unknown) {
