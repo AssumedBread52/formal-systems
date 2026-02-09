@@ -25,7 +25,7 @@ import { SystemWriteService } from './services/system-write.service';
     SystemWriteService
   ],
   exports: [
-    SystemRepository
+    SystemReadService
   ]
 })
 export class SystemModule {
