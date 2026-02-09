@@ -3,17 +3,15 @@ import { TokenService } from '@/auth/services/token.service';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { UserEntity } from '@/user/entities/user.entity';
 import { UniqueEmailAddressException } from '@/user/exceptions/unique-email-address.exception';
-import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { NewUserPayload } from '@/user/payloads/new-user.payload';
 import { UserRepository } from '@/user/repositories/user.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { hashSync } from 'bcryptjs';
-import { isMongoId } from 'class-validator';
 import { Response } from 'express';
 
 @Injectable()
-export class UserService {
+export class UserWriteService {
   public constructor(private readonly cookieService: CookieService, private readonly tokenService: TokenService, private readonly userRepository: UserRepository) {
   }
 
@@ -46,30 +44,6 @@ export class UserService {
       }
 
       throw new InternalServerErrorException('Editting profile failed');
-    }
-  }
-
-  public async selectById(userId: string): Promise<UserEntity> {
-    try {
-      if (!isMongoId(userId)) {
-        throw new Error('Invalid user ID');
-      }
-
-      const user = await this.userRepository.findOneBy({
-        id: userId
-      });
-
-      if (!user) {
-        throw new UserNotFoundException();
-      }
-
-      return user;
-    } catch (error: unknown) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      throw new InternalServerErrorException('Selecting user failed');
     }
   }
 

@@ -6,7 +6,8 @@ import { MongoUserEntity } from './entities/mongo-user.entity';
 import { CountListener } from './listeners/count.listener';
 import { UserRepository } from './repositories/user.repository';
 import { UserResolver } from './resolvers/user.resolver';
-import { UserService } from './services/user.service';
+import { UserReadService } from './services/user-read.service';
+import { UserWriteService } from './services/user-write.service';
 
 @Module({
   imports: [
@@ -22,9 +23,10 @@ import { UserService } from './services/user.service';
   ],
   providers: [
     CountListener,
+    UserReadService,
     UserRepository,
     UserResolver,
-    UserService
+    UserWriteService
   ],
   exports: [
     UserRepository
