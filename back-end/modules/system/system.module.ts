@@ -19,9 +19,9 @@ import { SystemWriteService } from './services/system-write.service';
   ],
   providers: [
     CountListener,
+    SystemReadService,
     SystemRepository,
     SystemResolver,
-    SystemReadService,
     SystemWriteService
   ],
   exports: [
