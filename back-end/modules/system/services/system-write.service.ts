@@ -6,15 +6,13 @@ import { SystemNotFoundException } from '@/system/exceptions/system-not-found.ex
 import { UniqueTitleException } from '@/system/exceptions/unique-title.exception';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
-import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.payload';
-import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
 import { SystemRepository } from '@/system/repositories/system.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { isMongoId } from 'class-validator';
 
 @Injectable()
-export class SystemService {
+export class SystemWriteService {
   public constructor(private readonly eventEmitter2: EventEmitter2, private readonly systemRepository: SystemRepository) {
   }
 
@@ -112,50 +110,6 @@ export class SystemService {
       }
 
       throw new InternalServerErrorException('Deleting system failed');
-    }
-  }
-
-  public async searchSystems(searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
-    try {
-      const validatedSearchSystemsPayload = validatePayload(searchSystemsPayload, SearchSystemsPayload);
-
-      const take = validatedSearchSystemsPayload.pageSize;
-      const skip = (validatedSearchSystemsPayload.page - 1) * validatedSearchSystemsPayload.pageSize;
-
-      const [systems, total] = await this.systemRepository.findAndCount({
-        skip,
-        take,
-        keywords: validatedSearchSystemsPayload.keywords,
-        userIds: validatedSearchSystemsPayload.userIds
-      });
-
-      return new PaginatedSystemsPayload(systems, total);
-    } catch {
-      throw new InternalServerErrorException('Reading systems failed');
-    }
-  }
-
-  public async selectById(systemId: string): Promise<SystemEntity> {
-    try {
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
-      const system = await this.systemRepository.findOneBy({
-        id: systemId
-      });
-
-      if (!system) {
-        throw new SystemNotFoundException();
-      }
-
-      return system;
-    } catch (error: unknown) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      throw new InternalServerErrorException('Reading system failed');
     }
   }
 

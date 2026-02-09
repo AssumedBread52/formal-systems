@@ -5,7 +5,8 @@ import { MongoSystemEntity } from './entities/mongo-system.entity';
 import { CountListener } from './listeners/count.listener';
 import { SystemRepository } from './repositories/system.repository';
 import { SystemResolver } from './resolvers/system.resolver';
-import { SystemService } from './services/system.service';
+import { SystemReadService } from './services/system-read.service';
+import { SystemWriteService } from './services/system-write.service';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { SystemService } from './services/system.service';
     CountListener,
     SystemRepository,
     SystemResolver,
-    SystemService
+    SystemReadService,
+    SystemWriteService
   ],
   exports: [
     SystemRepository
