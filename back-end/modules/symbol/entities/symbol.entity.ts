@@ -63,4 +63,8 @@ export class SymbolEntity {
   })
   @IsMongoId()
   public createdByUserId: string = '';
+
+  public isInUse(): boolean {
+    return (0 < this.axiomAppearanceCount) || (0 < this.theoremAppearanceCount) || (0 < this.deductionAppearanceCount) || (0 < this.proofAppearanceCount);
+  }
 };

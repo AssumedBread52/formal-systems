@@ -94,19 +94,7 @@ export class SymbolWriteService {
         throw new OwnershipException();
       }
 
-      if (0 < symbol.axiomAppearanceCount) {
-        throw new InUseException();
-      }
-
-      if (0 < symbol.theoremAppearanceCount) {
-        throw new InUseException();
-      }
-
-      if (0 < symbol.deductionAppearanceCount) {
-        throw new InUseException();
-      }
-
-      if (0 < symbol.proofAppearanceCount) {
+      if (symbol.isInUse()) {
         throw new InUseException();
       }
 
@@ -165,19 +153,7 @@ export class SymbolWriteService {
       }
 
       if (validatedEditSymbolPayload.newType !== symbol.type) {
-        if (0 < symbol.axiomAppearanceCount) {
-          throw new InUseException();
-        }
-
-        if (0 < symbol.theoremAppearanceCount) {
-          throw new InUseException();
-        }
-
-        if (0 < symbol.deductionAppearanceCount) {
-          throw new InUseException();
-        }
-
-        if (0 < symbol.proofAppearanceCount) {
+        if (symbol.isInUse()) {
           throw new InUseException();
         }
       }
