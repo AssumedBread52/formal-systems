@@ -6,18 +6,15 @@ import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.ex
 import { UniqueTitleException } from '@/symbol/exceptions/unique-title.exception';
 import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
-import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.payload';
-import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { SymbolRepository } from '@/symbol/repositories/symbol.repository';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { SystemRepository } from '@/system/repositories/system.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { isMongoId } from 'class-validator';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
-export class SymbolService {
+export class SymbolWriteService {
   public constructor(private readonly eventEmitter2: EventEmitter2, private readonly symbolRepository: SymbolRepository, private readonly systemRepository: SystemRepository) {
   }
 
@@ -134,60 +131,6 @@ export class SymbolService {
     }
   }
 
-  public async searchSymbols(systemId: string, searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedSymbolsPayload> {
-    try {
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
-      const validatedSearchSymbolsPayload = validatePayload(searchSymbolsPayload, SearchSymbolsPayload);
-
-      const take = validatedSearchSymbolsPayload.pageSize;
-      const skip = (validatedSearchSymbolsPayload.page - 1) * validatedSearchSymbolsPayload.pageSize;
-
-      const [symbols, total] = await this.symbolRepository.findAndCount({
-        skip,
-        take,
-        systemId,
-        keywords: validatedSearchSymbolsPayload.keywords,
-        types: validatedSearchSymbolsPayload.types
-      });
-
-      return new PaginatedSymbolsPayload(symbols, total);
-    } catch {
-      throw new InternalServerErrorException('Reading symbols failed');
-    }
-  }
-
-  public async selectById(systemId: string, symbolId: string): Promise<SymbolEntity> {
-    try {
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
-      if (!isMongoId(symbolId)) {
-        throw new Error('Invalid symbol ID');
-      }
-
-      const symbol = await this.symbolRepository.findOneBy({
-        id: symbolId,
-        systemId
-      });
-
-      if (!symbol) {
-        throw new SymbolNotFoundException();
-      }
-
-      return symbol;
-    } catch (error: unknown) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      throw new InternalServerErrorException('Reading symbol failed');
-    }
-  }
-
   public async update(sessionUserId: string, systemId: string, symbolId: string, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
     try {
       if (!isMongoId(sessionUserId)) {
@@ -265,40 +208,5 @@ export class SymbolService {
 
       throw new InternalServerErrorException('Updating symbol failed');
     }
-  }
-
-  async addToSymbolDictionary(systemId: ObjectId, symbolIds: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): Promise<Record<string, SymbolEntity>> {
-    const missingSymbolIds = symbolIds.filter((symbolId: ObjectId): boolean => {
-      if (symbolDictionary[symbolId.toString()]) {
-        return false;
-      }
-
-      return true;
-    });
-
-    const missingSymbols = await this.symbolRepository.find({
-      where: {
-        _id: {
-          $in: missingSymbolIds
-        },
-        systemId
-      }
-    });
-
-    const newSymbolDictionary = missingSymbols.reduce((dictionary: Record<string, SymbolEntity>, missingSymbol: SymbolEntity): Record<string, SymbolEntity> => {
-      const { id } = missingSymbol;
-
-      dictionary[id] = missingSymbol;
-
-      return dictionary;
-    }, symbolDictionary);
-
-    missingSymbolIds.forEach((missingSymbolId: ObjectId): void => {
-      if (!newSymbolDictionary[missingSymbolId.toString()]) {
-        throw new SymbolNotFoundException();
-      }
-    });
-
-    return newSymbolDictionary;
   }
 };

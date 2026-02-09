@@ -5,7 +5,8 @@ import { SymbolController } from './controllers/symbol.controller';
 import { MongoSymbolEntity } from './entities/mongo-symbol.entity';
 import { SymbolRepository } from './repositories/symbol.repository';
 import { SymbolResolver } from './resolvers/symbol.resolver';
-import { SymbolService } from './services/symbol.service';
+import { SymbolReadService } from './services/symbol-read.service';
+import { SymbolWriteService } from './services/symbol-write.service';
 
 @Module({
   imports: [
@@ -18,12 +19,13 @@ import { SymbolService } from './services/symbol.service';
     SymbolController
   ],
   providers: [
+    SymbolReadService,
     SymbolRepository,
     SymbolResolver,
-    SymbolService
+    SymbolWriteService
   ],
   exports: [
-    SymbolService
+    SymbolReadService
   ]
 })
 export class SymbolModule {
