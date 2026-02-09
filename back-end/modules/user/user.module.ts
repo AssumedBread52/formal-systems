@@ -29,7 +29,7 @@ import { UserWriteService } from './services/user-write.service';
     UserWriteService
   ],
   exports: [
-    UserRepository
+    UserReadService
   ]
 })
 export class UserModule {
