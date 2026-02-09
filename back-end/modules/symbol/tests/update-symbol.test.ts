@@ -143,9 +143,9 @@ describe('Update Symbol', (): void => {
     findOneBy.mockResolvedValueOnce(system);
     findOneBy.mockResolvedValueOnce(updatedUser1);
     findOneBy.mockResolvedValueOnce(updatedSystem1);
-    save.mockResolvedValueOnce(updatedSymbol);
     save.mockResolvedValueOnce(updatedUser1);
     save.mockResolvedValueOnce(updatedSystem1);
+    save.mockResolvedValueOnce(updatedSymbol);
     save.mockResolvedValueOnce(updatedUser2);
     save.mockResolvedValueOnce(updatedSystem2);
 
@@ -190,9 +190,9 @@ describe('Update Symbol', (): void => {
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(5);
-    expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);
-    expect(save).toHaveBeenNthCalledWith(2, updatedUser1);
-    expect(save).toHaveBeenNthCalledWith(3, updatedSystem1);
+    expect(save).toHaveBeenNthCalledWith(1, updatedUser1);
+    expect(save).toHaveBeenNthCalledWith(2, updatedSystem1);
+    expect(save).toHaveBeenNthCalledWith(3, updatedSymbol);
     expect(save).toHaveBeenNthCalledWith(4, updatedUser2);
     expect(save).toHaveBeenNthCalledWith(5, updatedSystem2);
     expect(statusCode).toBe(HttpStatus.OK);
@@ -331,9 +331,9 @@ describe('Update Symbol', (): void => {
     findOneBy.mockResolvedValueOnce(system);
     findOneBy.mockResolvedValueOnce(updatedUser1);
     findOneBy.mockResolvedValueOnce(updatedSystem1);
-    save.mockResolvedValueOnce(updatedSymbol);
     save.mockResolvedValueOnce(updatedUser1);
     save.mockResolvedValueOnce(updatedSystem1);
+    save.mockResolvedValueOnce(updatedSymbol);
     save.mockResolvedValueOnce(updatedUser2);
     save.mockResolvedValueOnce(updatedSystem2);
 
@@ -385,9 +385,9 @@ describe('Update Symbol', (): void => {
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(5);
-    expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);
-    expect(save).toHaveBeenNthCalledWith(2, updatedUser1);
-    expect(save).toHaveBeenNthCalledWith(3, updatedSystem1);
+    expect(save).toHaveBeenNthCalledWith(1, updatedUser1);
+    expect(save).toHaveBeenNthCalledWith(2, updatedSystem1);
+    expect(save).toHaveBeenNthCalledWith(3, updatedSymbol);
     expect(save).toHaveBeenNthCalledWith(4, updatedUser2);
     expect(save).toHaveBeenNthCalledWith(5, updatedSystem2);
     expect(statusCode).toBe(HttpStatus.OK);
