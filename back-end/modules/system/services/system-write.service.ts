@@ -75,27 +75,7 @@ export class SystemWriteService {
         throw new OwnershipException();
       }
 
-      if (0 < system.constantSymbolCount) {
-        throw new NotEmptyException();
-      }
-
-      if (0 < system.variableSymbolCount) {
-        throw new NotEmptyException();
-      }
-
-      if (0 < system.axiomCount) {
-        throw new NotEmptyException();
-      }
-
-      if (0 < system.theoremCount) {
-        throw new NotEmptyException();
-      }
-
-      if (0 < system.deductionCount) {
-        throw new NotEmptyException();
-      }
-
-      if (0 < system.proofCount) {
+      if (system.isNotEmpty()) {
         throw new NotEmptyException();
       }
 

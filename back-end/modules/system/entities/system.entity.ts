@@ -59,4 +59,8 @@ export class SystemEntity {
   })
   @IsMongoId()
   public createdByUserId: string = '';
+
+  public isNotEmpty(): boolean {
+    return (0 < this.constantSymbolCount) || (0 < this.variableSymbolCount) || (0 < this.axiomCount) || (0 < this.theoremCount) || (0 < this.deductionCount) || (0 < this.proofCount);
+  }
 };
