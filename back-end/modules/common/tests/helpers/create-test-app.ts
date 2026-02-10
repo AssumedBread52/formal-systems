@@ -1,7 +1,7 @@
 import { AuthModule } from '@/auth/auth.module';
 import { DependencyModule } from '@/dependency/dependency.module';
 import { HealthModule } from '@/health/health.module';
-import { StatementEntity } from '@/statement/statement.entity';
+import { StatementEntity } from '@/statement/entities/statement.entity';
 import { StatementModule } from '@/statement/statement.module';
 import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
