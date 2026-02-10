@@ -4,11 +4,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StatementController } from './controllers/statement.controller';
 import { StatementEntity } from './entities/statement.entity';
-import { StatementCreateService } from './services/statement-create.service';
-import { StatementDeleteService } from './services/statement-delete.service';
-import { StatementReadService } from './services/statement-read.service';
-import { StatementUpdateService } from './services/statement-update.service';
-import { ValidateService } from './services/validate.service';
 
 @Module({
   imports: [
@@ -22,14 +17,10 @@ import { ValidateService } from './services/validate.service';
     StatementController
   ],
   providers: [
-    StatementCreateService,
-    StatementDeleteService,
-    StatementReadService,
-    StatementUpdateService,
-    ValidateService
+    StatementController
   ],
   exports: [
-    StatementReadService
+    StatementController
   ]
 })
 export class StatementModule {
