@@ -1,9 +1,7 @@
 import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
-import { InvalidObjectIdException } from '@/common/exceptions/invalid-object-id.exception';
-import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
-import { StatementEntity } from '@/statement/entities/statement.entity';
+import { MongoStatementEntity } from '@/statement/entities/mongo-statement.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SystemReadService } from '@/system/services/system-read.service';
@@ -13,6 +11,22 @@ import { ClassConstructor, plainToClass, Type } from 'class-transformer';
 import { arrayMaxSize, ArrayMinSize, arrayMinSize, ArrayUnique, arrayUnique, buildMessage, IsArray, isArray, IsInt, isMongoId, IsNotEmpty, Min, ValidateBy, validateSync, ValidationOptions } from 'class-validator';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
+
+class PaginatedResultsPayload<Entity> {
+  results: Entity[];
+  total: number;
+
+  constructor(entities: Entity[], total: number) {
+    this.results = entities;
+    this.total = total;
+  }
+};
+
+class InvalidObjectIdException extends UnprocessableEntityException {
+  constructor() {
+    super('Invalid Object ID.');
+  }
+};
 
 const IsExpressionDecorator = (validationOptions?: ValidationOptions): PropertyDecorator => {
   return ValidateBy({
@@ -93,7 +107,7 @@ class StatementPayload {
   systemId: string;
   createdByUserId: string;
 
-  constructor(statement: StatementEntity) {
+  constructor(statement: MongoStatementEntity) {
     const { _id, title, description, distinctVariableRestrictions, variableTypeHypotheses, logicalHypotheses, assertion, proofCount, proofAppearanceCount, systemId, createdByUserId } = statement;
 
     this.id = _id.toString();
@@ -277,7 +291,7 @@ class NewStatementPayload {
 
 @Controller('system/:systemId/statement')
 export class StatementController {
-  constructor(private symbolReadService: SymbolReadService, private systemReadService: SystemReadService, @InjectRepository(StatementEntity) private statementRepository: MongoRepository<StatementEntity>) {
+  constructor(private symbolReadService: SymbolReadService, private systemReadService: SystemReadService, @InjectRepository(MongoStatementEntity) private statementRepository: MongoRepository<MongoStatementEntity>) {
   }
 
   @UseGuards(JwtGuard)
@@ -317,7 +331,7 @@ export class StatementController {
     const { page, count, keywords } = searchPayload;
     const where = {
       systemId
-    } as RootFilterOperators<StatementEntity>;
+    } as RootFilterOperators<MongoStatementEntity>;
 
     if (0 !== keywords.length) {
       where.$text = {
@@ -442,7 +456,7 @@ export class StatementController {
 
     const [prefix, ...expression] = assertion;
 
-    const statement = new StatementEntity();
+    const statement = new MongoStatementEntity();
 
     statement.title = title;
     statement.description = description;
