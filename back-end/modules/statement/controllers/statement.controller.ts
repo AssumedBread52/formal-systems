@@ -1,8 +1,6 @@
 import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
-import { IsDistinctPairDecorator } from '@/common/decorators/is-distinct-pair.decorator';
-import { IsExpressionDecorator } from '@/common/decorators/is-expression.decorator';
 import { InvalidObjectIdException } from '@/common/exceptions/invalid-object-id.exception';
 import { PaginatedResultsPayload } from '@/common/payloads/paginated-results.payload';
 import { StatementEntity } from '@/statement/entities/statement.entity';
@@ -12,9 +10,75 @@ import { SystemReadService } from '@/system/services/system-read.service';
 import { Body, ConflictException, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, UnprocessableEntityException, UseGuards, ValidationPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ClassConstructor, plainToClass, Type } from 'class-transformer';
-import { ArrayMinSize, ArrayUnique, IsArray, isArray, IsInt, isMongoId, IsNotEmpty, Min, validateSync } from 'class-validator';
+import { arrayMaxSize, ArrayMinSize, arrayMinSize, ArrayUnique, arrayUnique, buildMessage, IsArray, isArray, IsInt, isMongoId, IsNotEmpty, Min, ValidateBy, validateSync, ValidationOptions } from 'class-validator';
 import { ObjectId } from 'mongodb';
 import { MongoRepository, RootFilterOperators } from 'typeorm';
+
+const IsExpressionDecorator = (validationOptions?: ValidationOptions): PropertyDecorator => {
+  return ValidateBy({
+    name: 'is-expression',
+    validator: {
+      defaultMessage: buildMessage((eachPrefix: string): string => {
+        return `${eachPrefix}each value in $property must be a mongodb id`;
+      }, validationOptions),
+      validate: (value: any): boolean => {
+        if (!isArray(value)) {
+          return false;
+        }
+
+        for (let item of value) {
+          if (!isMongoId(item)) {
+            return false;
+          }
+        }
+
+        return true;
+      }
+    }
+  }, validationOptions);
+};
+
+const IsDistinctPairDecorator = (validationOptions?: ValidationOptions): PropertyDecorator => {
+  return ValidateBy({
+    name: 'is-distinct-pair',
+    validator: {
+      defaultMessage: buildMessage((eachPrefix: string): string => {
+        return `${eachPrefix}$property must be a distinct pair of mongodb ids`;
+      }, validationOptions),
+      validate: (value: any): boolean => {
+        if (!isArray(value)) {
+          return false;
+        }
+
+        if (!arrayMaxSize(value, 2)) {
+          return false;
+        }
+
+        if (!arrayMinSize(value, 2)) {
+          return false;
+        }
+
+        const [first, second] = value;
+
+        if (!isMongoId(first)) {
+          return false;
+        }
+
+        if (!isMongoId(second)) {
+          return false;
+        }
+
+        if (!arrayUnique(value, (item: string): string => {
+          return item;
+        })) {
+          return false;
+        }
+
+        return true;
+      }
+    }
+  }, validationOptions);
+};
 
 class StatementPayload {
   id: string;
