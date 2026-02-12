@@ -19,7 +19,7 @@ export class SymbolResolver {
     return SymbolEntity;
   })
   @UseGuards(JwtGuard)
-  public createSymbol(@SessionUser('id') sessionUserId: string, @Args('systemId') systemId: string, @Args('symbolPayload', new ValidationPipe({ transform: true })) newSymbolPayload: NewSymbolPayload) {
+  public createSymbol(@SessionUser('id') sessionUserId: string, @Args('systemId') systemId: string, @Args('symbolPayload', new ValidationPipe({ transform: true })) newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
     return this.symbolWriteService.create(sessionUserId, systemId, newSymbolPayload);
   }
 
