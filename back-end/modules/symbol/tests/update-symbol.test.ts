@@ -47,11 +47,9 @@ describe('Update Symbol', (): void => {
     const newType = SymbolType.constant;
     const newContent = '\\beta';
     const user = new MongoUserEntity();
-    const updatedUser1 = new MongoUserEntity();
-    const updatedUser2 = new MongoUserEntity();
+    const updatedUser = new MongoUserEntity();
     const system = new MongoSystemEntity();
-    const updatedSystem1 = new MongoSystemEntity();
-    const updatedSystem2 = new MongoSystemEntity();
+    const updatedSystem = new MongoSystemEntity();
     const symbol = new MongoSymbolEntity();
     const updatedSymbol = new MongoSymbolEntity();
 
@@ -67,30 +65,18 @@ describe('Update Symbol', (): void => {
     user.theoremCount = theoremCount;
     user.deductionCount = deductionCount;
     user.proofCount = proofCount;
-    updatedUser1._id = userId;
-    updatedUser1.firstName = firstName;
-    updatedUser1.lastName = lastName;
-    updatedUser1.email = email;
-    updatedUser1.hashedPassword = hashedPassword;
-    updatedUser1.systemCount = systemCount;
-    updatedUser1.constantSymbolCount = constantSymbolCount;
-    updatedUser1.variableSymbolCount = updatedVariableSymbolCount;
-    updatedUser1.axiomCount = axiomCount;
-    updatedUser1.theoremCount = theoremCount;
-    updatedUser1.deductionCount = deductionCount;
-    updatedUser1.proofCount = proofCount;
-    updatedUser2._id = userId;
-    updatedUser2.firstName = firstName;
-    updatedUser2.lastName = lastName;
-    updatedUser2.email = email;
-    updatedUser2.hashedPassword = hashedPassword;
-    updatedUser2.systemCount = systemCount;
-    updatedUser2.constantSymbolCount = updatedConstantSymbolCount;
-    updatedUser2.variableSymbolCount = updatedVariableSymbolCount;
-    updatedUser2.axiomCount = axiomCount;
-    updatedUser2.theoremCount = theoremCount;
-    updatedUser2.deductionCount = deductionCount;
-    updatedUser2.proofCount = proofCount;
+    updatedUser._id = userId;
+    updatedUser.firstName = firstName;
+    updatedUser.lastName = lastName;
+    updatedUser.email = email;
+    updatedUser.hashedPassword = hashedPassword;
+    updatedUser.systemCount = systemCount;
+    updatedUser.constantSymbolCount = updatedConstantSymbolCount;
+    updatedUser.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser.axiomCount = axiomCount;
+    updatedUser.theoremCount = theoremCount;
+    updatedUser.deductionCount = deductionCount;
+    updatedUser.proofCount = proofCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
@@ -101,26 +87,16 @@ describe('Update Symbol', (): void => {
     system.deductionCount = deductionCount;
     system.proofCount = proofCount;
     system.createdByUserId = userId;
-    updatedSystem1._id = systemId;
-    updatedSystem1.title = title;
-    updatedSystem1.description = description;
-    updatedSystem1.constantSymbolCount = constantSymbolCount;
-    updatedSystem1.variableSymbolCount = updatedVariableSymbolCount;
-    updatedSystem1.axiomCount = axiomCount;
-    updatedSystem1.theoremCount = theoremCount;
-    updatedSystem1.deductionCount = deductionCount;
-    updatedSystem1.proofCount = proofCount;
-    updatedSystem1.createdByUserId = userId;
-    updatedSystem2._id = systemId;
-    updatedSystem2.title = title;
-    updatedSystem2.description = description;
-    updatedSystem2.constantSymbolCount = updatedConstantSymbolCount;
-    updatedSystem2.variableSymbolCount = updatedVariableSymbolCount;
-    updatedSystem2.axiomCount = axiomCount;
-    updatedSystem2.theoremCount = theoremCount;
-    updatedSystem2.deductionCount = deductionCount;
-    updatedSystem2.proofCount = proofCount;
-    updatedSystem2.createdByUserId = userId;
+    updatedSystem._id = systemId;
+    updatedSystem.title = title;
+    updatedSystem.description = description;
+    updatedSystem.constantSymbolCount = updatedConstantSymbolCount;
+    updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem.axiomCount = axiomCount;
+    updatedSystem.theoremCount = theoremCount;
+    updatedSystem.deductionCount = deductionCount;
+    updatedSystem.proofCount = proofCount;
+    updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = 'TestSymbol1';
     symbol.description = 'Test Symbol 1';
@@ -141,13 +117,9 @@ describe('Update Symbol', (): void => {
     findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
-    findOneBy.mockResolvedValueOnce(updatedUser1);
-    findOneBy.mockResolvedValueOnce(updatedSystem1);
-    save.mockResolvedValueOnce(updatedUser1);
-    save.mockResolvedValueOnce(updatedSystem1);
     save.mockResolvedValueOnce(updatedSymbol);
-    save.mockResolvedValueOnce(updatedUser2);
-    save.mockResolvedValueOnce(updatedSystem2);
+    save.mockResolvedValueOnce(updatedUser);
+    save.mockResolvedValueOnce(updatedSystem);
 
     const token = app.get(JwtService).sign({
       userId
@@ -164,7 +136,7 @@ describe('Update Symbol', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(7);
+    expect(findOneBy).toHaveBeenCalledTimes(5);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -182,19 +154,11 @@ describe('Update Symbol', (): void => {
     expect(findOneBy).toHaveBeenNthCalledWith(5, {
       _id: systemId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(6, {
-      _id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(7, {
-      _id: systemId
-    });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(5);
-    expect(save).toHaveBeenNthCalledWith(1, updatedUser1);
-    expect(save).toHaveBeenNthCalledWith(2, updatedSystem1);
-    expect(save).toHaveBeenNthCalledWith(3, updatedSymbol);
-    expect(save).toHaveBeenNthCalledWith(4, updatedUser2);
-    expect(save).toHaveBeenNthCalledWith(5, updatedSystem2);
+    expect(save).toHaveBeenCalledTimes(3);
+    expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);
+    expect(save).toHaveBeenNthCalledWith(2, updatedUser);
+    expect(save).toHaveBeenNthCalledWith(3, updatedSystem);
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toStrictEqual({
       id: symbolId.toString(),
@@ -235,11 +199,9 @@ describe('Update Symbol', (): void => {
     const newType = SymbolType.constant;
     const newContent = '\\beta';
     const user = new MongoUserEntity();
-    const updatedUser1 = new MongoUserEntity();
-    const updatedUser2 = new MongoUserEntity();
+    const updatedUser = new MongoUserEntity();
     const system = new MongoSystemEntity();
-    const updatedSystem1 = new MongoSystemEntity();
-    const updatedSystem2 = new MongoSystemEntity();
+    const updatedSystem = new MongoSystemEntity();
     const symbol = new MongoSymbolEntity();
     const updatedSymbol = new MongoSymbolEntity();
 
@@ -255,30 +217,18 @@ describe('Update Symbol', (): void => {
     user.theoremCount = theoremCount;
     user.deductionCount = deductionCount;
     user.proofCount = proofCount;
-    updatedUser1._id = userId;
-    updatedUser1.firstName = firstName;
-    updatedUser1.lastName = lastName;
-    updatedUser1.email = email;
-    updatedUser1.hashedPassword = hashedPassword;
-    updatedUser1.systemCount = systemCount;
-    updatedUser1.constantSymbolCount = constantSymbolCount;
-    updatedUser1.variableSymbolCount = updatedVariableSymbolCount;
-    updatedUser1.axiomCount = axiomCount;
-    updatedUser1.theoremCount = theoremCount;
-    updatedUser1.deductionCount = deductionCount;
-    updatedUser1.proofCount = proofCount;
-    updatedUser2._id = userId;
-    updatedUser2.firstName = firstName;
-    updatedUser2.lastName = lastName;
-    updatedUser2.email = email;
-    updatedUser2.hashedPassword = hashedPassword;
-    updatedUser2.systemCount = systemCount;
-    updatedUser2.constantSymbolCount = updatedConstantSymbolCount;
-    updatedUser2.variableSymbolCount = updatedVariableSymbolCount;
-    updatedUser2.axiomCount = axiomCount;
-    updatedUser2.theoremCount = theoremCount;
-    updatedUser2.deductionCount = deductionCount;
-    updatedUser2.proofCount = proofCount;
+    updatedUser._id = userId;
+    updatedUser.firstName = firstName;
+    updatedUser.lastName = lastName;
+    updatedUser.email = email;
+    updatedUser.hashedPassword = hashedPassword;
+    updatedUser.systemCount = systemCount;
+    updatedUser.constantSymbolCount = updatedConstantSymbolCount;
+    updatedUser.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser.axiomCount = axiomCount;
+    updatedUser.theoremCount = theoremCount;
+    updatedUser.deductionCount = deductionCount;
+    updatedUser.proofCount = proofCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
@@ -289,26 +239,16 @@ describe('Update Symbol', (): void => {
     system.deductionCount = deductionCount;
     system.proofCount = proofCount;
     system.createdByUserId = userId;
-    updatedSystem1._id = systemId;
-    updatedSystem1.title = title;
-    updatedSystem1.description = description;
-    updatedSystem1.constantSymbolCount = constantSymbolCount;
-    updatedSystem1.variableSymbolCount = updatedVariableSymbolCount;
-    updatedSystem1.axiomCount = axiomCount;
-    updatedSystem1.theoremCount = theoremCount;
-    updatedSystem1.deductionCount = deductionCount;
-    updatedSystem1.proofCount = proofCount;
-    updatedSystem1.createdByUserId = userId;
-    updatedSystem2._id = systemId;
-    updatedSystem2.title = title;
-    updatedSystem2.description = description;
-    updatedSystem2.constantSymbolCount = updatedConstantSymbolCount;
-    updatedSystem2.variableSymbolCount = updatedVariableSymbolCount;
-    updatedSystem2.axiomCount = axiomCount;
-    updatedSystem2.theoremCount = theoremCount;
-    updatedSystem2.deductionCount = deductionCount;
-    updatedSystem2.proofCount = proofCount;
-    updatedSystem2.createdByUserId = userId;
+    updatedSystem._id = systemId;
+    updatedSystem.title = title;
+    updatedSystem.description = description;
+    updatedSystem.constantSymbolCount = updatedConstantSymbolCount;
+    updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem.axiomCount = axiomCount;
+    updatedSystem.theoremCount = theoremCount;
+    updatedSystem.deductionCount = deductionCount;
+    updatedSystem.proofCount = proofCount;
+    updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = 'TestSymbol1';
     symbol.description = 'Test Symbol 1';
@@ -329,13 +269,9 @@ describe('Update Symbol', (): void => {
     findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
-    findOneBy.mockResolvedValueOnce(updatedUser1);
-    findOneBy.mockResolvedValueOnce(updatedSystem1);
-    save.mockResolvedValueOnce(updatedUser1);
-    save.mockResolvedValueOnce(updatedSystem1);
     save.mockResolvedValueOnce(updatedSymbol);
-    save.mockResolvedValueOnce(updatedUser2);
-    save.mockResolvedValueOnce(updatedSystem2);
+    save.mockResolvedValueOnce(updatedUser);
+    save.mockResolvedValueOnce(updatedSystem);
 
     const token = app.get(JwtService).sign({
       userId
@@ -359,7 +295,7 @@ describe('Update Symbol', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(7);
+    expect(findOneBy).toHaveBeenCalledTimes(5);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -377,19 +313,11 @@ describe('Update Symbol', (): void => {
     expect(findOneBy).toHaveBeenNthCalledWith(5, {
       _id: systemId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(6, {
-      _id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(7, {
-      _id: systemId
-    });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(5);
-    expect(save).toHaveBeenNthCalledWith(1, updatedUser1);
-    expect(save).toHaveBeenNthCalledWith(2, updatedSystem1);
-    expect(save).toHaveBeenNthCalledWith(3, updatedSymbol);
-    expect(save).toHaveBeenNthCalledWith(4, updatedUser2);
-    expect(save).toHaveBeenNthCalledWith(5, updatedSystem2);
+    expect(save).toHaveBeenCalledTimes(3);
+    expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);
+    expect(save).toHaveBeenNthCalledWith(2, updatedUser);
+    expect(save).toHaveBeenNthCalledWith(3, updatedSystem);
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toStrictEqual({
       data: {

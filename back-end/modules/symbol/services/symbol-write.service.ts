@@ -158,7 +158,7 @@ export class SymbolWriteService {
         }
       }
 
-      await this.eventEmitter2.emitAsync('symbol.update.started', symbol);
+      const originalSymbol = Object.assign(new SymbolEntity(), symbol);
 
       symbol.title = validatedEditSymbolPayload.newTitle;
       symbol.description = validatedEditSymbolPayload.newDescription;
@@ -167,7 +167,7 @@ export class SymbolWriteService {
 
       const savedSymbol = await this.symbolRepository.save(symbol);
 
-      await this.eventEmitter2.emitAsync('symbol.update.completed', savedSymbol);
+      await this.eventEmitter2.emitAsync('symbol.update.completed', originalSymbol, savedSymbol);
 
       return savedSymbol;
     } catch (error: unknown) {
