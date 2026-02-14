@@ -4,25 +4,25 @@ import { Column, Entity, ObjectIdColumn } from 'typeorm';
 @Entity('statement')
 export class MongoStatementEntity {
   @ObjectIdColumn()
-  _id: ObjectId = new ObjectId();
+  public _id: ObjectId = new ObjectId();
   @Column()
-  title: string = '';
+  public title: string = '';
   @Column()
-  description: string = '';
+  public description: string = '';
   @Column()
-  distinctVariableRestrictions: [ObjectId, ObjectId][] = [];
+  public distinctVariableRestrictions: [ObjectId, ObjectId][] = [];
   @Column()
-  variableTypeHypotheses: [ObjectId, ObjectId][] = [];
+  public variableTypeHypotheses: [ObjectId, ObjectId][] = [];
   @Column()
-  logicalHypotheses: [ObjectId, ...ObjectId[]][] = [];
+  public logicalHypotheses: [ObjectId, ...ObjectId[]][] = [];
   @Column()
-  assertion: [ObjectId, ...ObjectId[]] = [new ObjectId()];
+  public assertion: [ObjectId, ...ObjectId[]] = [new ObjectId()];
   @Column()
-  proofCount: number = 0;
+  public proofCount: number = 0;
   @Column()
-  proofAppearanceCount: number = 0;
+  public proofAppearanceCount: number = 0;
   @Column()
-  systemId: ObjectId = new ObjectId();
+  public systemId: ObjectId = new ObjectId();
   @Column()
-  createdByUserId: ObjectId = new ObjectId();
+  public createdByUserId: ObjectId = new ObjectId();
 };
