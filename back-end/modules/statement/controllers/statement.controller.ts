@@ -99,9 +99,9 @@ class StatementPayload {
   title: string;
   description: string;
   distinctVariableRestrictions: [string, string][];
-  variableTypeHypotheses: [string, string][];
-  logicalHypotheses: [string, ...string[]][];
-  assertion: [string, ...string[]];
+  variableTypeHypotheses: string[][];
+  logicalHypotheses: string[][];
+  assertion: string[];
   proofCount: number;
   proofAppearanceCount: number;
   systemId: string;
@@ -121,31 +121,19 @@ class StatementPayload {
         second.toString()
       ];
     });
-    this.variableTypeHypotheses = variableTypeHypotheses.map((variableTypeHypothesis: [ObjectId, ObjectId]): [string, string] => {
-      const [type, variable] = variableTypeHypothesis;
-
-      return [
-        type.toString(),
-        variable.toString()
-      ];
+    this.variableTypeHypotheses = variableTypeHypotheses.map((variableTypeHypothesis: ObjectId[]): string[] => {
+      return variableTypeHypothesis.map((id: ObjectId): string => {
+        return id.toString();
+      });
     });
-    this.logicalHypotheses = logicalHypotheses.map((logicalHypothesis: [ObjectId, ...ObjectId[]]): [string, ...string[]] => {
-      const [prefix, ...expression] = logicalHypothesis;
-
-      return [
-        prefix.toString(),
-        ...expression.map((symbolId: ObjectId): string => {
-          return symbolId.toString();
-        })
-      ];
+    this.logicalHypotheses = logicalHypotheses.map((logicalHypothesis: ObjectId[]): string[] => {
+      return logicalHypothesis.map((id: ObjectId): string => {
+        return id.toString();
+      });
     });
-    const [prefix, ...expression] = assertion;
-    this.assertion = [
-      prefix.toString(),
-      ...expression.map((symbolId: ObjectId): string => {
-        return symbolId.toString();
-      })
-    ];
+    this.assertion = assertion.map((id: ObjectId): string => {
+      return id.toString();
+    });
     this.proofCount = proofCount;
     this.proofAppearanceCount = proofAppearanceCount;
     this.systemId = systemId.toString();

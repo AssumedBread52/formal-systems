@@ -12,11 +12,11 @@ export class MongoStatementEntity {
   @Column()
   public distinctVariableRestrictions: [ObjectId, ObjectId][] = [];
   @Column()
-  public variableTypeHypotheses: [ObjectId, ObjectId][] = [];
+  public variableTypeHypotheses: ObjectId[][] = [];
   @Column()
-  public logicalHypotheses: [ObjectId, ...ObjectId[]][] = [];
+  public logicalHypotheses: ObjectId[][] = [];
   @Column()
-  public assertion: [ObjectId, ...ObjectId[]] = [new ObjectId()];
+  public assertion: ObjectId[] = [];
   @Column()
   public proofCount: number = 0;
   @Column()
