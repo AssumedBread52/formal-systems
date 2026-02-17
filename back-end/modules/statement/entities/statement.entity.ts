@@ -64,6 +64,14 @@ export class StatementEntity {
     each: true
   })
   public logicalHypotheses: ConstantPrefixedExpressionPayload[] = [];
+  @Field((): typeof ConstantPrefixedExpressionPayload => {
+    return ConstantPrefixedExpressionPayload;
+  })
+  @Type((): typeof ConstantPrefixedExpressionPayload => {
+    return ConstantPrefixedExpressionPayload;
+  })
+  @ValidateNested()
+  public assertion: ConstantPrefixedExpressionPayload = new ConstantPrefixedExpressionPayload();
   @Field((): typeof Int => {
     return Int;
   })
