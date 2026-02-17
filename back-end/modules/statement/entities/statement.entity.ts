@@ -1,3 +1,4 @@
+import { ConstantPrefixedExpressionPayload } from '@/statement/payloads/constant-prefixed-expression.payload';
 import { ConstantVariablePairExpressionPayload } from '@/statement/payloads/constant-variable-pair-expression.payload';
 import { DistinctVariablePairPayload } from '@/statement/payloads/distinct-variable-pair.payload';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
@@ -49,6 +50,20 @@ export class StatementEntity {
     each: true
   })
   public variableTypeHypotheses: ConstantVariablePairExpressionPayload[] = [];
+  @ArrayUnique((logicalHypothesis: ConstantPrefixedExpressionPayload): string => {
+    return logicalHypothesis.symbolIds.join('::');
+  })
+  @Field((): [typeof ConstantPrefixedExpressionPayload] => {
+    return [ConstantPrefixedExpressionPayload];
+  })
+  @IsArray()
+  @Type((): typeof ConstantPrefixedExpressionPayload => {
+    return ConstantPrefixedExpressionPayload;
+  })
+  @ValidateNested({
+    each: true
+  })
+  public logicalHypotheses: ConstantPrefixedExpressionPayload[] = [];
   @Field((): typeof Int => {
     return Int;
   })
