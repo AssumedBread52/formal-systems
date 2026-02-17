@@ -1,3 +1,4 @@
+import { ConstantVariablePairExpressionPayload } from '@/statement/payloads/constant-variable-pair-expression.payload';
 import { DistinctVariablePairPayload } from '@/statement/payloads/distinct-variable-pair.payload';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
@@ -34,6 +35,20 @@ export class StatementEntity {
     each: true
   })
   public distinctVariableRestrictions: DistinctVariablePairPayload[] = [];
+  @ArrayUnique((variableTypeHypothesis: ConstantVariablePairExpressionPayload): string => {
+    return variableTypeHypothesis.suffixedVariableSymbolId;
+  })
+  @Field((): [typeof ConstantVariablePairExpressionPayload] => {
+    return [ConstantVariablePairExpressionPayload];
+  })
+  @IsArray()
+  @Type((): typeof ConstantVariablePairExpressionPayload => {
+    return ConstantVariablePairExpressionPayload;
+  })
+  @ValidateNested({
+    each: true
+  })
+  public variableTypeHypotheses: ConstantVariablePairExpressionPayload[] = [];
   @Field((): typeof Int => {
     return Int;
   })
