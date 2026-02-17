@@ -199,16 +199,16 @@ export class StatementRepository {
       return constantPrefixedExpressionPayload;
     });
     const [prefix, ...expression] = mongoStatement.assertion;
-    const assertion = new ConstantPrefixedExpressionPayload();
+    const constantPrefixedExpressionPayload = new ConstantPrefixedExpressionPayload();
 
-    assertion.symbolIds = [
+    constantPrefixedExpressionPayload.symbolIds = [
       prefix.toString(),
       ...expression.map((symbolId: ObjectId): string => {
         return symbolId.toString();
       })
     ];
 
-    statement.assertion = assertion;
+    statement.assertion = constantPrefixedExpressionPayload;
     statement.proofCount = mongoStatement.proofCount;
     statement.proofAppearanceCount = mongoStatement.proofAppearanceCount;
     statement.systemId = mongoStatement.systemId.toString();
