@@ -138,25 +138,19 @@ export class StatementRepository {
       ];
     });
     mongoStatement.logicalHypotheses = statement.logicalHypotheses.map((logicalHypothesis: ConstantPrefixedExpressionPayload): [ObjectId, ...ObjectId[]] => {
-      const [prefix, ...expression] = logicalHypothesis.symbolIds;
-
       return [
-        new ObjectId(prefix),
-        ...expression.map((symbolId: string): ObjectId => {
+        new ObjectId(logicalHypothesis.prefixedConstantSymbolId),
+        ...logicalHypothesis.suffixedExpressionSymbolIds.map((symbolId: string): ObjectId => {
           return new ObjectId(symbolId);
         })
       ];
     });
-
-    const [prefix, ...expression] = statement.assertion.symbolIds;
-
     mongoStatement.assertion = [
-      new ObjectId(prefix),
-      ...expression.map((symbolId: string): ObjectId => {
+      new ObjectId(statement.assertion.prefixedConstantSymbolId),
+      ...statement.assertion.suffixedExpressionSymbolIds.map((symbolId: string): ObjectId => {
         return new ObjectId(symbolId);
       })
     ];
-
     mongoStatement.proofCount = statement.proofCount;
     mongoStatement.proofAppearanceCount = statement.proofAppearanceCount;
     mongoStatement.systemId = new ObjectId(statement.systemId);
@@ -172,37 +166,37 @@ export class StatementRepository {
     statement.title = mongoStatement.title;
     statement.description = mongoStatement.description;
     statement.distinctVariableRestrictions = mongoStatement.distinctVariableRestrictions.map((distinctVariableRestriction: [ObjectId, ObjectId]): DistinctVariablePairPayload => {
-      const restriction = new DistinctVariablePairPayload();
+      const distinctVariablePairPayload = new DistinctVariablePairPayload();
 
-      restriction.variableSymbolIds = [
+      distinctVariablePairPayload.variableSymbolIds = [
         distinctVariableRestriction[0].toString(),
         distinctVariableRestriction[1].toString()
       ];
 
-      return restriction;
+      return distinctVariablePairPayload;
     });
     statement.variableTypeHypotheses = mongoStatement.variableTypeHypotheses.map((variableTypeHypothesis: [ObjectId, ObjectId]): ConstantVariablePairExpressionPayload => {
-      const typeHypothesis = new ConstantVariablePairExpressionPayload();
+      const constantVariablePairExpressionPayload = new ConstantVariablePairExpressionPayload();
 
-      typeHypothesis.symbolIds = [
+      constantVariablePairExpressionPayload.symbolIds = [
         variableTypeHypothesis[0].toString(),
         variableTypeHypothesis[1].toString()
       ];
 
-      return typeHypothesis;
+      return constantVariablePairExpressionPayload;
     });
     statement.logicalHypotheses = mongoStatement.logicalHypotheses.map((logicalHypothesis: [ObjectId, ...ObjectId[]]): ConstantPrefixedExpressionPayload => {
       const [prefix, ...expression] = logicalHypothesis;
-      const hypothesis = new ConstantPrefixedExpressionPayload();
+      const constantPrefixedExpressionPayload = new ConstantPrefixedExpressionPayload();
 
-      hypothesis.symbolIds = [
+      constantPrefixedExpressionPayload.symbolIds = [
         prefix.toString(),
         ...expression.map((symbolId: ObjectId): string => {
           return symbolId.toString();
         })
       ];
 
-      return hypothesis;
+      return constantPrefixedExpressionPayload;
     });
     const [prefix, ...expression] = mongoStatement.assertion;
     const assertion = new ConstantPrefixedExpressionPayload();

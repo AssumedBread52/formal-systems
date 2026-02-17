@@ -8,4 +8,8 @@ export class ConstantPrefixedExpressionPayload extends ExpressionPayload {
   public get prefixedConstantSymbolId(): string {
     return this.symbolIds[0];
   }
+
+  public get suffixedExpressionSymbolIds(): string[] {
+    return this.symbolIds.slice(1);
+  }
 };
