@@ -1,5 +1,7 @@
+import { DistinctVariablePairPayload } from '@/statement/payloads/distinct-variable-pair.payload';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ArrayUnique, IsArray, IsInt, IsMongoId, IsNotEmpty, Min, ValidateNested } from 'class-validator';
 
 @ObjectType()
 export class StatementEntity {
@@ -18,6 +20,20 @@ export class StatementEntity {
   })
   @IsNotEmpty()
   public description: string = '';
+  @ArrayUnique((distinctVariableRestriction: DistinctVariablePairPayload): string => {
+    return [...distinctVariableRestriction.variableSymbolIds].sort().join('::');
+  })
+  @Field((): [typeof DistinctVariablePairPayload] => {
+    return [DistinctVariablePairPayload];
+  })
+  @IsArray()
+  @Type((): typeof DistinctVariablePairPayload => {
+    return DistinctVariablePairPayload;
+  })
+  @ValidateNested({
+    each: true
+  })
+  public distinctVariableRestrictions: DistinctVariablePairPayload[] = [];
   @Field((): typeof Int => {
     return Int;
   })
