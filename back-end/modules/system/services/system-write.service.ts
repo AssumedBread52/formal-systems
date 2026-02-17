@@ -16,9 +16,9 @@ export class SystemWriteService {
   public constructor(private readonly eventEmitter2: EventEmitter2, private readonly systemRepository: SystemRepository) {
   }
 
-  public async create(sessionUserId: string, newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
+  public async create(createdByUserId: string, newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
     try {
-      if (!isMongoId(sessionUserId)) {
+      if (!isMongoId(createdByUserId)) {
         throw new Error('Invalid session user ID');
       }
 
@@ -26,7 +26,7 @@ export class SystemWriteService {
 
       const conflict = await this.systemRepository.findOneBy({
         title: validatedNewSystemPayload.title,
-        createdByUserId: sessionUserId
+        createdByUserId
       });
 
       if (conflict) {
@@ -37,7 +37,7 @@ export class SystemWriteService {
 
       system.title = validatedNewSystemPayload.title;
       system.description = validatedNewSystemPayload.description;
-      system.createdByUserId = sessionUserId;
+      system.createdByUserId = createdByUserId;
 
       const savedSystem = await this.systemRepository.save(system);
 
@@ -53,9 +53,9 @@ export class SystemWriteService {
     }
   }
 
-  public async delete(sessionUserId: string, systemId: string): Promise<SystemEntity> {
+  public async delete(createdByUserId: string, systemId: string): Promise<SystemEntity> {
     try {
-      if (!isMongoId(sessionUserId)) {
+      if (!isMongoId(createdByUserId)) {
         throw new Error('Invalid session user ID');
       }
 
@@ -71,7 +71,7 @@ export class SystemWriteService {
         throw new SystemNotFoundException();
       }
 
-      if (sessionUserId !== system.createdByUserId) {
+      if (createdByUserId !== system.createdByUserId) {
         throw new OwnershipException();
       }
 
@@ -93,9 +93,9 @@ export class SystemWriteService {
     }
   }
 
-  public async update(sessionUserId: string, systemId: string, editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
+  public async update(createdByUserId: string, systemId: string, editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
     try {
-      if (!isMongoId(sessionUserId)) {
+      if (!isMongoId(createdByUserId)) {
         throw new Error('Invalid session user ID');
       }
 
@@ -111,7 +111,7 @@ export class SystemWriteService {
         throw new SystemNotFoundException();
       }
 
-      if (sessionUserId !== system.createdByUserId) {
+      if (createdByUserId !== system.createdByUserId) {
         throw new OwnershipException();
       }
 
@@ -120,7 +120,7 @@ export class SystemWriteService {
       if (validatedEditSystemPayload.newTitle !== system.title) {
         const conflict = await this.systemRepository.findOneBy({
           title: validatedEditSystemPayload.newTitle,
-          createdByUserId: sessionUserId
+          createdByUserId
         });
 
         if (conflict) {

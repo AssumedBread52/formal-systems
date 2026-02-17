@@ -17,9 +17,9 @@ export class SymbolWriteService {
   public constructor(private readonly eventEmitter2: EventEmitter2, private readonly symbolRepository: SymbolRepository, private readonly systemReadService: SystemReadService) {
   }
 
-  public async create(sessionUserId: string, systemId: string, newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
+  public async create(createdByUserId: string, systemId: string, newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
     try {
-      if (!isMongoId(sessionUserId)) {
+      if (!isMongoId(createdByUserId)) {
         throw new Error('Invalid session user ID');
       }
 
@@ -31,7 +31,7 @@ export class SymbolWriteService {
 
       const system = await this.systemReadService.selectById(systemId);
 
-      if (sessionUserId !== system.createdByUserId) {
+      if (createdByUserId !== system.createdByUserId) {
         throw new OwnershipException();
       }
 
@@ -51,7 +51,7 @@ export class SymbolWriteService {
       symbol.type = validatedNewSymbolPayload.type;
       symbol.content = validatedNewSymbolPayload.content;
       symbol.systemId = systemId;
-      symbol.createdByUserId = sessionUserId;
+      symbol.createdByUserId = createdByUserId;
 
       const savedSymbol = await this.symbolRepository.save(symbol);
 
@@ -67,9 +67,9 @@ export class SymbolWriteService {
     }
   }
 
-  public async delete(sessionUserId: string, systemId: string, symbolId: string): Promise<SymbolEntity> {
+  public async delete(createdByUserId: string, systemId: string, symbolId: string): Promise<SymbolEntity> {
     try {
-      if (!isMongoId(sessionUserId)) {
+      if (!isMongoId(createdByUserId)) {
         throw new Error('Invalid session user ID');
       }
 
@@ -90,7 +90,7 @@ export class SymbolWriteService {
         throw new SymbolNotFoundException();
       }
 
-      if (sessionUserId !== symbol.createdByUserId) {
+      if (createdByUserId !== symbol.createdByUserId) {
         throw new OwnershipException();
       }
 
@@ -112,9 +112,9 @@ export class SymbolWriteService {
     }
   }
 
-  public async update(sessionUserId: string, systemId: string, symbolId: string, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
+  public async update(createdByUserId: string, systemId: string, symbolId: string, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
     try {
-      if (!isMongoId(sessionUserId)) {
+      if (!isMongoId(createdByUserId)) {
         throw new Error('Invalid session user ID');
       }
 
@@ -137,7 +137,7 @@ export class SymbolWriteService {
         throw new SymbolNotFoundException();
       }
 
-      if (sessionUserId !== symbol.createdByUserId) {
+      if (createdByUserId !== symbol.createdByUserId) {
         throw new OwnershipException();
       }
 
