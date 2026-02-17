@@ -110,7 +110,7 @@ export class StatementRepository {
       const mongoStatement = this.createDatabaseEntityFromDomainEntity(validatedStatement);
 
       const savedMongoStatement = await this.repository.save(mongoStatement);
-      
+
       const savedStatement = this.createDomainEntityFromDatabaseEntity(savedMongoStatement);
 
       return validatePayload(savedStatement, StatementEntity);
