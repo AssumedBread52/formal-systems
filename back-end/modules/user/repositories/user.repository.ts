@@ -69,10 +69,6 @@ export class UserRepository {
     mongoUser.systemCount = user.systemCount;
     mongoUser.constantSymbolCount = user.constantSymbolCount;
     mongoUser.variableSymbolCount = user.variableSymbolCount;
-    mongoUser.axiomCount = user.axiomCount;
-    mongoUser.theoremCount = user.theoremCount;
-    mongoUser.deductionCount = user.deductionCount;
-    mongoUser.proofCount = user.proofCount;
 
     return mongoUser;
   }
@@ -88,10 +84,6 @@ export class UserRepository {
     user.systemCount = mongoUser.systemCount;
     user.constantSymbolCount = mongoUser.constantSymbolCount;
     user.variableSymbolCount = mongoUser.variableSymbolCount;
-    user.axiomCount = mongoUser.axiomCount;
-    user.theoremCount = mongoUser.theoremCount;
-    user.deductionCount = mongoUser.deductionCount;
-    user.proofCount = mongoUser.proofCount;
 
     return user;
   }

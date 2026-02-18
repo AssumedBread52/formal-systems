@@ -23,10 +23,6 @@ describe('Read System by ID', (): void => {
     const description = 'Test System 1';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const system = new MongoSystemEntity();
 
     system._id = systemId;
@@ -34,10 +30,6 @@ describe('Read System by ID', (): void => {
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
-    system.axiomCount = axiomCount;
-    system.theoremCount = theoremCount;
-    system.deductionCount = deductionCount;
-    system.proofCount = proofCount;
     system.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(system);
@@ -58,10 +50,6 @@ describe('Read System by ID', (): void => {
       description,
       constantSymbolCount,
       variableSymbolCount,
-      axiomCount,
-      theoremCount,
-      deductionCount,
-      proofCount,
       createdByUserId: userId.toString()
     });
   });
@@ -73,10 +61,6 @@ describe('Read System by ID', (): void => {
     const description = 'Test System 1';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const system = new MongoSystemEntity();
 
     system._id = systemId;
@@ -84,16 +68,12 @@ describe('Read System by ID', (): void => {
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
-    system.axiomCount = axiomCount;
-    system.theoremCount = theoremCount;
-    system.deductionCount = deductionCount;
-    system.proofCount = proofCount;
     system.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(system);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query system($systemId: String!) { system(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount axiomCount theoremCount deductionCount proofCount createdByUserId } }',
+      query: 'query system($systemId: String!) { system(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount createdByUserId } }',
       variables: {
         systemId
       }
@@ -115,10 +95,6 @@ describe('Read System by ID', (): void => {
           description,
           constantSymbolCount,
           variableSymbolCount,
-          axiomCount,
-          theoremCount,
-          deductionCount,
-          proofCount,
           createdByUserId: userId.toString()
         }
       }

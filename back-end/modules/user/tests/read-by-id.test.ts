@@ -25,10 +25,6 @@ describe('Read User by ID', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const user = new MongoUserEntity();
 
     user._id = userId;
@@ -39,10 +35,6 @@ describe('Read User by ID', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
-    user.axiomCount = axiomCount;
-    user.theoremCount = theoremCount;
-    user.deductionCount = deductionCount;
-    user.proofCount = proofCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
@@ -63,11 +55,7 @@ describe('Read User by ID', (): void => {
       email,
       systemCount,
       constantSymbolCount,
-      variableSymbolCount,
-      axiomCount,
-      theoremCount,
-      deductionCount,
-      proofCount
+      variableSymbolCount
     });
   });
 
@@ -79,10 +67,6 @@ describe('Read User by ID', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const user = new MongoUserEntity();
 
     user._id = userId;
@@ -93,15 +77,11 @@ describe('Read User by ID', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
-    user.axiomCount = axiomCount;
-    user.theoremCount = theoremCount;
-    user.deductionCount = deductionCount;
-    user.proofCount = proofCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query user($userId: String!) { user(userId: $userId) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount axiomCount theoremCount deductionCount proofCount } }',
+      query: 'query user($userId: String!) { user(userId: $userId) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount } }',
       variables: {
         userId
       }
@@ -124,11 +104,7 @@ describe('Read User by ID', (): void => {
           email,
           systemCount,
           constantSymbolCount,
-          variableSymbolCount,
-          axiomCount,
-          theoremCount,
-          deductionCount,
-          proofCount
+          variableSymbolCount
         }
       }
     });

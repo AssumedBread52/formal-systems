@@ -34,10 +34,6 @@ describe('Delete Symbol', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 4;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const updatedVariableSymbolCount = variableSymbolCount - 1;
     const systemId = new ObjectId();
     const systemTitle = 'TestSystem1';
@@ -61,10 +57,6 @@ describe('Delete Symbol', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
-    user.axiomCount = axiomCount;
-    user.theoremCount = theoremCount;
-    user.deductionCount = deductionCount;
-    user.proofCount = proofCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -73,29 +65,17 @@ describe('Delete Symbol', (): void => {
     updatedUser.systemCount = systemCount;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
-    updatedUser.axiomCount = axiomCount;
-    updatedUser.theoremCount = theoremCount;
-    updatedUser.deductionCount = deductionCount;
-    updatedUser.proofCount = proofCount;
     system._id = systemId;
     system.title = systemTitle;
     system.description = systemDescription;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
-    system.axiomCount = axiomCount;
-    system.theoremCount = theoremCount;
-    system.deductionCount = deductionCount;
-    system.proofCount = proofCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = systemTitle;
     updatedSystem.description = systemDescription;
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
-    updatedSystem.axiomCount = axiomCount;
-    updatedSystem.theoremCount = theoremCount;
-    updatedSystem.deductionCount = deductionCount;
-    updatedSystem.proofCount = proofCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = title;
@@ -150,10 +130,6 @@ describe('Delete Symbol', (): void => {
       description,
       type,
       content,
-      axiomAppearanceCount: 0,
-      theoremAppearanceCount: 0,
-      deductionAppearanceCount: 0,
-      proofAppearanceCount: 0,
       systemId: systemId.toString(),
       createdByUserId: userId.toString()
     });
@@ -168,10 +144,6 @@ describe('Delete Symbol', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 4;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const updatedVariableSymbolCount = variableSymbolCount - 1;
     const systemId = new ObjectId();
     const systemTitle = 'TestSystem1';
@@ -195,10 +167,6 @@ describe('Delete Symbol', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
-    user.axiomCount = axiomCount;
-    user.theoremCount = theoremCount;
-    user.deductionCount = deductionCount;
-    user.proofCount = proofCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -207,29 +175,17 @@ describe('Delete Symbol', (): void => {
     updatedUser.systemCount = systemCount;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
-    updatedUser.axiomCount = axiomCount;
-    updatedUser.theoremCount = theoremCount;
-    updatedUser.deductionCount = deductionCount;
-    updatedUser.proofCount = proofCount;
     system._id = systemId;
     system.title = systemTitle;
     system.description = systemDescription;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
-    system.axiomCount = axiomCount;
-    system.theoremCount = theoremCount;
-    system.deductionCount = deductionCount;
-    system.proofCount = proofCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = systemTitle;
     updatedSystem.description = systemDescription;
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
-    updatedSystem.axiomCount = axiomCount;
-    updatedSystem.theoremCount = theoremCount;
-    updatedSystem.deductionCount = deductionCount;
-    updatedSystem.proofCount = proofCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = title;
@@ -254,7 +210,7 @@ describe('Delete Symbol', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation deleteSymbol($systemId: String!, $symbolId: String!) { deleteSymbol(systemId: $systemId, symbolId: $symbolId) { id title description type content axiomAppearanceCount theoremAppearanceCount deductionAppearanceCount proofAppearanceCount systemId createdByUserId } }',
+      query: 'mutation deleteSymbol($systemId: String!, $symbolId: String!) { deleteSymbol(systemId: $systemId, symbolId: $symbolId) { id title description type content systemId createdByUserId } }',
       variables: {
         systemId,
         symbolId
@@ -292,10 +248,6 @@ describe('Delete Symbol', (): void => {
           description,
           type,
           content,
-          axiomAppearanceCount: 0,
-          theoremAppearanceCount: 0,
-          deductionAppearanceCount: 0,
-          proofAppearanceCount: 0,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }

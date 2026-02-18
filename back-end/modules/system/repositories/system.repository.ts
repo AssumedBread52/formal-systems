@@ -130,10 +130,6 @@ export class SystemRepository {
     mongoSystem.description = system.description;
     mongoSystem.constantSymbolCount = system.constantSymbolCount;
     mongoSystem.variableSymbolCount = system.variableSymbolCount;
-    mongoSystem.axiomCount = system.axiomCount;
-    mongoSystem.theoremCount = system.theoremCount;
-    mongoSystem.deductionCount = system.deductionCount;
-    mongoSystem.proofCount = system.proofCount;
     mongoSystem.createdByUserId = new ObjectId(system.createdByUserId);
 
     return mongoSystem;
@@ -147,10 +143,6 @@ export class SystemRepository {
     system.description = mongoSystem.description;
     system.constantSymbolCount = mongoSystem.constantSymbolCount;
     system.variableSymbolCount = mongoSystem.variableSymbolCount;
-    system.axiomCount = mongoSystem.axiomCount;
-    system.theoremCount = mongoSystem.theoremCount;
-    system.deductionCount = mongoSystem.deductionCount;
-    system.proofCount = mongoSystem.proofCount;
     system.createdByUserId = mongoSystem.createdByUserId.toString();
 
     return system;

@@ -26,10 +26,6 @@ describe('Read Symbols', (): void => {
     const description = 'Test Symbol 1';
     const type = SymbolType.variable;
     const content = '\\alpha';
-    const axiomAppearanceCount = 6;
-    const theoremAppearanceCount = 1;
-    const deductionAppearanceCount = 2;
-    const proofAppearanceCount = 6;
     const total = 1;
     const page = 2;
     const pageSize = 20;
@@ -42,10 +38,6 @@ describe('Read Symbols', (): void => {
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
-    symbol.axiomAppearanceCount = axiomAppearanceCount;
-    symbol.theoremAppearanceCount = theoremAppearanceCount;
-    symbol.deductionAppearanceCount = deductionAppearanceCount;
-    symbol.proofAppearanceCount = proofAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
@@ -104,10 +96,6 @@ describe('Read Symbols', (): void => {
           description,
           type,
           content,
-          axiomAppearanceCount,
-          theoremAppearanceCount,
-          deductionAppearanceCount,
-          proofAppearanceCount,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }
@@ -124,10 +112,6 @@ describe('Read Symbols', (): void => {
     const description = 'Test Symbol 1';
     const type = SymbolType.variable;
     const content = '\\alpha';
-    const axiomAppearanceCount = 6;
-    const theoremAppearanceCount = 1;
-    const deductionAppearanceCount = 2;
-    const proofAppearanceCount = 6;
     const total = 1;
     const page = 2;
     const pageSize = 20;
@@ -140,10 +124,6 @@ describe('Read Symbols', (): void => {
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
-    symbol.axiomAppearanceCount = axiomAppearanceCount;
-    symbol.theoremAppearanceCount = theoremAppearanceCount;
-    symbol.deductionAppearanceCount = deductionAppearanceCount;
-    symbol.proofAppearanceCount = proofAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
@@ -155,7 +135,7 @@ describe('Read Symbols', (): void => {
     ]);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query symbols($systemId: String!, $filters: SearchSymbolsPayload!) { symbols(systemId: $systemId, filters: $filters) { results { id title description type content axiomAppearanceCount theoremAppearanceCount deductionAppearanceCount proofAppearanceCount systemId createdByUserId } total } }',
+      query: 'query symbols($systemId: String!, $filters: SearchSymbolsPayload!) { symbols(systemId: $systemId, filters: $filters) { results { id title description type content systemId createdByUserId } total } }',
       variables: {
         systemId,
         filters: {
@@ -204,10 +184,6 @@ describe('Read Symbols', (): void => {
               description,
               type,
               content,
-              axiomAppearanceCount,
-              theoremAppearanceCount,
-              deductionAppearanceCount,
-              proofAppearanceCount,
               systemId: systemId.toString(),
               createdByUserId: userId.toString()
             }

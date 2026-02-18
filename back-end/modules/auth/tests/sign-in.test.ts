@@ -71,7 +71,7 @@ describe('Sign In', (): void => {
     getOrThrow.mockReturnValueOnce(1000);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'mutation signIn($email: String!, $password: String!) { signIn(email: $email, password: $password) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount axiomCount theoremCount deductionCount proofCount } }',
+      query: 'mutation signIn($email: String!, $password: String!) { signIn(email: $email, password: $password) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount } }',
       variables: {
         email,
         password
@@ -97,11 +97,7 @@ describe('Sign In', (): void => {
           email,
           systemCount: 0,
           constantSymbolCount: 0,
-          variableSymbolCount: 0,
-          axiomCount: 0,
-          theoremCount: 0,
-          deductionCount: 0,
-          proofCount: 0
+          variableSymbolCount: 0
         }
       }
     });

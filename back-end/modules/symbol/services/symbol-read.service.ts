@@ -6,7 +6,6 @@ import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { SymbolRepository } from '@/symbol/repositories/symbol.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { isMongoId } from 'class-validator';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class SymbolReadService {
@@ -65,40 +64,5 @@ export class SymbolReadService {
 
       throw new InternalServerErrorException('Reading symbol failed');
     }
-  }
-
-  async addToSymbolDictionary(systemId: ObjectId, symbolIds: ObjectId[], symbolDictionary: Record<string, SymbolEntity>): Promise<Record<string, SymbolEntity>> {
-    const missingSymbolIds = symbolIds.filter((symbolId: ObjectId): boolean => {
-      if (symbolDictionary[symbolId.toString()]) {
-        return false;
-      }
-
-      return true;
-    });
-
-    const missingSymbols = await this.symbolRepository.find({
-      where: {
-        _id: {
-          $in: missingSymbolIds
-        },
-        systemId
-      }
-    });
-
-    const newSymbolDictionary = missingSymbols.reduce((dictionary: Record<string, SymbolEntity>, missingSymbol: SymbolEntity): Record<string, SymbolEntity> => {
-      const { id } = missingSymbol;
-
-      dictionary[id] = missingSymbol;
-
-      return dictionary;
-    }, symbolDictionary);
-
-    missingSymbolIds.forEach((missingSymbolId: ObjectId): void => {
-      if (!newSymbolDictionary[missingSymbolId.toString()]) {
-        throw new SymbolNotFoundException();
-      }
-    });
-
-    return newSymbolDictionary;
   }
 };

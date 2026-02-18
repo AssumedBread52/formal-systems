@@ -1,8 +1,6 @@
 import { AuthModule } from '@/auth/auth.module';
 import { DependencyModule } from '@/dependency/dependency.module';
 import { HealthModule } from '@/health/health.module';
-import { MongoStatementEntity } from '@/statement/entities/mongo-statement.entity';
-import { StatementModule } from '@/statement/statement.module';
 import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
 import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
@@ -41,12 +39,11 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
         }
       }),
       HealthModule,
-      StatementModule,
       SymbolModule,
       SystemModule,
       UserModule
     ]
-  }).overrideProvider(getRepositoryToken(MongoStatementEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSystemEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoUserEntity)).useClass(MongoRepository).compile();
+  }).overrideProvider(getRepositoryToken(MongoSymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSystemEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoUserEntity)).useClass(MongoRepository).compile();
 
   const app = testingModule.createNestApplication<NestExpressApplication>();
 

@@ -25,10 +25,6 @@ describe('Read Symbol by ID', (): void => {
     const description = 'Test Symbol 1';
     const type = SymbolType.variable;
     const content = '\\alpha';
-    const axiomAppearanceCount = 6;
-    const theoremAppearanceCount = 1;
-    const deductionAppearanceCount = 2;
-    const proofAppearanceCount = 4;
     const symbol = new MongoSymbolEntity();
 
     symbol._id = symbolId;
@@ -36,10 +32,6 @@ describe('Read Symbol by ID', (): void => {
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
-    symbol.axiomAppearanceCount = axiomAppearanceCount;
-    symbol.theoremAppearanceCount = theoremAppearanceCount;
-    symbol.deductionAppearanceCount = deductionAppearanceCount;
-    symbol.proofAppearanceCount = proofAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
@@ -62,10 +54,6 @@ describe('Read Symbol by ID', (): void => {
       description,
       type,
       content,
-      axiomAppearanceCount,
-      theoremAppearanceCount,
-      deductionAppearanceCount,
-      proofAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: userId.toString()
     });
@@ -79,10 +67,6 @@ describe('Read Symbol by ID', (): void => {
     const description = 'Test Symbol 1';
     const type = SymbolType.variable;
     const content = '\\alpha';
-    const axiomAppearanceCount = 6;
-    const theoremAppearanceCount = 1;
-    const deductionAppearanceCount = 2;
-    const proofAppearanceCount = 4;
     const symbol = new MongoSymbolEntity();
 
     symbol._id = symbolId;
@@ -90,17 +74,13 @@ describe('Read Symbol by ID', (): void => {
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
-    symbol.axiomAppearanceCount = axiomAppearanceCount;
-    symbol.theoremAppearanceCount = theoremAppearanceCount;
-    symbol.deductionAppearanceCount = deductionAppearanceCount;
-    symbol.proofAppearanceCount = proofAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(symbol);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query symbol($systemId: String!, $symbolId: String!) { symbol(systemId: $systemId, symbolId: $symbolId) { id title description type content axiomAppearanceCount theoremAppearanceCount deductionAppearanceCount proofAppearanceCount systemId createdByUserId } }',
+      query: 'query symbol($systemId: String!, $symbolId: String!) { symbol(systemId: $systemId, symbolId: $symbolId) { id title description type content systemId createdByUserId } }',
       variables: {
         systemId,
         symbolId
@@ -124,10 +104,6 @@ describe('Read Symbol by ID', (): void => {
           description,
           type,
           content,
-          axiomAppearanceCount,
-          theoremAppearanceCount,
-          deductionAppearanceCount,
-          proofAppearanceCount,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }

@@ -9,18 +9,8 @@ import { DatabaseType } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import { DependencyModule } from './dependency/dependency.module';
 import { HealthModule } from './health/health.module';
-import { ProofModule } from './proof/proof.module';
-import { StatementModule } from './statement/statement.module';
-import { StatementProofAppearanceCountSubscriber } from './statement/subscribers/statement-proof-appearance-count.subscriber';
-import { StatementProofCountSubscriber } from './statement/subscribers/statement-proof-count.subscriber';
-import { SymbolProofCountSubscriber } from './symbol/subscribers/symbol-proof-count.subscriber';
-import { SymbolStatementCountSubscriber } from './symbol/subscribers/symbol-statement-count.subscriber';
 import { SymbolModule } from './symbol/symbol.module';
-import { SystemProofCountSubscriber } from './system/subscribers/system-proof-count.subscriber';
-import { SystemStatementCountSubscriber } from './system/subscribers/system-statement-count.subscriber';
 import { SystemModule } from './system/system.module';
-import { UserProofCountSubscriber } from './user/subscribers/user-proof-count.subscriber';
-import { UserStatementCountSubscriber } from './user/subscribers/user-statement-count.subscriber';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -51,8 +41,6 @@ import { UserModule } from './user/user.module';
       }
     }),
     HealthModule,
-    ProofModule,
-    StatementModule,
     SymbolModule,
     SystemModule,
     TypeOrmModule.forRootAsync({
@@ -75,20 +63,8 @@ import { UserModule } from './user/user.module';
         const name = configService.getOrThrow<string>('DATABASE_NAME');
         const url = `${scheme}://${username}:${encodeURIComponent(password)}@${host}:${port}/${name}?authSource=admin`;
 
-        const subscribers = [
-          StatementProofAppearanceCountSubscriber,
-          StatementProofCountSubscriber,
-          SymbolProofCountSubscriber,
-          SymbolStatementCountSubscriber,
-          SystemProofCountSubscriber,
-          SystemStatementCountSubscriber,
-          UserProofCountSubscriber,
-          UserStatementCountSubscriber
-        ];
-
         return {
           autoLoadEntities,
-          subscribers,
           type,
           url
         };

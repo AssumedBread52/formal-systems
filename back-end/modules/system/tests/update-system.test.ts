@@ -28,10 +28,6 @@ describe('Update System', (): void => {
     const newDescription = 'Test System 2';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const user = new MongoUserEntity();
     const system = new MongoSystemEntity();
     const updatedSystem = new MongoSystemEntity();
@@ -46,20 +42,12 @@ describe('Update System', (): void => {
     system.description = 'Test System 1';
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
-    system.axiomCount = axiomCount;
-    system.theoremCount = theoremCount;
-    system.deductionCount = deductionCount;
-    system.proofCount = proofCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = newTitle;
     updatedSystem.description = newDescription;
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = variableSymbolCount;
-    updatedSystem.axiomCount = axiomCount;
-    updatedSystem.theoremCount = theoremCount;
-    updatedSystem.deductionCount = deductionCount;
-    updatedSystem.proofCount = proofCount;
     updatedSystem.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(user);
@@ -101,10 +89,6 @@ describe('Update System', (): void => {
       description: newDescription,
       constantSymbolCount,
       variableSymbolCount,
-      axiomCount,
-      theoremCount,
-      deductionCount,
-      proofCount,
       createdByUserId: userId.toString()
     });
   });
@@ -116,10 +100,6 @@ describe('Update System', (): void => {
     const newDescription = 'Test System 2';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const user = new MongoUserEntity();
     const system = new MongoSystemEntity();
     const updatedSystem = new MongoSystemEntity();
@@ -134,20 +114,12 @@ describe('Update System', (): void => {
     system.description = 'Test System 1';
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
-    system.axiomCount = axiomCount;
-    system.theoremCount = theoremCount;
-    system.deductionCount = deductionCount;
-    system.proofCount = proofCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = newTitle;
     updatedSystem.description = newDescription;
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = variableSymbolCount;
-    updatedSystem.axiomCount = axiomCount;
-    updatedSystem.theoremCount = theoremCount;
-    updatedSystem.deductionCount = deductionCount;
-    updatedSystem.proofCount = proofCount;
     updatedSystem.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(user);
@@ -162,7 +134,7 @@ describe('Update System', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation updateSystem($systemId: String!, $editSystemPayload: EditSystemPayload!) { updateSystem(systemId: $systemId, systemPayload: $editSystemPayload) { id title description constantSymbolCount variableSymbolCount axiomCount theoremCount deductionCount proofCount createdByUserId } }',
+      query: 'mutation updateSystem($systemId: String!, $editSystemPayload: EditSystemPayload!) { updateSystem(systemId: $systemId, systemPayload: $editSystemPayload) { id title description constantSymbolCount variableSymbolCount createdByUserId } }',
       variables: {
         systemId,
         editSystemPayload: {
@@ -197,10 +169,6 @@ describe('Update System', (): void => {
           description: newDescription,
           constantSymbolCount,
           variableSymbolCount,
-          axiomCount,
-          theoremCount,
-          deductionCount,
-          proofCount,
           createdByUserId: userId.toString()
         }
       }

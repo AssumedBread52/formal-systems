@@ -26,10 +26,6 @@ describe('Read Session User', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const user = new MongoUserEntity();
 
     user._id = userId;
@@ -40,10 +36,6 @@ describe('Read Session User', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
-    user.axiomCount = axiomCount;
-    user.theoremCount = theoremCount;
-    user.deductionCount = deductionCount;
-    user.proofCount = proofCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
@@ -70,11 +62,7 @@ describe('Read Session User', (): void => {
       email,
       systemCount,
       constantSymbolCount,
-      variableSymbolCount,
-      axiomCount,
-      theoremCount,
-      deductionCount,
-      proofCount
+      variableSymbolCount
     });
   });
 
@@ -86,10 +74,6 @@ describe('Read Session User', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const user = new MongoUserEntity();
 
     user._id = userId;
@@ -100,10 +84,6 @@ describe('Read Session User', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
-    user.axiomCount = axiomCount;
-    user.theoremCount = theoremCount;
-    user.deductionCount = deductionCount;
-    user.proofCount = proofCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
@@ -114,7 +94,7 @@ describe('Read Session User', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'query sessionUser { sessionUser { id firstName lastName email systemCount constantSymbolCount variableSymbolCount axiomCount theoremCount deductionCount proofCount } }'
+      query: 'query sessionUser { sessionUser { id firstName lastName email systemCount constantSymbolCount variableSymbolCount } }'
     });
 
     const { statusCode, body } = response;
@@ -134,11 +114,7 @@ describe('Read Session User', (): void => {
           email,
           systemCount,
           constantSymbolCount,
-          variableSymbolCount,
-          axiomCount,
-          theoremCount,
-          deductionCount,
-          proofCount
+          variableSymbolCount
         }
       }
     });

@@ -23,9 +23,6 @@ import { SymbolWriteService } from './services/symbol-write.service';
     SymbolRepository,
     SymbolResolver,
     SymbolWriteService
-  ],
-  exports: [
-    SymbolReadService
   ]
 })
 export class SymbolModule {

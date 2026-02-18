@@ -32,10 +32,6 @@ describe('Delete System', (): void => {
     const systemCount = 2;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const systemId = new ObjectId();
     const title = 'TestSystem1';
     const description = 'Test System 1';
@@ -51,10 +47,6 @@ describe('Delete System', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
-    user.axiomCount = axiomCount;
-    user.theoremCount = theoremCount;
-    user.deductionCount = deductionCount;
-    user.proofCount = proofCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -63,10 +55,6 @@ describe('Delete System', (): void => {
     updatedUser.systemCount = systemCount - 1;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
-    updatedUser.axiomCount = axiomCount;
-    updatedUser.theoremCount = theoremCount;
-    updatedUser.deductionCount = deductionCount;
-    updatedUser.proofCount = proofCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
@@ -110,10 +98,6 @@ describe('Delete System', (): void => {
       description,
       constantSymbolCount: 0,
       variableSymbolCount: 0,
-      axiomCount: 0,
-      theoremCount: 0,
-      deductionCount: 0,
-      proofCount: 0,
       createdByUserId: userId.toString()
     });
   });
@@ -127,10 +111,6 @@ describe('Delete System', (): void => {
     const systemCount = 2;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const systemId = new ObjectId();
     const title = 'TestSystem1';
     const description = 'Test System 1';
@@ -146,10 +126,6 @@ describe('Delete System', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
-    user.axiomCount = axiomCount;
-    user.theoremCount = theoremCount;
-    user.deductionCount = deductionCount;
-    user.proofCount = proofCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -158,10 +134,6 @@ describe('Delete System', (): void => {
     updatedUser.systemCount = systemCount - 1;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
-    updatedUser.axiomCount = axiomCount;
-    updatedUser.theoremCount = theoremCount;
-    updatedUser.deductionCount = deductionCount;
-    updatedUser.proofCount = proofCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
@@ -180,7 +152,7 @@ describe('Delete System', (): void => {
     const response = await request(app.getHttpServer()).post(`/graphql`).set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation deleteSystem($systemId: String!) { deleteSystem(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount axiomCount theoremCount deductionCount proofCount createdByUserId } }',
+      query: 'mutation deleteSystem($systemId: String!) { deleteSystem(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount createdByUserId } }',
       variables: {
         systemId
       }
@@ -212,10 +184,6 @@ describe('Delete System', (): void => {
           description,
           constantSymbolCount: 0,
           variableSymbolCount: 0,
-          axiomCount: 0,
-          theoremCount: 0,
-          deductionCount: 0,
-          proofCount: 0,
           createdByUserId: userId.toString()
         }
       }

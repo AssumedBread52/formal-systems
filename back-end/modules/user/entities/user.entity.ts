@@ -45,28 +45,4 @@ export class UserEntity {
   @IsInt()
   @Min(0)
   public variableSymbolCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public axiomCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public theoremCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public deductionCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public proofCount: number = 0;
 };

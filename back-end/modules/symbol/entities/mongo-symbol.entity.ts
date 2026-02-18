@@ -18,14 +18,6 @@ export class MongoSymbolEntity {
   @Column()
   public content: string = '';
   @Column()
-  public axiomAppearanceCount: number = 0;
-  @Column()
-  public theoremAppearanceCount: number = 0;
-  @Column()
-  public deductionAppearanceCount: number = 0;
-  @Column()
-  public proofAppearanceCount: number = 0;
-  @Column()
   public systemId: ObjectId = new ObjectId();
   @Column()
   public createdByUserId: ObjectId = new ObjectId();

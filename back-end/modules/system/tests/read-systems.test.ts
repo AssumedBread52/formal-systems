@@ -24,10 +24,6 @@ describe('Read Systems', (): void => {
     const description = 'Test System 1';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const total = 1;
     const page = 2;
     const pageSize = 20;
@@ -40,10 +36,6 @@ describe('Read Systems', (): void => {
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
-    system.axiomCount = axiomCount;
-    system.theoremCount = theoremCount;
-    system.deductionCount = deductionCount;
-    system.proofCount = proofCount;
     system.createdByUserId = userId;
 
     findAndCount.mockResolvedValueOnce([
@@ -99,10 +91,6 @@ describe('Read Systems', (): void => {
           description,
           constantSymbolCount,
           variableSymbolCount,
-          axiomCount,
-          theoremCount,
-          deductionCount,
-          proofCount,
           createdByUserId: userId.toString()
         }
       ],
@@ -117,10 +105,6 @@ describe('Read Systems', (): void => {
     const description = 'Test System 1';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
-    const axiomCount = 6;
-    const theoremCount = 1;
-    const deductionCount = 3;
-    const proofCount = 6;
     const total = 1;
     const page = 2;
     const pageSize = 20;
@@ -133,10 +117,6 @@ describe('Read Systems', (): void => {
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
-    system.axiomCount = axiomCount;
-    system.theoremCount = theoremCount;
-    system.deductionCount = deductionCount;
-    system.proofCount = proofCount;
     system.createdByUserId = userId;
 
     findAndCount.mockResolvedValueOnce([
@@ -147,7 +127,7 @@ describe('Read Systems', (): void => {
     ]);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query systems($filters: SearchSystemsPayload!) { systems(filters: $filters) { results { id title description constantSymbolCount variableSymbolCount axiomCount theoremCount deductionCount proofCount createdByUserId } total } }',
+      query: 'query systems($filters: SearchSystemsPayload!) { systems(filters: $filters) { results { id title description constantSymbolCount variableSymbolCount createdByUserId } total } }',
       variables: {
         filters: {
           page,
@@ -193,10 +173,6 @@ describe('Read Systems', (): void => {
               description,
               constantSymbolCount,
               variableSymbolCount,
-              axiomCount,
-              theoremCount,
-              deductionCount,
-              proofCount,
               createdByUserId: userId.toString()
             }
           ],

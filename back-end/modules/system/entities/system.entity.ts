@@ -30,30 +30,6 @@ export class SystemEntity {
   @IsInt()
   @Min(0)
   public variableSymbolCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public axiomCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public theoremCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public deductionCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public proofCount: number = 0;
   @Field((): typeof String => {
     return String;
   })
@@ -61,6 +37,6 @@ export class SystemEntity {
   public createdByUserId: string = '';
 
   public isNotEmpty(): boolean {
-    return (0 < this.constantSymbolCount) || (0 < this.variableSymbolCount) || (0 < this.axiomCount) || (0 < this.theoremCount) || (0 < this.deductionCount) || (0 < this.proofCount);
+    return (0 < this.constantSymbolCount) || (0 < this.variableSymbolCount);
   }
 };

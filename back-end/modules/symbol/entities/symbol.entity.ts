@@ -1,6 +1,6 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsEnum, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { IsEnum, IsMongoId, IsNotEmpty } from 'class-validator';
 
 @ObjectType()
 export class SymbolEntity {
@@ -29,30 +29,6 @@ export class SymbolEntity {
   })
   @IsNotEmpty()
   public content: string = '';
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public axiomAppearanceCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public theoremAppearanceCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public deductionAppearanceCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public proofAppearanceCount: number = 0;
   @Field((): typeof String => {
     return String;
   })
@@ -65,6 +41,6 @@ export class SymbolEntity {
   public createdByUserId: string = '';
 
   public isInUse(): boolean {
-    return (0 < this.axiomAppearanceCount) || (0 < this.theoremAppearanceCount) || (0 < this.deductionAppearanceCount) || (0 < this.proofAppearanceCount);
+    return false;
   }
 };

@@ -6,15 +6,11 @@ import { FindOneByPayload } from '@/symbol/payloads/find-one-by.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
-import { Filter, FilterOperators, FindManyOptions, MongoRepository } from 'typeorm';
+import { Filter, MongoRepository } from 'typeorm';
 
 @Injectable()
 export class SymbolRepository {
   public constructor(@InjectRepository(MongoSymbolEntity) private readonly repository: MongoRepository<MongoSymbolEntity>) {
-  }
-
-  public async find(options?: FindManyOptions<MongoSymbolEntity> | Partial<MongoSymbolEntity> | FilterOperators<MongoSymbolEntity> | undefined): Promise<SymbolEntity[]> {
-    return (await this.repository.find(options)).map(this.createDomainEntityFromDatabaseEntity);
   }
 
   public async findAndCount(findAndCountPayload: FindAndCountPayload): Promise<[SymbolEntity[], number]> {
@@ -134,10 +130,6 @@ export class SymbolRepository {
     mongoSymbol.description = symbol.description;
     mongoSymbol.type = symbol.type;
     mongoSymbol.content = symbol.content;
-    mongoSymbol.axiomAppearanceCount = symbol.axiomAppearanceCount;
-    mongoSymbol.theoremAppearanceCount = symbol.theoremAppearanceCount;
-    mongoSymbol.deductionAppearanceCount = symbol.deductionAppearanceCount;
-    mongoSymbol.proofAppearanceCount = symbol.proofAppearanceCount;
     mongoSymbol.systemId = new ObjectId(symbol.systemId);
     mongoSymbol.createdByUserId = new ObjectId(symbol.createdByUserId);
 
@@ -152,10 +144,6 @@ export class SymbolRepository {
     symbol.description = mongoSymbol.description;
     symbol.type = mongoSymbol.type;
     symbol.content = mongoSymbol.content;
-    symbol.axiomAppearanceCount = mongoSymbol.axiomAppearanceCount;
-    symbol.theoremAppearanceCount = mongoSymbol.theoremAppearanceCount;
-    symbol.deductionAppearanceCount = mongoSymbol.deductionAppearanceCount;
-    symbol.proofAppearanceCount = mongoSymbol.proofAppearanceCount;
     symbol.systemId = mongoSymbol.systemId.toString();
     symbol.createdByUserId = mongoSymbol.createdByUserId.toString();
 
