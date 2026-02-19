@@ -12,47 +12,6 @@ export class CountListener {
   public constructor(private readonly userRepository: UserRepository) {
   }
 
-  @OnEvent('symbol.update.completed', {
-    suppressErrors: false
-  })
-  public async switchSymbolCount(originalSymbol: SymbolEntity, savedSymbol: SymbolEntity): Promise<void> {
-    try {
-      const validatedOriginalSymbol = validatePayload(originalSymbol, SymbolEntity);
-      const validatedSavedSymbol = validatePayload(savedSymbol, SymbolEntity);
-
-      if (validatedOriginalSymbol.type === validatedSavedSymbol.type) {
-        return;
-      }
-
-      const user = await this.userRepository.findOneBy({
-        id: validatedSavedSymbol.createdByUserId
-      });
-
-      if (!user) {
-        throw new UserNotFoundException();
-      }
-
-      switch (validatedSavedSymbol.type) {
-        case SymbolType.constant:
-          user.constantSymbolCount++;
-          user.variableSymbolCount--;
-          break;
-        case SymbolType.variable:
-          user.constantSymbolCount--;
-          user.variableSymbolCount++;
-          break;
-      }
-
-      await this.userRepository.save(user);
-    } catch (error: unknown) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      throw new InternalServerErrorException('Updating symbol count on user failed');
-    }
-  }
-
   @OnEvent('symbol.create.completed', {
     suppressErrors: false
   })
@@ -108,6 +67,47 @@ export class CountListener {
           break;
         case SymbolType.variable:
           user.variableSymbolCount--;
+          break;
+      }
+
+      await this.userRepository.save(user);
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating symbol count on user failed');
+    }
+  }
+
+  @OnEvent('symbol.update.completed', {
+    suppressErrors: false
+  })
+  public async switchSymbolCount(originalSymbol: SymbolEntity, savedSymbol: SymbolEntity): Promise<void> {
+    try {
+      const validatedOriginalSymbol = validatePayload(originalSymbol, SymbolEntity);
+      const validatedSavedSymbol = validatePayload(savedSymbol, SymbolEntity);
+
+      if (validatedOriginalSymbol.type === validatedSavedSymbol.type) {
+        return;
+      }
+
+      const user = await this.userRepository.findOneBy({
+        id: validatedSavedSymbol.createdByUserId
+      });
+
+      if (!user) {
+        throw new UserNotFoundException();
+      }
+
+      switch (validatedSavedSymbol.type) {
+        case SymbolType.constant:
+          user.constantSymbolCount++;
+          user.variableSymbolCount--;
+          break;
+        case SymbolType.variable:
+          user.constantSymbolCount--;
+          user.variableSymbolCount++;
           break;
       }
 
