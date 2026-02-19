@@ -20,14 +20,12 @@ export class SymbolRepository {
       const where = {
         systemId: new ObjectId(validatedFindAndCountPayload.systemId)
       } as Filter<MongoSymbolEntity>;
-
       if (0 < validatedFindAndCountPayload.keywords.length) {
         where.$text = {
           $caseSensitive: false,
           $search: validatedFindAndCountPayload.keywords.join(',')
         };
       }
-
       if (0 < validatedFindAndCountPayload.types.length) {
         where.type = {
           $in: validatedFindAndCountPayload.types
@@ -49,7 +47,7 @@ export class SymbolRepository {
         total
       ];
     } catch {
-      throw new Error('Finding symbols failed');
+      throw new Error('Finding and counting symbols failed');
     }
   }
 

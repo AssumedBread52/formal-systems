@@ -18,14 +18,12 @@ export class SystemRepository {
       const validatedFindAndCountPayload = validatePayload(findAndCountPayload, FindAndCountPayload);
 
       const where = {} as Filter<MongoSystemEntity>;
-
       if (0 < validatedFindAndCountPayload.keywords.length) {
         where.$text = {
           $caseSensitive: false,
           $search: validatedFindAndCountPayload.keywords.join(',')
         };
       }
-
       if (0 < validatedFindAndCountPayload.userIds.length) {
         where.createdByUserId = {
           $in: validatedFindAndCountPayload.userIds.map((userId: string): ObjectId => {
@@ -49,7 +47,7 @@ export class SystemRepository {
         total
       ];
     } catch {
-      throw new Error('Finding systems failed');
+      throw new Error('Finding and counting systems failed');
     }
   }
 
