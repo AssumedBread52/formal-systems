@@ -18,10 +18,10 @@ export class CountListener {
   })
   public async incrementDistinctVariablePairCount(distinctVariablePair: DistinctVariablePairEntity): Promise<void> {
     try {
-      const validatedDistinctVariablePairEntity = validatePayload(distinctVariablePair, DistinctVariablePairEntity);
+      const validatedDistinctVariablePair = validatePayload(distinctVariablePair, DistinctVariablePairEntity);
 
       const user = await this.userRepository.findOneBy({
-        id: validatedDistinctVariablePairEntity.createdByUserId
+        id: validatedDistinctVariablePair.createdByUserId
       });
 
       if (!user) {
@@ -45,10 +45,10 @@ export class CountListener {
   })
   public async decrementDistinctVariablePairCount(distinctVariablePair: DistinctVariablePairEntity): Promise<void> {
     try {
-      const validatedDistinctVariablePairEntity = validatePayload(distinctVariablePair, DistinctVariablePairEntity);
+      const validatedDistinctVariablePair = validatePayload(distinctVariablePair, DistinctVariablePairEntity);
 
       const user = await this.userRepository.findOneBy({
-        id: validatedDistinctVariablePairEntity.createdByUserId
+        id: validatedDistinctVariablePair.createdByUserId
       });
 
       if (!user) {
