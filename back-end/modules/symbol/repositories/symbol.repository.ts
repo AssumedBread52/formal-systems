@@ -21,9 +21,9 @@ export class SymbolRepository {
       const where = {
         systemId: new ObjectId(validatedFindPayload.systemId)
       } as Filter<MongoSymbolEntity>;
-      if (0 < validatedFindPayload.symbolIds.length) {
+      if (0 < validatedFindPayload.ids.length) {
         where._id = {
-          $in: validatedFindPayload.symbolIds.map((symbolId: string): ObjectId => {
+          $in: validatedFindPayload.ids.map((symbolId: string): ObjectId => {
             return new ObjectId(symbolId);
           })
         };

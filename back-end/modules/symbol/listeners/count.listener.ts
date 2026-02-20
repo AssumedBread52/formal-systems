@@ -19,8 +19,8 @@ export class CountListener {
       const validatedDistinctVariablePair = validatePayload(distinctVariablePair, DistinctVariablePairEntity);
 
       const symbols = await this.symbolRepository.find({
-        systemId: validatedDistinctVariablePair.systemId,
-        symbolIds: validatedDistinctVariablePair.variableSymbolIds
+        ids: validatedDistinctVariablePair.variableSymbolIds,
+        systemId: validatedDistinctVariablePair.systemId
       });
 
       if (validatedDistinctVariablePair.variableSymbolIds.length !== symbols.length) {
@@ -49,8 +49,8 @@ export class CountListener {
       const validatedDistinctVariablePair = validatePayload(distinctVariablePair, DistinctVariablePairEntity);
 
       const symbols = await this.symbolRepository.find({
-        systemId: validatedDistinctVariablePair.systemId,
-        symbolIds: validatedDistinctVariablePair.variableSymbolIds
+        ids: validatedDistinctVariablePair.variableSymbolIds,
+        systemId: validatedDistinctVariablePair.systemId
       });
 
       if (validatedDistinctVariablePair.variableSymbolIds.length !== symbols.length) {

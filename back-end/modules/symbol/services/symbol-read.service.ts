@@ -73,8 +73,8 @@ export class SymbolReadService {
       }
 
       const symbols = await this.symbolRepository.find({
-        systemId,
-        symbolIds
+        ids: symbolIds,
+        systemId
       });
 
       if (symbols.length !== symbolIds.length) {
