@@ -4,9 +4,9 @@ export class FindOneByPayload {
   @IsMongoId()
   @IsOptional()
   public readonly id?: string;
-  @ArrayUnique()
-  @ArrayMinSize(2)
   @ArrayMaxSize(2)
+  @ArrayMinSize(2)
+  @ArrayUnique()
   @IsArray()
   @IsMongoId({
     each: true
