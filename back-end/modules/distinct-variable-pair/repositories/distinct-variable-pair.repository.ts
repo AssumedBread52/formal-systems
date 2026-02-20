@@ -20,27 +20,17 @@ export class DistinctVariablePairRepository {
       const where = {
         systemId: new ObjectId(validatedFindAndCountPayload.systemId)
       } as Filter<MongoDistinctVariablePairEntity>;
-      if (0 < validatedFindAndCountPayload.mustIncludeVariableSymbolIds.length) {
-        where.variableSymbolIds = {
-          $all: validatedFindAndCountPayload.mustIncludeVariableSymbolIds.map((variablSymbolId: string): ObjectId => {
-            return new ObjectId(variablSymbolId);
-          })
-        };
-      }
-      if (0 < validatedFindAndCountPayload.mayIncludeVariableSymbolIds.length) {
-        if (!where.variableSymbolIds) {
-          where.variableSymbolIds = {
-            $in: validatedFindAndCountPayload.mayIncludeVariableSymbolIds.map((variableSymbolId: string): ObjectId => {
-              return new ObjectId(variableSymbolId);
-            })
-          };
-        } else {
-          where.variableSymbolIds = {
-            ...where.variableSymbolIds,
-            $in: validatedFindAndCountPayload.mayIncludeVariableSymbolIds.map((variableSymbolId: string): ObjectId => {
-              return new ObjectId(variableSymbolId);
-            })
-          };
+      if (0 < validatedFindAndCountPayload.mustIncludeVariableSymbolIds.length || 0 < validatedFindAndCountPayload.mayIncludeVariableSymbolIds.length) {
+        where.variableSymbolIds = {};
+        if (0 < validatedFindAndCountPayload.mustIncludeVariableSymbolIds.length) {
+          where.variableSymbolIds.$all = validatedFindAndCountPayload.mustIncludeVariableSymbolIds.map((variableSymbolId: string): ObjectId => {
+            return new ObjectId(variableSymbolId);
+          });
+        }
+        if (0 < validatedFindAndCountPayload.mayIncludeVariableSymbolIds.length) {
+          where.variableSymbolIds.$in = validatedFindAndCountPayload.mayIncludeVariableSymbolIds.map((variableSymbolId: string): ObjectId => {
+            return new ObjectId(variableSymbolId);
+          });
         }
       }
 
