@@ -17,7 +17,7 @@ export class CountListener {
   public async incrementDistinctVariablePairAppearanceCount(distinctVariablePair: DistinctVariablePairEntity): Promise<void> {
     try {
       const validatedDistinctVariablePair = validatePayload(distinctVariablePair, DistinctVariablePairEntity);
-      
+
       const symbols = await this.symbolRepository.find({
         systemId: validatedDistinctVariablePair.systemId,
         symbolIds: validatedDistinctVariablePair.variableSymbolIds
@@ -47,7 +47,7 @@ export class CountListener {
   public async decrementDistinctVariablePairAppearanceCount(distinctVariablePair: DistinctVariablePairEntity): Promise<void> {
     try {
       const validatedDistinctVariablePair = validatePayload(distinctVariablePair, DistinctVariablePairEntity);
-      
+
       const symbols = await this.symbolRepository.find({
         systemId: validatedDistinctVariablePair.systemId,
         symbolIds: validatedDistinctVariablePair.variableSymbolIds
