@@ -13,5 +13,5 @@ export class NewDistinctVariablePairPayload {
   @IsMongoId({
     each: true
   })
-  variableSymbolIds: [string, string] = ['', ''];
+  public readonly variableSymbolIds: [string, string] = ['', ''];
 };
