@@ -14,5 +14,7 @@ export class MongoSystemEntity {
   @Column()
   public variableSymbolCount: number = 0;
   @Column()
+  public distinctVariablePairCount: number = 0;
+  @Column()
   public createdByUserId: ObjectId = new ObjectId();
 };

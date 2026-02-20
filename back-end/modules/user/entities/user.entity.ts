@@ -45,4 +45,10 @@ export class UserEntity {
   @IsInt()
   @Min(0)
   public variableSymbolCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public distinctVariablePairCount: number = 0;
 };

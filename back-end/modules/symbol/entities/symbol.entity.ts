@@ -1,6 +1,6 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { Field, ObjectType } from '@nestjs/graphql';
-import { IsEnum, IsMongoId, IsNotEmpty } from 'class-validator';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { IsEnum, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
 
 @ObjectType()
 export class SymbolEntity {
@@ -29,6 +29,12 @@ export class SymbolEntity {
   })
   @IsNotEmpty()
   public content: string = '';
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public distinctVariablePairAppearanceCount: number = 0;
   @Field((): typeof String => {
     return String;
   })

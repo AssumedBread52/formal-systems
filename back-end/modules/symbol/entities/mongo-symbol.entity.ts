@@ -18,6 +18,8 @@ export class MongoSymbolEntity {
   @Column()
   public content: string = '';
   @Column()
+  public distinctVariablePairAppearanceCount: number = 0;
+  @Column()
   public systemId: ObjectId = new ObjectId();
   @Column()
   public createdByUserId: ObjectId = new ObjectId();

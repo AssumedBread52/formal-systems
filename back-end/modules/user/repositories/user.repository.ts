@@ -69,6 +69,7 @@ export class UserRepository {
     mongoUser.systemCount = user.systemCount;
     mongoUser.constantSymbolCount = user.constantSymbolCount;
     mongoUser.variableSymbolCount = user.variableSymbolCount;
+    mongoUser.distinctVariablePairCount = user.distinctVariablePairCount;
 
     return mongoUser;
   }
@@ -84,6 +85,7 @@ export class UserRepository {
     user.systemCount = mongoUser.systemCount;
     user.constantSymbolCount = mongoUser.constantSymbolCount;
     user.variableSymbolCount = mongoUser.variableSymbolCount;
+    user.distinctVariablePairCount = mongoUser.distinctVariablePairCount;
 
     return user;
   }

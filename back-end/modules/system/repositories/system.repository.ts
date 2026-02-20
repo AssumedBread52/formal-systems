@@ -128,6 +128,7 @@ export class SystemRepository {
     mongoSystem.description = system.description;
     mongoSystem.constantSymbolCount = system.constantSymbolCount;
     mongoSystem.variableSymbolCount = system.variableSymbolCount;
+    mongoSystem.distinctVariablePairCount = system.distinctVariablePairCount;
     mongoSystem.createdByUserId = new ObjectId(system.createdByUserId);
 
     return mongoSystem;
@@ -141,6 +142,7 @@ export class SystemRepository {
     system.description = mongoSystem.description;
     system.constantSymbolCount = mongoSystem.constantSymbolCount;
     system.variableSymbolCount = mongoSystem.variableSymbolCount;
+    system.distinctVariablePairCount = mongoSystem.distinctVariablePairCount;
     system.createdByUserId = mongoSystem.createdByUserId.toString();
 
     return system;

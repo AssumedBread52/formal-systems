@@ -30,6 +30,12 @@ export class SystemEntity {
   @IsInt()
   @Min(0)
   public variableSymbolCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public distinctVariablePairCount: number = 0;
   @Field((): typeof String => {
     return String;
   })
@@ -37,6 +43,6 @@ export class SystemEntity {
   public createdByUserId: string = '';
 
   public isNotEmpty(): boolean {
-    return (0 < this.constantSymbolCount) || (0 < this.variableSymbolCount);
+    return (0 < this.constantSymbolCount) || (0 < this.variableSymbolCount) || (0 < this.distinctVariablePairCount);
   }
 };

@@ -19,4 +19,6 @@ export class MongoUserEntity {
   public constantSymbolCount: number = 0;
   @Column()
   public variableSymbolCount: number = 0;
+  @Column()
+  public distinctVariablePairCount: number = 0;
 };

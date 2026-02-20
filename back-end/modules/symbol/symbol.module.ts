@@ -7,6 +7,7 @@ import { SymbolRepository } from './repositories/symbol.repository';
 import { SymbolResolver } from './resolvers/symbol.resolver';
 import { SymbolReadService } from './services/symbol-read.service';
 import { SymbolWriteService } from './services/symbol-write.service';
+import { CountListener } from './listeners/count.listener';
 
 @Module({
   imports: [
@@ -19,10 +20,14 @@ import { SymbolWriteService } from './services/symbol-write.service';
     SymbolController
   ],
   providers: [
+    CountListener,
     SymbolReadService,
     SymbolRepository,
     SymbolResolver,
     SymbolWriteService
+  ],
+  exports: [
+    SymbolReadService
   ]
 })
 export class SymbolModule {

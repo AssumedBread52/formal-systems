@@ -10,6 +10,14 @@ type UserEntity {
   systemCount: Int!
   constantSymbolCount: Int!
   variableSymbolCount: Int!
+  distinctVariablePairCount: Int!
+}
+
+type DistinctVariablePairEntity {
+  id: String!
+  variableSymbolIds: [String!]!
+  systemId: String!
+  createdByUserId: String!
 }
 
 type SymbolEntity {
@@ -18,6 +26,7 @@ type SymbolEntity {
   description: String!
   type: SymbolType!
   content: String!
+  distinctVariablePairAppearanceCount: Int!
   systemId: String!
   createdByUserId: String!
 }
@@ -33,6 +42,7 @@ type SystemEntity {
   description: String!
   constantSymbolCount: Int!
   variableSymbolCount: Int!
+  distinctVariablePairCount: Int!
   createdByUserId: String!
 }
 
@@ -45,6 +55,21 @@ type DependencyPayload {
 enum DependencyType {
   development
   operational
+}
+
+type PaginatedSystemsPayload {
+  results: [SystemEntity!]!
+  total: Int!
+}
+
+type PaginatedSymbolsPayload {
+  results: [SymbolEntity!]!
+  total: Int!
+}
+
+type PaginatedDistinctVariablePairsPayload {
+  results: [DistinctVariablePairEntity!]!
+  total: Int!
 }
 
 type ComponentStatusPayload {
@@ -67,25 +92,24 @@ type HealthStatusPayload {
   healthStatus: HealthStatus!
 }
 
-type PaginatedSystemsPayload {
-  results: [SystemEntity!]!
-  total: Int!
-}
-
-type PaginatedSymbolsPayload {
-  results: [SymbolEntity!]!
-  total: Int!
-}
-
 type Query {
   sessionUser: UserEntity!
   user(userId: String!): UserEntity!
   dependencies: [DependencyPayload!]!
-  healthCheck: HealthStatusPayload!
+  distinctVariablePair(systemId: String!, distinctVariablePairId: String!): DistinctVariablePairEntity!
+  distinctVariablePairs(systemId: String!, filters: SearchDistinctVariablePairsPayload!): PaginatedDistinctVariablePairsPayload!
   symbol(systemId: String!, symbolId: String!): SymbolEntity!
   symbols(systemId: String!, filters: SearchSymbolsPayload!): PaginatedSymbolsPayload!
   system(systemId: String!): SystemEntity!
   systems(filters: SearchSystemsPayload!): PaginatedSystemsPayload!
+  healthCheck: HealthStatusPayload!
+}
+
+input SearchDistinctVariablePairsPayload {
+  page: Int! = 1
+  pageSize: Int! = 10
+  mustIncludeVariableSymbolIds: [String!]! = []
+  mayIncludeVariableSymbolIds: [String!]! = []
 }
 
 input SearchSymbolsPayload {
@@ -108,6 +132,8 @@ type Mutation {
   signOut: UserEntity!
   createUser(userPayload: NewUserPayload!): UserEntity!
   updateUser(userPayload: EditUserPayload!): UserEntity!
+  createDistinctVariablePair(systemId: String!, distinctVariablePairPayload: NewDistinctVariablePairPayload!): DistinctVariablePairEntity!
+  deleteDistinctVariablePair(systemId: String!, distinctVariablePairId: String!): DistinctVariablePairEntity!
   createSymbol(systemId: String!, symbolPayload: NewSymbolPayload!): SymbolEntity!
   deleteSymbol(systemId: String!, symbolId: String!): SymbolEntity!
   updateSymbol(systemId: String!, symbolId: String!, symbolPayload: EditSymbolPayload!): SymbolEntity!
@@ -128,6 +154,10 @@ input EditUserPayload {
   newLastName: String! = ""
   newEmail: String! = ""
   newPassword: String
+}
+
+input NewDistinctVariablePairPayload {
+  variableSymbolIds: [String!]! = ["", ""]
 }
 
 input NewSymbolPayload {

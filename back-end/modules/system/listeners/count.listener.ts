@@ -1,4 +1,5 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
+import { DistinctVariablePairEntity } from '@/distinct-variable-pair/entities/distinct-variable-pair.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
@@ -9,6 +10,60 @@ import { OnEvent } from '@nestjs/event-emitter';
 @Injectable()
 export class CountListener {
   public constructor(private readonly systemRepository: SystemRepository) {
+  }
+
+  @OnEvent('distinct-variable-pair.create.completed', {
+    suppressErrors: false
+  })
+  public async incrementDistinctVariablePairCount(distinctVariablePair: DistinctVariablePairEntity): Promise<void> {
+    try {
+      const validatedDistinctVariablePairEntity = validatePayload(distinctVariablePair, DistinctVariablePairEntity);
+
+      const system = await this.systemRepository.findOneBy({
+        id: validatedDistinctVariablePairEntity.systemId
+      });
+
+      if (!system) {
+        throw new SystemNotFoundException();
+      }
+
+      system.distinctVariablePairCount++;
+
+      await this.systemRepository.save(system);
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating distinct variable pair count on system failed');
+    }
+  }
+
+  @OnEvent('distinct-variable-pair.delete.completed', {
+    suppressErrors: false
+  })
+  public async decrementDistinctVariablePairCount(distinctVariablePair: DistinctVariablePairEntity): Promise<void> {
+    try {
+      const validatedDistinctVariablePairEntity = validatePayload(distinctVariablePair, DistinctVariablePairEntity);
+
+      const system = await this.systemRepository.findOneBy({
+        id: validatedDistinctVariablePairEntity.systemId
+      });
+
+      if (!system) {
+        throw new SystemNotFoundException();
+      }
+
+      system.distinctVariablePairCount--;
+
+      await this.systemRepository.save(system);
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating distinct variable pair count on system failed');
+    }
   }
 
   @OnEvent('symbol.create.completed', {

@@ -3,6 +3,7 @@ import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { FindAndCountPayload } from '@/symbol/payloads/find-and-count.payload';
 import { FindOneByPayload } from '@/symbol/payloads/find-one-by.payload';
+import { FindPayload } from '@/symbol/payloads/find.payload';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId } from 'mongodb';
@@ -11,6 +12,33 @@ import { Filter, MongoRepository } from 'typeorm';
 @Injectable()
 export class SymbolRepository {
   public constructor(@InjectRepository(MongoSymbolEntity) private readonly repository: MongoRepository<MongoSymbolEntity>) {
+  }
+
+  public async find(findPayload: FindPayload): Promise<SymbolEntity[]> {
+    try {
+      const validatedFindPayload = validatePayload(findPayload, FindPayload);
+
+      const where = {
+        systemId: new ObjectId(validatedFindPayload.systemId)
+      } as Filter<MongoSymbolEntity>;
+      if (0 < validatedFindPayload.symbolIds.length) {
+        where._id = {
+          $in: validatedFindPayload.symbolIds.map((symbolId: string): ObjectId => {
+            return new ObjectId(symbolId);
+          })
+        };
+      }
+
+      const mongoSymbols = await this.repository.find(where);
+
+      const symbols = mongoSymbols.map(this.createDomainEntityFromDatabaseEntity);
+
+      return symbols.map((symbol: SymbolEntity): SymbolEntity => {
+        return validatePayload(symbol, SymbolEntity);
+      });
+    } catch {
+      throw new Error('Finding symbols failed');
+    }
   }
 
   public async findAndCount(findAndCountPayload: FindAndCountPayload): Promise<[SymbolEntity[], number]> {
@@ -128,6 +156,7 @@ export class SymbolRepository {
     mongoSymbol.description = symbol.description;
     mongoSymbol.type = symbol.type;
     mongoSymbol.content = symbol.content;
+    mongoSymbol.distinctVariablePairAppearanceCount = symbol.distinctVariablePairAppearanceCount;
     mongoSymbol.systemId = new ObjectId(symbol.systemId);
     mongoSymbol.createdByUserId = new ObjectId(symbol.createdByUserId);
 
@@ -142,6 +171,7 @@ export class SymbolRepository {
     symbol.description = mongoSymbol.description;
     symbol.type = mongoSymbol.type;
     symbol.content = mongoSymbol.content;
+    symbol.distinctVariablePairAppearanceCount = mongoSymbol.distinctVariablePairAppearanceCount;
     symbol.systemId = mongoSymbol.systemId.toString();
     symbol.createdByUserId = mongoSymbol.createdByUserId.toString();
 

@@ -8,6 +8,7 @@ import { Request, Response } from 'express';
 import { DatabaseType } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import { DependencyModule } from './dependency/dependency.module';
+import { DistinctVariablePairModule } from './distinct-variable-pair/distinct-variable-pair.module';
 import { HealthModule } from './health/health.module';
 import { SymbolModule } from './symbol/symbol.module';
 import { SystemModule } from './system/system.module';
@@ -24,6 +25,7 @@ import { UserModule } from './user/user.module';
       ]
     }),
     DependencyModule,
+    DistinctVariablePairModule,
     EventEmitterModule.forRoot(),
     GraphQLModule.forRootAsync({
       driver: ApolloDriver,

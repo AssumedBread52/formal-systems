@@ -65,4 +65,29 @@ export class SymbolReadService {
       throw new InternalServerErrorException('Reading symbol failed');
     }
   }
+
+  public async selectByIds(systemId: string, symbolIds: string[]): Promise<SymbolEntity[]> {
+    try {
+      if (!isMongoId(systemId)) {
+        throw new Error('Invalid system ID');
+      }
+
+      const symbols = await this.symbolRepository.find({
+        systemId,
+        symbolIds
+      });
+
+      if (symbols.length !== symbolIds.length) {
+        throw new SymbolNotFoundException();
+      }
+
+      return symbols;
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Reading symbols failed');
+    }
+  }
 };
