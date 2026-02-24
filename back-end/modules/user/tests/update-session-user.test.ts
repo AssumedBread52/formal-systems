@@ -25,6 +25,7 @@ describe('Update Session User', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const newFirstName = 'NewTest1';
     const newLastName = 'NewUser1';
     const newEmail = 'newtest1.newuser1@example.com';
@@ -40,6 +41,7 @@ describe('Update Session User', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
     updatedUser._id = userId;
     updatedUser.firstName = newFirstName;
     updatedUser.lastName = newLastName;
@@ -48,6 +50,7 @@ describe('Update Session User', (): void => {
     updatedUser.systemCount = systemCount;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
+    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
@@ -85,7 +88,8 @@ describe('Update Session User', (): void => {
       hashedPassword: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/),
       systemCount,
       constantSymbolCount,
-      variableSymbolCount
+      variableSymbolCount,
+      distinctVariablePairCount
     });
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toStrictEqual({
@@ -95,7 +99,8 @@ describe('Update Session User', (): void => {
       email: newEmail,
       systemCount,
       constantSymbolCount,
-      variableSymbolCount
+      variableSymbolCount,
+      distinctVariablePairCount
     });
   });
 
@@ -104,6 +109,7 @@ describe('Update Session User', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const newFirstName = 'NewTest1';
     const newLastName = 'NewUser1';
     const newEmail = 'newtest1.newuser1@example.com';
@@ -119,6 +125,7 @@ describe('Update Session User', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
     updatedUser._id = userId;
     updatedUser.firstName = newFirstName;
     updatedUser.lastName = newLastName;
@@ -127,6 +134,7 @@ describe('Update Session User', (): void => {
     updatedUser.systemCount = systemCount;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
+    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
@@ -139,7 +147,7 @@ describe('Update Session User', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation updateUser($userPayload: EditUserPayload!) { updateUser(userPayload: $userPayload) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount } }',
+      query: 'mutation updateUser($userPayload: EditUserPayload!) { updateUser(userPayload: $userPayload) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount } }',
       variables: {
         userPayload: {
           newFirstName,
@@ -169,7 +177,8 @@ describe('Update Session User', (): void => {
       hashedPassword: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/),
       systemCount,
       constantSymbolCount,
-      variableSymbolCount
+      variableSymbolCount,
+      distinctVariablePairCount
     });
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toStrictEqual({
@@ -181,7 +190,8 @@ describe('Update Session User', (): void => {
           email: newEmail,
           systemCount,
           constantSymbolCount,
-          variableSymbolCount
+          variableSymbolCount,
+          distinctVariablePairCount
         }
       }
     });

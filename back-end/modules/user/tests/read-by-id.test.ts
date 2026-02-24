@@ -25,6 +25,7 @@ describe('Read User by ID', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const user = new MongoUserEntity();
 
     user._id = userId;
@@ -35,6 +36,7 @@ describe('Read User by ID', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
@@ -55,7 +57,8 @@ describe('Read User by ID', (): void => {
       email,
       systemCount,
       constantSymbolCount,
-      variableSymbolCount
+      variableSymbolCount,
+      distinctVariablePairCount
     });
   });
 
@@ -67,6 +70,7 @@ describe('Read User by ID', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const user = new MongoUserEntity();
 
     user._id = userId;
@@ -77,11 +81,12 @@ describe('Read User by ID', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query user($userId: String!) { user(userId: $userId) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount } }',
+      query: 'query user($userId: String!) { user(userId: $userId) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount } }',
       variables: {
         userId
       }
@@ -104,7 +109,8 @@ describe('Read User by ID', (): void => {
           email,
           systemCount,
           constantSymbolCount,
-          variableSymbolCount
+          variableSymbolCount,
+          distinctVariablePairCount
         }
       }
     });

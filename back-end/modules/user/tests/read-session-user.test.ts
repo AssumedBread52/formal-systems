@@ -26,6 +26,7 @@ describe('Read Session User', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const user = new MongoUserEntity();
 
     user._id = userId;
@@ -36,6 +37,7 @@ describe('Read Session User', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
@@ -62,7 +64,8 @@ describe('Read Session User', (): void => {
       email,
       systemCount,
       constantSymbolCount,
-      variableSymbolCount
+      variableSymbolCount,
+      distinctVariablePairCount
     });
   });
 
@@ -74,6 +77,7 @@ describe('Read Session User', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const user = new MongoUserEntity();
 
     user._id = userId;
@@ -84,6 +88,7 @@ describe('Read Session User', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
@@ -94,7 +99,7 @@ describe('Read Session User', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'query sessionUser { sessionUser { id firstName lastName email systemCount constantSymbolCount variableSymbolCount } }'
+      query: 'query sessionUser { sessionUser { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount } }'
     });
 
     const { statusCode, body } = response;
@@ -114,7 +119,8 @@ describe('Read Session User', (): void => {
           email,
           systemCount,
           constantSymbolCount,
-          variableSymbolCount
+          variableSymbolCount,
+          distinctVariablePairCount
         }
       }
     });

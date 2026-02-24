@@ -77,7 +77,7 @@ describe('Sign Out', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation { signOut { id firstName lastName email systemCount constantSymbolCount variableSymbolCount } }'
+      query: 'mutation { signOut { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount } }'
     });
 
     const { statusCode, body } = response;
@@ -98,7 +98,8 @@ describe('Sign Out', (): void => {
           email,
           systemCount: 0,
           constantSymbolCount: 0,
-          variableSymbolCount: 0
+          variableSymbolCount: 0,
+          distinctVariablePairCount: 0
         }
       }
     });
