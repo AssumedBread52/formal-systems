@@ -23,6 +23,7 @@ describe('Read System by ID', (): void => {
     const description = 'Test System 1';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const system = new MongoSystemEntity();
 
     system._id = systemId;
@@ -30,6 +31,7 @@ describe('Read System by ID', (): void => {
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(system);
@@ -50,6 +52,7 @@ describe('Read System by ID', (): void => {
       description,
       constantSymbolCount,
       variableSymbolCount,
+      distinctVariablePairCount,
       createdByUserId: userId.toString()
     });
   });
@@ -61,6 +64,7 @@ describe('Read System by ID', (): void => {
     const description = 'Test System 1';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const system = new MongoSystemEntity();
 
     system._id = systemId;
@@ -68,12 +72,13 @@ describe('Read System by ID', (): void => {
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(system);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query system($systemId: String!) { system(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount createdByUserId } }',
+      query: 'query system($systemId: String!) { system(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount createdByUserId } }',
       variables: {
         systemId
       }
@@ -95,6 +100,7 @@ describe('Read System by ID', (): void => {
           description,
           constantSymbolCount,
           variableSymbolCount,
+          distinctVariablePairCount,
           createdByUserId: userId.toString()
         }
       }

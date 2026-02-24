@@ -24,6 +24,7 @@ describe('Read Systems', (): void => {
     const description = 'Test System 1';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const total = 1;
     const page = 2;
     const pageSize = 20;
@@ -36,6 +37,7 @@ describe('Read Systems', (): void => {
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
 
     findAndCount.mockResolvedValueOnce([
@@ -91,6 +93,7 @@ describe('Read Systems', (): void => {
           description,
           constantSymbolCount,
           variableSymbolCount,
+          distinctVariablePairCount,
           createdByUserId: userId.toString()
         }
       ],
@@ -105,6 +108,7 @@ describe('Read Systems', (): void => {
     const description = 'Test System 1';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const total = 1;
     const page = 2;
     const pageSize = 20;
@@ -117,6 +121,7 @@ describe('Read Systems', (): void => {
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
 
     findAndCount.mockResolvedValueOnce([
@@ -127,7 +132,7 @@ describe('Read Systems', (): void => {
     ]);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query systems($filters: SearchSystemsPayload!) { systems(filters: $filters) { results { id title description constantSymbolCount variableSymbolCount createdByUserId } total } }',
+      query: 'query systems($filters: SearchSystemsPayload!) { systems(filters: $filters) { results { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount createdByUserId } total } }',
       variables: {
         filters: {
           page,
@@ -173,6 +178,7 @@ describe('Read Systems', (): void => {
               description,
               constantSymbolCount,
               variableSymbolCount,
+              distinctVariablePairCount,
               createdByUserId: userId.toString()
             }
           ],

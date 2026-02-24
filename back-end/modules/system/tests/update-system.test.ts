@@ -28,6 +28,7 @@ describe('Update System', (): void => {
     const newDescription = 'Test System 2';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const user = new MongoUserEntity();
     const system = new MongoSystemEntity();
     const updatedSystem = new MongoSystemEntity();
@@ -42,12 +43,14 @@ describe('Update System', (): void => {
     system.description = 'Test System 1';
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = newTitle;
     updatedSystem.description = newDescription;
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = variableSymbolCount;
+    updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
     updatedSystem.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(user);
@@ -89,6 +92,7 @@ describe('Update System', (): void => {
       description: newDescription,
       constantSymbolCount,
       variableSymbolCount,
+      distinctVariablePairCount,
       createdByUserId: userId.toString()
     });
   });
@@ -100,6 +104,7 @@ describe('Update System', (): void => {
     const newDescription = 'Test System 2';
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const user = new MongoUserEntity();
     const system = new MongoSystemEntity();
     const updatedSystem = new MongoSystemEntity();
@@ -114,12 +119,14 @@ describe('Update System', (): void => {
     system.description = 'Test System 1';
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = newTitle;
     updatedSystem.description = newDescription;
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = variableSymbolCount;
+    updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
     updatedSystem.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(user);
@@ -134,7 +141,7 @@ describe('Update System', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation updateSystem($systemId: String!, $editSystemPayload: EditSystemPayload!) { updateSystem(systemId: $systemId, systemPayload: $editSystemPayload) { id title description constantSymbolCount variableSymbolCount createdByUserId } }',
+      query: 'mutation updateSystem($systemId: String!, $editSystemPayload: EditSystemPayload!) { updateSystem(systemId: $systemId, systemPayload: $editSystemPayload) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount createdByUserId } }',
       variables: {
         systemId,
         editSystemPayload: {
@@ -169,6 +176,7 @@ describe('Update System', (): void => {
           description: newDescription,
           constantSymbolCount,
           variableSymbolCount,
+          distinctVariablePairCount,
           createdByUserId: userId.toString()
         }
       }

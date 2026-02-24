@@ -32,6 +32,7 @@ describe('Delete System', (): void => {
     const systemCount = 2;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const systemId = new ObjectId();
     const title = 'TestSystem1';
     const description = 'Test System 1';
@@ -47,6 +48,7 @@ describe('Delete System', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -55,6 +57,7 @@ describe('Delete System', (): void => {
     updatedUser.systemCount = systemCount - 1;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
+    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
@@ -98,6 +101,7 @@ describe('Delete System', (): void => {
       description,
       constantSymbolCount: 0,
       variableSymbolCount: 0,
+      distinctVariablePairCount: 0,
       createdByUserId: userId.toString()
     });
   });
@@ -111,6 +115,7 @@ describe('Delete System', (): void => {
     const systemCount = 2;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const systemId = new ObjectId();
     const title = 'TestSystem1';
     const description = 'Test System 1';
@@ -126,6 +131,7 @@ describe('Delete System', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -134,6 +140,7 @@ describe('Delete System', (): void => {
     updatedUser.systemCount = systemCount - 1;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
+    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
@@ -152,7 +159,7 @@ describe('Delete System', (): void => {
     const response = await request(app.getHttpServer()).post(`/graphql`).set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation deleteSystem($systemId: String!) { deleteSystem(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount createdByUserId } }',
+      query: 'mutation deleteSystem($systemId: String!) { deleteSystem(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount createdByUserId } }',
       variables: {
         systemId
       }
@@ -184,6 +191,7 @@ describe('Delete System', (): void => {
           description,
           constantSymbolCount: 0,
           variableSymbolCount: 0,
+          distinctVariablePairCount: 0,
           createdByUserId: userId.toString()
         }
       }
