@@ -5,7 +5,6 @@ import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.pay
 import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { SymbolRepository } from '@/symbol/repositories/symbol.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { isMongoId } from 'class-validator';
 
 @Injectable()
 export class SymbolReadService {
@@ -14,10 +13,6 @@ export class SymbolReadService {
 
   public async searchSymbols(systemId: string, searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedSymbolsPayload> {
     try {
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
       const validatedSearchSymbolsPayload = validatePayload(searchSymbolsPayload, SearchSymbolsPayload);
 
       const take = validatedSearchSymbolsPayload.pageSize;
@@ -39,14 +34,6 @@ export class SymbolReadService {
 
   public async selectById(systemId: string, symbolId: string): Promise<SymbolEntity> {
     try {
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
-      if (!isMongoId(symbolId)) {
-        throw new Error('Invalid symbol ID');
-      }
-
       const symbol = await this.symbolRepository.findOneBy({
         id: symbolId,
         systemId
@@ -68,10 +55,6 @@ export class SymbolReadService {
 
   public async selectByIds(systemId: string, symbolIds: string[]): Promise<SymbolEntity[]> {
     try {
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
       const symbols = await this.symbolRepository.find({
         ids: symbolIds,
         systemId

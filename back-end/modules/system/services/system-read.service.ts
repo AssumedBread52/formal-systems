@@ -5,7 +5,6 @@ import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.pay
 import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
 import { SystemRepository } from '@/system/repositories/system.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { isMongoId } from 'class-validator';
 
 @Injectable()
 export class SystemReadService {
@@ -34,10 +33,6 @@ export class SystemReadService {
 
   public async selectById(systemId: string): Promise<SystemEntity> {
     try {
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
       const system = await this.systemRepository.findOneBy({
         id: systemId
       });

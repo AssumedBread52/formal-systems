@@ -5,7 +5,6 @@ import { PaginatedDistinctVariablePairsPayload } from '@/distinct-variable-pair/
 import { SearchDistinctVariablePairsPayload } from '@/distinct-variable-pair/payloads/search-distinct-variable-pairs.payload';
 import { DistinctVariablePairRepository } from '@/distinct-variable-pair/repositories/distinct-variable-pair.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { isMongoId } from 'class-validator';
 
 @Injectable()
 export class DistinctVariablePairReadService {
@@ -14,10 +13,6 @@ export class DistinctVariablePairReadService {
 
   public async searchDistinctVariablePairs(systemId: string, searchDistinctVariablePairsPayload: SearchDistinctVariablePairsPayload): Promise<PaginatedDistinctVariablePairsPayload> {
     try {
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
       const validatedSearchDistinctVariablePairsPayload = validatePayload(searchDistinctVariablePairsPayload, SearchDistinctVariablePairsPayload);
 
       const take = validatedSearchDistinctVariablePairsPayload.pageSize;
@@ -39,14 +34,6 @@ export class DistinctVariablePairReadService {
 
   public async selectById(systemId: string, distinctVariablePairId: string): Promise<DistinctVariablePairEntity> {
     try {
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
-      if (!isMongoId(distinctVariablePairId)) {
-        throw new Error('Invalid distinct variable pair ID');
-      }
-
       const distinctVariablePair = await this.distinctVariablePairRepository.findOneBy({
         id: distinctVariablePairId,
         systemId

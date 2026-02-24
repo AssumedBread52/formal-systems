@@ -2,7 +2,6 @@ import { UserEntity } from '@/user/entities/user.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { UserRepository } from '@/user/repositories/user.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { isEmail, isMongoId } from 'class-validator';
 
 @Injectable()
 export class UserReadService {
@@ -11,10 +10,6 @@ export class UserReadService {
 
   public async selectByEmail(email: string): Promise<UserEntity> {
     try {
-      if (!isEmail(email)) {
-        throw new Error('Invalid email');
-      }
-
       const user = await this.userRepository.findOneBy({
         email
       });
@@ -35,10 +30,6 @@ export class UserReadService {
 
   public async selectById(userId: string): Promise<UserEntity> {
     try {
-      if (!isMongoId(userId)) {
-        throw new Error('Invalid user ID');
-      }
-
       const user = await this.userRepository.findOneBy({
         id: userId
       });
