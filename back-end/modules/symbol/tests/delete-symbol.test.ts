@@ -34,6 +34,7 @@ describe('Delete Symbol', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 4;
+    const distinctVariablePairCount = 1;
     const updatedVariableSymbolCount = variableSymbolCount - 1;
     const systemId = new ObjectId();
     const systemTitle = 'TestSystem1';
@@ -43,6 +44,7 @@ describe('Delete Symbol', (): void => {
     const description = 'Test Symbol 1';
     const type = SymbolType.variable;
     const content = '\\alpha';
+    const distinctVariablePairAppearanceCount = 0;
     const user = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
     const system = new MongoSystemEntity();
@@ -57,6 +59,7 @@ describe('Delete Symbol', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -65,23 +68,27 @@ describe('Delete Symbol', (): void => {
     updatedUser.systemCount = systemCount;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
     system._id = systemId;
     system.title = systemTitle;
     system.description = systemDescription;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = systemTitle;
     updatedSystem.description = systemDescription;
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = title;
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
+    symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
@@ -130,6 +137,7 @@ describe('Delete Symbol', (): void => {
       description,
       type,
       content,
+      distinctVariablePairAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: userId.toString()
     });
@@ -144,6 +152,8 @@ describe('Delete Symbol', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 4;
+    const distinctVariablePairCount = 1;
+    const distinctVariablePairAppearanceCount = 0;
     const updatedVariableSymbolCount = variableSymbolCount - 1;
     const systemId = new ObjectId();
     const systemTitle = 'TestSystem1';
@@ -167,6 +177,7 @@ describe('Delete Symbol', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -175,23 +186,27 @@ describe('Delete Symbol', (): void => {
     updatedUser.systemCount = systemCount;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
     system._id = systemId;
     system.title = systemTitle;
     system.description = systemDescription;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = systemTitle;
     updatedSystem.description = systemDescription;
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = title;
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
+    symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
@@ -210,7 +225,7 @@ describe('Delete Symbol', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation deleteSymbol($systemId: String!, $symbolId: String!) { deleteSymbol(systemId: $systemId, symbolId: $symbolId) { id title description type content systemId createdByUserId } }',
+      query: 'mutation deleteSymbol($systemId: String!, $symbolId: String!) { deleteSymbol(systemId: $systemId, symbolId: $symbolId) { id title description type content distinctVariablePairAppearanceCount systemId createdByUserId } }',
       variables: {
         systemId,
         symbolId
@@ -248,6 +263,7 @@ describe('Delete Symbol', (): void => {
           description,
           type,
           content,
+          distinctVariablePairAppearanceCount,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }

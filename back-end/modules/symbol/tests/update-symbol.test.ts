@@ -32,6 +32,7 @@ describe('Update Symbol', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 4;
+    const distinctVariablePairCount = 1;
     const updatedVariableSymbolCount = variableSymbolCount - 1;
     const updatedConstantSymbolCount = constantSymbolCount + 1;
     const systemId = new ObjectId();
@@ -42,6 +43,7 @@ describe('Update Symbol', (): void => {
     const newDescription = 'Test Symbol 2';
     const newType = SymbolType.constant;
     const newContent = '\\beta';
+    const distinctVariablePairAppearanceCount = 0;
     const user = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
     const system = new MongoSystemEntity();
@@ -57,6 +59,7 @@ describe('Update Symbol', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -65,23 +68,27 @@ describe('Update Symbol', (): void => {
     updatedUser.systemCount = systemCount;
     updatedUser.constantSymbolCount = updatedConstantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = title;
     updatedSystem.description = description;
     updatedSystem.constantSymbolCount = updatedConstantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = 'TestSymbol1';
     symbol.description = 'Test Symbol 1';
     symbol.type = SymbolType.variable;
     symbol.content = '\\alpha';
+    symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
     updatedSymbol._id = symbolId;
@@ -89,6 +96,7 @@ describe('Update Symbol', (): void => {
     updatedSymbol.description = newDescription;
     updatedSymbol.type = newType;
     updatedSymbol.content = newContent;
+    updatedSymbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
     updatedSymbol.systemId = systemId;
     updatedSymbol.createdByUserId = userId;
 
@@ -146,6 +154,7 @@ describe('Update Symbol', (): void => {
       description: newDescription,
       type: newType,
       content: newContent,
+      distinctVariablePairAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: userId.toString()
     });
@@ -160,6 +169,7 @@ describe('Update Symbol', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 4;
+    const distinctVariablePairCount = 1;
     const updatedVariableSymbolCount = variableSymbolCount - 1;
     const updatedConstantSymbolCount = constantSymbolCount + 1;
     const systemId = new ObjectId();
@@ -170,6 +180,7 @@ describe('Update Symbol', (): void => {
     const newDescription = 'Test Symbol 2';
     const newType = SymbolType.constant;
     const newContent = '\\beta';
+    const distinctVariablePairAppearanceCount = 0;
     const user = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
     const system = new MongoSystemEntity();
@@ -185,6 +196,7 @@ describe('Update Symbol', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -193,23 +205,27 @@ describe('Update Symbol', (): void => {
     updatedUser.systemCount = systemCount;
     updatedUser.constantSymbolCount = updatedConstantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = title;
     updatedSystem.description = description;
     updatedSystem.constantSymbolCount = updatedConstantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = 'TestSymbol1';
     symbol.description = 'Test Symbol 1';
     symbol.type = SymbolType.variable;
     symbol.content = '\\alpha';
+    symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
     updatedSymbol._id = symbolId;
@@ -217,6 +233,7 @@ describe('Update Symbol', (): void => {
     updatedSymbol.description = newDescription;
     updatedSymbol.type = newType;
     updatedSymbol.content = newContent;
+    updatedSymbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
     updatedSymbol.systemId = systemId;
     updatedSymbol.createdByUserId = userId;
 
@@ -236,7 +253,7 @@ describe('Update Symbol', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation updateSymbol($systemId: String!, $symbolId: String!, $symbolPayload: EditSymbolPayload!) { updateSymbol(systemId: $systemId, symbolId: $symbolId, symbolPayload: $symbolPayload) { id title description type content systemId createdByUserId } }',
+      query: 'mutation updateSymbol($systemId: String!, $symbolId: String!, $symbolPayload: EditSymbolPayload!) { updateSymbol(systemId: $systemId, symbolId: $symbolId, symbolPayload: $symbolPayload) { id title description type content distinctVariablePairAppearanceCount systemId createdByUserId } }',
       variables: {
         systemId,
         symbolId,
@@ -283,6 +300,7 @@ describe('Update Symbol', (): void => {
           description: newDescription,
           type: newType,
           content: newContent,
+          distinctVariablePairAppearanceCount,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }

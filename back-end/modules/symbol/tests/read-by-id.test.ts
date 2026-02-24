@@ -25,6 +25,7 @@ describe('Read Symbol by ID', (): void => {
     const description = 'Test Symbol 1';
     const type = SymbolType.variable;
     const content = '\\alpha';
+    const distinctVariablePairAppearanceCount = 1;
     const symbol = new MongoSymbolEntity();
 
     symbol._id = symbolId;
@@ -32,6 +33,7 @@ describe('Read Symbol by ID', (): void => {
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
+    symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
@@ -54,6 +56,7 @@ describe('Read Symbol by ID', (): void => {
       description,
       type,
       content,
+      distinctVariablePairAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: userId.toString()
     });
@@ -67,6 +70,7 @@ describe('Read Symbol by ID', (): void => {
     const description = 'Test Symbol 1';
     const type = SymbolType.variable;
     const content = '\\alpha';
+    const distinctVariablePairAppearanceCount = 1;
     const symbol = new MongoSymbolEntity();
 
     symbol._id = symbolId;
@@ -74,13 +78,14 @@ describe('Read Symbol by ID', (): void => {
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
+    symbol.distinctVariablePairAppearanceCount = 1;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(symbol);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query symbol($systemId: String!, $symbolId: String!) { symbol(systemId: $systemId, symbolId: $symbolId) { id title description type content systemId createdByUserId } }',
+      query: 'query symbol($systemId: String!, $symbolId: String!) { symbol(systemId: $systemId, symbolId: $symbolId) { id title description type content distinctVariablePairAppearanceCount systemId createdByUserId } }',
       variables: {
         systemId,
         symbolId
@@ -104,6 +109,7 @@ describe('Read Symbol by ID', (): void => {
           description,
           type,
           content,
+          distinctVariablePairAppearanceCount,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }

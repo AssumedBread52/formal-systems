@@ -32,6 +32,7 @@ describe('Create Symbol', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const updatedVariableSymbolCount = variableSymbolCount + 1;
     const systemId = new ObjectId();
     const systemTitle = 'TestSystem1';
@@ -55,6 +56,7 @@ describe('Create Symbol', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -63,17 +65,20 @@ describe('Create Symbol', (): void => {
     updatedUser.systemCount = systemCount;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
     system._id = systemId;
     system.title = systemTitle;
     system.description = systemDescription;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = systemTitle;
     updatedSystem.description = systemDescription;
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = title;
@@ -133,6 +138,7 @@ describe('Create Symbol', (): void => {
       type,
       content,
       systemId,
+      distinctVariablePairAppearanceCount: 0,
       createdByUserId: userId
     });
     expect(save).toHaveBeenNthCalledWith(2, updatedUser);
@@ -144,6 +150,7 @@ describe('Create Symbol', (): void => {
       description,
       type,
       content,
+      distinctVariablePairAppearanceCount: 0,
       systemId: systemId.toString(),
       createdByUserId: userId.toString()
     });
@@ -158,6 +165,7 @@ describe('Create Symbol', (): void => {
     const systemCount = 1;
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
+    const distinctVariablePairCount = 1;
     const updatedVariableSymbolCount = variableSymbolCount + 1;
     const systemId = new ObjectId();
     const systemTitle = 'TestSystem1';
@@ -181,6 +189,7 @@ describe('Create Symbol', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
+    user.distinctVariablePairCount = distinctVariablePairCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -189,17 +198,20 @@ describe('Create Symbol', (): void => {
     updatedUser.systemCount = systemCount;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
+    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
     system._id = systemId;
     system.title = systemTitle;
     system.description = systemDescription;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
+    system.distinctVariablePairCount = distinctVariablePairCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = systemTitle;
     updatedSystem.description = systemDescription;
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
+    updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = title;
@@ -225,7 +237,7 @@ describe('Create Symbol', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation createSymbol($systemId: String!, $symbolPayload: NewSymbolPayload!) { createSymbol(systemId: $systemId, symbolPayload: $symbolPayload) { id title description type content systemId createdByUserId } }',
+      query: 'mutation createSymbol($systemId: String!, $symbolPayload: NewSymbolPayload!) { createSymbol(systemId: $systemId, symbolPayload: $symbolPayload) { id title description type content distinctVariablePairAppearanceCount systemId createdByUserId } }',
       variables: {
         systemId,
         symbolPayload: {
@@ -264,6 +276,7 @@ describe('Create Symbol', (): void => {
       description,
       type,
       content,
+      distinctVariablePairAppearanceCount: 0,
       systemId,
       createdByUserId: userId
     });
@@ -278,6 +291,7 @@ describe('Create Symbol', (): void => {
           description,
           type,
           content,
+          distinctVariablePairAppearanceCount: 0,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }
