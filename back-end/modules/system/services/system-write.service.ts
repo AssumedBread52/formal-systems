@@ -7,37 +7,35 @@ import { UniqueTitleException } from '@/system/exceptions/unique-title.exception
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
 import { SystemRepository } from '@/system/repositories/system.repository';
+import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { isMongoId } from 'class-validator';
 
 @Injectable()
 export class SystemWriteService {
-  public constructor(private readonly eventEmitter2: EventEmitter2, private readonly systemRepository: SystemRepository) {
+  public constructor(private readonly eventEmitter2: EventEmitter2, private readonly systemRepository: SystemRepository, private readonly userReadService: UserReadService) {
   }
 
-  public async create(createdByUserId: string, newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
+  public async create(userId: string, newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
     try {
-      if (!isMongoId(createdByUserId)) {
-        throw new Error('Invalid session user ID');
-      }
-
       const validatedNewSystemPayload = validatePayload(newSystemPayload, NewSystemPayload);
 
       const conflict = await this.systemRepository.findOneBy({
         title: validatedNewSystemPayload.title,
-        createdByUserId
+        createdByUserId: userId
       });
 
       if (conflict) {
         throw new UniqueTitleException();
       }
 
+      const user = await this.userReadService.selectById(userId);
+
       const system = new SystemEntity();
 
       system.title = validatedNewSystemPayload.title;
       system.description = validatedNewSystemPayload.description;
-      system.createdByUserId = createdByUserId;
+      system.createdByUserId = user.id;
 
       const savedSystem = await this.systemRepository.save(system);
 
@@ -53,16 +51,8 @@ export class SystemWriteService {
     }
   }
 
-  public async delete(createdByUserId: string, systemId: string): Promise<SystemEntity> {
+  public async delete(userId: string, systemId: string): Promise<SystemEntity> {
     try {
-      if (!isMongoId(createdByUserId)) {
-        throw new Error('Invalid session user ID');
-      }
-
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
       const system = await this.systemRepository.findOneBy({
         id: systemId
       });
@@ -71,7 +61,9 @@ export class SystemWriteService {
         throw new SystemNotFoundException();
       }
 
-      if (createdByUserId !== system.createdByUserId) {
+      const user = await this.userReadService.selectById(userId);
+
+      if (user.id !== system.createdByUserId) {
         throw new OwnershipException();
       }
 
@@ -93,16 +85,8 @@ export class SystemWriteService {
     }
   }
 
-  public async update(createdByUserId: string, systemId: string, editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
+  public async update(userId: string, systemId: string, editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
     try {
-      if (!isMongoId(createdByUserId)) {
-        throw new Error('Invalid session user ID');
-      }
-
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
       const system = await this.systemRepository.findOneBy({
         id: systemId
       });
@@ -111,7 +95,9 @@ export class SystemWriteService {
         throw new SystemNotFoundException();
       }
 
-      if (createdByUserId !== system.createdByUserId) {
+      const user = await this.userReadService.selectById(userId);
+
+      if (user.id !== system.createdByUserId) {
         throw new OwnershipException();
       }
 
@@ -120,7 +106,7 @@ export class SystemWriteService {
       if (validatedEditSystemPayload.newTitle !== system.title) {
         const conflict = await this.systemRepository.findOneBy({
           title: validatedEditSystemPayload.newTitle,
-          createdByUserId
+          createdByUserId: user.id
         });
 
         if (conflict) {

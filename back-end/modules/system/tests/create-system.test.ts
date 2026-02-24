@@ -55,7 +55,7 @@ describe('Create System', (): void => {
     updatedUser.systemCount = systemCount + 1;
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
-    updatedUser.distinctVariablePairCount = distinctVariablePairCount
+    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
@@ -63,6 +63,7 @@ describe('Create System', (): void => {
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
+    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(user);
     save.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(updatedUser);
@@ -80,7 +81,7 @@ describe('Create System', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -89,6 +90,9 @@ describe('Create System', (): void => {
       createdByUserId: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       _id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
@@ -158,6 +162,7 @@ describe('Create System', (): void => {
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
     save.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(updatedUser);
 
@@ -179,7 +184,7 @@ describe('Create System', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -188,6 +193,9 @@ describe('Create System', (): void => {
       createdByUserId: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       _id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);

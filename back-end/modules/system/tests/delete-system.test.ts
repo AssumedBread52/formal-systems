@@ -66,6 +66,7 @@ describe('Delete System', (): void => {
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
     findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
     remove.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(updatedUser);
 
@@ -79,7 +80,7 @@ describe('Delete System', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -87,6 +88,9 @@ describe('Delete System', (): void => {
       _id: systemId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       _id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
@@ -149,6 +153,7 @@ describe('Delete System', (): void => {
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
     findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
     remove.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(updatedUser);
 
@@ -167,7 +172,7 @@ describe('Delete System', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -175,6 +180,9 @@ describe('Delete System', (): void => {
       _id: systemId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       _id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);

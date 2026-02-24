@@ -55,6 +55,7 @@ describe('Update System', (): void => {
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
     save.mockResolvedValueOnce(updatedSystem);
 
@@ -71,7 +72,7 @@ describe('Update System', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -79,6 +80,9 @@ describe('Update System', (): void => {
       _id: systemId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       title: newTitle,
       createdByUserId: userId
     });
@@ -131,6 +135,7 @@ describe('Update System', (): void => {
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
     save.mockResolvedValueOnce(updatedSystem);
 
@@ -153,7 +158,7 @@ describe('Update System', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -161,6 +166,9 @@ describe('Update System', (): void => {
       _id: systemId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       title: newTitle,
       createdByUserId: userId
     });

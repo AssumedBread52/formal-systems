@@ -1,3 +1,4 @@
+import { UserModule } from '@/user/user.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SystemController } from './controllers/system.controller';
@@ -12,7 +13,8 @@ import { SystemWriteService } from './services/system-write.service';
   imports: [
     TypeOrmModule.forFeature([
       MongoSystemEntity
-    ])
+    ]),
+    UserModule
   ],
   controllers: [
     SystemController
