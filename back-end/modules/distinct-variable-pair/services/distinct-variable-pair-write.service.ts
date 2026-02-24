@@ -12,30 +12,24 @@ import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SystemReadService } from '@/system/services/system-read.service';
+import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { isMongoId } from 'class-validator';
 
 @Injectable()
 export class DistinctVariablePairWriteService {
-  public constructor(private readonly distinctVariablePairRepository: DistinctVariablePairRepository, private readonly eventEmitter2: EventEmitter2, private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService) {
+  public constructor(private readonly distinctVariablePairRepository: DistinctVariablePairRepository, private readonly eventEmitter2: EventEmitter2, private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService) {
   }
 
-  public async create(createdByUserId: string, systemId: string, newDistinctVariablePairPayload: NewDistinctVariablePairPayload): Promise<DistinctVariablePairEntity> {
+  public async create(userId: string, systemId: string, newDistinctVariablePairPayload: NewDistinctVariablePairPayload): Promise<DistinctVariablePairEntity> {
     try {
-      if (!isMongoId(createdByUserId)) {
-        throw new Error('Invalid user ID');
-      }
-
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
       const validatedNewDistinctVariablePairPayload = validatePayload(newDistinctVariablePairPayload, NewDistinctVariablePairPayload);
 
       const system = await this.systemReadService.selectById(systemId);
 
-      if (createdByUserId !== system.createdByUserId) {
+      const user = await this.userReadService.selectById(userId);
+
+      if (user.id !== system.createdByUserId) {
         throw new OwnershipException();
       }
 
@@ -66,7 +60,7 @@ export class DistinctVariablePairWriteService {
 
       distinctVariablePair.variableSymbolIds = sortedVariableSymbolIds;
       distinctVariablePair.systemId = systemId;
-      distinctVariablePair.createdByUserId = createdByUserId;
+      distinctVariablePair.createdByUserId = user.id;
 
       const savedDistinctVariablePair = await this.distinctVariablePairRepository.save(distinctVariablePair);
 
@@ -82,20 +76,8 @@ export class DistinctVariablePairWriteService {
     }
   }
 
-  public async delete(createdByUserId: string, systemId: string, distinctVariablePairId: string): Promise<DistinctVariablePairEntity> {
+  public async delete(userId: string, systemId: string, distinctVariablePairId: string): Promise<DistinctVariablePairEntity> {
     try {
-      if (!isMongoId(createdByUserId)) {
-        throw new Error('Invalid user ID');
-      }
-
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
-      if (!isMongoId(distinctVariablePairId)) {
-        throw new Error('Invalid distinct variable pair ID');
-      }
-
       const distinctVariablePair = await this.distinctVariablePairRepository.findOneBy({
         id: distinctVariablePairId,
         systemId
@@ -105,7 +87,9 @@ export class DistinctVariablePairWriteService {
         throw new DistinctVariablePairNotFoundException();
       }
 
-      if (createdByUserId !== distinctVariablePair.createdByUserId) {
+      const user = await this.userReadService.selectById(userId);
+
+      if (user.id !== distinctVariablePair.createdByUserId) {
         throw new OwnershipException();
       }
 

@@ -1,5 +1,6 @@
 import { SymbolModule } from '@/symbol/symbol.module';
 import { SystemModule } from '@/system/system.module';
+import { UserModule } from '@/user/user.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DistinctVariablePairController } from './controllers/distinct-variable-pair.controller';
@@ -15,7 +16,8 @@ import { DistinctVariablePairWriteService } from './services/distinct-variable-p
     SystemModule,
     TypeOrmModule.forFeature([
       MongoDistinctVariablePairEntity
-    ])
+    ]),
+    UserModule
   ],
   controllers: [
     DistinctVariablePairController
