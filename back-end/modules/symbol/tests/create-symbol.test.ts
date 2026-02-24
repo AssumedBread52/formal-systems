@@ -90,6 +90,7 @@ describe('Create Symbol', (): void => {
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
@@ -112,7 +113,7 @@ describe('Create Symbol', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(5);
+    expect(findOneBy).toHaveBeenCalledTimes(6);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -120,13 +121,16 @@ describe('Create Symbol', (): void => {
       _id: systemId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       title,
       systemId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
+    expect(findOneBy).toHaveBeenNthCalledWith(5, {
       _id: userId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(5, {
+    expect(findOneBy).toHaveBeenNthCalledWith(6, {
       _id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
@@ -137,8 +141,8 @@ describe('Create Symbol', (): void => {
       description,
       type,
       content,
-      systemId,
       distinctVariablePairAppearanceCount: 0,
+      systemId,
       createdByUserId: userId
     });
     expect(save).toHaveBeenNthCalledWith(2, updatedUser);
@@ -223,6 +227,7 @@ describe('Create Symbol', (): void => {
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
+    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
@@ -251,7 +256,7 @@ describe('Create Symbol', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(5);
+    expect(findOneBy).toHaveBeenCalledTimes(6);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -259,13 +264,16 @@ describe('Create Symbol', (): void => {
       _id: systemId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       title,
       systemId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
+    expect(findOneBy).toHaveBeenNthCalledWith(5, {
       _id: userId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(5, {
+    expect(findOneBy).toHaveBeenNthCalledWith(6, {
       _id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);

@@ -8,30 +8,24 @@ import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
 import { SymbolRepository } from '@/symbol/repositories/symbol.repository';
 import { SystemReadService } from '@/system/services/system-read.service';
+import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { isMongoId } from 'class-validator';
 
 @Injectable()
 export class SymbolWriteService {
-  public constructor(private readonly eventEmitter2: EventEmitter2, private readonly symbolRepository: SymbolRepository, private readonly systemReadService: SystemReadService) {
+  public constructor(private readonly eventEmitter2: EventEmitter2, private readonly symbolRepository: SymbolRepository, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService) {
   }
 
-  public async create(createdByUserId: string, systemId: string, newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
+  public async create(userId: string, systemId: string, newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
     try {
-      if (!isMongoId(createdByUserId)) {
-        throw new Error('Invalid session user ID');
-      }
-
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
       const validatedNewSymbolPayload = validatePayload(newSymbolPayload, NewSymbolPayload);
 
       const system = await this.systemReadService.selectById(systemId);
 
-      if (createdByUserId !== system.createdByUserId) {
+      const user = await this.userReadService.selectById(userId);
+
+      if (user.id !== system.createdByUserId) {
         throw new OwnershipException();
       }
 
@@ -51,7 +45,7 @@ export class SymbolWriteService {
       symbol.type = validatedNewSymbolPayload.type;
       symbol.content = validatedNewSymbolPayload.content;
       symbol.systemId = systemId;
-      symbol.createdByUserId = createdByUserId;
+      symbol.createdByUserId = user.id;
 
       const savedSymbol = await this.symbolRepository.save(symbol);
 
@@ -67,20 +61,8 @@ export class SymbolWriteService {
     }
   }
 
-  public async delete(createdByUserId: string, systemId: string, symbolId: string): Promise<SymbolEntity> {
+  public async delete(userId: string, systemId: string, symbolId: string): Promise<SymbolEntity> {
     try {
-      if (!isMongoId(createdByUserId)) {
-        throw new Error('Invalid session user ID');
-      }
-
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
-      if (!isMongoId(symbolId)) {
-        throw new Error('Invalid symbol ID');
-      }
-
       const symbol = await this.symbolRepository.findOneBy({
         id: symbolId,
         systemId
@@ -90,7 +72,9 @@ export class SymbolWriteService {
         throw new SymbolNotFoundException();
       }
 
-      if (createdByUserId !== symbol.createdByUserId) {
+      const user = await this.userReadService.selectById(userId);
+
+      if (user.id !== symbol.createdByUserId) {
         throw new OwnershipException();
       }
 
@@ -112,20 +96,8 @@ export class SymbolWriteService {
     }
   }
 
-  public async update(createdByUserId: string, systemId: string, symbolId: string, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
+  public async update(userId: string, systemId: string, symbolId: string, editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
     try {
-      if (!isMongoId(createdByUserId)) {
-        throw new Error('Invalid session user ID');
-      }
-
-      if (!isMongoId(systemId)) {
-        throw new Error('Invalid system ID');
-      }
-
-      if (!isMongoId(symbolId)) {
-        throw new Error('Invalid symbol ID');
-      }
-
       const validatedEditSymbolPayload = validatePayload(editSymbolPayload, EditSymbolPayload);
 
       const symbol = await this.symbolRepository.findOneBy({
@@ -137,7 +109,9 @@ export class SymbolWriteService {
         throw new SymbolNotFoundException();
       }
 
-      if (createdByUserId !== symbol.createdByUserId) {
+      const user = await this.userReadService.selectById(userId);
+
+      if (user.id !== symbol.createdByUserId) {
         throw new OwnershipException();
       }
 

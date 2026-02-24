@@ -1,4 +1,5 @@
 import { SystemModule } from '@/system/system.module';
+import { UserModule } from '@/user/user.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SymbolController } from './controllers/symbol.controller';
@@ -14,7 +15,8 @@ import { SymbolWriteService } from './services/symbol-write.service';
     SystemModule,
     TypeOrmModule.forFeature([
       MongoSymbolEntity
-    ])
+    ]),
+    UserModule
   ],
   controllers: [
     SymbolController

@@ -102,6 +102,7 @@ describe('Update Symbol', (): void => {
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
+    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
@@ -124,7 +125,7 @@ describe('Update Symbol', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(5);
+    expect(findOneBy).toHaveBeenCalledTimes(6);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -133,13 +134,16 @@ describe('Update Symbol', (): void => {
       systemId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       title: newTitle,
       systemId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
+    expect(findOneBy).toHaveBeenNthCalledWith(5, {
       _id: userId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(5, {
+    expect(findOneBy).toHaveBeenNthCalledWith(6, {
       _id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
@@ -239,6 +243,7 @@ describe('Update Symbol', (): void => {
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
+    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
@@ -268,7 +273,7 @@ describe('Update Symbol', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(5);
+    expect(findOneBy).toHaveBeenCalledTimes(6);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -277,13 +282,16 @@ describe('Update Symbol', (): void => {
       systemId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       title: newTitle,
       systemId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
+    expect(findOneBy).toHaveBeenNthCalledWith(5, {
       _id: userId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(5, {
+    expect(findOneBy).toHaveBeenNthCalledWith(6, {
       _id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);

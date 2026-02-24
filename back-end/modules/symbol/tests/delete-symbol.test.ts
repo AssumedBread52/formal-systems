@@ -95,6 +95,7 @@ describe('Delete Symbol', (): void => {
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
     findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce(symbol);
     save.mockResolvedValueOnce(updatedUser);
@@ -110,7 +111,7 @@ describe('Delete Symbol', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(findOneBy).toHaveBeenCalledTimes(5);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -122,6 +123,9 @@ describe('Delete Symbol', (): void => {
       _id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(4, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(5, {
       _id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
@@ -213,6 +217,7 @@ describe('Delete Symbol', (): void => {
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
     findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce(symbol);
     save.mockResolvedValueOnce(updatedUser);
@@ -234,7 +239,7 @@ describe('Delete Symbol', (): void => {
 
     const { statusCode, body } = response;
 
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(findOneBy).toHaveBeenCalledTimes(5);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       _id: userId
     });
@@ -246,6 +251,9 @@ describe('Delete Symbol', (): void => {
       _id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(4, {
+      _id: userId
+    });
+    expect(findOneBy).toHaveBeenNthCalledWith(5, {
       _id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
