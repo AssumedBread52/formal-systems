@@ -1,5 +1,7 @@
 import { AuthModule } from '@/auth/auth.module';
 import { DependencyModule } from '@/dependency/dependency.module';
+import { DistinctVariablePairModule } from '@/distinct-variable-pair/distinct-variable-pair.module';
+import { MongoDistinctVariablePairEntity } from '@/distinct-variable-pair/entities/mongo-distinct-variable-pair.entity';
 import { HealthModule } from '@/health/health.module';
 import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
@@ -22,6 +24,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
     imports: [
       AuthModule,
       DependencyModule,
+      DistinctVariablePairModule,
       EventEmitterModule.forRoot(),
       GraphQLModule.forRootAsync({
         driver: ApolloDriver,
@@ -43,7 +46,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
       SystemModule,
       UserModule
     ]
-  }).overrideProvider(getRepositoryToken(MongoSymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSystemEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoUserEntity)).useClass(MongoRepository).compile();
+  }).overrideProvider(getRepositoryToken(MongoDistinctVariablePairEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSystemEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoUserEntity)).useClass(MongoRepository).compile();
 
   const app = testingModule.createNestApplication<NestExpressApplication>();
 
