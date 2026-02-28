@@ -157,6 +157,9 @@ export class SymbolRepository {
     mongoSymbol.type = symbol.type;
     mongoSymbol.content = symbol.content;
     mongoSymbol.distinctVariablePairAppearanceCount = symbol.distinctVariablePairAppearanceCount;
+    mongoSymbol.constantVariablePairExpressionAppearanceCount = symbol.constantVariablePairExpressionAppearanceCount;
+    mongoSymbol.constantPrefixedExpressionAppearanceCount = symbol.constantPrefixedExpressionAppearanceCount;
+    mongoSymbol.standardExpressionAppearanceCount = symbol.standardExpressionAppearanceCount;
     mongoSymbol.systemId = new ObjectId(symbol.systemId);
     mongoSymbol.createdByUserId = new ObjectId(symbol.createdByUserId);
 
@@ -172,6 +175,9 @@ export class SymbolRepository {
     symbol.type = mongoSymbol.type;
     symbol.content = mongoSymbol.content;
     symbol.distinctVariablePairAppearanceCount = mongoSymbol.distinctVariablePairAppearanceCount;
+    symbol.constantVariablePairExpressionAppearanceCount = mongoSymbol.constantVariablePairExpressionAppearanceCount;
+    symbol.constantPrefixedExpressionAppearanceCount = mongoSymbol.constantPrefixedExpressionAppearanceCount;
+    symbol.standardExpressionAppearanceCount = mongoSymbol.standardExpressionAppearanceCount;
     symbol.systemId = mongoSymbol.systemId.toString();
     symbol.createdByUserId = mongoSymbol.createdByUserId.toString();
 

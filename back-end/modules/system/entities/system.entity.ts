@@ -36,6 +36,24 @@ export class SystemEntity {
   @IsInt()
   @Min(0)
   public distinctVariablePairCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public constantVariablePairExpressionCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public constantPrefixedExpressionCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public standardExpressionCount: number = 0;
   @Field((): typeof String => {
     return String;
   })
@@ -43,6 +61,6 @@ export class SystemEntity {
   public createdByUserId: string = '';
 
   public isNotEmpty(): boolean {
-    return (0 < this.constantSymbolCount) || (0 < this.variableSymbolCount) || (0 < this.distinctVariablePairCount);
+    return (0 < this.constantSymbolCount) || (0 < this.variableSymbolCount) || (0 < this.distinctVariablePairCount) || (0 < this.constantVariablePairExpressionCount) || (0 < this.constantPrefixedExpressionCount) || (0 < this.standardExpressionCount);
   }
 };

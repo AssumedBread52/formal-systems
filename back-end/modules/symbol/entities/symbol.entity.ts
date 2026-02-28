@@ -35,6 +35,24 @@ export class SymbolEntity {
   @IsInt()
   @Min(0)
   public distinctVariablePairAppearanceCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public constantVariablePairExpressionAppearanceCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public constantPrefixedExpressionAppearanceCount: number = 0;
+  @Field((): typeof Int => {
+    return Int;
+  })
+  @IsInt()
+  @Min(0)
+  public standardExpressionAppearanceCount: number = 0;
   @Field((): typeof String => {
     return String;
   })
@@ -47,6 +65,6 @@ export class SymbolEntity {
   public createdByUserId: string = '';
 
   public isInUse(): boolean {
-    return (0 < this.distinctVariablePairAppearanceCount);
+    return (0 < this.distinctVariablePairAppearanceCount) || (0 < this.distinctVariablePairAppearanceCount) || (0 < this.constantPrefixedExpressionAppearanceCount) || (0 < this.standardExpressionAppearanceCount);
   }
 };

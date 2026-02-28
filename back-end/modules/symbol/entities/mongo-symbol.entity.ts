@@ -20,6 +20,12 @@ export class MongoSymbolEntity {
   @Column()
   public distinctVariablePairAppearanceCount: number = 0;
   @Column()
+  public constantVariablePairExpressionAppearanceCount: number = 0;
+  @Column()
+  public constantPrefixedExpressionAppearanceCount: number = 0;
+  @Column()
+  public standardExpressionAppearanceCount: number = 0;
+  @Column()
   public systemId: ObjectId = new ObjectId();
   @Column()
   public createdByUserId: ObjectId = new ObjectId();

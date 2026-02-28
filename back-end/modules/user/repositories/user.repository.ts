@@ -70,6 +70,9 @@ export class UserRepository {
     mongoUser.constantSymbolCount = user.constantSymbolCount;
     mongoUser.variableSymbolCount = user.variableSymbolCount;
     mongoUser.distinctVariablePairCount = user.distinctVariablePairCount;
+    mongoUser.constantVariablePairExpressionCount = user.constantVariablePairExpressionCount;
+    mongoUser.constantPrefixedExpressionCount = user.constantPrefixedExpressionCount;
+    mongoUser.standardExpressionCount = user.standardExpressionCount;
 
     return mongoUser;
   }
@@ -86,6 +89,9 @@ export class UserRepository {
     user.constantSymbolCount = mongoUser.constantSymbolCount;
     user.variableSymbolCount = mongoUser.variableSymbolCount;
     user.distinctVariablePairCount = mongoUser.distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = mongoUser.constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = mongoUser.constantPrefixedExpressionCount;
+    user.standardExpressionCount = mongoUser.standardExpressionCount;
 
     return user;
   }

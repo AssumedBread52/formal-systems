@@ -129,6 +129,9 @@ export class SystemRepository {
     mongoSystem.constantSymbolCount = system.constantSymbolCount;
     mongoSystem.variableSymbolCount = system.variableSymbolCount;
     mongoSystem.distinctVariablePairCount = system.distinctVariablePairCount;
+    mongoSystem.constantVariablePairExpressionCount = system.constantVariablePairExpressionCount;
+    mongoSystem.constantPrefixedExpressionCount = system.constantPrefixedExpressionCount;
+    mongoSystem.standardExpressionCount = system.standardExpressionCount;
     mongoSystem.createdByUserId = new ObjectId(system.createdByUserId);
 
     return mongoSystem;
@@ -143,6 +146,9 @@ export class SystemRepository {
     system.constantSymbolCount = mongoSystem.constantSymbolCount;
     system.variableSymbolCount = mongoSystem.variableSymbolCount;
     system.distinctVariablePairCount = mongoSystem.distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = mongoSystem.constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = mongoSystem.constantPrefixedExpressionCount;
+    system.standardExpressionCount = mongoSystem.standardExpressionCount;
     system.createdByUserId = mongoSystem.createdByUserId.toString();
 
     return system;
