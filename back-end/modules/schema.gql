@@ -11,6 +11,9 @@ type UserEntity {
   constantSymbolCount: Int!
   variableSymbolCount: Int!
   distinctVariablePairCount: Int!
+  constantVariablePairExpressionCount: Int!
+  constantPrefixedExpressionCount: Int!
+  standardExpressionCount: Int!
 }
 
 type DistinctVariablePairEntity {
@@ -27,6 +30,9 @@ type SymbolEntity {
   type: SymbolType!
   content: String!
   distinctVariablePairAppearanceCount: Int!
+  constantVariablePairExpressionAppearanceCount: Int!
+  constantPrefixedExpressionAppearanceCount: Int!
+  standardExpressionAppearanceCount: Int!
   systemId: String!
   createdByUserId: String!
 }
@@ -43,6 +49,9 @@ type SystemEntity {
   constantSymbolCount: Int!
   variableSymbolCount: Int!
   distinctVariablePairCount: Int!
+  constantVariablePairExpressionCount: Int!
+  constantPrefixedExpressionCount: Int!
+  standardExpressionCount: Int!
   createdByUserId: String!
 }
 
