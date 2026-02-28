@@ -20,6 +20,8 @@ export class SystemWriteService {
     try {
       const validatedNewSystemPayload = validatePayload(newSystemPayload, NewSystemPayload);
 
+      const user = await this.userReadService.selectById(userId);
+
       const conflict = await this.systemRepository.findOneBy({
         title: validatedNewSystemPayload.title,
         createdByUserId: userId
@@ -28,8 +30,6 @@ export class SystemWriteService {
       if (conflict) {
         throw new UniqueTitleException();
       }
-
-      const user = await this.userReadService.selectById(userId);
 
       const system = new SystemEntity();
 
