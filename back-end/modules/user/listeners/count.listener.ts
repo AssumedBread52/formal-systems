@@ -1,5 +1,7 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { DistinctVariablePairEntity } from '@/distinct-variable-pair/entities/distinct-variable-pair.entity';
+import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { ExpressionType } from '@/expression/enums/expression-type.enum';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
@@ -64,6 +66,80 @@ export class CountListener {
       }
 
       throw new InternalServerErrorException('Updating distinct variable pair count on user failed');
+    }
+  }
+
+  @OnEvent('expression.create.completed', {
+    suppressErrors: false
+  })
+  public async incrementExpressionCount(expression: ExpressionEntity): Promise<void> {
+    try {
+      const validatedExpression = validatePayload(expression, ExpressionEntity);
+
+      const user = await this.userRepository.findOneBy({
+        id: validatedExpression.createdByUserId
+      });
+
+      if (!user) {
+        throw new UserNotFoundException();
+      }
+
+      switch (validatedExpression.type) {
+        case ExpressionType.constant_variable_pair:
+          user.constantVariablePairExpressionCount++;
+          break;
+        case ExpressionType.constant_prefixed:
+          user.constantPrefixedExpressionCount++;
+          break;
+        case ExpressionType.standard:
+          user.standardExpressionCount++;
+          break;
+      }
+
+      await this.userRepository.save(user);
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating expression count on user failed');
+    }
+  }
+
+  @OnEvent('expression.delete.completed', {
+    suppressErrors: false
+  })
+  public async decrementExpressionCount(expression: ExpressionEntity): Promise<void> {
+    try {
+      const validatedExpression = validatePayload(expression, ExpressionEntity);
+
+      const user = await this.userRepository.findOneBy({
+        id: validatedExpression.createdByUserId
+      });
+
+      if (!user) {
+        throw new UserNotFoundException();
+      }
+
+      switch (validatedExpression.type) {
+        case ExpressionType.constant_variable_pair:
+          user.constantVariablePairExpressionCount--;
+          break;
+        case ExpressionType.constant_prefixed:
+          user.constantPrefixedExpressionCount--;
+          break;
+        case ExpressionType.standard:
+          user.standardExpressionCount--;
+          break;
+      }
+
+      await this.userRepository.save(user);
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating expression count on user failed');
     }
   }
 

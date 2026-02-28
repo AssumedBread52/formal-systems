@@ -1,5 +1,7 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { DistinctVariablePairEntity } from '@/distinct-variable-pair/entities/distinct-variable-pair.entity';
+import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { ExpressionType } from '@/expression/enums/expression-type.enum';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
@@ -63,6 +65,80 @@ export class CountListener {
       }
 
       throw new InternalServerErrorException('Updating distinct variable pair count on system failed');
+    }
+  }
+
+  @OnEvent('expression.create.completed', {
+    suppressErrors: false
+  })
+  public async incrementExpressionCount(expression: ExpressionEntity): Promise<void> {
+    try {
+      const validatedExpression = validatePayload(expression, ExpressionEntity);
+
+      const system = await this.systemRepository.findOneBy({
+        id: validatedExpression.systemId
+      });
+
+      if (!system) {
+        throw new SystemNotFoundException();
+      }
+
+      switch (validatedExpression.type) {
+        case ExpressionType.constant_variable_pair:
+          system.constantVariablePairExpressionCount++;
+          break;
+        case ExpressionType.constant_prefixed:
+          system.constantPrefixedExpressionCount++;
+          break;
+        case ExpressionType.standard:
+          system.standardExpressionCount++;
+          break;
+      }
+
+      await this.systemRepository.save(system);
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating expression count on system failed');
+    }
+  }
+
+  @OnEvent('expression.delete.completed', {
+    suppressErrors: false
+  })
+  public async decrementExpressionCount(expression: ExpressionEntity): Promise<void> {
+    try {
+      const validatedExpression = validatePayload(expression, ExpressionEntity);
+
+      const system = await this.systemRepository.findOneBy({
+        id: validatedExpression.systemId
+      });
+
+      if (!system) {
+        throw new SystemNotFoundException();
+      }
+
+      switch (validatedExpression.type) {
+        case ExpressionType.constant_variable_pair:
+          system.constantVariablePairExpressionCount--;
+          break;
+        case ExpressionType.constant_prefixed:
+          system.constantPrefixedExpressionCount--;
+          break;
+        case ExpressionType.standard:
+          system.standardExpressionCount--;
+          break;
+      }
+
+      await this.systemRepository.save(system);
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating expression count on system failed');
     }
   }
 
