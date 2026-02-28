@@ -39,18 +39,18 @@ describe('Create Distinct Variable Pair', (): void => {
     const systemId = new ObjectId();
     const title = 'TestSystem1';
     const description = 'Test System 1';
-    const alphaId = new ObjectId();
-    const aId = new ObjectId();
+    const firstSymbolId = new ObjectId();
+    const secondSymbolId = new ObjectId();
     const distinctVariablePairId = new ObjectId();
     const updatedDistinctVariablePairCount = distinctVariablePairCount + 1;
     const user = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
     const system = new MongoSystemEntity();
     const updatedSystem = new MongoSystemEntity();
-    const alpha = new MongoSymbolEntity();
-    const updatedAlpha = new MongoSymbolEntity();
-    const a = new MongoSymbolEntity();
-    const updatedA = new MongoSymbolEntity();
+    const firstSymbol = new MongoSymbolEntity();
+    const updatedFirstSymbol = new MongoSymbolEntity();
+    const secondSymbol = new MongoSymbolEntity();
+    const updatedSecondSymbol = new MongoSymbolEntity();
     const distinctVariablePair = new MongoDistinctVariablePairEntity();
 
     user._id = userId;
@@ -85,53 +85,53 @@ describe('Create Distinct Variable Pair', (): void => {
     updatedSystem.variableSymbolCount = variableSymbolCount;
     updatedSystem.distinctVariablePairCount = updatedDistinctVariablePairCount;
     updatedSystem.createdByUserId = userId;
-    alpha._id = alphaId;
-    alpha.title = 'Alpha';
-    alpha.description = 'The first letter of the greek alphabet';
-    alpha.type = SymbolType.variable;
-    alpha.content = '\\alpha';
-    alpha.distinctVariablePairAppearanceCount = distinctVariablePairCount;
-    alpha.systemId = systemId;
-    alpha.createdByUserId = userId;
-    updatedAlpha._id = alphaId;
-    updatedAlpha.title = 'Alpha';
-    updatedAlpha.description = 'The first letter of the greek alphabet';
-    updatedAlpha.type = SymbolType.variable;
-    updatedAlpha.content = '\\alpha';
-    updatedAlpha.distinctVariablePairAppearanceCount = updatedDistinctVariablePairCount;
-    updatedAlpha.systemId = systemId;
-    updatedAlpha.createdByUserId = userId;
-    a._id = aId;
-    a.title = 'A';
-    a.description = 'The first letter of the english alphabet';
-    a.type = SymbolType.variable;
-    a.content = 'a';
-    a.distinctVariablePairAppearanceCount = distinctVariablePairCount;
-    a.systemId = systemId;
-    a.createdByUserId = userId;
-    updatedA._id = aId;
-    updatedA.title = 'A';
-    updatedA.description = 'The first letter of the english alphabet';
-    updatedA.type = SymbolType.variable;
-    updatedA.content = 'a';
-    updatedA.distinctVariablePairAppearanceCount = updatedDistinctVariablePairCount;
-    updatedA.systemId = systemId;
-    updatedA.createdByUserId = userId;
+    firstSymbol._id = firstSymbolId;
+    firstSymbol.title = 'Alpha';
+    firstSymbol.description = 'The first letter of the greek alphabet';
+    firstSymbol.type = SymbolType.variable;
+    firstSymbol.content = '\\alpha';
+    firstSymbol.distinctVariablePairAppearanceCount = distinctVariablePairCount;
+    firstSymbol.systemId = systemId;
+    firstSymbol.createdByUserId = userId;
+    updatedFirstSymbol._id = firstSymbolId;
+    updatedFirstSymbol.title = 'Alpha';
+    updatedFirstSymbol.description = 'The first letter of the greek alphabet';
+    updatedFirstSymbol.type = SymbolType.variable;
+    updatedFirstSymbol.content = '\\alpha';
+    updatedFirstSymbol.distinctVariablePairAppearanceCount = updatedDistinctVariablePairCount;
+    updatedFirstSymbol.systemId = systemId;
+    updatedFirstSymbol.createdByUserId = userId;
+    secondSymbol._id = secondSymbolId;
+    secondSymbol.title = 'A';
+    secondSymbol.description = 'The first letter of the english alphabet';
+    secondSymbol.type = SymbolType.variable;
+    secondSymbol.content = 'a';
+    secondSymbol.distinctVariablePairAppearanceCount = distinctVariablePairCount;
+    secondSymbol.systemId = systemId;
+    secondSymbol.createdByUserId = userId;
+    updatedSecondSymbol._id = secondSymbolId;
+    updatedSecondSymbol.title = 'A';
+    updatedSecondSymbol.description = 'The first letter of the english alphabet';
+    updatedSecondSymbol.type = SymbolType.variable;
+    updatedSecondSymbol.content = 'a';
+    updatedSecondSymbol.distinctVariablePairAppearanceCount = updatedDistinctVariablePairCount;
+    updatedSecondSymbol.systemId = systemId;
+    updatedSecondSymbol.createdByUserId = userId;
     distinctVariablePair._id = distinctVariablePairId;
     distinctVariablePair.variableSymbolIds = [
-      alphaId,
-      aId
+      firstSymbolId,
+      secondSymbolId
     ];
     distinctVariablePair.systemId = systemId;
     distinctVariablePair.createdByUserId = userId;
 
     find.mockResolvedValueOnce([
-      alpha,
-      a
+      firstSymbol,
+      secondSymbol
     ]);
     find.mockResolvedValueOnce([
-      alpha,
-      a
+      firstSymbol,
+      secondSymbol
     ]);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
@@ -141,8 +141,8 @@ describe('Create Distinct Variable Pair', (): void => {
     findOneBy.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(distinctVariablePair);
     save.mockResolvedValueOnce(updatedUser);
-    save.mockResolvedValueOnce(updatedAlpha);
-    save.mockResolvedValueOnce(updatedA);
+    save.mockResolvedValueOnce(updatedFirstSymbol);
+    save.mockResolvedValueOnce(updatedSecondSymbol);
     save.mockResolvedValueOnce(updatedSystem);
 
     const token = app.get(JwtService).sign({
@@ -153,8 +153,8 @@ describe('Create Distinct Variable Pair', (): void => {
       `token=${token}`
     ]).send({
       variableSymbolIds: [
-        alphaId,
-        aId
+        firstSymbolId,
+        secondSymbolId
       ]
     });
 
@@ -164,8 +164,8 @@ describe('Create Distinct Variable Pair', (): void => {
     expect(find).toHaveBeenNthCalledWith(1, {
       _id: {
         $in: [
-          alphaId,
-          aId
+          firstSymbolId,
+          secondSymbolId
         ]
       },
       systemId
@@ -173,8 +173,8 @@ describe('Create Distinct Variable Pair', (): void => {
     expect(find).toHaveBeenNthCalledWith(2, {
       _id: {
         $in: [
-          alphaId,
-          aId
+          firstSymbolId,
+          secondSymbolId
         ]
       },
       systemId
@@ -191,8 +191,8 @@ describe('Create Distinct Variable Pair', (): void => {
     });
     expect(findOneBy).toHaveBeenNthCalledWith(4, {
       variableSymbolIds: [
-        alphaId,
-        aId
+        firstSymbolId,
+        secondSymbolId
       ],
       systemId
     });
@@ -207,22 +207,22 @@ describe('Create Distinct Variable Pair', (): void => {
     expect(save).toHaveBeenNthCalledWith(1, {
       _id: expect.objectContaining(/^[0-9a-f]{24}$/),
       variableSymbolIds: [
-        alphaId,
-        aId
+        firstSymbolId,
+        secondSymbolId
       ],
       systemId,
       createdByUserId: userId
     });
     expect(save).toHaveBeenNthCalledWith(2, updatedUser);
-    expect(save).toHaveBeenNthCalledWith(3, updatedAlpha);
-    expect(save).toHaveBeenNthCalledWith(4, updatedA);
+    expect(save).toHaveBeenNthCalledWith(3, updatedFirstSymbol);
+    expect(save).toHaveBeenNthCalledWith(4, updatedSecondSymbol);
     expect(save).toHaveBeenNthCalledWith(5, updatedSystem);
     expect(statusCode).toBe(HttpStatus.CREATED);
     expect(body).toStrictEqual({
       id: distinctVariablePairId.toString(),
       variableSymbolIds: [
-        alphaId.toString(),
-        aId.toString()
+        firstSymbolId.toString(),
+        secondSymbolId.toString()
       ],
       systemId: systemId.toString(),
       createdByUserId: userId.toString()
@@ -242,18 +242,18 @@ describe('Create Distinct Variable Pair', (): void => {
     const systemId = new ObjectId();
     const title = 'TestSystem1';
     const description = 'Test System 1';
-    const alphaId = new ObjectId();
-    const aId = new ObjectId();
+    const firstSymbolId = new ObjectId();
+    const secondSymbolId = new ObjectId();
     const distinctVariablePairId = new ObjectId();
     const updatedDistinctVariablePairCount = distinctVariablePairCount + 1;
     const user = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
     const system = new MongoSystemEntity();
     const updatedSystem = new MongoSystemEntity();
-    const alpha = new MongoSymbolEntity();
-    const updatedAlpha = new MongoSymbolEntity();
-    const a = new MongoSymbolEntity();
-    const updatedA = new MongoSymbolEntity();
+    const firstSymbol = new MongoSymbolEntity();
+    const updatedFirstSymbol = new MongoSymbolEntity();
+    const secondSymbol = new MongoSymbolEntity();
+    const updatedSecondSymbol = new MongoSymbolEntity();
     const distinctVariablePair = new MongoDistinctVariablePairEntity();
 
     user._id = userId;
@@ -288,53 +288,53 @@ describe('Create Distinct Variable Pair', (): void => {
     updatedSystem.variableSymbolCount = variableSymbolCount;
     updatedSystem.distinctVariablePairCount = updatedDistinctVariablePairCount;
     updatedSystem.createdByUserId = userId;
-    alpha._id = alphaId;
-    alpha.title = 'Alpha';
-    alpha.description = 'The first letter of the greek alphabet';
-    alpha.type = SymbolType.variable;
-    alpha.content = '\\alpha';
-    alpha.distinctVariablePairAppearanceCount = distinctVariablePairCount;
-    alpha.systemId = systemId;
-    alpha.createdByUserId = userId;
-    updatedAlpha._id = alphaId;
-    updatedAlpha.title = 'Alpha';
-    updatedAlpha.description = 'The first letter of the greek alphabet';
-    updatedAlpha.type = SymbolType.variable;
-    updatedAlpha.content = '\\alpha';
-    updatedAlpha.distinctVariablePairAppearanceCount = updatedDistinctVariablePairCount;
-    updatedAlpha.systemId = systemId;
-    updatedAlpha.createdByUserId = userId;
-    a._id = aId;
-    a.title = 'A';
-    a.description = 'The first letter of the english alphabet';
-    a.type = SymbolType.variable;
-    a.content = 'a';
-    a.distinctVariablePairAppearanceCount = distinctVariablePairCount;
-    a.systemId = systemId;
-    a.createdByUserId = userId;
-    updatedA._id = aId;
-    updatedA.title = 'A';
-    updatedA.description = 'The first letter of the english alphabet';
-    updatedA.type = SymbolType.variable;
-    updatedA.content = 'a';
-    updatedA.distinctVariablePairAppearanceCount = updatedDistinctVariablePairCount;
-    updatedA.systemId = systemId;
-    updatedA.createdByUserId = userId;
+    firstSymbol._id = firstSymbolId;
+    firstSymbol.title = 'Alpha';
+    firstSymbol.description = 'The first letter of the greek alphabet';
+    firstSymbol.type = SymbolType.variable;
+    firstSymbol.content = '\\alpha';
+    firstSymbol.distinctVariablePairAppearanceCount = distinctVariablePairCount;
+    firstSymbol.systemId = systemId;
+    firstSymbol.createdByUserId = userId;
+    updatedFirstSymbol._id = firstSymbolId;
+    updatedFirstSymbol.title = 'Alpha';
+    updatedFirstSymbol.description = 'The first letter of the greek alphabet';
+    updatedFirstSymbol.type = SymbolType.variable;
+    updatedFirstSymbol.content = '\\alpha';
+    updatedFirstSymbol.distinctVariablePairAppearanceCount = updatedDistinctVariablePairCount;
+    updatedFirstSymbol.systemId = systemId;
+    updatedFirstSymbol.createdByUserId = userId;
+    secondSymbol._id = secondSymbolId;
+    secondSymbol.title = 'A';
+    secondSymbol.description = 'The first letter of the english alphabet';
+    secondSymbol.type = SymbolType.variable;
+    secondSymbol.content = 'a';
+    secondSymbol.distinctVariablePairAppearanceCount = distinctVariablePairCount;
+    secondSymbol.systemId = systemId;
+    secondSymbol.createdByUserId = userId;
+    updatedSecondSymbol._id = secondSymbolId;
+    updatedSecondSymbol.title = 'A';
+    updatedSecondSymbol.description = 'The first letter of the english alphabet';
+    updatedSecondSymbol.type = SymbolType.variable;
+    updatedSecondSymbol.content = 'a';
+    updatedSecondSymbol.distinctVariablePairAppearanceCount = updatedDistinctVariablePairCount;
+    updatedSecondSymbol.systemId = systemId;
+    updatedSecondSymbol.createdByUserId = userId;
     distinctVariablePair._id = distinctVariablePairId;
     distinctVariablePair.variableSymbolIds = [
-      alphaId,
-      aId
+      firstSymbolId,
+      secondSymbolId
     ];
     distinctVariablePair.systemId = systemId;
     distinctVariablePair.createdByUserId = userId;
 
     find.mockResolvedValueOnce([
-      alpha,
-      a
+      firstSymbol,
+      secondSymbol
     ]);
     find.mockResolvedValueOnce([
-      alpha,
-      a
+      firstSymbol,
+      secondSymbol
     ]);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
@@ -344,8 +344,8 @@ describe('Create Distinct Variable Pair', (): void => {
     findOneBy.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(distinctVariablePair);
     save.mockResolvedValueOnce(updatedUser);
-    save.mockResolvedValueOnce(updatedAlpha);
-    save.mockResolvedValueOnce(updatedA);
+    save.mockResolvedValueOnce(updatedFirstSymbol);
+    save.mockResolvedValueOnce(updatedSecondSymbol);
     save.mockResolvedValueOnce(updatedSystem);
 
     const token = app.get(JwtService).sign({
@@ -360,8 +360,8 @@ describe('Create Distinct Variable Pair', (): void => {
         systemId,
         distinctVariablePairPayload: {
           variableSymbolIds: [
-            alphaId,
-            aId
+            firstSymbolId,
+            secondSymbolId
           ]
         }
       }
@@ -373,8 +373,8 @@ describe('Create Distinct Variable Pair', (): void => {
     expect(find).toHaveBeenNthCalledWith(1, {
       _id: {
         $in: [
-          alphaId,
-          aId
+          firstSymbolId,
+          secondSymbolId
         ]
       },
       systemId
@@ -382,8 +382,8 @@ describe('Create Distinct Variable Pair', (): void => {
     expect(find).toHaveBeenNthCalledWith(2, {
       _id: {
         $in: [
-          alphaId,
-          aId
+          firstSymbolId,
+          secondSymbolId
         ]
       },
       systemId
@@ -400,8 +400,8 @@ describe('Create Distinct Variable Pair', (): void => {
     });
     expect(findOneBy).toHaveBeenNthCalledWith(4, {
       variableSymbolIds: [
-        alphaId,
-        aId
+        firstSymbolId,
+        secondSymbolId
       ],
       systemId
     });
@@ -416,15 +416,15 @@ describe('Create Distinct Variable Pair', (): void => {
     expect(save).toHaveBeenNthCalledWith(1, {
       _id: expect.objectContaining(/^[0-9a-f]{24}$/),
       variableSymbolIds: [
-        alphaId,
-        aId
+        firstSymbolId,
+        secondSymbolId
       ],
       systemId,
       createdByUserId: userId
     });
     expect(save).toHaveBeenNthCalledWith(2, updatedUser);
-    expect(save).toHaveBeenNthCalledWith(3, updatedAlpha);
-    expect(save).toHaveBeenNthCalledWith(4, updatedA);
+    expect(save).toHaveBeenNthCalledWith(3, updatedFirstSymbol);
+    expect(save).toHaveBeenNthCalledWith(4, updatedSecondSymbol);
     expect(save).toHaveBeenNthCalledWith(5, updatedSystem);
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toStrictEqual({
@@ -432,8 +432,8 @@ describe('Create Distinct Variable Pair', (): void => {
         createDistinctVariablePair: {
           id: distinctVariablePairId.toString(),
           variableSymbolIds: [
-            alphaId.toString(),
-            aId.toString()
+            firstSymbolId.toString(),
+            secondSymbolId.toString()
           ],
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
