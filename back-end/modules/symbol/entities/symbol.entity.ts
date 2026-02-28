@@ -47,6 +47,6 @@ export class SymbolEntity {
   public createdByUserId: string = '';
 
   public isInUse(): boolean {
-    return false;
+    return (0 < this.distinctVariablePairAppearanceCount);
   }
 };
