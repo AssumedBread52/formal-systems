@@ -62,8 +62,8 @@ describe('Create System', (): void => {
     system.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
     save.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(updatedUser);
@@ -86,11 +86,11 @@ describe('Create System', (): void => {
       _id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      title,
-      createdByUserId: userId
+      _id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      _id: userId
+      title,
+      createdByUserId: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(4, {
       _id: userId
@@ -160,8 +160,8 @@ describe('Create System', (): void => {
     system.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
+    findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
     save.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(updatedUser);
@@ -189,11 +189,11 @@ describe('Create System', (): void => {
       _id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      title,
-      createdByUserId: userId
+      _id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      _id: userId
+      title,
+      createdByUserId: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(4, {
       _id: userId
