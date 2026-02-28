@@ -55,16 +55,30 @@ export class SymbolReadService {
 
   public async selectByIds(systemId: string, symbolIds: string[]): Promise<SymbolEntity[]> {
     try {
+      const uniqueSymbolIds = symbolIds.reduce((uniqueIds: string[], symbolId: string): string[] => {
+        if (!uniqueIds.includes(symbolId)) {
+          uniqueIds.push(symbolId);
+        }
+
+        return uniqueIds;
+      }, []);
+
       const symbols = await this.symbolRepository.find({
-        ids: symbolIds,
+        ids: uniqueSymbolIds,
         systemId
       });
 
-      if (symbols.length !== symbolIds.length) {
-        throw new SymbolNotFoundException();
-      }
+      return symbolIds.map((symbolId: string): SymbolEntity => {
+        const symbol = symbols.find((symbol: SymbolEntity): boolean => {
+          return symbol.id === symbolId;
+        });
 
-      return symbols;
+        if (!symbol) {
+          throw new SymbolNotFoundException();
+        }
+
+        return symbol;
+      });
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
