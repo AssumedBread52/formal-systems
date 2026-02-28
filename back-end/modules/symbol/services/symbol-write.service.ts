@@ -31,7 +31,7 @@ export class SymbolWriteService {
 
       const conflict = await this.symbolRepository.findOneBy({
         title: validatedNewSymbolPayload.title,
-        systemId
+        systemId: system.id
       });
 
       if (conflict) {
@@ -44,7 +44,7 @@ export class SymbolWriteService {
       symbol.description = validatedNewSymbolPayload.description;
       symbol.type = validatedNewSymbolPayload.type;
       symbol.content = validatedNewSymbolPayload.content;
-      symbol.systemId = systemId;
+      symbol.systemId = system.id;
       symbol.createdByUserId = user.id;
 
       const savedSymbol = await this.symbolRepository.save(symbol);
