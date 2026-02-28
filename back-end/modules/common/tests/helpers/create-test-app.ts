@@ -2,6 +2,8 @@ import { AuthModule } from '@/auth/auth.module';
 import { DependencyModule } from '@/dependency/dependency.module';
 import { DistinctVariablePairModule } from '@/distinct-variable-pair/distinct-variable-pair.module';
 import { MongoDistinctVariablePairEntity } from '@/distinct-variable-pair/entities/mongo-distinct-variable-pair.entity';
+import { MongoExpressionEntity } from '@/expression/entities/mongo-expression.entity';
+import { ExpressionModule } from '@/expression/expression.module';
 import { HealthModule } from '@/health/health.module';
 import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
@@ -26,6 +28,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
       DependencyModule,
       DistinctVariablePairModule,
       EventEmitterModule.forRoot(),
+      ExpressionModule,
       GraphQLModule.forRootAsync({
         driver: ApolloDriver,
         useFactory: (): Omit<ApolloDriverConfig, 'driver'> => {
@@ -46,7 +49,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
       SystemModule,
       UserModule
     ]
-  }).overrideProvider(getRepositoryToken(MongoDistinctVariablePairEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSystemEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoUserEntity)).useClass(MongoRepository).compile();
+  }).overrideProvider(getRepositoryToken(MongoExpressionEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoDistinctVariablePairEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSystemEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoUserEntity)).useClass(MongoRepository).compile();
 
   const app = testingModule.createNestApplication<NestExpressApplication>();
 
