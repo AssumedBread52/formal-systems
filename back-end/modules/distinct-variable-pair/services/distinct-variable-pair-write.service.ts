@@ -37,7 +37,7 @@ export class DistinctVariablePairWriteService {
         throw new MaxPairsExistException();
       }
 
-      const symbols = await this.symbolReadService.selectByIds(systemId, validatedNewDistinctVariablePairPayload.variableSymbolIds);
+      const symbols = await this.symbolReadService.selectByIds(system.id, validatedNewDistinctVariablePairPayload.variableSymbolIds);
 
       symbols.forEach((symbol: SymbolEntity): void => {
         if (SymbolType.variable !== symbol.type) {
@@ -49,7 +49,7 @@ export class DistinctVariablePairWriteService {
 
       const conflict = await this.distinctVariablePairRepository.findOneBy({
         variableSymbolIds: sortedVariableSymbolIds,
-        systemId
+        systemId: system.id
       });
 
       if (conflict) {
@@ -59,7 +59,7 @@ export class DistinctVariablePairWriteService {
       const distinctVariablePair = new DistinctVariablePairEntity();
 
       distinctVariablePair.variableSymbolIds = sortedVariableSymbolIds;
-      distinctVariablePair.systemId = systemId;
+      distinctVariablePair.systemId = system.id;
       distinctVariablePair.createdByUserId = user.id;
 
       const savedDistinctVariablePair = await this.distinctVariablePairRepository.save(distinctVariablePair);
