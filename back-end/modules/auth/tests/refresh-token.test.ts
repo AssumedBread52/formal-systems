@@ -80,7 +80,7 @@ describe('Refresh Token', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation refreshToken { refreshToken { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount } }'
+      query: 'mutation refreshToken { refreshToken { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount } }'
     });
 
     const { statusCode, body } = response;
@@ -103,7 +103,10 @@ describe('Refresh Token', (): void => {
           systemCount: 0,
           constantSymbolCount: 0,
           variableSymbolCount: 0,
-          distinctVariablePairCount: 0
+          distinctVariablePairCount: 0,
+          constantVariablePairExpressionCount: 0,
+          constantPrefixedExpressionCount: 0,
+          standardExpressionCount: 0
         }
       }
     });
