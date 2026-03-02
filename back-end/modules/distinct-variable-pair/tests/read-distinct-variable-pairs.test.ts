@@ -44,7 +44,6 @@ describe('Read Distinct Variable Pairs', (): void => {
     ]);
 
     const urlSearchParams = new URLSearchParams;
-
     urlSearchParams.set('page', page.toString());
     urlSearchParams.set('pageSize', pageSize.toString());
     for (const symbolId of mustIncludeVariableSymbolIds) {
@@ -61,7 +60,6 @@ describe('Read Distinct Variable Pairs', (): void => {
     const where = {
       systemId
     } as Filter<MongoDistinctVariablePairEntity>;
-
     if (0 < mustIncludeVariableSymbolIds.length || 0 < mayIncludeVariableSymbolIds.length) {
       where.variableSymbolIds = {};
       if (0 < mustIncludeVariableSymbolIds.length) {
@@ -123,7 +121,6 @@ describe('Read Distinct Variable Pairs', (): void => {
     ]);
 
     const urlSearchParams = new URLSearchParams;
-
     urlSearchParams.set('page', page.toString());
     urlSearchParams.set('pageSize', pageSize.toString());
     for (const symbolId of mustIncludeVariableSymbolIds) {
@@ -151,7 +148,6 @@ describe('Read Distinct Variable Pairs', (): void => {
     const where = {
       systemId
     } as Filter<MongoDistinctVariablePairEntity>;
-
     if (0 < mustIncludeVariableSymbolIds.length || 0 < mayIncludeVariableSymbolIds.length) {
       where.variableSymbolIds = {};
       if (0 < mustIncludeVariableSymbolIds.length) {
