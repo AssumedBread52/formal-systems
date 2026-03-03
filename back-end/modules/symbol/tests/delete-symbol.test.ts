@@ -35,6 +35,9 @@ describe('Delete Symbol', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 4;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const updatedVariableSymbolCount = variableSymbolCount - 1;
     const systemId = new ObjectId();
     const systemTitle = 'TestSystem1';
@@ -45,6 +48,9 @@ describe('Delete Symbol', (): void => {
     const type = SymbolType.variable;
     const content = '\\alpha';
     const distinctVariablePairAppearanceCount = 0;
+    const constantVariablePairExpressionAppearanceCount = 0;
+    const constantPrefixedExpressionAppearanceCount = 0;
+    const standardExpressionAppearanceCount = 0;
     const user = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
     const system = new MongoSystemEntity();
@@ -60,6 +66,9 @@ describe('Delete Symbol', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -69,12 +78,18 @@ describe('Delete Symbol', (): void => {
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
     system._id = systemId;
     system.title = systemTitle;
     system.description = systemDescription;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = systemTitle;
@@ -82,6 +97,9 @@ describe('Delete Symbol', (): void => {
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
     updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
+    updatedSystem.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedSystem.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedSystem.standardExpressionCount = standardExpressionCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = title;
@@ -89,6 +107,9 @@ describe('Delete Symbol', (): void => {
     symbol.type = type;
     symbol.content = content;
     symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
+    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
+    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
+    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
@@ -142,6 +163,9 @@ describe('Delete Symbol', (): void => {
       type,
       content,
       distinctVariablePairAppearanceCount,
+      constantVariablePairExpressionAppearanceCount,
+      constantPrefixedExpressionAppearanceCount,
+      standardExpressionAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: userId.toString()
     });
@@ -157,7 +181,9 @@ describe('Delete Symbol', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 4;
     const distinctVariablePairCount = 1;
-    const distinctVariablePairAppearanceCount = 0;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const updatedVariableSymbolCount = variableSymbolCount - 1;
     const systemId = new ObjectId();
     const systemTitle = 'TestSystem1';
@@ -167,6 +193,10 @@ describe('Delete Symbol', (): void => {
     const description = 'Test Symbol 1';
     const type = SymbolType.variable;
     const content = '\\alpha';
+    const distinctVariablePairAppearanceCount = 0;
+    const constantVariablePairExpressionAppearanceCount = 0;
+    const constantPrefixedExpressionAppearanceCount = 0;
+    const standardExpressionAppearanceCount = 0;
     const user = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
     const system = new MongoSystemEntity();
@@ -182,6 +212,9 @@ describe('Delete Symbol', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -191,12 +224,18 @@ describe('Delete Symbol', (): void => {
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
     system._id = systemId;
     system.title = systemTitle;
     system.description = systemDescription;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = systemTitle;
@@ -204,6 +243,9 @@ describe('Delete Symbol', (): void => {
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
     updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
+    updatedSystem.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedSystem.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedSystem.standardExpressionCount = standardExpressionCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = title;
@@ -211,6 +253,9 @@ describe('Delete Symbol', (): void => {
     symbol.type = type;
     symbol.content = content;
     symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
+    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
+    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
+    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
@@ -230,7 +275,7 @@ describe('Delete Symbol', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation deleteSymbol($systemId: String!, $symbolId: String!) { deleteSymbol(systemId: $systemId, symbolId: $symbolId) { id title description type content distinctVariablePairAppearanceCount systemId createdByUserId } }',
+      query: 'mutation deleteSymbol($systemId: String!, $symbolId: String!) { deleteSymbol(systemId: $systemId, symbolId: $symbolId) { id title description type content distinctVariablePairAppearanceCount constantVariablePairExpressionAppearanceCount constantPrefixedExpressionAppearanceCount standardExpressionAppearanceCount systemId createdByUserId } }',
       variables: {
         systemId,
         symbolId
@@ -272,6 +317,9 @@ describe('Delete Symbol', (): void => {
           type,
           content,
           distinctVariablePairAppearanceCount,
+          constantVariablePairExpressionAppearanceCount,
+          constantPrefixedExpressionAppearanceCount,
+          standardExpressionAppearanceCount,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }

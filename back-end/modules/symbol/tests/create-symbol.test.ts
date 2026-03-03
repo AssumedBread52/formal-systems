@@ -33,6 +33,9 @@ describe('Create Symbol', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const updatedVariableSymbolCount = variableSymbolCount + 1;
     const systemId = new ObjectId();
     const systemTitle = 'TestSystem1';
@@ -57,6 +60,9 @@ describe('Create Symbol', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -66,12 +72,18 @@ describe('Create Symbol', (): void => {
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
     system._id = systemId;
     system.title = systemTitle;
     system.description = systemDescription;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = systemTitle;
@@ -79,6 +91,9 @@ describe('Create Symbol', (): void => {
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
     updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
+    updatedSystem.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedSystem.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedSystem.standardExpressionCount = standardExpressionCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = title;
@@ -142,6 +157,9 @@ describe('Create Symbol', (): void => {
       type,
       content,
       distinctVariablePairAppearanceCount: 0,
+      constantVariablePairExpressionAppearanceCount: 0,
+      constantPrefixedExpressionAppearanceCount: 0,
+      standardExpressionAppearanceCount: 0,
       systemId,
       createdByUserId: userId
     });
@@ -155,6 +173,9 @@ describe('Create Symbol', (): void => {
       type,
       content,
       distinctVariablePairAppearanceCount: 0,
+      constantVariablePairExpressionAppearanceCount: 0,
+      constantPrefixedExpressionAppearanceCount: 0,
+      standardExpressionAppearanceCount: 0,
       systemId: systemId.toString(),
       createdByUserId: userId.toString()
     });
@@ -170,6 +191,9 @@ describe('Create Symbol', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const updatedVariableSymbolCount = variableSymbolCount + 1;
     const systemId = new ObjectId();
     const systemTitle = 'TestSystem1';
@@ -194,6 +218,9 @@ describe('Create Symbol', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -203,12 +230,18 @@ describe('Create Symbol', (): void => {
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
     system._id = systemId;
     system.title = systemTitle;
     system.description = systemDescription;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = systemTitle;
@@ -216,6 +249,9 @@ describe('Create Symbol', (): void => {
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
     updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
+    updatedSystem.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedSystem.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedSystem.standardExpressionCount = standardExpressionCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = title;
@@ -242,7 +278,7 @@ describe('Create Symbol', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation createSymbol($systemId: String!, $symbolPayload: NewSymbolPayload!) { createSymbol(systemId: $systemId, symbolPayload: $symbolPayload) { id title description type content distinctVariablePairAppearanceCount systemId createdByUserId } }',
+      query: 'mutation createSymbol($systemId: String!, $symbolPayload: NewSymbolPayload!) { createSymbol(systemId: $systemId, symbolPayload: $symbolPayload) { id title description type content distinctVariablePairAppearanceCount constantVariablePairExpressionAppearanceCount constantPrefixedExpressionAppearanceCount standardExpressionAppearanceCount systemId createdByUserId } }',
       variables: {
         systemId,
         symbolPayload: {
@@ -285,6 +321,9 @@ describe('Create Symbol', (): void => {
       type,
       content,
       distinctVariablePairAppearanceCount: 0,
+      constantVariablePairExpressionAppearanceCount: 0,
+      constantPrefixedExpressionAppearanceCount: 0,
+      standardExpressionAppearanceCount: 0,
       systemId,
       createdByUserId: userId
     });
@@ -300,6 +339,9 @@ describe('Create Symbol', (): void => {
           type,
           content,
           distinctVariablePairAppearanceCount: 0,
+          constantVariablePairExpressionAppearanceCount: 0,
+          constantPrefixedExpressionAppearanceCount: 0,
+          standardExpressionAppearanceCount: 0,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }

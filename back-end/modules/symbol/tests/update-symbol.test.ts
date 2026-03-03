@@ -33,6 +33,9 @@ describe('Update Symbol', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 4;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const updatedVariableSymbolCount = variableSymbolCount - 1;
     const updatedConstantSymbolCount = constantSymbolCount + 1;
     const systemId = new ObjectId();
@@ -44,6 +47,9 @@ describe('Update Symbol', (): void => {
     const newType = SymbolType.constant;
     const newContent = '\\beta';
     const distinctVariablePairAppearanceCount = 0;
+    const constantVariablePairExpressionAppearanceCount = 0;
+    const constantPrefixedExpressionAppearanceCount = 0;
+    const standardExpressionAppearanceCount = 0;
     const user = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
     const system = new MongoSystemEntity();
@@ -60,6 +66,9 @@ describe('Update Symbol', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -69,12 +78,18 @@ describe('Update Symbol', (): void => {
     updatedUser.constantSymbolCount = updatedConstantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = title;
@@ -82,6 +97,9 @@ describe('Update Symbol', (): void => {
     updatedSystem.constantSymbolCount = updatedConstantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
     updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
+    updatedSystem.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedSystem.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedSystem.standardExpressionCount = standardExpressionCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = 'TestSymbol1';
@@ -89,6 +107,9 @@ describe('Update Symbol', (): void => {
     symbol.type = SymbolType.variable;
     symbol.content = '\\alpha';
     symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
+    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
+    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
+    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
     updatedSymbol._id = symbolId;
@@ -97,6 +118,9 @@ describe('Update Symbol', (): void => {
     updatedSymbol.type = newType;
     updatedSymbol.content = newContent;
     updatedSymbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
+    updatedSymbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
+    updatedSymbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
+    updatedSymbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
     updatedSymbol.systemId = systemId;
     updatedSymbol.createdByUserId = userId;
 
@@ -159,6 +183,9 @@ describe('Update Symbol', (): void => {
       type: newType,
       content: newContent,
       distinctVariablePairAppearanceCount,
+      constantVariablePairExpressionAppearanceCount,
+      constantPrefixedExpressionAppearanceCount,
+      standardExpressionAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: userId.toString()
     });
@@ -174,6 +201,9 @@ describe('Update Symbol', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 4;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const updatedVariableSymbolCount = variableSymbolCount - 1;
     const updatedConstantSymbolCount = constantSymbolCount + 1;
     const systemId = new ObjectId();
@@ -185,6 +215,9 @@ describe('Update Symbol', (): void => {
     const newType = SymbolType.constant;
     const newContent = '\\beta';
     const distinctVariablePairAppearanceCount = 0;
+    const constantVariablePairExpressionAppearanceCount = 0;
+    const constantPrefixedExpressionAppearanceCount = 0;
+    const standardExpressionAppearanceCount = 0;
     const user = new MongoUserEntity();
     const updatedUser = new MongoUserEntity();
     const system = new MongoSystemEntity();
@@ -201,6 +234,9 @@ describe('Update Symbol', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -210,12 +246,18 @@ describe('Update Symbol', (): void => {
     updatedUser.constantSymbolCount = updatedConstantSymbolCount;
     updatedUser.variableSymbolCount = updatedVariableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = title;
@@ -223,6 +265,9 @@ describe('Update Symbol', (): void => {
     updatedSystem.constantSymbolCount = updatedConstantSymbolCount;
     updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
     updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
+    updatedSystem.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedSystem.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedSystem.standardExpressionCount = standardExpressionCount;
     updatedSystem.createdByUserId = userId;
     symbol._id = symbolId;
     symbol.title = 'TestSymbol1';
@@ -230,6 +275,9 @@ describe('Update Symbol', (): void => {
     symbol.type = SymbolType.variable;
     symbol.content = '\\alpha';
     symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
+    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
+    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
+    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
     updatedSymbol._id = symbolId;
@@ -238,6 +286,9 @@ describe('Update Symbol', (): void => {
     updatedSymbol.type = newType;
     updatedSymbol.content = newContent;
     updatedSymbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
+    updatedSymbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
+    updatedSymbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
+    updatedSymbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
     updatedSymbol.systemId = systemId;
     updatedSymbol.createdByUserId = userId;
 
@@ -258,7 +309,7 @@ describe('Update Symbol', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation updateSymbol($systemId: String!, $symbolId: String!, $symbolPayload: EditSymbolPayload!) { updateSymbol(systemId: $systemId, symbolId: $symbolId, symbolPayload: $symbolPayload) { id title description type content distinctVariablePairAppearanceCount systemId createdByUserId } }',
+      query: 'mutation updateSymbol($systemId: String!, $symbolId: String!, $symbolPayload: EditSymbolPayload!) { updateSymbol(systemId: $systemId, symbolId: $symbolId, symbolPayload: $symbolPayload) { id title description type content distinctVariablePairAppearanceCount constantVariablePairExpressionAppearanceCount constantPrefixedExpressionAppearanceCount standardExpressionAppearanceCount systemId createdByUserId } }',
       variables: {
         systemId,
         symbolId,
@@ -309,6 +360,9 @@ describe('Update Symbol', (): void => {
           type: newType,
           content: newContent,
           distinctVariablePairAppearanceCount,
+          constantVariablePairExpressionAppearanceCount,
+          constantPrefixedExpressionAppearanceCount,
+          standardExpressionAppearanceCount,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }

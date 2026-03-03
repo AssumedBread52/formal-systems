@@ -27,6 +27,9 @@ describe('Read Symbols', (): void => {
     const type = SymbolType.variable;
     const content = '\\alpha';
     const distinctVariablePairAppearanceCount = 1;
+    const constantVariablePairExpressionAppearanceCount = 5;
+    const constantPrefixedExpressionAppearanceCount = 25;
+    const standardExpressionAppearanceCount = 125;
     const total = 21;
     const page = 2;
     const pageSize = 20;
@@ -40,6 +43,9 @@ describe('Read Symbols', (): void => {
     symbol.type = type;
     symbol.content = content;
     symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
+    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
+    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
+    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
@@ -51,7 +57,6 @@ describe('Read Symbols', (): void => {
     ]);
 
     const urlSearchParams = new URLSearchParams;
-
     urlSearchParams.set('page', page.toString());
     urlSearchParams.set('pageSize', pageSize.toString());
     for (const keyword of keywords) {
@@ -68,14 +73,12 @@ describe('Read Symbols', (): void => {
     const where = {
       systemId
     } as Filter<MongoSymbolEntity>;
-
     if (0 < keywords.length) {
       where.$text = {
         $caseSensitive: false,
         $search: keywords.join(',')
       };
     }
-
     if (0 < types.length) {
       where.type = {
         $in: types
@@ -99,6 +102,9 @@ describe('Read Symbols', (): void => {
           type,
           content,
           distinctVariablePairAppearanceCount,
+          constantVariablePairExpressionAppearanceCount,
+          constantPrefixedExpressionAppearanceCount,
+          standardExpressionAppearanceCount,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }
@@ -116,6 +122,9 @@ describe('Read Symbols', (): void => {
     const type = SymbolType.variable;
     const content = '\\alpha';
     const distinctVariablePairAppearanceCount = 1;
+    const constantVariablePairExpressionAppearanceCount = 5;
+    const constantPrefixedExpressionAppearanceCount = 25;
+    const standardExpressionAppearanceCount = 125;
     const total = 1;
     const page = 2;
     const pageSize = 20;
@@ -129,6 +138,9 @@ describe('Read Symbols', (): void => {
     symbol.type = type;
     symbol.content = content;
     symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
+    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
+    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
+    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
@@ -140,7 +152,7 @@ describe('Read Symbols', (): void => {
     ]);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query symbols($systemId: String!, $filters: SearchSymbolsPayload!) { symbols(systemId: $systemId, filters: $filters) { results { id title description type content distinctVariablePairAppearanceCount systemId createdByUserId } total } }',
+      query: 'query symbols($systemId: String!, $filters: SearchSymbolsPayload!) { symbols(systemId: $systemId, filters: $filters) { results { id title description type content distinctVariablePairAppearanceCount constantVariablePairExpressionAppearanceCount constantPrefixedExpressionAppearanceCount standardExpressionAppearanceCount systemId createdByUserId } total } }',
       variables: {
         systemId,
         filters: {
@@ -157,14 +169,12 @@ describe('Read Symbols', (): void => {
     const where = {
       systemId
     } as Filter<MongoSymbolEntity>;
-
     if (0 < keywords.length) {
       where.$text = {
         $caseSensitive: false,
         $search: keywords.join(',')
       };
     }
-
     if (0 < types.length) {
       where.type = {
         $in: types
@@ -190,6 +200,9 @@ describe('Read Symbols', (): void => {
               type,
               content,
               distinctVariablePairAppearanceCount,
+              constantVariablePairExpressionAppearanceCount,
+              constantPrefixedExpressionAppearanceCount,
+              standardExpressionAppearanceCount,
               systemId: systemId.toString(),
               createdByUserId: userId.toString()
             }

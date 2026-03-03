@@ -26,6 +26,9 @@ describe('Read Symbol by ID', (): void => {
     const type = SymbolType.variable;
     const content = '\\alpha';
     const distinctVariablePairAppearanceCount = 1;
+    const constantVariablePairExpressionAppearanceCount = 5;
+    const constantPrefixedExpressionAppearanceCount = 25;
+    const standardExpressionAppearanceCount = 125;
     const symbol = new MongoSymbolEntity();
 
     symbol._id = symbolId;
@@ -34,6 +37,9 @@ describe('Read Symbol by ID', (): void => {
     symbol.type = type;
     symbol.content = content;
     symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
+    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
+    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
+    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
@@ -57,6 +63,9 @@ describe('Read Symbol by ID', (): void => {
       type,
       content,
       distinctVariablePairAppearanceCount,
+      constantVariablePairExpressionAppearanceCount,
+      constantPrefixedExpressionAppearanceCount,
+      standardExpressionAppearanceCount,
       systemId: systemId.toString(),
       createdByUserId: userId.toString()
     });
@@ -71,6 +80,9 @@ describe('Read Symbol by ID', (): void => {
     const type = SymbolType.variable;
     const content = '\\alpha';
     const distinctVariablePairAppearanceCount = 1;
+    const constantVariablePairExpressionAppearanceCount = 5;
+    const constantPrefixedExpressionAppearanceCount = 25;
+    const standardExpressionAppearanceCount = 125;
     const symbol = new MongoSymbolEntity();
 
     symbol._id = symbolId;
@@ -78,14 +90,17 @@ describe('Read Symbol by ID', (): void => {
     symbol.description = description;
     symbol.type = type;
     symbol.content = content;
-    symbol.distinctVariablePairAppearanceCount = 1;
+    symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
+    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
+    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
+    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
     symbol.systemId = systemId;
     symbol.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(symbol);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query symbol($systemId: String!, $symbolId: String!) { symbol(systemId: $systemId, symbolId: $symbolId) { id title description type content distinctVariablePairAppearanceCount systemId createdByUserId } }',
+      query: 'query symbol($systemId: String!, $symbolId: String!) { symbol(systemId: $systemId, symbolId: $symbolId) { id title description type content distinctVariablePairAppearanceCount constantVariablePairExpressionAppearanceCount constantPrefixedExpressionAppearanceCount standardExpressionAppearanceCount systemId createdByUserId } }',
       variables: {
         systemId,
         symbolId
@@ -110,6 +125,9 @@ describe('Read Symbol by ID', (): void => {
           type,
           content,
           distinctVariablePairAppearanceCount,
+          constantVariablePairExpressionAppearanceCount,
+          constantPrefixedExpressionAppearanceCount,
+          standardExpressionAppearanceCount,
           systemId: systemId.toString(),
           createdByUserId: userId.toString()
         }
