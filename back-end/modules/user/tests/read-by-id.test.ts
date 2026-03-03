@@ -26,6 +26,9 @@ describe('Read User by ID', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const user = new MongoUserEntity();
 
     user._id = userId;
@@ -37,6 +40,9 @@ describe('Read User by ID', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
@@ -58,7 +64,10 @@ describe('Read User by ID', (): void => {
       systemCount,
       constantSymbolCount,
       variableSymbolCount,
-      distinctVariablePairCount
+      distinctVariablePairCount,
+      constantVariablePairExpressionCount,
+      constantPrefixedExpressionCount,
+      standardExpressionCount
     });
   });
 
@@ -71,6 +80,9 @@ describe('Read User by ID', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const user = new MongoUserEntity();
 
     user._id = userId;
@@ -82,11 +94,14 @@ describe('Read User by ID', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
 
     findOneBy.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query user($userId: String!) { user(userId: $userId) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount } }',
+      query: 'query user($userId: String!) { user(userId: $userId) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount } }',
       variables: {
         userId
       }
@@ -110,7 +125,10 @@ describe('Read User by ID', (): void => {
           systemCount,
           constantSymbolCount,
           variableSymbolCount,
-          distinctVariablePairCount
+          distinctVariablePairCount,
+          constantVariablePairExpressionCount,
+          constantPrefixedExpressionCount,
+          standardExpressionCount
         }
       }
     });

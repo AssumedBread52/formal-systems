@@ -26,6 +26,9 @@ describe('Update Session User', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const newFirstName = 'NewTest1';
     const newLastName = 'NewUser1';
     const newEmail = 'newtest1.newuser1@example.com';
@@ -42,6 +45,9 @@ describe('Update Session User', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = newFirstName;
     updatedUser.lastName = newLastName;
@@ -51,6 +57,9 @@ describe('Update Session User', (): void => {
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
@@ -89,7 +98,10 @@ describe('Update Session User', (): void => {
       systemCount,
       constantSymbolCount,
       variableSymbolCount,
-      distinctVariablePairCount
+      distinctVariablePairCount,
+      constantVariablePairExpressionCount,
+      constantPrefixedExpressionCount,
+      standardExpressionCount
     });
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toStrictEqual({
@@ -100,7 +112,10 @@ describe('Update Session User', (): void => {
       systemCount,
       constantSymbolCount,
       variableSymbolCount,
-      distinctVariablePairCount
+      distinctVariablePairCount,
+      constantVariablePairExpressionCount,
+      constantPrefixedExpressionCount,
+      standardExpressionCount
     });
   });
 
@@ -110,6 +125,9 @@ describe('Update Session User', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const newFirstName = 'NewTest1';
     const newLastName = 'NewUser1';
     const newEmail = 'newtest1.newuser1@example.com';
@@ -126,6 +144,9 @@ describe('Update Session User', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = newFirstName;
     updatedUser.lastName = newLastName;
@@ -135,6 +156,9 @@ describe('Update Session User', (): void => {
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(null);
@@ -147,7 +171,7 @@ describe('Update Session User', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation updateUser($userPayload: EditUserPayload!) { updateUser(userPayload: $userPayload) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount } }',
+      query: 'mutation updateUser($userPayload: EditUserPayload!) { updateUser(userPayload: $userPayload) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount } }',
       variables: {
         userPayload: {
           newFirstName,
@@ -178,7 +202,10 @@ describe('Update Session User', (): void => {
       systemCount,
       constantSymbolCount,
       variableSymbolCount,
-      distinctVariablePairCount
+      distinctVariablePairCount,
+      constantVariablePairExpressionCount,
+      constantPrefixedExpressionCount,
+      standardExpressionCount
     });
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toStrictEqual({
@@ -191,7 +218,10 @@ describe('Update Session User', (): void => {
           systemCount,
           constantSymbolCount,
           variableSymbolCount,
-          distinctVariablePairCount
+          distinctVariablePairCount,
+          constantVariablePairExpressionCount,
+          constantPrefixedExpressionCount,
+          standardExpressionCount
         }
       }
     });

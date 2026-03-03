@@ -63,7 +63,10 @@ describe('Create User', (): void => {
       systemCount: 0,
       constantSymbolCount: 0,
       variableSymbolCount: 0,
-      distinctVariablePairCount: 0
+      distinctVariablePairCount: 0,
+      constantVariablePairExpressionCount: 0,
+      constantPrefixedExpressionCount: 0,
+      standardExpressionCount: 0
     });
     expect(statusCode).toBe(HttpStatus.CREATED);
     expect(body).toStrictEqual({
@@ -74,7 +77,10 @@ describe('Create User', (): void => {
       systemCount: 0,
       constantSymbolCount: 0,
       variableSymbolCount: 0,
-      distinctVariablePairCount: 0
+      distinctVariablePairCount: 0,
+      constantVariablePairExpressionCount: 0,
+      constantPrefixedExpressionCount: 0,
+      standardExpressionCount: 0
     });
     expect(cookies).toBeDefined();
     expect(cookies).toHaveLength(2);
@@ -101,7 +107,7 @@ describe('Create User', (): void => {
     save.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'mutation createUser($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount } }',
+      query: 'mutation createUser($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount } }',
       variables: {
         userPayload: {
           firstName,
@@ -131,7 +137,10 @@ describe('Create User', (): void => {
       systemCount: 0,
       constantSymbolCount: 0,
       variableSymbolCount: 0,
-      distinctVariablePairCount: 0
+      distinctVariablePairCount: 0,
+      constantVariablePairExpressionCount: 0,
+      constantPrefixedExpressionCount: 0,
+      standardExpressionCount: 0
     });
     expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toStrictEqual({
@@ -144,7 +153,10 @@ describe('Create User', (): void => {
           systemCount: 0,
           constantSymbolCount: 0,
           variableSymbolCount: 0,
-          distinctVariablePairCount: 0
+          distinctVariablePairCount: 0,
+          constantVariablePairExpressionCount: 0,
+          constantPrefixedExpressionCount: 0,
+          standardExpressionCount: 0
         }
       }
     });
