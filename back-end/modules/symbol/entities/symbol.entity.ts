@@ -65,6 +65,6 @@ export class SymbolEntity {
   public createdByUserId: string = '';
 
   public isInUse(): boolean {
-    return (0 < this.distinctVariablePairAppearanceCount) || (0 < this.distinctVariablePairAppearanceCount) || (0 < this.constantPrefixedExpressionAppearanceCount) || (0 < this.standardExpressionAppearanceCount);
+    return (0 < this.distinctVariablePairAppearanceCount) || (0 < this.constantVariablePairExpressionAppearanceCount) || (0 < this.constantPrefixedExpressionAppearanceCount) || (0 < this.standardExpressionAppearanceCount);
   }
 };
