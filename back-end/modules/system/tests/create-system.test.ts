@@ -31,6 +31,9 @@ describe('Create System', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const systemId = new ObjectId();
     const title = 'TestSystem1';
     const description = 'Test System 1';
@@ -47,6 +50,9 @@ describe('Create System', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -56,6 +62,9 @@ describe('Create System', (): void => {
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
@@ -104,6 +113,9 @@ describe('Create System', (): void => {
       constantSymbolCount: 0,
       variableSymbolCount: 0,
       distinctVariablePairCount: 0,
+      constantVariablePairExpressionCount: 0,
+      constantPrefixedExpressionCount: 0,
+      standardExpressionCount: 0,
       createdByUserId: userId
     });
     expect(save).toHaveBeenNthCalledWith(2, updatedUser);
@@ -115,6 +127,9 @@ describe('Create System', (): void => {
       constantSymbolCount: 0,
       variableSymbolCount: 0,
       distinctVariablePairCount: 0,
+      constantVariablePairExpressionCount: 0,
+      constantPrefixedExpressionCount: 0,
+      standardExpressionCount: 0,
       createdByUserId: userId.toString()
     });
   });
@@ -129,6 +144,9 @@ describe('Create System', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const systemId = new ObjectId();
     const title = 'TestSystem1';
     const description = 'Test System 1';
@@ -145,6 +163,9 @@ describe('Create System', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -154,6 +175,9 @@ describe('Create System', (): void => {
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
@@ -173,7 +197,7 @@ describe('Create System', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation createSystem($systemPayload: NewSystemPayload!) { createSystem(systemPayload: $systemPayload) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount createdByUserId } }',
+      query: 'mutation createSystem($systemPayload: NewSystemPayload!) { createSystem(systemPayload: $systemPayload) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount createdByUserId } }',
       variables: {
         systemPayload: {
           title,
@@ -207,6 +231,9 @@ describe('Create System', (): void => {
       constantSymbolCount: 0,
       variableSymbolCount: 0,
       distinctVariablePairCount: 0,
+      constantVariablePairExpressionCount: 0,
+      constantPrefixedExpressionCount: 0,
+      standardExpressionCount: 0,
       createdByUserId: userId
     });
     expect(save).toHaveBeenNthCalledWith(2, updatedUser);
@@ -220,6 +247,9 @@ describe('Create System', (): void => {
           constantSymbolCount: 0,
           variableSymbolCount: 0,
           distinctVariablePairCount: 0,
+          constantVariablePairExpressionCount: 0,
+          constantPrefixedExpressionCount: 0,
+          standardExpressionCount: 0,
           createdByUserId: userId.toString()
         }
       }

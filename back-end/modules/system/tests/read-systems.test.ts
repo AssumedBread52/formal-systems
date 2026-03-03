@@ -25,6 +25,9 @@ describe('Read Systems', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const total = 1;
     const page = 2;
     const pageSize = 20;
@@ -38,6 +41,9 @@ describe('Read Systems', (): void => {
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
 
     findAndCount.mockResolvedValueOnce([
@@ -48,7 +54,6 @@ describe('Read Systems', (): void => {
     ]);
 
     const urlSearchParams = new URLSearchParams;
-
     urlSearchParams.set('page', page.toString());
     urlSearchParams.set('pageSize', pageSize.toString());
     for (const keyword of keywords) {
@@ -63,14 +68,12 @@ describe('Read Systems', (): void => {
     const { statusCode, body } = response;
 
     const where = {} as Filter<MongoSystemEntity>;
-
     if (0 < keywords.length) {
       where.$text = {
         $caseSensitive: false,
         $search: keywords.join(',')
       };
     }
-
     if (0 < userIds.length) {
       where.createdByUserId = {
         $in: userIds
@@ -94,6 +97,9 @@ describe('Read Systems', (): void => {
           constantSymbolCount,
           variableSymbolCount,
           distinctVariablePairCount,
+          constantVariablePairExpressionCount,
+          constantPrefixedExpressionCount,
+          standardExpressionCount,
           createdByUserId: userId.toString()
         }
       ],
@@ -109,6 +115,9 @@ describe('Read Systems', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const total = 21;
     const page = 2;
     const pageSize = 20;
@@ -122,6 +131,9 @@ describe('Read Systems', (): void => {
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
 
     findAndCount.mockResolvedValueOnce([
@@ -132,7 +144,7 @@ describe('Read Systems', (): void => {
     ]);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query systems($filters: SearchSystemsPayload!) { systems(filters: $filters) { results { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount createdByUserId } total } }',
+      query: 'query systems($filters: SearchSystemsPayload!) { systems(filters: $filters) { results { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount createdByUserId } total } }',
       variables: {
         filters: {
           page,
@@ -146,14 +158,12 @@ describe('Read Systems', (): void => {
     const { statusCode, body } = response;
 
     const where = {} as Filter<MongoSystemEntity>;
-
     if (0 < keywords.length) {
       where.$text = {
         $caseSensitive: false,
         $search: keywords.join(',')
       };
     }
-
     if (0 < userIds.length) {
       where.createdByUserId = {
         $in: userIds
@@ -179,6 +189,9 @@ describe('Read Systems', (): void => {
               constantSymbolCount,
               variableSymbolCount,
               distinctVariablePairCount,
+              constantVariablePairExpressionCount,
+              constantPrefixedExpressionCount,
+              standardExpressionCount,
               createdByUserId: userId.toString()
             }
           ],

@@ -24,6 +24,9 @@ describe('Read System by ID', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const system = new MongoSystemEntity();
 
     system._id = systemId;
@@ -32,6 +35,9 @@ describe('Read System by ID', (): void => {
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(system);
@@ -53,6 +59,9 @@ describe('Read System by ID', (): void => {
       constantSymbolCount,
       variableSymbolCount,
       distinctVariablePairCount,
+      constantVariablePairExpressionCount,
+      constantPrefixedExpressionCount,
+      standardExpressionCount,
       createdByUserId: userId.toString()
     });
   });
@@ -65,6 +74,9 @@ describe('Read System by ID', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const system = new MongoSystemEntity();
 
     system._id = systemId;
@@ -73,12 +85,15 @@ describe('Read System by ID', (): void => {
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(system);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query system($systemId: String!) { system(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount createdByUserId } }',
+      query: 'query system($systemId: String!) { system(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount createdByUserId } }',
       variables: {
         systemId
       }
@@ -101,6 +116,9 @@ describe('Read System by ID', (): void => {
           constantSymbolCount,
           variableSymbolCount,
           distinctVariablePairCount,
+          constantVariablePairExpressionCount,
+          constantPrefixedExpressionCount,
+          standardExpressionCount,
           createdByUserId: userId.toString()
         }
       }

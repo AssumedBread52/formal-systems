@@ -29,6 +29,9 @@ describe('Update System', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const user = new MongoUserEntity();
     const system = new MongoSystemEntity();
     const updatedSystem = new MongoSystemEntity();
@@ -44,6 +47,9 @@ describe('Update System', (): void => {
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = newTitle;
@@ -51,6 +57,9 @@ describe('Update System', (): void => {
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = variableSymbolCount;
     updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
+    updatedSystem.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedSystem.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedSystem.standardExpressionCount = standardExpressionCount;
     updatedSystem.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(user);
@@ -97,6 +106,9 @@ describe('Update System', (): void => {
       constantSymbolCount,
       variableSymbolCount,
       distinctVariablePairCount,
+      constantVariablePairExpressionCount,
+      constantPrefixedExpressionCount,
+      standardExpressionCount,
       createdByUserId: userId.toString()
     });
   });
@@ -109,6 +121,9 @@ describe('Update System', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const user = new MongoUserEntity();
     const system = new MongoSystemEntity();
     const updatedSystem = new MongoSystemEntity();
@@ -124,6 +139,9 @@ describe('Update System', (): void => {
     system.constantSymbolCount = constantSymbolCount;
     system.variableSymbolCount = variableSymbolCount;
     system.distinctVariablePairCount = distinctVariablePairCount;
+    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    system.standardExpressionCount = standardExpressionCount;
     system.createdByUserId = userId;
     updatedSystem._id = systemId;
     updatedSystem.title = newTitle;
@@ -131,6 +149,9 @@ describe('Update System', (): void => {
     updatedSystem.constantSymbolCount = constantSymbolCount;
     updatedSystem.variableSymbolCount = variableSymbolCount;
     updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
+    updatedSystem.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedSystem.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedSystem.standardExpressionCount = standardExpressionCount;
     updatedSystem.createdByUserId = userId;
 
     findOneBy.mockResolvedValueOnce(user);
@@ -146,7 +167,7 @@ describe('Update System', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation updateSystem($systemId: String!, $editSystemPayload: EditSystemPayload!) { updateSystem(systemId: $systemId, systemPayload: $editSystemPayload) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount createdByUserId } }',
+      query: 'mutation updateSystem($systemId: String!, $editSystemPayload: EditSystemPayload!) { updateSystem(systemId: $systemId, systemPayload: $editSystemPayload) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount createdByUserId } }',
       variables: {
         systemId,
         editSystemPayload: {
@@ -185,6 +206,9 @@ describe('Update System', (): void => {
           constantSymbolCount,
           variableSymbolCount,
           distinctVariablePairCount,
+          constantVariablePairExpressionCount,
+          constantPrefixedExpressionCount,
+          standardExpressionCount,
           createdByUserId: userId.toString()
         }
       }

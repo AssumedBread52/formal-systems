@@ -33,6 +33,9 @@ describe('Delete System', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const systemId = new ObjectId();
     const title = 'TestSystem1';
     const description = 'Test System 1';
@@ -48,7 +51,10 @@ describe('Delete System', (): void => {
     user.systemCount = systemCount;
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
-    user.distinctVariablePairCount = distinctVariablePairCount
+    user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -58,6 +64,9 @@ describe('Delete System', (): void => {
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
@@ -106,6 +115,9 @@ describe('Delete System', (): void => {
       constantSymbolCount: 0,
       variableSymbolCount: 0,
       distinctVariablePairCount: 0,
+      constantVariablePairExpressionCount: 0,
+      constantPrefixedExpressionCount: 0,
+      standardExpressionCount: 0,
       createdByUserId: userId.toString()
     });
   });
@@ -120,6 +132,9 @@ describe('Delete System', (): void => {
     const constantSymbolCount = 6;
     const variableSymbolCount = 3;
     const distinctVariablePairCount = 1;
+    const constantVariablePairExpressionCount = 5;
+    const constantPrefixedExpressionCount = 25;
+    const standardExpressionCount = 125;
     const systemId = new ObjectId();
     const title = 'TestSystem1';
     const description = 'Test System 1';
@@ -136,6 +151,9 @@ describe('Delete System', (): void => {
     user.constantSymbolCount = constantSymbolCount;
     user.variableSymbolCount = variableSymbolCount;
     user.distinctVariablePairCount = distinctVariablePairCount;
+    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    user.standardExpressionCount = standardExpressionCount;
     updatedUser._id = userId;
     updatedUser.firstName = firstName;
     updatedUser.lastName = lastName;
@@ -145,6 +163,9 @@ describe('Delete System', (): void => {
     updatedUser.constantSymbolCount = constantSymbolCount;
     updatedUser.variableSymbolCount = variableSymbolCount;
     updatedUser.distinctVariablePairCount = distinctVariablePairCount;
+    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
+    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
+    updatedUser.standardExpressionCount = standardExpressionCount;
     system._id = systemId;
     system.title = title;
     system.description = description;
@@ -164,7 +185,7 @@ describe('Delete System', (): void => {
     const response = await request(app.getHttpServer()).post(`/graphql`).set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation deleteSystem($systemId: String!) { deleteSystem(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount createdByUserId } }',
+      query: 'mutation deleteSystem($systemId: String!) { deleteSystem(systemId: $systemId) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount createdByUserId } }',
       variables: {
         systemId
       }
@@ -200,6 +221,9 @@ describe('Delete System', (): void => {
           constantSymbolCount: 0,
           variableSymbolCount: 0,
           distinctVariablePairCount: 0,
+          constantVariablePairExpressionCount: 0,
+          constantPrefixedExpressionCount: 0,
+          standardExpressionCount: 0,
           createdByUserId: userId.toString()
         }
       }
