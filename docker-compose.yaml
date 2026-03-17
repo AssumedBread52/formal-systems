@@ -33,7 +33,7 @@ services:
     working_dir: /app
 
   front-end:
-    command: npm run dev
+    command: npm run start:dev
     depends_on:
       back-end:
         condition: service_healthy
