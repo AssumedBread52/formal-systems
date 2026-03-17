@@ -6,9 +6,7 @@
   "scripts": {
     "dev": "next dev --experimental-https --experimental-https-key ./security/private-key.pem --experimental-https-cert ./security/public-certificate.pem --experimental-https-ca ./security/certificate-authority-public-certificate.pem",
     "build": "next build",
-    "start": "next start",
-    "test": "jest",
-    "test:coverage": "jest --coverage"
+    "start": "next start"
   },
   "keywords": [],
   "author": "Antonio Sanchez",
