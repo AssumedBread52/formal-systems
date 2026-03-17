@@ -82,7 +82,7 @@ function generate_ssh_files() {
 
   EXPIRY_STATUS="Certificate will expire"
   if [ -f ./$1/security/certificate-authority-public-certificate.pem ]; then
-    EXPIRY_STATUS=$(openssl x509 -checkend 86400 -noout -in ./$1/security/public-certificate.pem)
+    EXPIRY_STATUS=$(openssl x509 -checkend 86400 -noout -in ./$1/security/certificate-authority-public-certificate.pem)
   fi
   if [ "$EXPIRY_STATUS" = "Certificate will expire" ]; then
     cp ./certificate-authority/public-certificate.pem ./$1/security/certificate-authority-public-certificate.pem
