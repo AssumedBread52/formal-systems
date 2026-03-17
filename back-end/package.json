@@ -6,9 +6,10 @@
   "scripts": {
     "build": "nest build",
     "start": "nest start",
+    "start:debug": "nest start --debug 0.0.0.0:9229 --path ./tsconfig.json --watch",
     "start:dev": "nest start --watch",
     "test": "jest --detectOpenHandles",
-    "test:coverage": "jest --detectOpenHandles --coverage"
+    "test:coverage": "jest --coverage --detectOpenHandles"
   },
   "keywords": [],
   "author": "Antonio Sanchez",

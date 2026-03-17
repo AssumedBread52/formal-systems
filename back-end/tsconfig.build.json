@@ -1,4 +1,7 @@
 {
+  "compilerOptions": {
+    "sourceMap": false
+  },
   "exclude": [
     "./.nest",
     "./coverage",

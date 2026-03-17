@@ -27,6 +27,8 @@ services:
       retries: 3
       start_period: 5s
     image: node:22.14.0
+    ports:
+      - "9229:9229/tcp"
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./back-end:/app:rw

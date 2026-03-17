@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/back-end/",
+      "name": "Back End",
+      "port": 9229,
+      "remoteRoot": "/app",
+      "request": "attach",
+      "type": "node"
+    }
+  ]
+}
