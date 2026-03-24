@@ -17,16 +17,16 @@ export class UserResolver {
   @Mutation((): typeof UserEntity => {
     return UserEntity;
   })
-  public createUser(@Args('userPayload', new ValidationPipe({ transform: true })) payload: NewUserPayload, @Context('res') response: Response): Promise<UserEntity> {
-    return this.userWriteService.signUp(payload, response);
+  public createUser(@Args('userPayload', new ValidationPipe({ transform: true })) newUserPayload: NewUserPayload, @Context('res') response: Response): Promise<UserEntity> {
+    return this.userWriteService.signUp(newUserPayload, response);
   }
 
   @Mutation((): typeof UserEntity => {
     return UserEntity;
   })
   @UseGuards(JwtGuard)
-  public updateUser(@SessionUser() sessionUser: UserEntity, @Args('userPayload', new ValidationPipe({ transform: true })) payload: EditUserPayload): Promise<UserEntity> {
-    return this.userWriteService.editProfile(sessionUser, payload);
+  public updateUser(@SessionUser() sessionUser: UserEntity, @Args('userPayload', new ValidationPipe({ transform: true })) editUserPayload: EditUserPayload): Promise<UserEntity> {
+    return this.userWriteService.editProfile(sessionUser, editUserPayload);
   }
 
   @Query((): typeof UserEntity => {

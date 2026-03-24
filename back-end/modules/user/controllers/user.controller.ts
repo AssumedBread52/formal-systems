@@ -35,7 +35,7 @@ export class UserController {
 
   @Post()
   @UseInterceptors(ClassSerializerInterceptor)
-  public postUser(@Body(new ValidationPipe({ transform: true })) payload: NewUserPayload, @Res({ passthrough: true }) response: Response): Promise<UserEntity> {
-    return this.userWriteService.signUp(payload, response);
+  public postUser(@Body(new ValidationPipe({ transform: true })) newUserPayload: NewUserPayload, @Res({ passthrough: true }) response: Response): Promise<UserEntity> {
+    return this.userWriteService.signUp(newUserPayload, response);
   }
 };
