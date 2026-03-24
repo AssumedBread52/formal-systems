@@ -2,9 +2,7 @@ import { AuthModule } from '@/auth/auth.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './controllers/user.controller';
-import { MongoUserEntity } from './entities/mongo-user.entity';
-import { CountListener } from './listeners/count.listener';
-import { UserRepository } from './repositories/user.repository';
+import { UserEntity } from './entities/user.entity';
 import { UserResolver } from './resolvers/user.resolver';
 import { UserReadService } from './services/user-read.service';
 import { UserWriteService } from './services/user-write.service';
@@ -15,16 +13,14 @@ import { UserWriteService } from './services/user-write.service';
       return AuthModule;
     }),
     TypeOrmModule.forFeature([
-      MongoUserEntity
+      UserEntity
     ])
   ],
   controllers: [
     UserController
   ],
   providers: [
-    CountListener,
     UserReadService,
-    UserRepository,
     UserResolver,
     UserWriteService
   ],

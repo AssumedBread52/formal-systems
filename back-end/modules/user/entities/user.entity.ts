@@ -1,72 +1,46 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
-import { IsEmail, IsInt, IsMongoId, IsNotEmpty, Matches, Min } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsUUID, Matches, MaxLength } from 'class-validator';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+@Entity('users')
 @ObjectType()
 export class UserEntity {
   @Field((): typeof String => {
     return String;
   })
-  @IsMongoId()
-  public id: string = '';
+  @IsUUID()
+  @PrimaryGeneratedColumn('uuid')
+  public readonly id!: string;
+  @Column({
+    length: 32,
+    type: 'varchar',
+    unique: true
+  })
   @Field((): typeof String => {
     return String;
   })
   @IsNotEmpty()
-  public firstName: string = '';
-  @Field((): typeof String => {
-    return String;
+  @MaxLength(32)
+  public handle: string = '';
+  @Column({
+    length: 254,
+    type: 'varchar',
+    unique: true
   })
-  @IsNotEmpty()
-  public lastName: string = '';
   @Field((): typeof String => {
     return String;
   })
   @IsEmail()
+  @MaxLength(254)
   public email: string = '';
+  @Column({
+    length: 60,
+    name: 'password_hash',
+    type: 'varchar'
+  })
   @Exclude()
   @Matches(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+  @MaxLength(60)
   public passwordHash: string = '';
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public systemCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public constantSymbolCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public variableSymbolCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public distinctVariablePairCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public constantVariablePairExpressionCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public constantPrefixedExpressionCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public standardExpressionCount: number = 0;
 };

@@ -7,12 +7,7 @@ export class NewUserPayload {
     return String;
   })
   @IsNotEmpty()
-  public readonly firstName: string = '';
-  @Field((): typeof String => {
-    return String;
-  })
-  @IsNotEmpty()
-  public readonly lastName: string = '';
+  public readonly handle: string = '';
   @Field((): typeof String => {
     return String;
   })

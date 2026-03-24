@@ -3,41 +3,49 @@ import { TokenService } from '@/auth/services/token.service';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { UserEntity } from '@/user/entities/user.entity';
 import { UniqueEmailAddressException } from '@/user/exceptions/unique-email-address.exception';
+import { UniqueHandleException } from '@/user/exceptions/unique-handle.exception';
 import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { NewUserPayload } from '@/user/payloads/new-user.payload';
-import { UserRepository } from '@/user/repositories/user.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { hashSync } from 'bcryptjs';
 import { Response } from 'express';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserWriteService {
-  public constructor(private readonly cookieService: CookieService, private readonly tokenService: TokenService, private readonly userRepository: UserRepository) {
+  public constructor(private readonly cookieService: CookieService, private readonly tokenService: TokenService, @InjectRepository(UserEntity) private readonly repository: Repository<UserEntity>) {
   }
 
-  public async editProfile(sessionUser: UserEntity, editUserPayload: EditUserPayload): Promise<UserEntity> {
+  public async editProfile(user: UserEntity, editUserPayload: EditUserPayload): Promise<UserEntity> {
     try {
-      const validatedSessionUser = validatePayload(sessionUser, UserEntity);
+      const validatedUser = validatePayload(user, UserEntity);
       const validatedEditUserPayload = validatePayload(editUserPayload, EditUserPayload);
 
-      if (validatedEditUserPayload.newEmail !== validatedSessionUser.email) {
-        const conflict = await this.userRepository.findOneBy({
+      const [handleConflict, emailConflict] = await Promise.all([
+        validatedEditUserPayload.newHandle !== validatedUser.handle ? this.repository.findOneBy({
+          handle: validatedEditUserPayload.newHandle
+        }) : false,
+        validatedEditUserPayload.newEmail !== validatedUser.email ? this.repository.findOneBy({
           email: validatedEditUserPayload.newEmail
-        });
+        }) : false
+      ]);
 
-        if (conflict) {
-          throw new UniqueEmailAddressException();
-        }
+      if (handleConflict) {
+        throw new UniqueHandleException();
       }
 
-      validatedSessionUser.firstName = validatedEditUserPayload.newFirstName;
-      validatedSessionUser.lastName = validatedEditUserPayload.newLastName;
-      validatedSessionUser.email = validatedEditUserPayload.newEmail;
+      if (emailConflict) {
+        throw new UniqueEmailAddressException();
+      }
+
+      validatedUser.handle = validatedEditUserPayload.newHandle;
+      validatedUser.email = validatedEditUserPayload.newEmail;
       if (validatedEditUserPayload.newPassword) {
-        validatedSessionUser.passwordHash = hashSync(validatedEditUserPayload.newPassword);
+        validatedUser.passwordHash = hashSync(validatedEditUserPayload.newPassword);
       }
 
-      return this.userRepository.save(validatedSessionUser);
+      return await this.repository.save(validatedUser);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
@@ -51,22 +59,30 @@ export class UserWriteService {
     try {
       const validatedNewUserPayload = validatePayload(newUserPayload, NewUserPayload);
 
-      const conflict = await this.userRepository.findOneBy({
-        email: validatedNewUserPayload.email
-      });
+      const [handleConflict, emailConflict] = await Promise.all([
+        this.repository.findOneBy({
+          handle: validatedNewUserPayload.handle
+        }),
+        this.repository.findOneBy({
+          email: validatedNewUserPayload.email
+        })
+      ]);
 
-      if (conflict) {
+      if (handleConflict) {
+        throw new UniqueHandleException();
+      }
+
+      if (emailConflict) {
         throw new UniqueEmailAddressException();
       }
 
       const user = new UserEntity();
 
-      user.firstName = validatedNewUserPayload.firstName;
-      user.lastName = validatedNewUserPayload.lastName;
+      user.handle = validatedNewUserPayload.handle;
       user.email = validatedNewUserPayload.email;
       user.passwordHash = hashSync(validatedNewUserPayload.password);
 
-      const savedUser = await this.userRepository.save(user);
+      const savedUser = await this.repository.save(user);
 
       const token = this.tokenService.generateUserToken(savedUser);
 

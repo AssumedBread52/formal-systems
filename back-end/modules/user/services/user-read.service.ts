@@ -1,16 +1,17 @@
 import { UserEntity } from '@/user/entities/user.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
-import { UserRepository } from '@/user/repositories/user.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserReadService {
-  public constructor(private readonly userRepository: UserRepository) {
+  public constructor(@InjectRepository(UserEntity) private readonly repository: Repository<UserEntity>) {
   }
 
   public async selectByEmail(email: string): Promise<UserEntity> {
     try {
-      const user = await this.userRepository.findOneBy({
+      const user = await this.repository.findOneBy({
         email
       });
 
@@ -30,7 +31,7 @@ export class UserReadService {
 
   public async selectById(userId: string): Promise<UserEntity> {
     try {
-      const user = await this.userRepository.findOneBy({
+      const user = await this.repository.findOneBy({
         id: userId
       });
 

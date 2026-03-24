@@ -12,6 +12,7 @@ import { DistinctVariablePairModule } from './distinct-variable-pair/distinct-va
 import { ExpressionModule } from './expression/expression.module';
 import { HealthModule } from './health/health.module';
 import { MigrationModule } from './migration/migration.module';
+import migrations from './migration/migrations';
 import { SymbolModule } from './symbol/symbol.module';
 import { SystemModule } from './system/system.module';
 import { UserModule } from './user/user.module';
@@ -71,6 +72,7 @@ import { UserModule } from './user/user.module';
 
         return {
           autoLoadEntities,
+          migrations,
           type,
           url
         };
