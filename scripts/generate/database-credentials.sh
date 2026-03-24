@@ -6,15 +6,17 @@ if [ "$1" = "--help" ]; then
   exit
 fi
 
-rm -rf database/data
+if docker volume inspect pgdata >/dev/null 2>&1; then
+  docker volume rm pgdata >/dev/null
+fi
 
-MONGO_USERNAME="database"
-MONGO_PASSWORD=$(openssl rand -base64 32)
+USERNAME="database"
+PASSWORD=$(openssl rand -base64 32)
 
 echo -n "" > database/credentials.env
-echo "MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME" >> database/credentials.env
-echo "MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD" >> database/credentials.env
+echo "POSTGRES_USER=$USERNAME" >> database/credentials.env
+echo "POSTGRES_PASSWORD=$PASSWORD" >> database/credentials.env
 
 echo -n "" > back-end/database-credentials.env
-echo "DATABASE_USERNAME=$MONGO_USERNAME" >> back-end/database-credentials.env
-echo "DATABASE_PASSWORD=$MONGO_PASSWORD" >> back-end/database-credentials.env
+echo "DATABASE_USERNAME=$USERNAME" >> back-end/database-credentials.env
+echo "DATABASE_PASSWORD=$PASSWORD" >> back-end/database-credentials.env

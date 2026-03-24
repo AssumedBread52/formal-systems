@@ -4,19 +4,17 @@ services:
     env_file:
       - ./database/credentials.env
     healthcheck:
-      test: ["CMD-SHELL", "mongosh database:27017/test --quiet --eval='db.runCommand(\"ping\").ok' || exit 1"]
+      test: ["CMD-SHELL", "pg_isready -U database -d postgres"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 5s
-    image: mongo:8.0.5
-    user: "${USER_ID}:${GROUP_ID}"
+    image: postgres:18.3
     volumes:
-      - ./database/data:/data/db:rw
-      - ./database/initialization-scripts:/docker-entrypoint-initdb.d:ro
+      - pgdata:/var/lib/postgresql/18/docker:rw
 
   back-end:
-    command: npm run start:dev
+    command: npm run start:debug
     depends_on:
       database:
         condition: service_healthy
@@ -26,7 +24,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
-    image: node:22.14.0
+    image: node:24.14.0
     ports:
       - "9229:9229/tcp"
     user: "${USER_ID}:${GROUP_ID}"
@@ -45,7 +43,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
-    image: node:22.14.0
+    image: node:24.14.0
     ports:
       - "3000:3000/tcp"
     user: "${USER_ID}:${GROUP_ID}"
@@ -55,7 +53,7 @@ services:
 
   npm-back-end:
     entrypoint: npm
-    image: node:22.14.0
+    image: node:24.14.0
     stdin_open: true
     tty: true
     user: "${USER_ID}:${GROUP_ID}"
@@ -65,10 +63,14 @@ services:
 
   npm-front-end:
     entrypoint: npm
-    image: node:22.14.0
+    image: node:24.14.0
     stdin_open: true
     tty: true
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./front-end:/app:rw
     working_dir: /app
+
+volumes:
+  pgdata:
+    name: pgdata

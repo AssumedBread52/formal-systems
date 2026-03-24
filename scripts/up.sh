@@ -7,11 +7,16 @@ if [ "$1" = "--help" ]; then
   echo "  empty directories, (2) it would pose serious security risks, (3) there is"
   echo "  enough data committed to easily generate them. If any needed files and"
   echo "  directories are missing, then this script will generate them."
+  echo "  --clear  Removes the database named volume which clears the database"
 
   exit
 fi
 
-./scripts/down.sh
+if [ "$1" = "--clear" ]; then
+  ./scripts/down.sh --clear
+else
+  ./scripts/down.sh
+fi
 
 function generate_environment_variables() {
   CHECK_SUM_FILE=scripts/generate/$1.cksm
@@ -107,24 +112,5 @@ generate_ssh_files front-end
 
 resolve_node_dependencies back-end
 resolve_node_dependencies front-end
-
-DATABASE_CHECK_SUM_FILE=database/initialization-scripts.cksm
-DATABASE_CURRENT_CHECK_SUM=$(cat database/initialization-scripts/* | sha1sum)
-
-if [ -f "$DATABASE_CHECK_SUM_FILE" ]; then
-  DATABASE_OLD_CHECK_SUM=$(cat $DATABASE_CHECK_SUM_FILE)
-fi
-
-if [ ! -d database/data ]; then
-  mkdir database/data
-
-  echo -n "$DATABASE_CURRENT_CHECK_SUM" > $DATABASE_CHECK_SUM_FILE
-elif [ ! "$DATABASE_OLD_CHECK_SUM" = "$DATABASE_CURRENT_CHECK_SUM" ]; then
-  rm -rf database/data
-
-  mkdir database/data
-
-  echo -n "$DATABASE_CURRENT_CHECK_SUM" > $DATABASE_CHECK_SUM_FILE
-fi
 
 GROUP_ID=$(id -g) USER_ID=$(id -u) docker-compose up --detach front-end
