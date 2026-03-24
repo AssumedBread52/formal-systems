@@ -1,7 +1,7 @@
-import { IsInt, IsMongoId, IsPositive } from 'class-validator';
+import { IsInt, IsPositive, IsUUID } from 'class-validator';
 
 export class TokenPayload {
-  @IsMongoId()
+  @IsUUID()
   public readonly userId: string = '';
   @IsInt()
   @IsPositive()
