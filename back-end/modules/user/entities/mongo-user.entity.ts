@@ -12,7 +12,7 @@ export class MongoUserEntity {
   @Column()
   public email: string = '';
   @Column()
-  public hashedPassword: string = '';
+  public passwordHash: string = '';
   @Column()
   public systemCount: number = 0;
   @Column()

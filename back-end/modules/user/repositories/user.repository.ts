@@ -65,7 +65,7 @@ export class UserRepository {
     mongoUser.firstName = user.firstName;
     mongoUser.lastName = user.lastName;
     mongoUser.email = user.email;
-    mongoUser.hashedPassword = user.hashedPassword;
+    mongoUser.passwordHash = user.passwordHash;
     mongoUser.systemCount = user.systemCount;
     mongoUser.constantSymbolCount = user.constantSymbolCount;
     mongoUser.variableSymbolCount = user.variableSymbolCount;
@@ -84,7 +84,7 @@ export class UserRepository {
     user.firstName = mongoUser.firstName;
     user.lastName = mongoUser.lastName;
     user.email = mongoUser.email;
-    user.hashedPassword = mongoUser.hashedPassword;
+    user.passwordHash = mongoUser.passwordHash;
     user.systemCount = mongoUser.systemCount;
     user.constantSymbolCount = mongoUser.constantSymbolCount;
     user.variableSymbolCount = mongoUser.variableSymbolCount;

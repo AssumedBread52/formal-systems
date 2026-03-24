@@ -26,7 +26,7 @@ export class UserEntity {
   public email: string = '';
   @Exclude()
   @Matches(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-  public hashedPassword: string = '';
+  public passwordHash: string = '';
   @Field((): typeof Int => {
     return Int;
   })

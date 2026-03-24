@@ -34,7 +34,7 @@ export class UserWriteService {
       validatedSessionUser.lastName = validatedEditUserPayload.newLastName;
       validatedSessionUser.email = validatedEditUserPayload.newEmail;
       if (validatedEditUserPayload.newPassword) {
-        validatedSessionUser.hashedPassword = hashSync(validatedEditUserPayload.newPassword);
+        validatedSessionUser.passwordHash = hashSync(validatedEditUserPayload.newPassword);
       }
 
       return this.userRepository.save(validatedSessionUser);
@@ -64,7 +64,7 @@ export class UserWriteService {
       user.firstName = validatedNewUserPayload.firstName;
       user.lastName = validatedNewUserPayload.lastName;
       user.email = validatedNewUserPayload.email;
-      user.hashedPassword = hashSync(validatedNewUserPayload.password);
+      user.passwordHash = hashSync(validatedNewUserPayload.password);
 
       const savedUser = await this.userRepository.save(user);
 

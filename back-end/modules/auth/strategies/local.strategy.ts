@@ -18,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     try {
       const user = await this.userReadService.selectByEmail(email);
 
-      if (!compareSync(password, user.hashedPassword)) {
+      if (!compareSync(password, user.passwordHash)) {
         throw new Error('Invalid password');
       }
 
