@@ -14,7 +14,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('refresh-token')
   @UseGuards(JwtGuard)
-  refreshToken(@SessionUser() sessionUser: UserEntity, @Res({ passthrough: true }) response: Response): void {
+  public refreshToken(@SessionUser() sessionUser: UserEntity, @Res({ passthrough: true }) response: Response): void {
     this.authService.refreshToken(sessionUser, response);
   }
 
