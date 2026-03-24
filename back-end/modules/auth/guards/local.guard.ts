@@ -16,7 +16,7 @@ export class LocalGuard extends AuthGuard('local') {
 
         const gqlArgs = gqlExecutionContext.getArgs<{ email: string; password: string; }>();
 
-        const gqlContext = gqlExecutionContext.getContext<{ req: Request; res: Response }>();
+        const gqlContext = gqlExecutionContext.getContext<{ req: Request; res: Response; }>();
 
         const { req } = gqlContext;
 
