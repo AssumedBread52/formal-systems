@@ -11,6 +11,7 @@ import { DependencyModule } from './dependency/dependency.module';
 import { DistinctVariablePairModule } from './distinct-variable-pair/distinct-variable-pair.module';
 import { ExpressionModule } from './expression/expression.module';
 import { HealthModule } from './health/health.module';
+import { MigrationModule } from './migration/migration.module';
 import { SymbolModule } from './symbol/symbol.module';
 import { SystemModule } from './system/system.module';
 import { UserModule } from './user/user.module';
@@ -45,6 +46,7 @@ import { UserModule } from './user/user.module';
       }
     }),
     HealthModule,
+    MigrationModule,
     SymbolModule,
     SystemModule,
     TypeOrmModule.forRootAsync({
@@ -65,7 +67,7 @@ import { UserModule } from './user/user.module';
         const host = configService.getOrThrow<string>('DATABASE_HOST');
         const port = configService.getOrThrow<number>('DATABASE_PORT');
         const name = configService.getOrThrow<string>('DATABASE_NAME');
-        const url = `${scheme}://${username}:${encodeURIComponent(password)}@${host}:${port}/${name}?authSource=admin`;
+        const url = `${scheme}://${username}:${encodeURIComponent(password)}@${host}:${port}/${name}`;
 
         return {
           autoLoadEntities,
