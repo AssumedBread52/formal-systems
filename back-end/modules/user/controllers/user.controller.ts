@@ -5,7 +5,7 @@ import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { NewUserPayload } from '@/user/payloads/new-user.payload';
 import { UserReadService } from '@/user/services/user-read.service';
 import { UserWriteService } from '@/user/services/user-write.service';
-import { Body, ClassSerializerInterceptor, Controller, Get, Param, Patch, Post, Res, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Res, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { Response } from 'express';
 
 @Controller('user')
@@ -22,7 +22,7 @@ export class UserController {
 
   @Get(':userId')
   @UseInterceptors(ClassSerializerInterceptor)
-  public getById(@Param('userId') userId: string): Promise<UserEntity> {
+  public getById(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<UserEntity> {
     return this.userReadService.selectById(userId);
   }
 
