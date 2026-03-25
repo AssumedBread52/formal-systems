@@ -27,7 +27,7 @@ import { LocalStrategy } from './strategies/local.strategy';
         return {
           secret,
           signOptions: {
-            expiresIn
+            expiresIn: parseInt(expiresIn)
           }
         };
       }
