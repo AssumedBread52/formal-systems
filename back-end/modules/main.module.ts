@@ -60,6 +60,8 @@ import { UserModule } from './user/user.module';
       useFactory: (configService: ConfigService): TypeOrmModuleOptions => {
         const autoLoadEntities = true;
 
+        const logging = true;
+
         const type = configService.getOrThrow<DatabaseType>('DATABASE_TYPE');
 
         const scheme = configService.getOrThrow<string>('DATABASE_SCHEME');
@@ -72,6 +74,7 @@ import { UserModule } from './user/user.module';
 
         return {
           autoLoadEntities,
+          logging,
           migrations,
           type,
           url
