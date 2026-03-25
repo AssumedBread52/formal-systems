@@ -8,7 +8,7 @@ export class RunnerService implements OnApplicationBootstrap {
   private static readonly RELEASE_LOCK = 'SELECT pg_advisory_unlock(hashtext($1))';
   private static readonly LOCK_KEY = 'migration_lock';
 
-  public constructor(@InjectDataSource('postgres') private readonly dataSource: DataSource) {
+  public constructor(@InjectDataSource() private readonly dataSource: DataSource) {
   }
 
   public async onApplicationBootstrap(): Promise<void> {
