@@ -23,10 +23,10 @@ export class UserWriteService {
       const validatedEditUserPayload = validatePayload(editUserPayload, EditUserPayload);
 
       const [handleConflict, emailConflict] = await Promise.all([
-        validatedEditUserPayload.newHandle !== validatedUser.handle ? this.repository.findOneBy({
+        validatedEditUserPayload.newHandle !== validatedUser.handle ? this.repository.existsBy({
           handle: validatedEditUserPayload.newHandle
         }) : false,
-        validatedEditUserPayload.newEmail !== validatedUser.email ? this.repository.findOneBy({
+        validatedEditUserPayload.newEmail !== validatedUser.email ? this.repository.existsBy({
           email: validatedEditUserPayload.newEmail
         }) : false
       ]);
@@ -60,10 +60,10 @@ export class UserWriteService {
       const validatedNewUserPayload = validatePayload(newUserPayload, NewUserPayload);
 
       const [handleConflict, emailConflict] = await Promise.all([
-        this.repository.findOneBy({
+        this.repository.existsBy({
           handle: validatedNewUserPayload.handle
         }),
-        this.repository.findOneBy({
+        this.repository.existsBy({
           email: validatedNewUserPayload.email
         })
       ]);
