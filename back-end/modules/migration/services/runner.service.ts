@@ -19,7 +19,7 @@ export class RunnerService implements OnApplicationBootstrap {
 
       try {
         await queryRunner.query(RunnerService.ENGAGE_LOCK, [
-          RunnerService.LOCK_KEY,
+          RunnerService.LOCK_KEY
         ]);
 
         try {
