@@ -53,6 +53,7 @@ export class LibraryService {
               break;
             case LibraryService.DEVELOPMENT_PACKAGES_KEY:
               dependencies.push(new DependencyPayload(key, version, DependencyType.development));
+              break;
           }
         }
       }
