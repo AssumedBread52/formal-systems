@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsEmail, IsNotEmpty, IsOptional, IsStrongPassword } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsStrongPassword, MaxLength } from 'class-validator';
 
 @InputType()
 export class EditUserPayload {
@@ -7,13 +7,17 @@ export class EditUserPayload {
     return String;
   })
   @IsNotEmpty()
+  @MaxLength(32)
   public readonly newHandle: string = '';
   @Field((): typeof String => {
     return String;
   })
   @IsEmail()
+  @MaxLength(254)
   public readonly newEmail: string = '';
-  @Field({
+  @Field((): typeof String => {
+    return String;
+  }, {
     nullable: true
   })
   @IsOptional()
