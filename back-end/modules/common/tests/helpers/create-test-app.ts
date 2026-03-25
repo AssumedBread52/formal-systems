@@ -9,7 +9,7 @@ import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
 import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
 import { SystemModule } from '@/system/system.module';
-import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { UserModule } from '@/user/user.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -19,7 +19,7 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as cookieParser from 'cookie-parser';
 import { Request, Response } from 'express';
-import { MongoRepository } from 'typeorm';
+import { MongoRepository, Repository } from 'typeorm';
 
 export const createTestApp = async (): Promise<NestExpressApplication> => {
   const testingModule = await Test.createTestingModule({
@@ -49,7 +49,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
       SystemModule,
       UserModule
     ]
-  }).overrideProvider(getRepositoryToken(MongoExpressionEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoDistinctVariablePairEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSystemEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoUserEntity)).useClass(MongoRepository).compile();
+  }).overrideProvider(getRepositoryToken(MongoExpressionEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoDistinctVariablePairEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSystemEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(UserEntity)).useClass(Repository).compile();
 
   const app = testingModule.createNestApplication<NestExpressApplication>();
 
