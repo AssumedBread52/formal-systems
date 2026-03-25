@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsUUID, Matches, MaxLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsUUID, Matches, MaxLength, MinLength } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users')
@@ -42,5 +42,6 @@ export class UserEntity {
   @Exclude()
   @Matches(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
   @MaxLength(60)
+  @MinLength(60)
   public passwordHash: string = '';
 };
