@@ -45,7 +45,9 @@ export class UserWriteService {
         validatedUser.passwordHash = hashSync(validatedEditUserPayload.newPassword);
       }
 
-      return await this.repository.save(validatedUser);
+      const savedUser = await this.repository.save(validatedUser);
+
+      return validatePayload(savedUser, UserEntity);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
@@ -84,11 +86,13 @@ export class UserWriteService {
 
       const savedUser = await this.repository.save(user);
 
-      const token = this.tokenService.generateUserToken(savedUser);
+      const validatedSavedUser = validatePayload(savedUser, UserEntity);
+
+      const token = this.tokenService.generateUserToken(validatedSavedUser);
 
       this.cookieService.setAuthCookies(response, token);
 
-      return savedUser;
+      return validatedSavedUser;
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;

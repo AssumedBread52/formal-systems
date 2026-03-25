@@ -1,3 +1,4 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { UserEntity } from '@/user/entities/user.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -19,7 +20,7 @@ export class UserReadService {
         throw new UserNotFoundException();
       }
 
-      return user;
+      return validatePayload(user, UserEntity);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
@@ -39,7 +40,7 @@ export class UserReadService {
         throw new UserNotFoundException();
       }
 
-      return user;
+      return validatePayload(user, UserEntity);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
