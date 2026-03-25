@@ -1,12 +1,13 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
-import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
-import { ObjectId } from 'mongodb';
+import { instanceToPlain } from 'class-transformer';
 import * as request from 'supertest';
 
 describe('Refresh Token', (): void => {
@@ -19,14 +20,13 @@ describe('Refresh Token', (): void => {
   });
 
   it('POST /auth/refresh-token', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const user = new MongoUserEntity();
-
-    user._id = userId;
-    user.firstName = 'Test1';
-    user.lastName = 'User1';
-    user.email = 'test1.user1@example.com';
-    user.hashedPassword = hashSync('Test1User1!');
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const user = validatePayload({
+      id: userId,
+      handle: 'Test1 User1',
+      email: 'test1.user1@example.com',
+      passwordHash: hashSync('Test1User1!')
+    }, UserEntity);
 
     findOneBy.mockResolvedValueOnce(user);
     getOrThrow.mockReturnValueOnce(1000);
@@ -39,18 +39,17 @@ describe('Refresh Token', (): void => {
       `token=${token}`
     ]);
 
-    const { statusCode, body } = response;
     const cookies = response.get('Set-Cookie');
 
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
+      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(1);
     expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
-    expect(statusCode).toBe(HttpStatus.NO_CONTENT);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
     });
+    expect(response.statusCode).toBe(HttpStatus.NO_CONTENT);
     expect(cookies).toBeDefined();
     expect(cookies).toHaveLength(2);
     expect(cookies![0]).toMatch(/^token=.+; Max-Age=1; Path=\/; Expires=(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (0[1-9]|[12]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} ([01]\d|2[0-3]):([0-5]\d):([0-5]\d) GMT; HttpOnly; Secure$/);
@@ -58,17 +57,13 @@ describe('Refresh Token', (): void => {
   });
 
   it('POST /graphql mutation refreshToken', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const firstName = 'Test1';
-    const lastName = 'User1';
-    const email = 'test1.user1@example.com';
-    const user = new MongoUserEntity();
-
-    user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashSync('Test1User1!');
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const user = validatePayload({
+      id: userId,
+      handle: 'Test1 User1',
+      email: 'test1.user1@example.com',
+      passwordHash: hashSync('Test1User1!')
+    }, UserEntity);
 
     findOneBy.mockResolvedValueOnce(user);
     getOrThrow.mockReturnValueOnce(1000);
@@ -80,36 +75,23 @@ describe('Refresh Token', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation refreshToken { refreshToken { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount } }'
+      query: 'mutation { refreshToken { id handle email } }'
     });
 
-    const { statusCode, body } = response;
     const cookies = response.get('Set-Cookie');
 
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
+      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(1);
     expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       data: {
-        refreshToken: {
-          id: userId.toString(),
-          firstName,
-          lastName,
-          email,
-          systemCount: 0,
-          constantSymbolCount: 0,
-          variableSymbolCount: 0,
-          distinctVariablePairCount: 0,
-          constantVariablePairExpressionCount: 0,
-          constantPrefixedExpressionCount: 0,
-          standardExpressionCount: 0
-        }
+        refreshToken: instanceToPlain(user)
       }
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
     expect(cookies).toBeDefined();
     expect(cookies).toHaveLength(2);
     expect(cookies![0]).toMatch(/^token=.+; Max-Age=1; Path=\/; Expires=(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (0[1-9]|[12]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} ([01]\d|2[0-3]):([0-5]\d):([0-5]\d) GMT; HttpOnly; Secure$/);
