@@ -3,7 +3,7 @@
   "configurations": [
     {
       "address": "localhost",
-      "localRoot": "${workspaceFolder}/back-end/",
+      "localRoot": "${workspaceFolder}/back-end",
       "name": "Back End",
       "port": 9229,
       "remoteRoot": "/app",
