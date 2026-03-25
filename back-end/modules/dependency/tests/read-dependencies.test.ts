@@ -3,6 +3,7 @@ import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as request from 'supertest';
 import { readFileMock } from './mocks/read-file.mock';
+import { HttpStatus } from '@nestjs/common';
 
 describe('Read Dependencies', (): void => {
   const getOrThrow = getOrThrowMock();
@@ -47,11 +48,12 @@ describe('Read Dependencies', (): void => {
 
     const response = await request(app.getHttpServer()).get('/dependency');
 
-    const { body } = response;
+    const { statusCode, body } = response;
 
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(readFile).toHaveBeenCalledTimes(1);
     expect(readFile).toHaveBeenNthCalledWith(1, '/app/package-lock.json', 'utf-8');
+    expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toStrictEqual([
       {
         name: 'library1',
@@ -112,11 +114,12 @@ describe('Read Dependencies', (): void => {
       query: 'query dependencies { dependencies { name type version } }'
     });
 
-    const { body } = response;
+    const { statusCode, body } = response;
 
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(readFile).toHaveBeenCalledTimes(1);
     expect(readFile).toHaveBeenNthCalledWith(1, '/app/package-lock.json', 'utf-8');
+    expect(statusCode).toBe(HttpStatus.OK);
     expect(body).toStrictEqual({
       data: {
         dependencies: [
