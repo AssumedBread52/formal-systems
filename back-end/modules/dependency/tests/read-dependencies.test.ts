@@ -1,9 +1,9 @@
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
+import { readFileMock } from '@/common/tests/mocks/read-file.mock';
+import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as request from 'supertest';
-import { readFileMock } from './mocks/read-file.mock';
-import { HttpStatus } from '@nestjs/common';
 
 describe('Read Dependencies', (): void => {
   const getOrThrow = getOrThrowMock();
@@ -15,7 +15,7 @@ describe('Read Dependencies', (): void => {
   });
 
   it('GET /dependency', async (): Promise<void> => {
-    const dependencyData = {
+    const fileData = JSON.stringify({
       packages: {
         '': {
           dependencies: {
@@ -40,21 +40,16 @@ describe('Read Dependencies', (): void => {
           version: '4.5.6'
         }
       }
-    };
+    });
 
-    const readFileResponse = JSON.stringify(dependencyData);
-
-    readFile.mockResolvedValueOnce(readFileResponse);
+    readFile.mockResolvedValueOnce(fileData);
 
     const response = await request(app.getHttpServer()).get('/dependency');
-
-    const { statusCode, body } = response;
 
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(readFile).toHaveBeenCalledTimes(1);
     expect(readFile).toHaveBeenNthCalledWith(1, '/app/package-lock.json', 'utf-8');
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual([
+    expect(response.body).toStrictEqual([
       {
         name: 'library1',
         type: 'operational',
@@ -76,10 +71,11 @@ describe('Read Dependencies', (): void => {
         version: '4.5.6'
       }
     ]);
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   it('POST /graphql query dependencies', async (): Promise<void> => {
-    const dependencyData = {
+    const fileData = JSON.stringify({
       packages: {
         '': {
           dependencies: {
@@ -104,23 +100,18 @@ describe('Read Dependencies', (): void => {
           version: '4.5.6'
         }
       }
-    };
-
-    const readFileResponse = JSON.stringify(dependencyData);
-
-    readFile.mockResolvedValueOnce(readFileResponse);
-
-    const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query dependencies { dependencies { name type version } }'
     });
 
-    const { statusCode, body } = response;
+    readFile.mockResolvedValueOnce(fileData);
+
+    const response = await request(app.getHttpServer()).post('/graphql').send({
+      query: 'query { dependencies { name type version } }'
+    });
 
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(readFile).toHaveBeenCalledTimes(1);
     expect(readFile).toHaveBeenNthCalledWith(1, '/app/package-lock.json', 'utf-8');
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       data: {
         dependencies: [
           {
@@ -146,6 +137,7 @@ describe('Read Dependencies', (): void => {
         ]
       }
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   afterAll(async (): Promise<void> => {
