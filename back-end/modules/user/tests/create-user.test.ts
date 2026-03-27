@@ -1,16 +1,17 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
-import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
+import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
-import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
-import { ObjectId } from 'mongodb';
+import { instanceToPlain } from 'class-transformer';
 import * as request from 'supertest';
 
 describe('Create User', (): void => {
-  const findOneBy = findOneByMock();
+  const existsBy = existsByMock();
   const getOrThrow = getOrThrowMock();
   const save = saveMock();
   let app: NestExpressApplication;
@@ -20,68 +21,47 @@ describe('Create User', (): void => {
   });
 
   it('POST /user', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const firstName = 'Test1';
-    const lastName = 'User1';
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const handle = 'Test1 User1';
     const email = 'test1.user1@example.com';
     const password = 'Test1User1!';
-    const user = new MongoUserEntity();
+    const user = validatePayload({
+      id: userId,
+      handle,
+      email,
+      passwordHash: hashSync(password)
+    }, UserEntity);
 
-    user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashSync(password);
-
-    findOneBy.mockResolvedValueOnce(null);
+    existsBy.mockResolvedValueOnce(false);
+    existsBy.mockResolvedValueOnce(false);
     getOrThrow.mockReturnValueOnce(1000);
     save.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/user').send({
-      firstName,
-      lastName,
+      handle,
       email,
       password
     });
 
-    const { statusCode, body } = response;
     const cookies = response.get('Set-Cookie');
 
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      handle
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       email
     });
     expect(getOrThrow).toHaveBeenCalledTimes(1);
     expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
-      _id: expect.objectContaining(/^[0-9a-f]{24}$/),
-      firstName,
-      lastName,
+      handle,
       email,
-      hashedPassword: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/),
-      systemCount: 0,
-      constantSymbolCount: 0,
-      variableSymbolCount: 0,
-      distinctVariablePairCount: 0,
-      constantVariablePairExpressionCount: 0,
-      constantPrefixedExpressionCount: 0,
-      standardExpressionCount: 0
+      passwordHash: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
     });
-    expect(statusCode).toBe(HttpStatus.CREATED);
-    expect(body).toStrictEqual({
-      id: userId.toString(),
-      firstName,
-      lastName,
-      email,
-      systemCount: 0,
-      constantSymbolCount: 0,
-      variableSymbolCount: 0,
-      distinctVariablePairCount: 0,
-      constantVariablePairExpressionCount: 0,
-      constantPrefixedExpressionCount: 0,
-      standardExpressionCount: 0
-    });
+    expect(response.body).toStrictEqual(instanceToPlain(user));
+    expect(response.statusCode).toBe(HttpStatus.CREATED);
     expect(cookies).toBeDefined();
     expect(cookies).toHaveLength(2);
     expect(cookies![0]).toMatch(/^token=.+; Max-Age=1; Path=\/; Expires=(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (0[1-9]|[12]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} ([01]\d|2[0-3]):([0-5]\d):([0-5]\d) GMT; HttpOnly; Secure$/);
@@ -89,77 +69,56 @@ describe('Create User', (): void => {
   });
 
   it('POST /graphql mutation createUser', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const firstName = 'Test1';
-    const lastName = 'User1';
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const handle = 'Test1 User1';
     const email = 'test1.user1@example.com';
     const password = 'Test1User1!';
-    const user = new MongoUserEntity();
+    const user = validatePayload({
+      id: userId,
+      handle,
+      email,
+      passwordHash: hashSync(password)
+    }, UserEntity);
 
-    user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashSync(password);
-
-    findOneBy.mockResolvedValueOnce(null);
+    existsBy.mockResolvedValueOnce(false);
+    existsBy.mockResolvedValueOnce(false);
     getOrThrow.mockReturnValueOnce(1000);
     save.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'mutation createUser($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount } }',
+      query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
       variables: {
         userPayload: {
-          firstName,
-          lastName,
+          handle,
           email,
           password
         }
       }
     });
 
-    const { statusCode, body } = response;
     const cookies = response.get('Set-Cookie');
 
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      handle
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       email
     });
     expect(getOrThrow).toHaveBeenCalledTimes(1);
     expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
-      _id: expect.objectContaining(/^[0-9a-f]{24}$/),
-      firstName,
-      lastName,
+      handle,
       email,
-      hashedPassword: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/),
-      systemCount: 0,
-      constantSymbolCount: 0,
-      variableSymbolCount: 0,
-      distinctVariablePairCount: 0,
-      constantVariablePairExpressionCount: 0,
-      constantPrefixedExpressionCount: 0,
-      standardExpressionCount: 0
+      passwordHash: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
     });
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       data: {
-        createUser: {
-          id: userId.toString(),
-          firstName,
-          lastName,
-          email,
-          systemCount: 0,
-          constantSymbolCount: 0,
-          variableSymbolCount: 0,
-          distinctVariablePairCount: 0,
-          constantVariablePairExpressionCount: 0,
-          constantPrefixedExpressionCount: 0,
-          standardExpressionCount: 0
-        }
+        createUser: instanceToPlain(user)
       }
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
     expect(cookies).toBeDefined();
     expect(cookies).toHaveLength(2);
     expect(cookies![0]).toMatch(/^token=.+; Max-Age=1; Path=\/; Expires=(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (0[1-9]|[12]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} ([01]\d|2[0-3]):([0-5]\d):([0-5]\d) GMT; HttpOnly; Secure$/);

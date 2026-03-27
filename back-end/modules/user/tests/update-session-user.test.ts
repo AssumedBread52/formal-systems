@@ -1,16 +1,19 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
-import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
-import { ObjectId } from 'mongodb';
+import { instanceToPlain } from 'class-transformer';
 import * as request from 'supertest';
 
 describe('Update Session User', (): void => {
+  const existsBy = existsByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   const save = saveMock();
@@ -21,48 +24,26 @@ describe('Update Session User', (): void => {
   });
 
   it('PATCH /user/session-user', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const systemCount = 1;
-    const constantSymbolCount = 6;
-    const variableSymbolCount = 3;
-    const distinctVariablePairCount = 1;
-    const constantVariablePairExpressionCount = 5;
-    const constantPrefixedExpressionCount = 25;
-    const standardExpressionCount = 125;
-    const newFirstName = 'NewTest1';
-    const newLastName = 'NewUser1';
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const newHandle = 'NewTest1 NewUser1';
     const newEmail = 'newtest1.newuser1@example.com';
-    const newPassword = 'NewTestNewUser1!';
-    const user = new MongoUserEntity();
-    const updatedUser = new MongoUserEntity();
+    const newPassword = 'NewTest1NewUser1!';
+    const user = validatePayload({
+      id: userId,
+      handle: 'Test1 User1',
+      email: 'test1.user1@example.com',
+      passwordHash: hashSync('Test1User1!')
+    }, UserEntity);
+    const updatedUser = validatePayload({
+      id: userId,
+      handle: newHandle,
+      email: newEmail,
+      passwordHash: hashSync(newPassword)
+    }, UserEntity);
 
-    user._id = userId;
-    user.firstName = 'Test1';
-    user.lastName = 'User1';
-    user.email = 'test1.user1@example.com';
-    user.hashedPassword = hashSync('TestUser1!');
-    user.systemCount = systemCount;
-    user.constantSymbolCount = constantSymbolCount;
-    user.variableSymbolCount = variableSymbolCount;
-    user.distinctVariablePairCount = distinctVariablePairCount;
-    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    user.standardExpressionCount = standardExpressionCount;
-    updatedUser._id = userId;
-    updatedUser.firstName = newFirstName;
-    updatedUser.lastName = newLastName;
-    updatedUser.email = newEmail;
-    updatedUser.hashedPassword = hashSync(newPassword);
-    updatedUser.systemCount = systemCount;
-    updatedUser.constantSymbolCount = constantSymbolCount;
-    updatedUser.variableSymbolCount = variableSymbolCount;
-    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
-    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    updatedUser.standardExpressionCount = standardExpressionCount;
-
+    existsBy.mockResolvedValueOnce(false);
+    existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(null);
     save.mockResolvedValueOnce(updatedUser);
 
     const token = app.get(JwtService).sign({
@@ -72,96 +53,55 @@ describe('Update Session User', (): void => {
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
     ]).send({
-      newFirstName,
-      newLastName,
+      newHandle,
       newEmail,
       newPassword
     });
 
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(2);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
+    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      handle: newHandle
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       email: newEmail
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
-      _id: userId,
-      firstName: newFirstName,
-      lastName: newLastName,
+      id: userId,
+      handle: newHandle,
       email: newEmail,
-      hashedPassword: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/),
-      systemCount,
-      constantSymbolCount,
-      variableSymbolCount,
-      distinctVariablePairCount,
-      constantVariablePairExpressionCount,
-      constantPrefixedExpressionCount,
-      standardExpressionCount
+      passwordHash: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
     });
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
-      id: userId.toString(),
-      firstName: newFirstName,
-      lastName: newLastName,
-      email: newEmail,
-      systemCount,
-      constantSymbolCount,
-      variableSymbolCount,
-      distinctVariablePairCount,
-      constantVariablePairExpressionCount,
-      constantPrefixedExpressionCount,
-      standardExpressionCount
-    });
+    expect(response.body).toStrictEqual(instanceToPlain(updatedUser));
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
-  it('POST /graphql query sessionUser', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const systemCount = 1;
-    const constantSymbolCount = 6;
-    const variableSymbolCount = 3;
-    const distinctVariablePairCount = 1;
-    const constantVariablePairExpressionCount = 5;
-    const constantPrefixedExpressionCount = 25;
-    const standardExpressionCount = 125;
-    const newFirstName = 'NewTest1';
-    const newLastName = 'NewUser1';
+  it('POST /graphql mutation updateUser', async (): Promise<void> => {
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const newHandle = 'NewTest1 NewUser1';
     const newEmail = 'newtest1.newuser1@example.com';
-    const newPassword = 'NewTestNewUser1!';
-    const user = new MongoUserEntity();
-    const updatedUser = new MongoUserEntity();
+    const newPassword = 'NewTest1NewUser1!';
+    const user = validatePayload({
+      id: userId,
+      handle: 'Test1 User1',
+      email: 'test1.user1@example.com',
+      passwordHash: hashSync('Test1User1!')
+    }, UserEntity);
+    const updatedUser = validatePayload({
+      id: userId,
+      handle: newHandle,
+      email: newEmail,
+      passwordHash: hashSync(newPassword)
+    }, UserEntity);
 
-    user._id = userId;
-    user.firstName = 'Test1';
-    user.lastName = 'User1';
-    user.email = 'test1.user1@example.com';
-    user.hashedPassword = hashSync('TestUser1!');
-    user.systemCount = systemCount;
-    user.constantSymbolCount = constantSymbolCount;
-    user.variableSymbolCount = variableSymbolCount;
-    user.distinctVariablePairCount = distinctVariablePairCount;
-    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    user.standardExpressionCount = standardExpressionCount;
-    updatedUser._id = userId;
-    updatedUser.firstName = newFirstName;
-    updatedUser.lastName = newLastName;
-    updatedUser.email = newEmail;
-    updatedUser.hashedPassword = hashSync(newPassword);
-    updatedUser.systemCount = systemCount;
-    updatedUser.constantSymbolCount = constantSymbolCount;
-    updatedUser.variableSymbolCount = variableSymbolCount;
-    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
-    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    updatedUser.standardExpressionCount = standardExpressionCount;
-
+    existsBy.mockResolvedValueOnce(false);
+    existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(null);
     save.mockResolvedValueOnce(updatedUser);
 
     const token = app.get(JwtService).sign({
@@ -171,60 +111,41 @@ describe('Update Session User', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation updateUser($userPayload: EditUserPayload!) { updateUser(userPayload: $userPayload) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount } }',
+      query: 'mutation ($userPayload: EditUserPayload!) { updateUser(userPayload: $userPayload) { id handle email } }',
       variables: {
         userPayload: {
-          newFirstName,
-          newLastName,
+          newHandle,
           newEmail,
           newPassword
         }
       }
     });
 
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(2);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
+    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      handle: newHandle
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       email: newEmail
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
-      _id: userId,
-      firstName: newFirstName,
-      lastName: newLastName,
+      id: userId,
+      handle: newHandle,
       email: newEmail,
-      hashedPassword: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/),
-      systemCount,
-      constantSymbolCount,
-      variableSymbolCount,
-      distinctVariablePairCount,
-      constantVariablePairExpressionCount,
-      constantPrefixedExpressionCount,
-      standardExpressionCount
+      passwordHash: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
     });
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       data: {
-        updateUser: {
-          id: userId.toString(),
-          firstName: newFirstName,
-          lastName: newLastName,
-          email: newEmail,
-          systemCount,
-          constantSymbolCount,
-          variableSymbolCount,
-          distinctVariablePairCount,
-          constantVariablePairExpressionCount,
-          constantPrefixedExpressionCount,
-          standardExpressionCount
-        }
+        updateUser: instanceToPlain(updatedUser)
       }
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   afterAll(async (): Promise<void> => {

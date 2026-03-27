@@ -1,7 +1,7 @@
-import { MongoRepository, SaveOptions } from 'typeorm';
+import { Repository, SaveOptions } from 'typeorm';
 
 export const saveMock = (): jest.SpyInstance<Promise<any>, [entity: any, options?: SaveOptions | undefined], any> => {
-  const save = jest.spyOn(MongoRepository.prototype, 'save');
+  const save = jest.spyOn(Repository.prototype, 'save');
 
   beforeEach((): void => {
     save.mockReset();

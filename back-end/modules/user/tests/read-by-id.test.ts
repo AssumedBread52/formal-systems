@@ -1,11 +1,12 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
-import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
-import { ObjectId } from 'mongodb';
+import { instanceToPlain } from 'class-transformer';
 import * as request from 'supertest';
 
 describe('Read User by ID', (): void => {
@@ -17,121 +18,61 @@ describe('Read User by ID', (): void => {
     app = await createTestApp();
   });
 
-  it('GET /user/session-user', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const firstName = 'Test1';
-    const lastName = 'User1';
+  it('GET /user/:userId', async (): Promise<void> => {
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const handle = 'Test1 User1';
     const email = 'test1.user1@example.com';
-    const systemCount = 1;
-    const constantSymbolCount = 6;
-    const variableSymbolCount = 3;
-    const distinctVariablePairCount = 1;
-    const constantVariablePairExpressionCount = 5;
-    const constantPrefixedExpressionCount = 25;
-    const standardExpressionCount = 125;
-    const user = new MongoUserEntity();
-
-    user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashSync('Test1User1!');
-    user.systemCount = systemCount;
-    user.constantSymbolCount = constantSymbolCount;
-    user.variableSymbolCount = variableSymbolCount;
-    user.distinctVariablePairCount = distinctVariablePairCount;
-    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    user.standardExpressionCount = standardExpressionCount;
+    const user = validatePayload({
+      id: userId,
+      handle,
+      email,
+      passwordHash: hashSync('Test1User1!')
+    }, UserEntity);
 
     findOneBy.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).get(`/user/${userId}`);
 
-    const { statusCode, body } = response;
-
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
+      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
-      id: userId.toString(),
-      firstName,
-      lastName,
-      email,
-      systemCount,
-      constantSymbolCount,
-      variableSymbolCount,
-      distinctVariablePairCount,
-      constantVariablePairExpressionCount,
-      constantPrefixedExpressionCount,
-      standardExpressionCount
-    });
+    expect(response.body).toStrictEqual(instanceToPlain(user));
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
-  it('POST /graphql query sessionUser', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const firstName = 'Test1';
-    const lastName = 'User1';
+  it('POST /graphql query user', async (): Promise<void> => {
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const handle = 'Test1 User1';
     const email = 'test1.user1@example.com';
-    const systemCount = 1;
-    const constantSymbolCount = 6;
-    const variableSymbolCount = 3;
-    const distinctVariablePairCount = 1;
-    const constantVariablePairExpressionCount = 5;
-    const constantPrefixedExpressionCount = 25;
-    const standardExpressionCount = 125;
-    const user = new MongoUserEntity();
-
-    user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashSync('Test1User1!');
-    user.systemCount = systemCount;
-    user.constantSymbolCount = constantSymbolCount;
-    user.variableSymbolCount = variableSymbolCount;
-    user.distinctVariablePairCount = distinctVariablePairCount;
-    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    user.standardExpressionCount = standardExpressionCount;
+    const user = validatePayload({
+      id: userId,
+      handle,
+      email,
+      passwordHash: hashSync('Test1User1!')
+    }, UserEntity);
 
     findOneBy.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query user($userId: String!) { user(userId: $userId) { id firstName lastName email systemCount constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount } }',
+      query: 'query ($userId: String!) { user(userId: $userId) { id handle email } }',
       variables: {
         userId
       }
     });
 
-    const { statusCode, body } = response;
-
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
+      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       data: {
-        user: {
-          id: userId.toString(),
-          firstName,
-          lastName,
-          email,
-          systemCount,
-          constantSymbolCount,
-          variableSymbolCount,
-          distinctVariablePairCount,
-          constantVariablePairExpressionCount,
-          constantPrefixedExpressionCount,
-          standardExpressionCount
-        }
+        user: instanceToPlain(user)
       }
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   afterAll(async (): Promise<void> => {
