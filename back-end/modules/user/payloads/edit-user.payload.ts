@@ -7,7 +7,7 @@ export class EditUserPayload {
     return String;
   })
   @IsNotEmpty()
-  @MaxLength(32)
+  @MaxLength(50)
   public readonly newHandle: string = '';
   @Field((): typeof String => {
     return String;

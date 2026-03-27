@@ -5,7 +5,7 @@ export class AddUsersTable0000000000001 implements MigrationInterface {
     return queryRunner.query(`
       CREATE TABLE users (
         id            UUID          NOT NULL  DEFAULT gen_random_uuid(),
-        handle        VARCHAR(250)  NOT NULL,
+        handle        VARCHAR(50)   NOT NULL,
         email         VARCHAR(254)  NOT NULL,
         password_hash VARCHAR(60)   NOT NULL,
 

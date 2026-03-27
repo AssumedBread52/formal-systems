@@ -13,7 +13,7 @@ export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   public readonly id!: string;
   @Column({
-    length: 250,
+    length: 50,
     type: 'varchar',
     unique: true
   })
@@ -21,7 +21,7 @@ export class UserEntity {
     return String;
   })
   @IsNotEmpty()
-  @MaxLength(250)
+  @MaxLength(50)
   public handle: string = '';
   @Column({
     length: 254,
