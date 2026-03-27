@@ -1,13 +1,13 @@
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { accessMock } from '@/common/tests/mocks/access.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
+import { pingCheckMock } from '@/common/tests/mocks/ping-check.mock';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { constants } from 'fs/promises';
 import { join } from 'path';
 import { cwd } from 'process';
 import * as request from 'supertest';
-import { accessMock } from './mocks/access.mock';
-import { pingCheckMock } from './mocks/ping-check.mock';
 
 describe('Health Check', (): void => {
   const access = accessMock();
@@ -29,15 +29,12 @@ describe('Health Check', (): void => {
 
     const response = await request(app.getHttpServer()).get('/health');
 
-    const { statusCode, body } = response;
-
     expect(access).toHaveBeenCalledTimes(1);
     expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       componentStatusPayloads: [
         {
           componentType: 'database',
@@ -50,6 +47,7 @@ describe('Health Check', (): void => {
       ],
       healthStatus: 'up'
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   it('POST /graphql query healthCheck', async (): Promise<void> => {
@@ -64,15 +62,12 @@ describe('Health Check', (): void => {
       query: 'query { healthCheck { componentStatusPayloads { componentType healthStatus } healthStatus } }'
     });
 
-    const { statusCode, body } = response;
-
     expect(access).toHaveBeenCalledTimes(1);
     expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(pingCheck).toHaveBeenCalledTimes(1);
     expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       data: {
         healthCheck: {
           componentStatusPayloads: [
@@ -89,6 +84,7 @@ describe('Health Check', (): void => {
         }
       }
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   afterAll(async (): Promise<void> => {
