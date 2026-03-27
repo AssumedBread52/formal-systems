@@ -5,7 +5,7 @@ export const getOrThrowMock = (): jest.SpyInstance<unknown, [propertyPath: never
 
   beforeAll((): void => {
     getOrThrow.mockReturnValueOnce('test secret');
-    getOrThrow.mockReturnValueOnce('5s');
+    getOrThrow.mockReturnValueOnce(5);
     getOrThrow.mockReturnValueOnce('test secret');
   });
 
