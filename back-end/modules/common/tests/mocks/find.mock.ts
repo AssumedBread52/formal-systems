@@ -1,7 +1,7 @@
-import { FilterOperators, FindManyOptions, MongoRepository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 
-export const findMock = (): jest.SpyInstance<Promise<any[]>, [options?: FindManyOptions<any> | Partial<any> | FilterOperators<any> | undefined], any> => {
-  const find = jest.spyOn(MongoRepository.prototype, 'find');
+export const findMock = (): jest.SpyInstance<Promise<any[]>, [options?: FindManyOptions<any> | undefined], any> => {
+  const find = jest.spyOn(Repository.prototype, 'find');
 
   beforeEach((): void => {
     find.mockReset();
