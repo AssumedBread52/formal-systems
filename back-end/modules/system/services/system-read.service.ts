@@ -3,12 +3,13 @@ import { SystemEntity } from '@/system/entities/system.entity';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.payload';
 import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
-import { SystemRepository } from '@/system/repositories/system.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindOptionsWhere, ILike, In, Repository } from 'typeorm';
 
 @Injectable()
 export class SystemReadService {
-  public constructor(private readonly systemRepository: SystemRepository) {
+  public constructor(@InjectRepository(SystemEntity) private readonly repository: Repository<SystemEntity>) {
   }
 
   public async searchSystems(searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
@@ -18,11 +19,35 @@ export class SystemReadService {
       const take = validatedSearchSystemsPayload.pageSize;
       const skip = (validatedSearchSystemsPayload.page - 1) * validatedSearchSystemsPayload.pageSize;
 
-      const [systems, total] = await this.systemRepository.findAndCount({
+      const where = [] as FindOptionsWhere<SystemEntity>[];
+      const usersFilter = In(validatedSearchSystemsPayload.ownerUserIds);
+      const textFilter = ILike(`%${validatedSearchSystemsPayload.searchText}%`);
+      if (0 < validatedSearchSystemsPayload.searchText.length && 0 < validatedSearchSystemsPayload.ownerUserIds.length) {
+        where.push({
+          ownerUserId: usersFilter,
+          name: textFilter
+        });
+        where.push({
+          ownerUserId: usersFilter,
+          description: textFilter
+        });
+      } else if (0 < validatedSearchSystemsPayload.searchText.length) {
+        where.push({
+          name: textFilter
+        });
+        where.push({
+          description: textFilter
+        });
+      } else if (0 < validatedSearchSystemsPayload.ownerUserIds.length) {
+        where.push({
+          ownerUserId: usersFilter
+        });
+      }
+
+      const [systems, total] = await this.repository.findAndCount({
         skip,
         take,
-        keywords: validatedSearchSystemsPayload.keywords,
-        userIds: validatedSearchSystemsPayload.userIds
+        where
       });
 
       return new PaginatedSystemsPayload(systems, total);
@@ -33,7 +58,7 @@ export class SystemReadService {
 
   public async selectById(systemId: string): Promise<SystemEntity> {
     try {
-      const system = await this.systemRepository.findOneBy({
+      const system = await this.repository.findOneBy({
         id: systemId
       });
 
@@ -41,7 +66,7 @@ export class SystemReadService {
         throw new SystemNotFoundException();
       }
 
-      return system;
+      return validatePayload(system, SystemEntity);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;

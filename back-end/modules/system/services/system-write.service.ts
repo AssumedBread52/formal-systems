@@ -1,19 +1,18 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { SystemEntity } from '@/system/entities/system.entity';
-import { NotEmptyException } from '@/system/exceptions/not-empty.exception';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
-import { UniqueTitleException } from '@/system/exceptions/unique-title.exception';
+import { UniqueNameException } from '@/system/exceptions/unique-name.exception';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
-import { SystemRepository } from '@/system/repositories/system.repository';
 import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SystemWriteService {
-  public constructor(private readonly eventEmitter2: EventEmitter2, private readonly systemRepository: SystemRepository, private readonly userReadService: UserReadService) {
+  public constructor(private readonly userReadService: UserReadService, @InjectRepository(SystemEntity) private readonly repository: Repository<SystemEntity>) {
   }
 
   public async create(userId: string, newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
@@ -22,26 +21,24 @@ export class SystemWriteService {
 
       const user = await this.userReadService.selectById(userId);
 
-      const conflict = await this.systemRepository.findOneBy({
-        title: validatedNewSystemPayload.title,
-        createdByUserId: userId
+      const nameConflict = await this.repository.existsBy({
+        name: validatedNewSystemPayload.name,
+        ownerUserId: user.id
       });
 
-      if (conflict) {
-        throw new UniqueTitleException();
+      if (nameConflict) {
+        throw new UniqueNameException();
       }
 
       const system = new SystemEntity();
 
-      system.title = validatedNewSystemPayload.title;
+      system.ownerUserId = user.id;
+      system.name = validatedNewSystemPayload.name;
       system.description = validatedNewSystemPayload.description;
-      system.createdByUserId = user.id;
 
-      const savedSystem = await this.systemRepository.save(system);
+      const savedSystem = await this.repository.save(system);
 
-      await this.eventEmitter2.emitAsync('system.create.completed', savedSystem);
-
-      return savedSystem;
+      return validatePayload(savedSystem, SystemEntity);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
@@ -53,7 +50,7 @@ export class SystemWriteService {
 
   public async delete(userId: string, systemId: string): Promise<SystemEntity> {
     try {
-      const system = await this.systemRepository.findOneBy({
+      const system = await this.repository.findOneBy({
         id: systemId
       });
 
@@ -63,17 +60,13 @@ export class SystemWriteService {
 
       const user = await this.userReadService.selectById(userId);
 
-      if (user.id !== system.createdByUserId) {
+      if (user.id !== system.ownerUserId) {
         throw new OwnershipException();
       }
 
-      if (system.isNotEmpty()) {
-        throw new NotEmptyException();
-      }
+      const deletedSystem = await this.repository.remove(system);
 
-      const deletedSystem = await this.systemRepository.remove(system);
-
-      await this.eventEmitter2.emitAsync('system.delete.completed', deletedSystem);
+      deletedSystem.id = systemId;
 
       return deletedSystem;
     } catch (error: unknown) {
@@ -87,7 +80,7 @@ export class SystemWriteService {
 
   public async update(userId: string, systemId: string, editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
     try {
-      const system = await this.systemRepository.findOneBy({
+      const system = await this.repository.findOneBy({
         id: systemId
       });
 
@@ -97,27 +90,29 @@ export class SystemWriteService {
 
       const user = await this.userReadService.selectById(userId);
 
-      if (user.id !== system.createdByUserId) {
+      if (user.id !== system.ownerUserId) {
         throw new OwnershipException();
       }
 
       const validatedEditSystemPayload = validatePayload(editSystemPayload, EditSystemPayload);
 
-      if (validatedEditSystemPayload.newTitle !== system.title) {
-        const conflict = await this.systemRepository.findOneBy({
-          title: validatedEditSystemPayload.newTitle,
-          createdByUserId: user.id
+      if (validatedEditSystemPayload.newName !== system.name) {
+        const nameConflict = await this.repository.existsBy({
+          ownerUserId: user.id,
+          name: validatedEditSystemPayload.newName
         });
 
-        if (conflict) {
-          throw new UniqueTitleException();
+        if (nameConflict) {
+          throw new UniqueNameException();
         }
       }
 
-      system.title = validatedEditSystemPayload.newTitle;
+      system.name = validatedEditSystemPayload.newName;
       system.description = validatedEditSystemPayload.newDescription;
 
-      return this.systemRepository.save(system);
+      const updatedSystem = await this.repository.save(system);
+
+      return validatePayload(updatedSystem, SystemEntity);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
