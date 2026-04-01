@@ -46,49 +46,19 @@ export class SystemEntity {
   @IsNotEmpty()
   @MaxLength(5000)
   public description: string = '';
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public constantSymbolCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public variableSymbolCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public distinctVariablePairCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public constantVariablePairExpressionCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public constantPrefixedExpressionCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public standardExpressionCount: number = 0;
-  @Field((): typeof String => {
-    return String;
-  })
-  @IsMongoId()
-  public createdByUserId: string = '';
 
-  public isNotEmpty(): boolean {
-    return (0 < this.constantSymbolCount) || (0 < this.variableSymbolCount) || (0 < this.distinctVariablePairCount) || (0 < this.constantVariablePairExpressionCount) || (0 < this.constantPrefixedExpressionCount) || (0 < this.standardExpressionCount);
-  }
+  @Allow()
+  @Exclude()
+  @Field((): typeof UserEntity => {
+    return UserEntity;
+  })
+  @JoinColumn({
+    name: 'owner_user_id'
+  })
+  @ManyToOne((): typeof UserEntity => {
+    return UserEntity;
+  }, (user: UserEntity): Promise<SystemEntity[]> => {
+    return user.systems;
+  })
+  public readonly owner!: Promise<UserEntity>;
 };

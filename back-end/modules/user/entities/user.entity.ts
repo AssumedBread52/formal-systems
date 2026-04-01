@@ -1,7 +1,8 @@
+import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsUUID, Matches, MaxLength, MinLength } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Allow, IsEmail, IsNotEmpty, IsUUID, Matches, MaxLength, MinLength } from 'class-validator';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users')
 @ObjectType()
@@ -44,4 +45,16 @@ export class UserEntity {
   @MaxLength(60)
   @MinLength(60)
   public passwordHash: string = '';
+
+  @Allow()
+  @Exclude()
+  @Field((): [typeof SystemEntity] => {
+    return [SystemEntity];
+  })
+  @OneToMany((): typeof SystemEntity => {
+    return SystemEntity;
+  }, (system: SystemEntity): Promise<UserEntity> => {
+    return system.owner;
+  })
+  public readonly systems!: Promise<SystemEntity[]>;
 };
