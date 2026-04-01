@@ -3,6 +3,8 @@ import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { UserEntity } from '@/user/entities/user.entity';
 import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { NewUserPayload } from '@/user/payloads/new-user.payload';
+import { PaginatedUsersPayload } from '@/user/payloads/paginated-users.payload';
+import { SearchUsersPayload } from '@/user/payloads/search-users.payload';
 import { UserReadService } from '@/user/services/user-read.service';
 import { UserWriteService } from '@/user/services/user-write.service';
 import { UseGuards, ValidationPipe } from '@nestjs/common';
@@ -42,5 +44,12 @@ export class UserResolver {
   })
   public user(@Args('userId') userId: string): Promise<UserEntity> {
     return this.userReadService.selectById(userId);
+  }
+
+  @Query((): typeof PaginatedUsersPayload => {
+    return PaginatedUsersPayload;
+  })
+  public users(@Args('filters', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchUsersPayload: SearchUsersPayload): Promise<PaginatedUsersPayload> {
+    return this.userReadService.searchUsers(searchUsersPayload);
   }
 };
