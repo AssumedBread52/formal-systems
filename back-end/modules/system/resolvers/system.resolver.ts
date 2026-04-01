@@ -7,7 +7,7 @@ import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.pay
 import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
 import { SystemReadService } from '@/system/services/system-read.service';
 import { SystemWriteService } from '@/system/services/system-write.service';
-import { UseGuards, ValidationPipe } from '@nestjs/common';
+import { ParseUUIDPipe, UseGuards, ValidationPipe } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 @Resolver()
@@ -19,7 +19,7 @@ export class SystemResolver {
     return SystemEntity;
   })
   @UseGuards(JwtGuard)
-  public createSystem(@SessionUser('id') sessionUserId: string, @Args('systemPayload', new ValidationPipe({ transform: true })) newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
+  public createSystem(@SessionUser('id') sessionUserId: string, @Args('systemPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
     return this.systemWriteService.create(sessionUserId, newSystemPayload);
   }
 
@@ -27,21 +27,21 @@ export class SystemResolver {
     return SystemEntity;
   })
   @UseGuards(JwtGuard)
-  public deleteSystem(@SessionUser('id') sessionUserId: string, @Args('systemId') systemId: string): Promise<SystemEntity> {
+  public deleteSystem(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string): Promise<SystemEntity> {
     return this.systemWriteService.delete(sessionUserId, systemId);
   }
 
   @Query((): typeof SystemEntity => {
     return SystemEntity;
   })
-  public system(@Args('systemId') systemId: string): Promise<SystemEntity> {
+  public system(@Args('systemId', new ParseUUIDPipe()) systemId: string): Promise<SystemEntity> {
     return this.systemReadService.selectById(systemId);
   }
 
   @Query((): typeof PaginatedSystemsPayload => {
     return PaginatedSystemsPayload;
   })
-  public systems(@Args('filters', new ValidationPipe({ transform: true })) searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
+  public systems(@Args('filters', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
     return this.systemReadService.searchSystems(searchSystemsPayload);
   }
 
@@ -49,7 +49,7 @@ export class SystemResolver {
     return SystemEntity;
   })
   @UseGuards(JwtGuard)
-  public updateSystem(@SessionUser('id') sessionUserId: string, @Args('systemId') systemId: string, @Args('systemPayload', new ValidationPipe({ transform: true })) editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
+  public updateSystem(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('systemPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
     return this.systemWriteService.update(sessionUserId, systemId, editSystemPayload);
   }
 };
