@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, MaxLength } from 'class-validator';
 
 @InputType()
 export class NewSystemPayload {
@@ -7,10 +7,12 @@ export class NewSystemPayload {
     return String;
   })
   @IsNotEmpty()
-  public readonly title: string = '';
+  @MaxLength(200)
+  public readonly name: string = '';
   @Field((): typeof String => {
     return String;
   })
   @IsNotEmpty()
+  @MaxLength(5000)
   public readonly description: string = '';
 };
