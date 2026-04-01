@@ -1,6 +1,6 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
-import { ArrayUnique, IsArray, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
+import { ArrayUnique, IsArray, IsInt, IsString, IsUUID, Min } from 'class-validator';
 
 @InputType()
 export class SearchSystemsPayload {
@@ -27,17 +27,13 @@ export class SearchSystemsPayload {
     return [String];
   })
   @IsArray()
-  @IsNotEmpty({
+  @IsUUID('all', {
     each: true
   })
-  public readonly keywords: string[] = [];
-  @ArrayUnique()
-  @Field((): [typeof String] => {
-    return [String];
+  public readonly ownerUserIds: string[] = [];
+  @Field((): typeof String => {
+    return String;
   })
-  @IsArray()
-  @IsMongoId({
-    each: true
-  })
-  public readonly userIds: string[] = [];
+  @IsString()
+  public readonly searchText: string = '';
 };
