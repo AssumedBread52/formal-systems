@@ -19,7 +19,7 @@ export class UserResolver {
   @Mutation((): typeof UserEntity => {
     return UserEntity;
   })
-  public createUser(@Args('userPayload', new ValidationPipe({ transform: true })) newUserPayload: NewUserPayload, @Context('res') response: Response): Promise<UserEntity> {
+  public createUser(@Args('userPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newUserPayload: NewUserPayload, @Context('res') response: Response): Promise<UserEntity> {
     return this.userWriteService.signUp(newUserPayload, response);
   }
 
@@ -27,7 +27,7 @@ export class UserResolver {
     return UserEntity;
   })
   @UseGuards(JwtGuard)
-  public updateUser(@SessionUser() sessionUser: UserEntity, @Args('userPayload', new ValidationPipe({ transform: true })) editUserPayload: EditUserPayload): Promise<UserEntity> {
+  public updateUser(@SessionUser() sessionUser: UserEntity, @Args('userPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) editUserPayload: EditUserPayload): Promise<UserEntity> {
     return this.userWriteService.editProfile(sessionUser, editUserPayload);
   }
 

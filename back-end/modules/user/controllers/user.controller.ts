@@ -37,13 +37,13 @@ export class UserController {
   @Patch('session-user')
   @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  public patchSessionUser(@SessionUser() sessionUser: UserEntity, @Body(new ValidationPipe({ transform: true })) editUserPayload: EditUserPayload): Promise<UserEntity> {
+  public patchSessionUser(@SessionUser() sessionUser: UserEntity, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) editUserPayload: EditUserPayload): Promise<UserEntity> {
     return this.userWriteService.editProfile(sessionUser, editUserPayload);
   }
 
   @Post()
   @UseInterceptors(ClassSerializerInterceptor)
-  public postUser(@Body(new ValidationPipe({ transform: true })) newUserPayload: NewUserPayload, @Res({ passthrough: true }) response: Response): Promise<UserEntity> {
+  public postUser(@Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newUserPayload: NewUserPayload, @Res({ passthrough: true }) response: Response): Promise<UserEntity> {
     return this.userWriteService.signUp(newUserPayload, response);
   }
 };
