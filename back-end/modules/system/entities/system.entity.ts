@@ -1,22 +1,50 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
+import { UserEntity } from '@/user/entities/user.entity';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { Exclude } from 'class-transformer';
+import { Allow, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
+@Entity('systems')
 @ObjectType()
+@Unique('systems_owner_name_unique', [
+  'owner',
+  'name'
+])
 export class SystemEntity {
   @Field((): typeof String => {
     return String;
   })
-  @IsMongoId()
-  public id: string = '';
+  @IsUUID()
+  @PrimaryGeneratedColumn('uuid')
+  public id!: string;
+  @Column({
+    name: 'owner_user_id',
+    type: 'uuid'
+  })
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsUUID()
+  public ownerUserId: string = '';
+  @Column({
+    length: 200,
+    type: 'varchar'
+  })
   @Field((): typeof String => {
     return String;
   })
   @IsNotEmpty()
-  public title: string = '';
+  @MaxLength(200)
+  public name: string = '';
+  @Column({
+    length: 5000,
+    type: 'varchar'
+  })
   @Field((): typeof String => {
     return String;
   })
   @IsNotEmpty()
+  @MaxLength(5000)
   public description: string = '';
   @Field((): typeof Int => {
     return Int;
