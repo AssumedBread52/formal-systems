@@ -1,8 +1,8 @@
 import { UserModule } from '@/user/user.module';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SystemController } from './controllers/system.controller';
-import { MongoSystemEntity } from './entities/mongo-system.entity';
+import { SystemEntity } from './entities/system.entity';
 import { RelationsResolver } from './resolvers/relations.resolver';
 import { SystemResolver } from './resolvers/system.resolver';
 import { SystemReadService } from './services/system-read.service';
@@ -11,10 +11,12 @@ import { SystemsByOwnerService } from './services/systems-by-owner.service';
 
 @Module({
   imports: [
+    forwardRef((): typeof UserModule => {
+      return UserModule;
+    }),
     TypeOrmModule.forFeature([
-      MongoSystemEntity
-    ]),
-    UserModule
+      SystemEntity
+    ])
   ],
   controllers: [
     SystemController
