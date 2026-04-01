@@ -7,7 +7,7 @@ import { ExpressionModule } from '@/expression/expression.module';
 import { HealthModule } from '@/health/health.module';
 import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
-import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
+import { SystemEntity } from '@/system/entities/system.entity';
 import { SystemModule } from '@/system/system.module';
 import { UserEntity } from '@/user/entities/user.entity';
 import { UserModule } from '@/user/user.module';
@@ -47,7 +47,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
       SystemModule,
       UserModule
     ]
-  }).overrideProvider(getRepositoryToken(MongoExpressionEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoDistinctVariablePairEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSystemEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(UserEntity)).useClass(Repository).compile();
+  }).overrideProvider(getRepositoryToken(MongoExpressionEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoDistinctVariablePairEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(MongoSymbolEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(SystemEntity)).useClass(Repository).overrideProvider(getRepositoryToken(UserEntity)).useClass(Repository).compile();
 
   const app = testingModule.createNestApplication<NestExpressApplication>();
 
