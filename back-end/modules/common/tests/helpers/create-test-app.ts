@@ -12,7 +12,6 @@ import { SystemModule } from '@/system/system.module';
 import { UserEntity } from '@/user/entities/user.entity';
 import { UserModule } from '@/user/user.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GraphQLModule } from '@nestjs/graphql';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
@@ -27,7 +26,6 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
       AuthModule,
       DependencyModule,
       DistinctVariablePairModule,
-      EventEmitterModule.forRoot(),
       ExpressionModule,
       GraphQLModule.forRootAsync({
         driver: ApolloDriver,
