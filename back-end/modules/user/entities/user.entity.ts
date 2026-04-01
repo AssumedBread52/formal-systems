@@ -37,7 +37,7 @@ export class UserEntity {
   @Column({
     length: 60,
     name: 'password_hash',
-    type: 'varchar'
+    type: 'char'
   })
   @Exclude()
   @Matches(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
