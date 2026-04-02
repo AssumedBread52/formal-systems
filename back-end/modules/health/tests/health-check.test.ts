@@ -7,7 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { constants } from 'fs/promises';
 import { join } from 'path';
 import { cwd } from 'process';
-import * as request from 'supertest';
+import request from 'supertest';
 
 describe('Health Check', (): void => {
   const access = accessMock();
