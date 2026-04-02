@@ -1,7 +1,6 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
@@ -29,7 +28,6 @@ import { UserModule } from './user/user.module';
     }),
     DependencyModule,
     DistinctVariablePairModule,
-    EventEmitterModule.forRoot(),
     ExpressionModule,
     GraphQLModule.forRootAsync({
       driver: ApolloDriver,
