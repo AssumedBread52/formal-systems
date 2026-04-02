@@ -9,7 +9,7 @@ import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
 import { instanceToPlain } from 'class-transformer';
-import * as request from 'supertest';
+import request from 'supertest';
 import { In } from 'typeorm';
 
 describe('Relations', (): void => {

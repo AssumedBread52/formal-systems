@@ -2,7 +2,7 @@ import { UserEntity } from '@/user/entities/user.entity';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { HttpException, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as DataLoader from 'dataloader';
+import DataLoader from 'dataloader';
 import { In, Repository } from 'typeorm';
 
 @Injectable({

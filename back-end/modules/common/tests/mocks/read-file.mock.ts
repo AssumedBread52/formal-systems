@@ -1,6 +1,6 @@
 import { Abortable } from 'events';
 import { ObjectEncodingOptions, OpenMode, PathLike } from 'fs';
-import * as fsPromises from 'fs/promises';
+import fsPromises from 'fs/promises';
 
 export const readFileMock = (): jest.SpyInstance<Promise<string | Buffer<ArrayBuffer>>, [path: PathLike | fsPromises.FileHandle, options?: (ObjectEncodingOptions & Abortable & { flag?: OpenMode | undefined; }) | BufferEncoding | null | undefined], any> => {
   const readFile = jest.spyOn(fsPromises, 'readFile');

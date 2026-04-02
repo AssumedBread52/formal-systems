@@ -16,7 +16,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import { Request, Response } from 'express';
 import { MongoRepository, Repository } from 'typeorm';
 

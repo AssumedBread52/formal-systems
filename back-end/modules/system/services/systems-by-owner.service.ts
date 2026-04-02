@@ -1,7 +1,7 @@
 import { SystemEntity } from '@/system/entities/system.entity';
 import { HttpException, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as DataLoader from 'dataloader';
+import DataLoader from 'dataloader';
 import { In, Repository } from 'typeorm';
 
 @Injectable({

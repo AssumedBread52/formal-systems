@@ -3,7 +3,7 @@ import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { readFileMock } from '@/common/tests/mocks/read-file.mock';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import * as request from 'supertest';
+import request from 'supertest';
 
 describe('Read Dependencies', (): void => {
   const getOrThrow = getOrThrowMock();

@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
 import { instanceToPlain } from 'class-transformer';
-import * as request from 'supertest';
+import request from 'supertest';
 
 describe('Update Session User', (): void => {
   const existsBy = existsByMock();

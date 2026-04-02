@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
 import { instanceToPlain } from 'class-transformer';
-import * as request from 'supertest';
+import request from 'supertest';
 
 describe('Refresh Token', (): void => {
   const findOneBy = findOneByMock();

@@ -6,7 +6,7 @@ import { SystemEntity } from '@/system/entities/system.entity';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { instanceToPlain } from 'class-transformer';
-import * as request from 'supertest';
+import request from 'supertest';
 import { ILike, In } from 'typeorm';
 
 describe('Read Systems', (): void => {
