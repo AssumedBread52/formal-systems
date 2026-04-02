@@ -1,17 +1,20 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
-import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
-import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
+import { SystemEntity } from '@/system/entities/system.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
-import { ObjectId } from 'mongodb';
+import { instanceToPlain } from 'class-transformer';
 import * as request from 'supertest';
 
 describe('Create System', (): void => {
+  const existsBy = existsByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   const save = saveMock();
@@ -22,60 +25,26 @@ describe('Create System', (): void => {
   });
 
   it('POST /system', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const firstName = 'Test1';
-    const lastName = 'User1';
-    const email = 'test1.user1@example.com';
-    const hashedPassword = hashSync('TestUser1!');
-    const systemCount = 1;
-    const constantSymbolCount = 6;
-    const variableSymbolCount = 3;
-    const distinctVariablePairCount = 1;
-    const constantVariablePairExpressionCount = 5;
-    const constantPrefixedExpressionCount = 25;
-    const standardExpressionCount = 125;
-    const systemId = new ObjectId();
-    const title = 'TestSystem1';
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const name = 'TestSystem1';
     const description = 'Test System 1';
-    const user = new MongoUserEntity();
-    const updatedUser = new MongoUserEntity();
-    const system = new MongoSystemEntity();
+    const user = validatePayload({
+      id: userId,
+      handle: 'Test1 User1',
+      email: 'test1.user1@example.com',
+      passwordHash: hashSync('Test1User1!')
+    }, UserEntity);
+    const system = validatePayload({
+      id: '1222051d-2638-424f-a193-68b26615345a',
+      ownerUserId: userId,
+      name,
+      description
+    }, SystemEntity);
 
-    user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashedPassword;
-    user.systemCount = systemCount;
-    user.constantSymbolCount = constantSymbolCount;
-    user.variableSymbolCount = variableSymbolCount;
-    user.distinctVariablePairCount = distinctVariablePairCount;
-    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    user.standardExpressionCount = standardExpressionCount;
-    updatedUser._id = userId;
-    updatedUser.firstName = firstName;
-    updatedUser.lastName = lastName;
-    updatedUser.email = email;
-    updatedUser.hashedPassword = hashedPassword;
-    updatedUser.systemCount = systemCount + 1;
-    updatedUser.constantSymbolCount = constantSymbolCount;
-    updatedUser.variableSymbolCount = variableSymbolCount;
-    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
-    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    updatedUser.standardExpressionCount = standardExpressionCount;
-    system._id = systemId;
-    system.title = title;
-    system.description = description;
-    system.createdByUserId = userId;
-
+    existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
     save.mockResolvedValueOnce(system);
-    save.mockResolvedValueOnce(updatedUser);
 
     const token = app.get(JwtService).sign({
       userId
@@ -84,111 +53,54 @@ describe('Create System', (): void => {
     const response = await request(app.getHttpServer()).post('/system').set('Cookie', [
       `token=${token}`
     ]).send({
-      title,
+      name,
       description
     });
 
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      ownerUserId: userId,
+      name
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
+      id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      title,
-      createdByUserId: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      _id: userId
+      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(2);
+    expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
-      _id: expect.objectContaining(/^[0-9a-f]{24}$/),
-      title,
-      description,
-      constantSymbolCount: 0,
-      variableSymbolCount: 0,
-      distinctVariablePairCount: 0,
-      constantVariablePairExpressionCount: 0,
-      constantPrefixedExpressionCount: 0,
-      standardExpressionCount: 0,
-      createdByUserId: userId
+      ownerUserId: userId,
+      name,
+      description
     });
-    expect(save).toHaveBeenNthCalledWith(2, updatedUser);
-    expect(statusCode).toBe(HttpStatus.CREATED);
-    expect(body).toStrictEqual({
-      id: systemId.toString(),
-      title,
-      description,
-      constantSymbolCount: 0,
-      variableSymbolCount: 0,
-      distinctVariablePairCount: 0,
-      constantVariablePairExpressionCount: 0,
-      constantPrefixedExpressionCount: 0,
-      standardExpressionCount: 0,
-      createdByUserId: userId.toString()
-    });
+    expect(response.body).toStrictEqual(instanceToPlain(system));
+    expect(response.statusCode).toBe(HttpStatus.CREATED);
   });
 
   it('POST /graphql mutation createSystem', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const firstName = 'Test1';
-    const lastName = 'User1';
-    const email = 'test1.user1@example.com';
-    const hashedPassword = hashSync('TestUser1!');
-    const systemCount = 1;
-    const constantSymbolCount = 6;
-    const variableSymbolCount = 3;
-    const distinctVariablePairCount = 1;
-    const constantVariablePairExpressionCount = 5;
-    const constantPrefixedExpressionCount = 25;
-    const standardExpressionCount = 125;
-    const systemId = new ObjectId();
-    const title = 'TestSystem1';
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const name = 'TestSystem1';
     const description = 'Test System 1';
-    const user = new MongoUserEntity();
-    const updatedUser = new MongoUserEntity();
-    const system = new MongoSystemEntity();
+    const user = validatePayload({
+      id: userId,
+      handle: 'Test1 User1',
+      email: 'test1.user1@example.com',
+      passwordHash: hashSync('Test1User1!')
+    }, UserEntity);
+    const system = validatePayload({
+      id: '1222051d-2638-424f-a193-68b26615345a',
+      ownerUserId: userId,
+      name,
+      description
+    }, SystemEntity);
 
-    user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashedPassword;
-    user.systemCount = systemCount;
-    user.constantSymbolCount = constantSymbolCount;
-    user.variableSymbolCount = variableSymbolCount;
-    user.distinctVariablePairCount = distinctVariablePairCount;
-    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    user.standardExpressionCount = standardExpressionCount;
-    updatedUser._id = userId;
-    updatedUser.firstName = firstName;
-    updatedUser.lastName = lastName;
-    updatedUser.email = email;
-    updatedUser.hashedPassword = hashedPassword;
-    updatedUser.systemCount = systemCount + 1;
-    updatedUser.constantSymbolCount = constantSymbolCount;
-    updatedUser.variableSymbolCount = variableSymbolCount;
-    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
-    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    updatedUser.standardExpressionCount = standardExpressionCount;
-    system._id = systemId;
-    system.title = title;
-    system.description = description;
-    system.createdByUserId = userId;
-
+    existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(null);
     findOneBy.mockResolvedValueOnce(user);
     save.mockResolvedValueOnce(system);
-    save.mockResolvedValueOnce(updatedUser);
 
     const token = app.get(JwtService).sign({
       userId
@@ -197,63 +109,40 @@ describe('Create System', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation createSystem($systemPayload: NewSystemPayload!) { createSystem(systemPayload: $systemPayload) { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount createdByUserId } }',
+      query: 'mutation ($systemPayload: NewSystemPayload!) { createSystem(systemPayload: $systemPayload) { id ownerUserId name description } }',
       variables: {
         systemPayload: {
-          title,
+          name,
           description
         }
       }
     });
 
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      ownerUserId: userId,
+      name
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
+      id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      title,
-      createdByUserId: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      _id: userId
+      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(save).toHaveBeenCalledTimes(2);
+    expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
-      _id: expect.objectContaining(/^[0-9a-f]{24}$/),
-      title,
-      description,
-      constantSymbolCount: 0,
-      variableSymbolCount: 0,
-      distinctVariablePairCount: 0,
-      constantVariablePairExpressionCount: 0,
-      constantPrefixedExpressionCount: 0,
-      standardExpressionCount: 0,
-      createdByUserId: userId
+      ownerUserId: userId,
+      name,
+      description
     });
-    expect(save).toHaveBeenNthCalledWith(2, updatedUser);
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       data: {
-        createSystem: {
-          id: systemId.toString(),
-          title,
-          description,
-          constantSymbolCount: 0,
-          variableSymbolCount: 0,
-          distinctVariablePairCount: 0,
-          constantVariablePairExpressionCount: 0,
-          constantPrefixedExpressionCount: 0,
-          standardExpressionCount: 0,
-          createdByUserId: userId.toString()
-        }
+        createSystem: instanceToPlain(system)
       }
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   afterAll(async (): Promise<void> => {

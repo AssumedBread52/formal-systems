@@ -1,12 +1,13 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findAndCountMock } from '@/common/tests/mocks/find-and-count.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
-import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
+import { SystemEntity } from '@/system/entities/system.entity';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ObjectId } from 'mongodb';
+import { instanceToPlain } from 'class-transformer';
 import * as request from 'supertest';
-import { Filter } from 'typeorm';
+import { ILike, In } from 'typeorm';
 
 describe('Read Systems', (): void => {
   const findAndCount = findAndCountMock();
@@ -18,33 +19,17 @@ describe('Read Systems', (): void => {
   });
 
   it('GET /system', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const systemId = new ObjectId();
-    const title = 'TestSystem1';
-    const description = 'Test System 1';
-    const constantSymbolCount = 6;
-    const variableSymbolCount = 3;
-    const distinctVariablePairCount = 1;
-    const constantVariablePairExpressionCount = 5;
-    const constantPrefixedExpressionCount = 25;
-    const standardExpressionCount = 125;
-    const total = 1;
     const page = 2;
     const pageSize = 20;
-    const keywords = ['Test'];
-    const userIds = [userId];
-    const system = new MongoSystemEntity();
-
-    system._id = systemId;
-    system.title = title;
-    system.description = description;
-    system.constantSymbolCount = constantSymbolCount;
-    system.variableSymbolCount = variableSymbolCount;
-    system.distinctVariablePairCount = distinctVariablePairCount;
-    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    system.standardExpressionCount = standardExpressionCount;
-    system.createdByUserId = userId;
+    const searchText = 't S';
+    const total = 1;
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const system = validatePayload({
+      id: '1222051d-2638-424f-a193-68b26615345a',
+      ownerUserId: userId,
+      name: 'TestSystem1',
+      description: 'Test System 1'
+    }, SystemEntity);
 
     findAndCount.mockResolvedValueOnce([
       [
@@ -53,88 +38,55 @@ describe('Read Systems', (): void => {
       total
     ]);
 
-    const urlSearchParams = new URLSearchParams;
+    const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('page', page.toString());
     urlSearchParams.set('pageSize', pageSize.toString());
-    for (const keyword of keywords) {
-      urlSearchParams.append('keywords[]', keyword);
-    }
-    for (const userId of userIds) {
-      urlSearchParams.append('userIds[]', userId.toString());
-    }
+    urlSearchParams.set('ownerUserIds[]', userId);
+    urlSearchParams.set('searchText', searchText);
 
     const response = await request(app.getHttpServer()).get(`/system?${urlSearchParams}`);
-
-    const { statusCode, body } = response;
-
-    const where = {} as Filter<MongoSystemEntity>;
-    if (0 < keywords.length) {
-      where.$text = {
-        $caseSensitive: false,
-        $search: keywords.join(',')
-      };
-    }
-    if (0 < userIds.length) {
-      where.createdByUserId = {
-        $in: userIds
-      };
-    }
 
     expect(findAndCount).toHaveBeenCalledTimes(1);
     expect(findAndCount).toHaveBeenNthCalledWith(1, {
       skip: (page - 1) * pageSize,
       take: pageSize,
-      where
+      where: [
+        {
+          ownerUserId: In([
+            userId
+          ]),
+          name: ILike(`%${searchText}%`)
+        },
+        {
+          ownerUserId: In([
+            userId
+          ]),
+          description: ILike(`%${searchText}%`)
+        }
+      ]
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       results: [
-        {
-          id: systemId.toString(),
-          title,
-          description,
-          constantSymbolCount,
-          variableSymbolCount,
-          distinctVariablePairCount,
-          constantVariablePairExpressionCount,
-          constantPrefixedExpressionCount,
-          standardExpressionCount,
-          createdByUserId: userId.toString()
-        }
+        instanceToPlain(system)
       ],
       total
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   it('POST /graphql query systems', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const systemId = new ObjectId();
-    const title = 'TestSystem1';
-    const description = 'Test System 1';
-    const constantSymbolCount = 6;
-    const variableSymbolCount = 3;
-    const distinctVariablePairCount = 1;
-    const constantVariablePairExpressionCount = 5;
-    const constantPrefixedExpressionCount = 25;
-    const standardExpressionCount = 125;
-    const total = 21;
     const page = 2;
     const pageSize = 20;
-    const keywords = ['Test'];
-    const userIds = [userId];
-    const system = new MongoSystemEntity();
-
-    system._id = systemId;
-    system.title = title;
-    system.description = description;
-    system.constantSymbolCount = constantSymbolCount;
-    system.variableSymbolCount = variableSymbolCount;
-    system.distinctVariablePairCount = distinctVariablePairCount;
-    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    system.standardExpressionCount = standardExpressionCount;
-    system.createdByUserId = userId;
+    const searchText = 't S';
+    const total = 1;
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const system = validatePayload({
+      id: '1222051d-2638-424f-a193-68b26615345a',
+      ownerUserId: userId,
+      name: 'TestSystem1',
+      description: 'Test System 1'
+    }, SystemEntity);
 
     findAndCount.mockResolvedValueOnce([
       [
@@ -143,62 +95,57 @@ describe('Read Systems', (): void => {
       total
     ]);
 
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.set('page', page.toString());
+    urlSearchParams.set('pageSize', pageSize.toString());
+    urlSearchParams.set('ownerUserIds[]', userId);
+    urlSearchParams.set('searchText', searchText);
+
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query systems($filters: SearchSystemsPayload!) { systems(filters: $filters) { results { id title description constantSymbolCount variableSymbolCount distinctVariablePairCount constantVariablePairExpressionCount constantPrefixedExpressionCount standardExpressionCount createdByUserId } total } }',
+      query: 'query ($filters: SearchSystemsPayload!) { systems(filters: $filters) { results { id ownerUserId name description } total } }',
       variables: {
         filters: {
           page,
           pageSize,
-          keywords,
-          userIds
+          ownerUserIds: [
+            userId
+          ],
+          searchText
         }
       }
     });
-
-    const { statusCode, body } = response;
-
-    const where = {} as Filter<MongoSystemEntity>;
-    if (0 < keywords.length) {
-      where.$text = {
-        $caseSensitive: false,
-        $search: keywords.join(',')
-      };
-    }
-    if (0 < userIds.length) {
-      where.createdByUserId = {
-        $in: userIds
-      };
-    }
 
     expect(findAndCount).toHaveBeenCalledTimes(1);
     expect(findAndCount).toHaveBeenNthCalledWith(1, {
       skip: (page - 1) * pageSize,
       take: pageSize,
-      where
+      where: [
+        {
+          ownerUserId: In([
+            userId
+          ]),
+          name: ILike(`%${searchText}%`)
+        },
+        {
+          ownerUserId: In([
+            userId
+          ]),
+          description: ILike(`%${searchText}%`)
+        }
+      ]
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       data: {
         systems: {
           results: [
-            {
-              id: systemId.toString(),
-              title,
-              description,
-              constantSymbolCount,
-              variableSymbolCount,
-              distinctVariablePairCount,
-              constantVariablePairExpressionCount,
-              constantPrefixedExpressionCount,
-              standardExpressionCount,
-              createdByUserId: userId.toString()
-            }
+            instanceToPlain(system)
           ],
           total
         }
       }
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   afterAll(async (): Promise<void> => {
