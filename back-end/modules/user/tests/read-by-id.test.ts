@@ -20,12 +20,10 @@ describe('Read User by ID', (): void => {
 
   it('GET /user/:userId', async (): Promise<void> => {
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
-    const handle = 'Test1 User1';
-    const email = 'test1.user1@example.com';
     const user = validatePayload({
       id: userId,
-      handle,
-      email,
+      handle: 'Test1 User1',
+      email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
 
@@ -44,12 +42,10 @@ describe('Read User by ID', (): void => {
 
   it('POST /graphql query user', async (): Promise<void> => {
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
-    const handle = 'Test1 User1';
-    const email = 'test1.user1@example.com';
     const user = validatePayload({
       id: userId,
-      handle,
-      email,
+      handle: 'Test1 User1',
+      email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
 

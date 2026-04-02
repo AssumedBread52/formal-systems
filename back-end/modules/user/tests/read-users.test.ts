@@ -31,11 +31,6 @@ describe('Read Users', (): void => {
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
 
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.set('page', page.toString());
-    urlSearchParams.set('pageSize', pageSize.toString());
-    urlSearchParams.set('searchText', searchText);
-
     findAndCount.mockResolvedValueOnce([
       [
         user
@@ -43,12 +38,17 @@ describe('Read Users', (): void => {
       total
     ]);
 
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.set('page', page.toString());
+    urlSearchParams.set('pageSize', pageSize.toString());
+    urlSearchParams.set('searchText', searchText);
+
     const response = await request(app.getHttpServer()).get(`/user?${urlSearchParams}`);
 
     expect(findAndCount).toHaveBeenCalledTimes(1);
     expect(findAndCount).toHaveBeenNthCalledWith(1, {
-      skip: 20,
-      take: 20,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
       where: [
         {
           handle: ILike(`%${searchText}%`)
@@ -64,6 +64,68 @@ describe('Read Users', (): void => {
         instanceToPlain(user)
       ],
       total
+    });
+    expect(response.statusCode).toBe(HttpStatus.OK);
+  });
+
+  it('POST /graphql query systems', async (): Promise<void> => {
+    const page = 2;
+    const pageSize = 20;
+    const searchText = '1 User';
+    const total = 1;
+    const user = validatePayload({
+      id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+      handle: 'Test1 User1',
+      email: 'test1.user1@example.com',
+      passwordHash: hashSync('Test1User1!')
+    }, UserEntity);
+
+    findAndCount.mockResolvedValueOnce([
+      [
+        user
+      ],
+      total
+    ]);
+
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.set('page', page.toString());
+    urlSearchParams.set('pageSize', pageSize.toString());
+    urlSearchParams.set('searchText', searchText);
+
+    const response = await request(app.getHttpServer()).post('/graphql').send({
+      query: 'query ($filters: SearchUsersPayload!) { users(filters: $filters) { results { id handle email } total } }',
+      variables: {
+        filters: {
+          page,
+          pageSize,
+          searchText
+        }
+      }
+    });
+
+    expect(findAndCount).toHaveBeenCalledTimes(1);
+    expect(findAndCount).toHaveBeenNthCalledWith(1, {
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      where: [
+        {
+          handle: ILike(`%${searchText}%`)
+        },
+        {
+          email: ILike(`%${searchText}%`)
+        }
+      ]
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(response.body).toStrictEqual({
+      data: {
+        users: {
+          results: [
+            instanceToPlain(user)
+          ],
+          total
+        }
+      }
     });
     expect(response.statusCode).toBe(HttpStatus.OK);
   });

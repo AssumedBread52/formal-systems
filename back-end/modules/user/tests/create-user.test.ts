@@ -21,12 +21,11 @@ describe('Create User', (): void => {
   });
 
   it('POST /user', async (): Promise<void> => {
-    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
     const handle = 'Test1 User1';
     const email = 'test1.user1@example.com';
     const password = 'Test1User1!';
     const user = validatePayload({
-      id: userId,
+      id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
       handle,
       email,
       passwordHash: hashSync(password)
@@ -69,12 +68,11 @@ describe('Create User', (): void => {
   });
 
   it('POST /graphql mutation createUser', async (): Promise<void> => {
-    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
     const handle = 'Test1 User1';
     const email = 'test1.user1@example.com';
     const password = 'Test1User1!';
     const user = validatePayload({
-      id: userId,
+      id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
       handle,
       email,
       passwordHash: hashSync(password)
