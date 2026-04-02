@@ -5,7 +5,7 @@ import { AuthService } from '@/auth/services/auth.service';
 import { UserEntity } from '@/user/entities/user.entity';
 import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
-import { Response } from 'express';
+import type { Response } from 'express';
 
 @Resolver()
 export class AuthResolver {

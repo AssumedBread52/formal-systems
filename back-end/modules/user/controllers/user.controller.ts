@@ -8,7 +8,7 @@ import { SearchUsersPayload } from '@/user/payloads/search-users.payload';
 import { UserReadService } from '@/user/services/user-read.service';
 import { UserWriteService } from '@/user/services/user-write.service';
 import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Query, Res, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
 
 @Controller('user')
 export class UserController {

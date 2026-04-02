@@ -9,7 +9,7 @@ import { UserReadService } from '@/user/services/user-read.service';
 import { UserWriteService } from '@/user/services/user-write.service';
 import { UseGuards, ValidationPipe } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Response } from 'express';
+import type { Response } from 'express';
 
 @Resolver()
 export class UserResolver {
