@@ -6,6 +6,11 @@ module.exports = {
   },
   rootDir: '.',
   transform: {
-    '^.+\\.ts$': 'ts-jest'
+    '^.+\\.ts$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/tsconfig.debug.json'
+      }
+    ]
   }
 };
