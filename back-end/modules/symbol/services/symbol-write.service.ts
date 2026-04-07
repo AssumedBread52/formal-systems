@@ -30,7 +30,7 @@ export class SymbolWriteService {
 
       const nameConflict = await this.repository.existsBy({
         systemId: system.id,
-        name: validatedNewSymbolPayload.name,
+        name: validatedNewSymbolPayload.name
       });
 
       if (nameConflict) {
