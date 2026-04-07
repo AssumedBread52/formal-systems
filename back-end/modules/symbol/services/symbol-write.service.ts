@@ -10,11 +10,10 @@ import { SymbolRepository } from '@/symbol/repositories/symbol.repository';
 import { SystemReadService } from '@/system/services/system-read.service';
 import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class SymbolWriteService {
-  public constructor(private readonly eventEmitter2: EventEmitter2, private readonly symbolRepository: SymbolRepository, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService) {
+  public constructor(private readonly symbolRepository: SymbolRepository, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService) {
   }
 
   public async create(userId: string, systemId: string, newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
@@ -49,8 +48,6 @@ export class SymbolWriteService {
 
       const savedSymbol = await this.symbolRepository.save(symbol);
 
-      await this.eventEmitter2.emitAsync('symbol.create.completed', savedSymbol);
-
       return savedSymbol;
     } catch (error: unknown) {
       if (error instanceof HttpException) {
@@ -83,8 +80,6 @@ export class SymbolWriteService {
       }
 
       const deletedSymbol = await this.symbolRepository.remove(symbol);
-
-      await this.eventEmitter2.emitAsync('symbol.delete.completed', deletedSymbol);
 
       return deletedSymbol;
     } catch (error: unknown) {
@@ -140,8 +135,6 @@ export class SymbolWriteService {
       symbol.content = validatedEditSymbolPayload.newContent;
 
       const savedSymbol = await this.symbolRepository.save(symbol);
-
-      await this.eventEmitter2.emitAsync('symbol.update.completed', originalSymbol, savedSymbol);
 
       return savedSymbol;
     } catch (error: unknown) {
