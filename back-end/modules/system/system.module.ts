@@ -1,3 +1,4 @@
+import { SymbolModule } from '@/symbol/symbol.module';
 import { UserModule } from '@/user/user.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,6 +15,7 @@ import { SystemsByOwnerService } from './services/systems-by-owner.service';
     forwardRef((): typeof UserModule => {
       return UserModule;
     }),
+    SymbolModule,
     TypeOrmModule.forFeature([
       SystemEntity
     ])
