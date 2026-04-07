@@ -39,10 +39,15 @@ export class SymbolEntity {
   @IsNotEmpty()
   @MaxLength(200)
   public name: string = '';
+  @Column({
+    length: 5000,
+    type: 'varchar'
+  })
   @Field((): typeof String => {
     return String;
   })
   @IsNotEmpty()
+  @MaxLength(5000)
   public description: string = '';
   @Field((): typeof SymbolType => {
     return SymbolType;
