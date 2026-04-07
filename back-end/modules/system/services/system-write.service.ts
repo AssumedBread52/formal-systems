@@ -80,6 +80,8 @@ export class SystemWriteService {
 
   public async update(userId: string, systemId: string, editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
     try {
+      const validatedEditSystemPayload = validatePayload(editSystemPayload, EditSystemPayload);
+
       const system = await this.repository.findOneBy({
         id: systemId
       });
@@ -93,8 +95,6 @@ export class SystemWriteService {
       if (user.id !== system.ownerUserId) {
         throw new OwnershipException();
       }
-
-      const validatedEditSystemPayload = validatePayload(editSystemPayload, EditSystemPayload);
 
       if (validatedEditSystemPayload.newName !== system.name) {
         const nameConflict = await this.repository.existsBy({
