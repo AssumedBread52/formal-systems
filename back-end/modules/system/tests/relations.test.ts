@@ -67,8 +67,8 @@ describe('Relations', (): void => {
 
     expect(findBy).toHaveBeenCalledTimes(2);
     expect(findBy).toHaveBeenNthCalledWith(1, {
-      id: In([
-        userId
+      systemId: In([
+        systemId
       ])
     });
     expect(findBy).toHaveBeenNthCalledWith(2, {
