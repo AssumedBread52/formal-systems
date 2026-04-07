@@ -7,7 +7,7 @@ import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.pay
 import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SymbolWriteService } from '@/symbol/services/symbol-write.service';
-import { UseGuards, ValidationPipe } from '@nestjs/common';
+import { ParseUUIDPipe, UseGuards, ValidationPipe } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 @Resolver()
@@ -19,7 +19,7 @@ export class SymbolResolver {
     return SymbolEntity;
   })
   @UseGuards(JwtGuard)
-  public createSymbol(@SessionUser('id') sessionUserId: string, @Args('systemId') systemId: string, @Args('symbolPayload', new ValidationPipe({ transform: true })) newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
+  public createSymbol(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('symbolPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
     return this.symbolWriteService.create(sessionUserId, systemId, newSymbolPayload);
   }
 
@@ -27,21 +27,21 @@ export class SymbolResolver {
     return SymbolEntity;
   })
   @UseGuards(JwtGuard)
-  public deleteSymbol(@SessionUser('id') sessionUserId: string, @Args('systemId') systemId: string, @Args('symbolId') symbolId: string): Promise<SymbolEntity> {
+  public deleteSymbol(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('symbolId', new ParseUUIDPipe()) symbolId: string): Promise<SymbolEntity> {
     return this.symbolWriteService.delete(sessionUserId, systemId, symbolId);
   }
 
   @Query((): typeof SymbolEntity => {
     return SymbolEntity;
   })
-  public symbol(@Args('systemId') systemId: string, @Args('symbolId') symbolId: string): Promise<SymbolEntity> {
+  public symbol(@Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('symbolId', new ParseUUIDPipe()) symbolId: string): Promise<SymbolEntity> {
     return this.symbolReadService.selectById(systemId, symbolId);
   }
 
   @Query((): typeof PaginatedSymbolsPayload => {
     return PaginatedSymbolsPayload;
   })
-  public symbols(@Args('systemId') systemId: string, @Args('filters', new ValidationPipe({ transform: true })) searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedSymbolsPayload> {
+  public symbols(@Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('filters', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedSymbolsPayload> {
     return this.symbolReadService.searchSymbols(systemId, searchSymbolsPayload);
   }
 
@@ -49,7 +49,7 @@ export class SymbolResolver {
     return SymbolEntity;
   })
   @UseGuards(JwtGuard)
-  public updateSymbol(@SessionUser('id') sessionUserId: string, @Args('systemId') systemId: string, @Args('symbolId') symbolId: string, @Args('symbolPayload', new ValidationPipe({ transform: true })) editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
+  public updateSymbol(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('symbolId', new ParseUUIDPipe()) symbolId: string, @Args('symbolPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
     return this.symbolWriteService.update(sessionUserId, systemId, symbolId, editSymbolPayload);
   }
 };
