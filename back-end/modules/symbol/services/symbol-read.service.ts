@@ -72,7 +72,7 @@ export class SymbolReadService {
 
   public async selectById(systemId: string, symbolId: string): Promise<SymbolEntity> {
     try {
-      const symbol = await this.symbolRepository.findOneBy({
+      const symbol = await this.repository.findOneBy({
         id: symbolId,
         systemId
       });
@@ -81,48 +81,13 @@ export class SymbolReadService {
         throw new SymbolNotFoundException();
       }
 
-      return symbol;
+      return validatePayload(symbol, SymbolEntity);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
       }
 
       throw new InternalServerErrorException('Reading symbol failed');
-    }
-  }
-
-  public async selectByIds(systemId: string, symbolIds: string[]): Promise<SymbolEntity[]> {
-    try {
-      const uniqueSymbolIds = symbolIds.reduce((uniqueIds: string[], symbolId: string): string[] => {
-        if (!uniqueIds.includes(symbolId)) {
-          uniqueIds.push(symbolId);
-        }
-
-        return uniqueIds;
-      }, []);
-
-      const symbols = await this.symbolRepository.find({
-        ids: uniqueSymbolIds,
-        systemId
-      });
-
-      return symbolIds.map((symbolId: string): SymbolEntity => {
-        const symbol = symbols.find((symbol: SymbolEntity): boolean => {
-          return symbol.id === symbolId;
-        });
-
-        if (!symbol) {
-          throw new SymbolNotFoundException();
-        }
-
-        return symbol;
-      });
-    } catch (error: unknown) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      throw new InternalServerErrorException('Reading symbols failed');
     }
   }
 };
