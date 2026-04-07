@@ -1,10 +1,8 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
-import { InUseException } from '@/symbol/exceptions/in-use.exception';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
 import { UniqueNameException } from '@/symbol/exceptions/unique-name.exception';
-import { UniqueTitleException } from '@/symbol/exceptions/unique-title.exception';
 import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
 import { SystemReadService } from '@/system/services/system-read.service';
@@ -96,7 +94,7 @@ export class SymbolWriteService {
     try {
       const validatedEditSymbolPayload = validatePayload(editSymbolPayload, EditSymbolPayload);
 
-      const symbol = await this.symbolRepository.findOneBy({
+      const symbol = await this.repository.findOneBy({
         id: symbolId,
         systemId
       });
@@ -107,35 +105,31 @@ export class SymbolWriteService {
 
       const user = await this.userReadService.selectById(userId);
 
-      if (user.id !== symbol.createdByUserId) {
+      const system = await this.systemReadService.selectById(systemId);
+
+      if (user.id !== system.ownerUserId) {
         throw new OwnershipException();
       }
 
-      if (validatedEditSymbolPayload.newTitle !== symbol.title) {
-        const conflict = await this.symbolRepository.findOneBy({
-          title: validatedEditSymbolPayload.newTitle,
-          systemId
+      if (validatedEditSymbolPayload.newName !== symbol.name) {
+        const nameConflict = await this.repository.findOneBy({
+          systemId,
+          name: validatedEditSymbolPayload.newName
         });
 
-        if (conflict) {
-          throw new UniqueTitleException();
+        if (nameConflict) {
+          throw new UniqueNameException();
         }
       }
 
-      if (validatedEditSymbolPayload.newType !== symbol.type) {
-        if (symbol.isInUse()) {
-          throw new InUseException();
-        }
-      }
-
-      symbol.title = validatedEditSymbolPayload.newTitle;
+      symbol.name = validatedEditSymbolPayload.newName;
       symbol.description = validatedEditSymbolPayload.newDescription;
       symbol.type = validatedEditSymbolPayload.newType;
       symbol.content = validatedEditSymbolPayload.newContent;
 
-      const savedSymbol = await this.symbolRepository.save(symbol);
+      const updatedSymbol = await this.repository.save(symbol);
 
-      return savedSymbol;
+      return validatePayload(updatedSymbol, SymbolEntity);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
