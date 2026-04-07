@@ -49,7 +49,7 @@ export class SymbolReadService {
         });
         where.push({
           systemId,
-          type: typeFilter
+          content: textFilter
         });
       } else if (0 < validatedSearchSymbolsPayload.types.length) {
         where.push({
