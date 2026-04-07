@@ -1,6 +1,6 @@
 import { AuthModule } from '@/auth/auth.module';
 import { DependencyModule } from '@/dependency/dependency.module';
-import { MongoExpressionEntity } from '@/expression/entities/mongo-expression.entity';
+import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { ExpressionModule } from '@/expression/expression.module';
 import { HealthModule } from '@/health/health.module';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
@@ -16,7 +16,7 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import cookieParser from 'cookie-parser';
 import { Request, Response } from 'express';
-import { MongoRepository, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 export const createTestApp = async (): Promise<NestExpressApplication> => {
   const testingModule = await Test.createTestingModule({
@@ -44,7 +44,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
       SystemModule,
       UserModule
     ]
-  }).overrideProvider(getRepositoryToken(MongoExpressionEntity)).useClass(MongoRepository).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(Repository).overrideProvider(getRepositoryToken(SystemEntity)).useClass(Repository).overrideProvider(getRepositoryToken(UserEntity)).useClass(Repository).compile();
+  }).overrideProvider(getRepositoryToken(ExpressionEntity)).useClass(Repository).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(Repository).overrideProvider(getRepositoryToken(SystemEntity)).useClass(Repository).overrideProvider(getRepositoryToken(UserEntity)).useClass(Repository).compile();
 
   const app = testingModule.createNestApplication<NestExpressApplication>();
 
