@@ -61,7 +61,7 @@ export class SymbolWriteService {
 
   public async delete(userId: string, systemId: string, symbolId: string): Promise<SymbolEntity> {
     try {
-      const symbol = await this.symbolRepository.findOneBy({
+      const symbol = await this.repository.findOneBy({
         id: symbolId,
         systemId
       });
@@ -72,17 +72,17 @@ export class SymbolWriteService {
 
       const user = await this.userReadService.selectById(userId);
 
-      if (user.id !== symbol.createdByUserId) {
+      const system = await this.systemReadService.selectById(systemId);
+
+      if (user.id !== system.ownerUserId) {
         throw new OwnershipException();
       }
 
-      if (symbol.isInUse()) {
-        throw new InUseException();
-      }
+      const deletedSymbol = await this.repository.remove(symbol);
 
-      const deletedSymbol = await this.symbolRepository.remove(symbol);
+      deletedSymbol.id = symbolId;
 
-      return deletedSymbol;
+      return validatePayload(deletedSymbol, SymbolEntity);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
