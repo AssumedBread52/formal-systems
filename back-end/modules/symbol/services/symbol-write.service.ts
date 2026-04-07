@@ -112,7 +112,7 @@ export class SymbolWriteService {
       }
 
       if (validatedEditSymbolPayload.newName !== symbol.name) {
-        const nameConflict = await this.repository.findOneBy({
+        const nameConflict = await this.repository.existsBy({
           systemId,
           name: validatedEditSymbolPayload.newName
         });
