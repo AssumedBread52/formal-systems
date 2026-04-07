@@ -49,6 +49,11 @@ export class SymbolEntity {
   @IsNotEmpty()
   @MaxLength(5000)
   public description: string = '';
+  @Column({
+    enum: SymbolType,
+    enumName: 'symbol_type',
+    type: 'enum'
+  })
   @Field((): typeof SymbolType => {
     return SymbolType;
   })
