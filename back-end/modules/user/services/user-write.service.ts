@@ -22,21 +22,24 @@ export class UserWriteService {
       const validatedUser = validatePayload(user, UserEntity);
       const validatedEditUserPayload = validatePayload(editUserPayload, EditUserPayload);
 
-      const [handleConflict, emailConflict] = await Promise.all([
-        validatedEditUserPayload.newHandle !== validatedUser.handle ? this.repository.existsBy({
+      if (validatedEditUserPayload.newHandle !== validatedUser.handle) {
+        const handleConflict = await this.repository.existsBy({
           handle: validatedEditUserPayload.newHandle
-        }) : false,
-        validatedEditUserPayload.newEmail !== validatedUser.email ? this.repository.existsBy({
-          email: validatedEditUserPayload.newEmail
-        }) : false
-      ]);
+        });
 
-      if (handleConflict) {
-        throw new UniqueHandleException();
+        if (handleConflict) {
+          throw new UniqueHandleException();
+        }
       }
 
-      if (emailConflict) {
-        throw new UniqueEmailAddressException();
+      if (validatedEditUserPayload.newEmail !== validatedUser.email) {
+        const emailConflict = await this.repository.existsBy({
+          email: validatedEditUserPayload.newEmail
+        });
+
+        if (emailConflict) {
+          throw new UniqueEmailAddressException();
+        }
       }
 
       validatedUser.handle = validatedEditUserPayload.newHandle;
@@ -61,18 +64,17 @@ export class UserWriteService {
     try {
       const validatedNewUserPayload = validatePayload(newUserPayload, NewUserPayload);
 
-      const [handleConflict, emailConflict] = await Promise.all([
-        this.repository.existsBy({
-          handle: validatedNewUserPayload.handle
-        }),
-        this.repository.existsBy({
-          email: validatedNewUserPayload.email
-        })
-      ]);
+      const handleConflict = await this.repository.existsBy({
+        handle: validatedNewUserPayload.handle
+      });
 
       if (handleConflict) {
         throw new UniqueHandleException();
       }
+
+      const emailConflict = await this.repository.existsBy({
+        email: validatedNewUserPayload.email
+      });
 
       if (emailConflict) {
         throw new UniqueEmailAddressException();
