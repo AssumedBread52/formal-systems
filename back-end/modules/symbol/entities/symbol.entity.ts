@@ -1,7 +1,9 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IsEnum, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { Allow, IsEnum, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity('symbols')
 @ObjectType()
@@ -69,4 +71,19 @@ export class SymbolEntity {
   @IsNotEmpty()
   @MaxLength(250)
   public content: string = '';
+
+  @Allow()
+  @Exclude()
+  @Field((): typeof SystemEntity => {
+    return SystemEntity;
+  })
+  @JoinColumn({
+    name: 'system_id'
+  })
+  @ManyToOne((): typeof SystemEntity => {
+    return SystemEntity;
+  }, (system: SystemEntity): Promise<SymbolEntity[]> => {
+    return system.symbols;
+  })
+  public readonly system!: Promise<SystemEntity>;
 };

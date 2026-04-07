@@ -1,8 +1,9 @@
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
 import { Allow, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity('systems')
 @ObjectType()
@@ -61,4 +62,15 @@ export class SystemEntity {
     return user.systems;
   })
   public readonly owner!: Promise<UserEntity>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof SymbolEntity] => {
+    return [SymbolEntity];
+  })
+  @OneToMany((): typeof SymbolEntity => {
+    return SymbolEntity;
+  }, (symbol: SymbolEntity): Promise<SystemEntity> => {
+    return symbol.system;
+  })
+  public readonly symbols!: Promise<SymbolEntity[]>;
 };
