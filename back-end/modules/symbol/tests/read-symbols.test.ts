@@ -35,12 +35,9 @@ describe('Read Symbols', (): void => {
       content: '\\alpha'
     }, SymbolEntity);
 
-    findAndCount.mockResolvedValueOnce([
-      [
-        symbol
-      ],
-      total
-    ]);
+    findAndCount.mockResolvedValueOnce([[
+      symbol
+    ], total]);
 
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('page', page.toString());
@@ -95,9 +92,6 @@ describe('Read Symbols', (): void => {
     const total = 1;
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
     const type = SymbolType.variable;
-    const types = [
-      type
-    ];
     const symbol = validatePayload({
       id: '7bde3313-f751-42f0-8d89-88c4ab394282',
       systemId,
@@ -107,12 +101,9 @@ describe('Read Symbols', (): void => {
       content: '\\alpha'
     }, SymbolEntity);
 
-    findAndCount.mockResolvedValueOnce([
-      [
-        symbol
-      ],
-      total
-    ]);
+    findAndCount.mockResolvedValueOnce([[
+      symbol
+    ], total]);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
       query: 'query ($systemId: String!, $filters: SearchSymbolsPayload!) { symbols(systemId: $systemId, filters: $filters) { results { id systemId name description type content } total } }',
@@ -122,7 +113,9 @@ describe('Read Symbols', (): void => {
           page,
           pageSize,
           searchText,
-          types
+          types: [
+            type
+          ]
         }
       }
     });

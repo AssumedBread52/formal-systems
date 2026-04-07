@@ -59,7 +59,7 @@ describe('Relations', (): void => {
     findOneBy.mockResolvedValueOnce(system);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query ($systemId: String!) { system(systemId: $systemId) { id ownerUserId name description owner { id handle email } } }',
+      query: 'query ($systemId: String!) { system(systemId: $systemId) { id ownerUserId name description owner { id handle email } symbols { id systemId name description type content } } }',
       variables: {
         systemId
       }
@@ -67,10 +67,14 @@ describe('Relations', (): void => {
 
     expect(findBy).toHaveBeenCalledTimes(2);
     expect(findBy).toHaveBeenNthCalledWith(1, {
-      id: In([userId])
+      id: In([
+        userId
+      ])
     });
     expect(findBy).toHaveBeenNthCalledWith(2, {
-      id: In([userId])
+      id: In([
+        userId
+      ])
     });
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -85,7 +89,9 @@ describe('Relations', (): void => {
           name,
           description,
           owner: instanceToPlain(user),
-          symbols: [instanceToPlain(symbol)]
+          symbols: [
+            instanceToPlain(symbol)
+          ]
         }
       }
     });

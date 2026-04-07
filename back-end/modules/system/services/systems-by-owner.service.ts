@@ -21,7 +21,9 @@ export class SystemsByOwnerService {
         const systemsOwnedByUser = map.get(system.ownerUserId);
 
         if (!systemsOwnedByUser) {
-          map.set(system.ownerUserId, [system]);
+          map.set(system.ownerUserId, [
+            system
+          ]);
         } else {
           systemsOwnedByUser.push(system);
         }

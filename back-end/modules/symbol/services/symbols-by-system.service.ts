@@ -21,7 +21,9 @@ export class SymbolsBySystemService {
         const symbolsInSystem = map.get(symbol.systemId);
 
         if (!symbolsInSystem) {
-          map.set(symbol.systemId, [symbol]);
+          map.set(symbol.systemId, [
+            symbol
+          ]);
         } else {
           symbolsInSystem.push(symbol);
         }

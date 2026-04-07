@@ -31,12 +31,9 @@ describe('Read Systems', (): void => {
       description: 'Test System 1'
     }, SystemEntity);
 
-    findAndCount.mockResolvedValueOnce([
-      [
-        system
-      ],
-      total
-    ]);
+    findAndCount.mockResolvedValueOnce([[
+      system
+    ], total]);
 
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('page', page.toString());
@@ -88,12 +85,9 @@ describe('Read Systems', (): void => {
       description: 'Test System 1'
     }, SystemEntity);
 
-    findAndCount.mockResolvedValueOnce([
-      [
-        system
-      ],
-      total
-    ]);
+    findAndCount.mockResolvedValueOnce([[
+      system
+    ], total]);
 
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('page', page.toString());

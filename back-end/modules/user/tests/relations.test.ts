@@ -39,7 +39,9 @@ describe('Relations', (): void => {
       description: 'Test System 1'
     }, SystemEntity);
 
-    findBy.mockResolvedValueOnce([system]);
+    findBy.mockResolvedValueOnce([
+      system
+    ]);
     findOneBy.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
@@ -51,7 +53,9 @@ describe('Relations', (): void => {
 
     expect(findBy).toHaveBeenCalledTimes(1);
     expect(findBy).toHaveBeenNthCalledWith(1, {
-      ownerUserId: In([userId])
+      ownerUserId: In([
+        userId
+      ])
     });
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -64,7 +68,9 @@ describe('Relations', (): void => {
           id: userId,
           handle,
           email,
-          systems: [instanceToPlain(system)]
+          systems: [
+            instanceToPlain(system)
+          ]
         }
       }
     });

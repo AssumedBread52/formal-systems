@@ -31,12 +31,9 @@ describe('Read Users', (): void => {
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
 
-    findAndCount.mockResolvedValueOnce([
-      [
-        user
-      ],
-      total
-    ]);
+    findAndCount.mockResolvedValueOnce([[
+      user
+    ], total]);
 
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('page', page.toString());
@@ -80,12 +77,9 @@ describe('Read Users', (): void => {
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
 
-    findAndCount.mockResolvedValueOnce([
-      [
-        user
-      ],
-      total
-    ]);
+    findAndCount.mockResolvedValueOnce([[
+      user
+    ], total]);
 
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('page', page.toString());
