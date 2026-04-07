@@ -1,24 +1,23 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { removeMock } from '@/common/tests/mocks/remove.mock';
-import { saveMock } from '@/common/tests/mocks/save.mock';
-import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entity';
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { MongoSystemEntity } from '@/system/entities/mongo-system.entity';
-import { MongoUserEntity } from '@/user/entities/mongo-user.entity';
+import { SystemEntity } from '@/system/entities/system.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
-import { ObjectId } from 'mongodb';
-import * as request from 'supertest';
+import { instanceToPlain } from 'class-transformer';
+import request from 'supertest';
 
 describe('Delete Symbol', (): void => {
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   const remove = removeMock();
-  const save = saveMock();
   let app: NestExpressApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -26,101 +25,35 @@ describe('Delete Symbol', (): void => {
   });
 
   it('DELETE /system/:systemId/symbol/:symbolId', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const firstName = 'Test1';
-    const lastName = 'User1';
-    const email = 'test1.user1@example.com';
-    const hashedPassword = hashSync('TestUser1!');
-    const systemCount = 1;
-    const constantSymbolCount = 6;
-    const variableSymbolCount = 4;
-    const distinctVariablePairCount = 1;
-    const constantVariablePairExpressionCount = 5;
-    const constantPrefixedExpressionCount = 25;
-    const standardExpressionCount = 125;
-    const updatedVariableSymbolCount = variableSymbolCount - 1;
-    const systemId = new ObjectId();
-    const systemTitle = 'TestSystem1';
-    const systemDescription = 'Test System 1';
-    const symbolId = new ObjectId();
-    const title = 'TestSymbol1';
-    const description = 'Test Symbol 1';
-    const type = SymbolType.variable;
-    const content = '\\alpha';
-    const distinctVariablePairAppearanceCount = 0;
-    const constantVariablePairExpressionAppearanceCount = 0;
-    const constantPrefixedExpressionAppearanceCount = 0;
-    const standardExpressionAppearanceCount = 0;
-    const user = new MongoUserEntity();
-    const updatedUser = new MongoUserEntity();
-    const system = new MongoSystemEntity();
-    const updatedSystem = new MongoSystemEntity();
-    const symbol = new MongoSymbolEntity();
-
-    user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashedPassword;
-    user.systemCount = systemCount;
-    user.constantSymbolCount = constantSymbolCount;
-    user.variableSymbolCount = variableSymbolCount;
-    user.distinctVariablePairCount = distinctVariablePairCount;
-    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    user.standardExpressionCount = standardExpressionCount;
-    updatedUser._id = userId;
-    updatedUser.firstName = firstName;
-    updatedUser.lastName = lastName;
-    updatedUser.email = email;
-    updatedUser.hashedPassword = hashedPassword;
-    updatedUser.systemCount = systemCount;
-    updatedUser.constantSymbolCount = constantSymbolCount;
-    updatedUser.variableSymbolCount = updatedVariableSymbolCount;
-    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
-    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    updatedUser.standardExpressionCount = standardExpressionCount;
-    system._id = systemId;
-    system.title = systemTitle;
-    system.description = systemDescription;
-    system.constantSymbolCount = constantSymbolCount;
-    system.variableSymbolCount = variableSymbolCount;
-    system.distinctVariablePairCount = distinctVariablePairCount;
-    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    system.standardExpressionCount = standardExpressionCount;
-    system.createdByUserId = userId;
-    updatedSystem._id = systemId;
-    updatedSystem.title = systemTitle;
-    updatedSystem.description = systemDescription;
-    updatedSystem.constantSymbolCount = constantSymbolCount;
-    updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
-    updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
-    updatedSystem.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    updatedSystem.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    updatedSystem.standardExpressionCount = standardExpressionCount;
-    updatedSystem.createdByUserId = userId;
-    symbol._id = symbolId;
-    symbol.title = title;
-    symbol.description = description;
-    symbol.type = type;
-    symbol.content = content;
-    symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
-    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
-    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
-    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
-    symbol.systemId = systemId;
-    symbol.createdByUserId = userId;
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const systemId = '1222051d-2638-424f-a193-68b26615345a';
+    const symbolId = '7bde3313-f751-42f0-8d89-88c4ab394282';
+    const user = validatePayload({
+      id: userId,
+      handle: 'Test1 User1',
+      email: 'test1.user1@example.com',
+      passwordHash: hashSync('Test1User1!')
+    }, UserEntity);
+    const system = validatePayload({
+      id: systemId,
+      ownerUserId: userId,
+      name: 'TestSystem1',
+      description: 'Test System 1'
+    }, SystemEntity);
+    const symbol = validatePayload({
+      id: symbolId,
+      systemId,
+      name: 'TestSymbol1',
+      description: 'Test Symbol 1',
+      type: SymbolType.variable,
+      content: '\\alpha'
+    }, SymbolEntity);
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce(symbol);
-    save.mockResolvedValueOnce(updatedUser);
-    save.mockResolvedValueOnce(updatedSystem);
 
     const token = app.get(JwtService).sign({
       userId
@@ -130,143 +63,57 @@ describe('Delete Symbol', (): void => {
       `token=${token}`
     ]);
 
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(5);
+    expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
+      id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: symbolId,
+      id: symbolId,
       systemId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      _id: userId
+      id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      _id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(5, {
-      _id: systemId
+      id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(remove).toHaveBeenCalledTimes(1);
     expect(remove).toHaveBeenNthCalledWith(1, symbol);
-    expect(save).toHaveBeenCalledTimes(2);
-    expect(save).toHaveBeenNthCalledWith(1, updatedUser);
-    expect(save).toHaveBeenNthCalledWith(2, updatedSystem);
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
-      id: symbolId.toString(),
-      title,
-      description,
-      type,
-      content,
-      distinctVariablePairAppearanceCount,
-      constantVariablePairExpressionAppearanceCount,
-      constantPrefixedExpressionAppearanceCount,
-      standardExpressionAppearanceCount,
-      systemId: systemId.toString(),
-      createdByUserId: userId.toString()
-    });
+    expect(response.body).toStrictEqual(instanceToPlain(symbol));
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   it('POST /graphql mutation deleteSymbol', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const firstName = 'Test1';
-    const lastName = 'User1';
-    const email = 'test1.user1@example.com';
-    const hashedPassword = hashSync('TestUser1!');
-    const systemCount = 1;
-    const constantSymbolCount = 6;
-    const variableSymbolCount = 4;
-    const distinctVariablePairCount = 1;
-    const constantVariablePairExpressionCount = 5;
-    const constantPrefixedExpressionCount = 25;
-    const standardExpressionCount = 125;
-    const updatedVariableSymbolCount = variableSymbolCount - 1;
-    const systemId = new ObjectId();
-    const systemTitle = 'TestSystem1';
-    const systemDescription = 'Test System 1';
-    const symbolId = new ObjectId();
-    const title = 'TestSymbol1';
-    const description = 'Test Symbol 1';
-    const type = SymbolType.variable;
-    const content = '\\alpha';
-    const distinctVariablePairAppearanceCount = 0;
-    const constantVariablePairExpressionAppearanceCount = 0;
-    const constantPrefixedExpressionAppearanceCount = 0;
-    const standardExpressionAppearanceCount = 0;
-    const user = new MongoUserEntity();
-    const updatedUser = new MongoUserEntity();
-    const system = new MongoSystemEntity();
-    const updatedSystem = new MongoSystemEntity();
-    const symbol = new MongoSymbolEntity();
-
-    user._id = userId;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
-    user.hashedPassword = hashedPassword;
-    user.systemCount = systemCount;
-    user.constantSymbolCount = constantSymbolCount;
-    user.variableSymbolCount = variableSymbolCount;
-    user.distinctVariablePairCount = distinctVariablePairCount;
-    user.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    user.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    user.standardExpressionCount = standardExpressionCount;
-    updatedUser._id = userId;
-    updatedUser.firstName = firstName;
-    updatedUser.lastName = lastName;
-    updatedUser.email = email;
-    updatedUser.hashedPassword = hashedPassword;
-    updatedUser.systemCount = systemCount;
-    updatedUser.constantSymbolCount = constantSymbolCount;
-    updatedUser.variableSymbolCount = updatedVariableSymbolCount;
-    updatedUser.distinctVariablePairCount = distinctVariablePairCount;
-    updatedUser.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    updatedUser.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    updatedUser.standardExpressionCount = standardExpressionCount;
-    system._id = systemId;
-    system.title = systemTitle;
-    system.description = systemDescription;
-    system.constantSymbolCount = constantSymbolCount;
-    system.variableSymbolCount = variableSymbolCount;
-    system.distinctVariablePairCount = distinctVariablePairCount;
-    system.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    system.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    system.standardExpressionCount = standardExpressionCount;
-    system.createdByUserId = userId;
-    updatedSystem._id = systemId;
-    updatedSystem.title = systemTitle;
-    updatedSystem.description = systemDescription;
-    updatedSystem.constantSymbolCount = constantSymbolCount;
-    updatedSystem.variableSymbolCount = updatedVariableSymbolCount;
-    updatedSystem.distinctVariablePairCount = distinctVariablePairCount;
-    updatedSystem.constantVariablePairExpressionCount = constantVariablePairExpressionCount;
-    updatedSystem.constantPrefixedExpressionCount = constantPrefixedExpressionCount;
-    updatedSystem.standardExpressionCount = standardExpressionCount;
-    updatedSystem.createdByUserId = userId;
-    symbol._id = symbolId;
-    symbol.title = title;
-    symbol.description = description;
-    symbol.type = type;
-    symbol.content = content;
-    symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
-    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
-    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
-    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
-    symbol.systemId = systemId;
-    symbol.createdByUserId = userId;
+    const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+    const systemId = '1222051d-2638-424f-a193-68b26615345a';
+    const symbolId = '7bde3313-f751-42f0-8d89-88c4ab394282';
+    const user = validatePayload({
+      id: userId,
+      handle: 'Test1 User1',
+      email: 'test1.user1@example.com',
+      passwordHash: hashSync('Test1User1!')
+    }, UserEntity);
+    const system = validatePayload({
+      id: systemId,
+      ownerUserId: userId,
+      name: 'TestSystem1',
+      description: 'Test System 1'
+    }, SystemEntity);
+    const symbol = validatePayload({
+      id: symbolId,
+      systemId,
+      name: 'TestSymbol1',
+      description: 'Test Symbol 1',
+      type: SymbolType.variable,
+      content: '\\alpha'
+    }, SymbolEntity);
 
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce(symbol);
-    save.mockResolvedValueOnce(updatedUser);
-    save.mockResolvedValueOnce(updatedSystem);
 
     const token = app.get(JwtService).sign({
       userId
@@ -275,56 +122,36 @@ describe('Delete Symbol', (): void => {
     const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
       `token=${token}`
     ]).send({
-      query: 'mutation deleteSymbol($systemId: String!, $symbolId: String!) { deleteSymbol(systemId: $systemId, symbolId: $symbolId) { id title description type content distinctVariablePairAppearanceCount constantVariablePairExpressionAppearanceCount constantPrefixedExpressionAppearanceCount standardExpressionAppearanceCount systemId createdByUserId } }',
+      query: 'mutation ($systemId: String!, $symbolId: String!) { deleteSymbol(systemId: $systemId, symbolId: $symbolId) { id systemId name description type content } }',
       variables: {
         systemId,
         symbolId
       }
     });
 
-    const { statusCode, body } = response;
-
-    expect(findOneBy).toHaveBeenCalledTimes(5);
+    expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      _id: userId
+      id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      _id: symbolId,
+      id: symbolId,
       systemId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      _id: userId
+      id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      _id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(5, {
-      _id: systemId
+      id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(remove).toHaveBeenCalledTimes(1);
     expect(remove).toHaveBeenNthCalledWith(1, symbol);
-    expect(save).toHaveBeenCalledTimes(2);
-    expect(save).toHaveBeenNthCalledWith(1, updatedUser);
-    expect(save).toHaveBeenNthCalledWith(2, updatedSystem);
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       data: {
-        deleteSymbol: {
-          id: symbolId.toString(),
-          title,
-          description,
-          type,
-          content,
-          distinctVariablePairAppearanceCount,
-          constantVariablePairExpressionAppearanceCount,
-          constantPrefixedExpressionAppearanceCount,
-          standardExpressionAppearanceCount,
-          systemId: systemId.toString(),
-          createdByUserId: userId.toString()
-        }
+        deleteSymbol: instanceToPlain(symbol)
       }
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   afterAll(async (): Promise<void> => {

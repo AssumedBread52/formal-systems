@@ -1,13 +1,14 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findAndCountMock } from '@/common/tests/mocks/find-and-count.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
-import { MongoSymbolEntity } from '@/symbol/entities/mongo-symbol.entity';
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ObjectId } from 'mongodb';
-import * as request from 'supertest';
-import { Filter } from 'typeorm';
+import { instanceToPlain } from 'class-transformer';
+import request from 'supertest';
+import { ILike, In } from 'typeorm';
 
 describe('Read Symbols', (): void => {
   const findAndCount = findAndCountMock();
@@ -19,35 +20,20 @@ describe('Read Symbols', (): void => {
   });
 
   it('GET /system/:systemId/symbol', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const systemId = new ObjectId();
-    const symbolId = new ObjectId();
-    const title = 'TestSymbol1';
-    const description = 'Test Symbol 1';
-    const type = SymbolType.variable;
-    const content = '\\alpha';
-    const distinctVariablePairAppearanceCount = 1;
-    const constantVariablePairExpressionAppearanceCount = 5;
-    const constantPrefixedExpressionAppearanceCount = 25;
-    const standardExpressionAppearanceCount = 125;
-    const total = 21;
     const page = 2;
     const pageSize = 20;
-    const keywords = ['Test'];
-    const types = [SymbolType.variable];
-    const symbol = new MongoSymbolEntity();
-
-    symbol._id = symbolId;
-    symbol.title = title;
-    symbol.description = description;
-    symbol.type = type;
-    symbol.content = content;
-    symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
-    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
-    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
-    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
-    symbol.systemId = systemId;
-    symbol.createdByUserId = userId;
+    const searchText = 't S';
+    const total = 1;
+    const systemId = '1222051d-2638-424f-a193-68b26615345a';
+    const type = SymbolType.variable;
+    const symbol = validatePayload({
+      id: '7bde3313-f751-42f0-8d89-88c4ab394282',
+      systemId,
+      name: 'TestSymbol1',
+      description: 'Test Symbol 1',
+      type,
+      content: '\\alpha'
+    }, SymbolEntity);
 
     findAndCount.mockResolvedValueOnce([
       [
@@ -56,93 +42,70 @@ describe('Read Symbols', (): void => {
       total
     ]);
 
-    const urlSearchParams = new URLSearchParams;
+    const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('page', page.toString());
     urlSearchParams.set('pageSize', pageSize.toString());
-    for (const keyword of keywords) {
-      urlSearchParams.append('keywords[]', keyword);
-    }
-    for (const type of types) {
-      urlSearchParams.append('types[]', type);
-    }
+    urlSearchParams.set('searchText', searchText);
+    urlSearchParams.set('types[]', type);
 
     const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol?${urlSearchParams}`);
-
-    const { statusCode, body } = response;
-
-    const where = {
-      systemId
-    } as Filter<MongoSymbolEntity>;
-    if (0 < keywords.length) {
-      where.$text = {
-        $caseSensitive: false,
-        $search: keywords.join(',')
-      };
-    }
-    if (0 < types.length) {
-      where.type = {
-        $in: types
-      };
-    }
 
     expect(findAndCount).toHaveBeenCalledTimes(1);
     expect(findAndCount).toHaveBeenNthCalledWith(1, {
       skip: (page - 1) * pageSize,
       take: pageSize,
-      where
+      where: [
+        {
+          systemId,
+          name: ILike(`%${searchText}%`),
+          type: In([
+            type
+          ])
+        },
+        {
+          systemId,
+          description: ILike(`%${searchText}%`),
+          type: In([
+            type
+          ])
+        },
+        {
+          systemId,
+          type: In([
+            type
+          ]),
+          content: ILike(`%${searchText}%`)
+        }
+      ]
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       results: [
-        {
-          id: symbolId.toString(),
-          title,
-          description,
-          type,
-          content,
-          distinctVariablePairAppearanceCount,
-          constantVariablePairExpressionAppearanceCount,
-          constantPrefixedExpressionAppearanceCount,
-          standardExpressionAppearanceCount,
-          systemId: systemId.toString(),
-          createdByUserId: userId.toString()
-        }
+        instanceToPlain(symbol)
       ],
       total
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
-  it ('POST /graphql query symbols', async (): Promise<void> => {
-    const userId = new ObjectId();
-    const systemId = new ObjectId();
-    const symbolId = new ObjectId();
-    const title = 'TestSymbol1';
-    const description = 'Test Symbol 1';
-    const type = SymbolType.variable;
-    const content = '\\alpha';
-    const distinctVariablePairAppearanceCount = 1;
-    const constantVariablePairExpressionAppearanceCount = 5;
-    const constantPrefixedExpressionAppearanceCount = 25;
-    const standardExpressionAppearanceCount = 125;
-    const total = 1;
+  it('POST /graphql query symbols', async (): Promise<void> => {
     const page = 2;
     const pageSize = 20;
-    const keywords = ['Test'];
-    const types = [SymbolType.variable];
-    const symbol = new MongoSymbolEntity();
-
-    symbol._id = symbolId;
-    symbol.title = title;
-    symbol.description = description;
-    symbol.type = type;
-    symbol.content = content;
-    symbol.distinctVariablePairAppearanceCount = distinctVariablePairAppearanceCount;
-    symbol.constantVariablePairExpressionAppearanceCount = constantVariablePairExpressionAppearanceCount;
-    symbol.constantPrefixedExpressionAppearanceCount = constantPrefixedExpressionAppearanceCount;
-    symbol.standardExpressionAppearanceCount = standardExpressionAppearanceCount;
-    symbol.systemId = systemId;
-    symbol.createdByUserId = userId;
+    const searchText = 't S';
+    const total = 1;
+    const systemId = '1222051d-2638-424f-a193-68b26615345a';
+    const type = SymbolType.variable;
+    const types = [
+      type
+    ];
+    const symbol = validatePayload({
+      id: '7bde3313-f751-42f0-8d89-88c4ab394282',
+      systemId,
+      name: 'TestSymbol1',
+      description: 'Test Symbol 1',
+      type,
+      content: '\\alpha'
+    }, SymbolEntity);
 
     findAndCount.mockResolvedValueOnce([
       [
@@ -152,65 +115,58 @@ describe('Read Symbols', (): void => {
     ]);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query symbols($systemId: String!, $filters: SearchSymbolsPayload!) { symbols(systemId: $systemId, filters: $filters) { results { id title description type content distinctVariablePairAppearanceCount constantVariablePairExpressionAppearanceCount constantPrefixedExpressionAppearanceCount standardExpressionAppearanceCount systemId createdByUserId } total } }',
+      query: 'query ($systemId: String!, $filters: SearchSymbolsPayload!) { symbols(systemId: $systemId, filters: $filters) { results { id systemId name description type content } total } }',
       variables: {
         systemId,
         filters: {
           page,
           pageSize,
-          keywords,
+          searchText,
           types
         }
       }
     });
 
-    const { statusCode, body } = response;
-
-    const where = {
-      systemId
-    } as Filter<MongoSymbolEntity>;
-    if (0 < keywords.length) {
-      where.$text = {
-        $caseSensitive: false,
-        $search: keywords.join(',')
-      };
-    }
-    if (0 < types.length) {
-      where.type = {
-        $in: types
-      };
-    }
-
     expect(findAndCount).toHaveBeenCalledTimes(1);
     expect(findAndCount).toHaveBeenNthCalledWith(1, {
       skip: (page - 1) * pageSize,
       take: pageSize,
-      where
+      where: [
+        {
+          systemId,
+          name: ILike(`%${searchText}%`),
+          type: In([
+            type
+          ])
+        },
+        {
+          systemId,
+          description: ILike(`%${searchText}%`),
+          type: In([
+            type
+          ])
+        },
+        {
+          systemId,
+          type: In([
+            type
+          ]),
+          content: ILike(`%${searchText}%`)
+        }
+      ]
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(statusCode).toBe(HttpStatus.OK);
-    expect(body).toStrictEqual({
+    expect(response.body).toStrictEqual({
       data: {
         symbols: {
           results: [
-            {
-              id: symbolId.toString(),
-              title,
-              description,
-              type,
-              content,
-              distinctVariablePairAppearanceCount,
-              constantVariablePairExpressionAppearanceCount,
-              constantPrefixedExpressionAppearanceCount,
-              standardExpressionAppearanceCount,
-              systemId: systemId.toString(),
-              createdByUserId: userId.toString()
-            }
+            instanceToPlain(symbol)
           ],
           total
         }
       }
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   afterAll(async (): Promise<void> => {

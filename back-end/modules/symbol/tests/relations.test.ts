@@ -1,15 +1,19 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { findByMock } from '@/common/tests/mocks/find-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { SystemEntity } from '@/system/entities/system.entity';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
+import { In } from 'typeorm';
 
-describe('Read Symbol by ID', (): void => {
+describe('Relations', (): void => {
+  const findBy = findByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   let app: NestExpressApplication;
@@ -18,54 +22,47 @@ describe('Read Symbol by ID', (): void => {
     app = await createTestApp();
   });
 
-  it('GET /system/:systemId/symbol/:symbolId', async (): Promise<void> => {
-    const systemId = '1222051d-2638-424f-a193-68b26615345a';
-    const symbolId = '7bde3313-f751-42f0-8d89-88c4ab394282';
-    const symbol = validatePayload({
-      id: symbolId,
-      systemId,
-      name: 'TestSymbol1',
-      description: 'Test Symbol 1',
-      type: SymbolType.variable,
-      content: '\\alpha'
-    }, SymbolEntity);
-
-    findOneBy.mockResolvedValueOnce(symbol);
-
-    const response = await request(app.getHttpServer()).get(`/system/${systemId}/symbol/${symbolId}`);
-
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      id: symbolId,
-      systemId
-    });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(response.body).toStrictEqual(instanceToPlain(symbol));
-    expect(response.statusCode).toBe(HttpStatus.OK);
-  });
-
   it('POST /graphql query symbol', async (): Promise<void> => {
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
     const symbolId = '7bde3313-f751-42f0-8d89-88c4ab394282';
+    const name = 'TestSymbol1';
+    const description = 'Test Symbol 1';
+    const type = SymbolType.constant;
+    const content = 'test-content';
+    const system = validatePayload({
+      id: systemId,
+      ownerUserId: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+      name: 'TestSystem1',
+      description: 'Test System 1'
+    }, SystemEntity);
     const symbol = validatePayload({
       id: symbolId,
       systemId,
-      name: 'TestSymbol1',
-      description: 'Test Symbol 1',
-      type: SymbolType.variable,
-      content: '\\alpha'
+      name,
+      description,
+      type,
+      content
     }, SymbolEntity);
 
+    findBy.mockResolvedValueOnce([
+      system
+    ]);
     findOneBy.mockResolvedValueOnce(symbol);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query ($systemId: String!, $symbolId: String!) { symbol(systemId: $systemId, symbolId: $symbolId) { id systemId name description type content } }',
+      query: 'query ($systemId: String!, $symbolId: String!) { symbol(systemId: $systemId, symbolId: $symbolId) { id systemId name description type content system { id ownerUserId name description } } }',
       variables: {
         systemId,
         symbolId
       }
     });
 
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      id: In([
+        systemId
+      ])
+    });
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: symbolId,
@@ -74,13 +71,21 @@ describe('Read Symbol by ID', (): void => {
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(response.body).toStrictEqual({
       data: {
-        symbol: instanceToPlain(symbol)
+        symbol: {
+          id: symbolId,
+          systemId,
+          name,
+          description,
+          type,
+          content,
+          system: instanceToPlain(system)
+        }
       }
     });
     expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
-  afterAll(async (): Promise<void> => {
+  afterAll(async(): Promise<void> => {
     await app.close();
   });
 });
