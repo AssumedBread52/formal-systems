@@ -59,10 +59,15 @@ export class SymbolEntity {
   })
   @IsEnum(SymbolType)
   public type: SymbolType = SymbolType.constant;
+  @Column({
+    length: 250,
+    type: 'varchar'
+  })
   @Field((): typeof String => {
     return String;
   })
   @IsNotEmpty()
+  @MaxLength(250)
   public content: string = '';
   @Field((): typeof Int => {
     return Int;
