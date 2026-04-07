@@ -14,10 +14,8 @@ export class UserBySystemService {
 
   public readonly loader = new DataLoader(async (ownerUserIds: readonly string[]): Promise<UserEntity[]> => {
     try {
-      const users = await this.repository.find({
-        where: {
-          id: In(ownerUserIds)
-        }
+      const users = await this.repository.findBy({
+        id: In(ownerUserIds)
       });
 
       const usersMap = users.reduce((map: Map<string, UserEntity>, user: UserEntity): Map<string, UserEntity> => {

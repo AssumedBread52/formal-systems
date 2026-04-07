@@ -1,5 +1,5 @@
 import { SystemEntity } from '@/system/entities/system.entity';
-import { HttpException, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import DataLoader from 'dataloader';
 import { In, Repository } from 'typeorm';
@@ -13,10 +13,8 @@ export class SystemsByOwnerService {
 
   public readonly loader = new DataLoader(async (ownerUserIds: readonly string[]): Promise<SystemEntity[][]> => {
     try {
-      const systems = await this.repository.find({
-        where: {
-          ownerUserId: In(ownerUserIds)
-        }
+      const systems = await this.repository.findBy({
+        ownerUserId: In(ownerUserIds)
       });
 
       const systemsMap = systems.reduce((map: Map<string, SystemEntity[]>, system: SystemEntity): Map<string, SystemEntity[]> => {
@@ -40,11 +38,7 @@ export class SystemsByOwnerService {
 
         return systems;
       });
-    } catch (error: unknown) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
+    } catch {
       throw new InternalServerErrorException('Loading systems failed');
     }
   });
