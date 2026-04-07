@@ -1,7 +1,7 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { findByMock } from '@/common/tests/mocks/find-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
-import { findMock } from '@/common/tests/mocks/find.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
@@ -13,7 +13,7 @@ import request from 'supertest';
 import { In } from 'typeorm';
 
 describe('Relations', (): void => {
-  const find = findMock();
+  const findBy = findByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   let app: NestExpressApplication;
@@ -39,7 +39,9 @@ describe('Relations', (): void => {
       description: 'Test System 1'
     }, SystemEntity);
 
-    find.mockResolvedValueOnce([system]);
+    findBy.mockResolvedValueOnce([
+      system
+    ]);
     findOneBy.mockResolvedValueOnce(user);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
@@ -49,13 +51,11 @@ describe('Relations', (): void => {
       }
     });
 
-    expect(find).toHaveBeenCalledTimes(1);
-    expect(find).toHaveBeenNthCalledWith(1, {
-      where: {
-        ownerUserId: In([
-          userId
-        ])
-      }
+    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenNthCalledWith(1, {
+      ownerUserId: In([
+        userId
+      ])
     });
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
