@@ -68,7 +68,7 @@ export class SystemWriteService {
 
       deletedSystem.id = systemId;
 
-      return deletedSystem;
+      return validatePayload(deletedSystem, SystemEntity);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
