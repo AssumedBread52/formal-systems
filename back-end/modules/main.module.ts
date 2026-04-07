@@ -7,7 +7,6 @@ import { Request, Response } from 'express';
 import { DatabaseType } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import { DependencyModule } from './dependency/dependency.module';
-import { ExpressionModule } from './expression/expression.module';
 import { HealthModule } from './health/health.module';
 import { MigrationModule } from './migration/migration.module';
 import migrations from './migration/migrations';
@@ -26,7 +25,6 @@ import { UserModule } from './user/user.module';
       ]
     }),
     DependencyModule,
-    ExpressionModule,
     GraphQLModule.forRootAsync({
       driver: ApolloDriver,
       useFactory: (): Omit<ApolloDriverConfig, 'driver'> => {

@@ -4,51 +4,28 @@
 
 type UserEntity {
   id: String!
-  firstName: String!
-  lastName: String!
+  handle: String!
   email: String!
-  systemCount: Int!
-  constantSymbolCount: Int!
-  variableSymbolCount: Int!
-  distinctVariablePairCount: Int!
-  constantVariablePairExpressionCount: Int!
-  constantPrefixedExpressionCount: Int!
-  standardExpressionCount: Int!
+  systems: [SystemEntity!]!
 }
 
-type DistinctVariablePairEntity {
+type SystemEntity {
   id: String!
-  variableSymbolIds: [String!]!
-  systemId: String!
-  createdByUserId: String!
-}
-
-type ExpressionEntity {
-  id: String!
-  symbolIds: [String!]!
-  type: ExpressionType!
-  systemId: String!
-  createdByUserId: String!
-}
-
-enum ExpressionType {
-  constant_variable_pair
-  constant_prefixed
-  standard
+  ownerUserId: String!
+  name: String!
+  description: String!
+  owner: UserEntity!
+  symbols: [SymbolEntity!]!
 }
 
 type SymbolEntity {
   id: String!
-  title: String!
+  systemId: String!
+  name: String!
   description: String!
   type: SymbolType!
   content: String!
-  distinctVariablePairAppearanceCount: Int!
-  constantVariablePairExpressionAppearanceCount: Int!
-  constantPrefixedExpressionAppearanceCount: Int!
-  standardExpressionAppearanceCount: Int!
-  systemId: String!
-  createdByUserId: String!
+  system: SystemEntity!
 }
 
 enum SymbolType {
@@ -56,17 +33,19 @@ enum SymbolType {
   variable
 }
 
-type SystemEntity {
-  id: String!
-  title: String!
-  description: String!
-  constantSymbolCount: Int!
-  variableSymbolCount: Int!
-  distinctVariablePairCount: Int!
-  constantVariablePairExpressionCount: Int!
-  constantPrefixedExpressionCount: Int!
-  standardExpressionCount: Int!
-  createdByUserId: String!
+type PaginatedSymbolsPayload {
+  results: [SymbolEntity!]!
+  total: Int!
+}
+
+type PaginatedSystemsPayload {
+  results: [SystemEntity!]!
+  total: Int!
+}
+
+type PaginatedUsersPayload {
+  results: [UserEntity!]!
+  total: Int!
 }
 
 type DependencyPayload {
@@ -78,26 +57,6 @@ type DependencyPayload {
 enum DependencyType {
   development
   operational
-}
-
-type PaginatedSystemsPayload {
-  results: [SystemEntity!]!
-  total: Int!
-}
-
-type PaginatedSymbolsPayload {
-  results: [SymbolEntity!]!
-  total: Int!
-}
-
-type PaginatedDistinctVariablePairsPayload {
-  results: [DistinctVariablePairEntity!]!
-  total: Int!
-}
-
-type PaginatedExpressionsPayload {
-  results: [ExpressionEntity!]!
-  total: Int!
 }
 
 type ComponentStatusPayload {
@@ -123,45 +82,33 @@ type HealthStatusPayload {
 type Query {
   sessionUser: UserEntity!
   user(userId: String!): UserEntity!
-  dependencies: [DependencyPayload!]!
-  distinctVariablePair(systemId: String!, distinctVariablePairId: String!): DistinctVariablePairEntity!
-  distinctVariablePairs(systemId: String!, filters: SearchDistinctVariablePairsPayload!): PaginatedDistinctVariablePairsPayload!
-  symbol(systemId: String!, symbolId: String!): SymbolEntity!
-  symbols(systemId: String!, filters: SearchSymbolsPayload!): PaginatedSymbolsPayload!
+  users(filters: SearchUsersPayload!): PaginatedUsersPayload!
   system(systemId: String!): SystemEntity!
   systems(filters: SearchSystemsPayload!): PaginatedSystemsPayload!
-  expression(systemId: String!, expressionId: String!): ExpressionEntity!
-  expressions(systemId: String!, filters: SearchExpressionsPayload!): PaginatedExpressionsPayload!
+  symbol(systemId: String!, symbolId: String!): SymbolEntity!
+  symbols(systemId: String!, filters: SearchSymbolsPayload!): PaginatedSymbolsPayload!
+  dependencies: [DependencyPayload!]!
   healthCheck: HealthStatusPayload!
 }
 
-input SearchDistinctVariablePairsPayload {
+input SearchUsersPayload {
   page: Int! = 1
   pageSize: Int! = 10
-  mustIncludeVariableSymbolIds: [String!]! = []
-  mayIncludeVariableSymbolIds: [String!]! = []
-}
-
-input SearchSymbolsPayload {
-  page: Int! = 1
-  pageSize: Int! = 10
-  keywords: [String!]! = []
-  types: [SymbolType!]! = []
+  searchText: String! = ""
 }
 
 input SearchSystemsPayload {
   page: Int! = 1
   pageSize: Int! = 10
-  keywords: [String!]! = []
-  userIds: [String!]! = []
+  ownerUserIds: [String!]! = []
+  searchText: String! = ""
 }
 
-input SearchExpressionsPayload {
+input SearchSymbolsPayload {
   page: Int! = 1
   pageSize: Int! = 10
-  mustIncludeSymbolIds: [String!]! = []
-  mayIncludeSymbolIds: [String!]! = []
-  types: [ExpressionType!]! = []
+  searchText: String! = ""
+  types: [SymbolType!]! = []
 }
 
 type Mutation {
@@ -170,60 +117,46 @@ type Mutation {
   signOut: UserEntity!
   createUser(userPayload: NewUserPayload!): UserEntity!
   updateUser(userPayload: EditUserPayload!): UserEntity!
-  createDistinctVariablePair(systemId: String!, distinctVariablePairPayload: NewDistinctVariablePairPayload!): DistinctVariablePairEntity!
-  deleteDistinctVariablePair(systemId: String!, distinctVariablePairId: String!): DistinctVariablePairEntity!
-  createSymbol(systemId: String!, symbolPayload: NewSymbolPayload!): SymbolEntity!
-  deleteSymbol(systemId: String!, symbolId: String!): SymbolEntity!
-  updateSymbol(systemId: String!, symbolId: String!, symbolPayload: EditSymbolPayload!): SymbolEntity!
   createSystem(systemPayload: NewSystemPayload!): SystemEntity!
   deleteSystem(systemId: String!): SystemEntity!
   updateSystem(systemId: String!, systemPayload: EditSystemPayload!): SystemEntity!
-  createExpression(systemId: String!, expressionPayload: NewExpressionPayload!): ExpressionEntity!
-  deleteExpression(systemId: String!, expressionId: String!): ExpressionEntity!
+  createSymbol(systemId: String!, symbolPayload: NewSymbolPayload!): SymbolEntity!
+  deleteSymbol(systemId: String!, symbolId: String!): SymbolEntity!
+  updateSymbol(systemId: String!, symbolId: String!, symbolPayload: EditSymbolPayload!): SymbolEntity!
 }
 
 input NewUserPayload {
-  firstName: String! = ""
-  lastName: String! = ""
+  handle: String! = ""
   email: String! = ""
   password: String! = ""
 }
 
 input EditUserPayload {
-  newFirstName: String! = ""
-  newLastName: String! = ""
+  newHandle: String! = ""
   newEmail: String! = ""
   newPassword: String
 }
 
-input NewDistinctVariablePairPayload {
-  variableSymbolIds: [String!]! = ["", ""]
+input NewSystemPayload {
+  name: String! = ""
+  description: String! = ""
+}
+
+input EditSystemPayload {
+  newName: String! = ""
+  newDescription: String! = ""
 }
 
 input NewSymbolPayload {
-  title: String! = ""
+  name: String! = ""
   description: String! = ""
   type: SymbolType! = constant
   content: String! = ""
 }
 
 input EditSymbolPayload {
-  newTitle: String! = ""
+  newName: String! = ""
   newDescription: String! = ""
   newType: SymbolType! = constant
   newContent: String! = ""
-}
-
-input NewSystemPayload {
-  title: String! = ""
-  description: String! = ""
-}
-
-input EditSystemPayload {
-  newTitle: String! = ""
-  newDescription: String! = ""
-}
-
-input NewExpressionPayload {
-  symbolIds: [String!]! = []
 }
