@@ -1,6 +1,6 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsEnum, IsInt, IsMongoId, IsNotEmpty, IsUUID, Min } from 'class-validator';
+import { IsEnum, IsInt, IsMongoId, IsNotEmpty, IsUUID, MaxLength, Min } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity('symbols')
@@ -29,11 +29,16 @@ export class SymbolEntity {
   })
   @IsUUID()
   public systemId: string = '';
+  @Column({
+    length: 200,
+    type: 'varchar'
+  })
   @Field((): typeof String => {
     return String;
   })
   @IsNotEmpty()
-  public title: string = '';
+  @MaxLength(200)
+  public name: string = '';
   @Field((): typeof String => {
     return String;
   })
