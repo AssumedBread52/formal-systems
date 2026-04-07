@@ -3,12 +3,13 @@ import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
 import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.payload';
 import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
-import { SymbolRepository } from '@/symbol/repositories/symbol.repository';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindOptionsWhere, ILike, In, Repository } from 'typeorm';
 
 @Injectable()
 export class SymbolReadService {
-  public constructor(private readonly symbolRepository: SymbolRepository) {
+  public constructor(@InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
   }
 
   public async searchSymbols(systemId: string, searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedSymbolsPayload> {
@@ -18,12 +19,49 @@ export class SymbolReadService {
       const take = validatedSearchSymbolsPayload.pageSize;
       const skip = (validatedSearchSymbolsPayload.page - 1) * validatedSearchSymbolsPayload.pageSize;
 
-      const [symbols, total] = await this.symbolRepository.findAndCount({
+      const where = [] as FindOptionsWhere<SymbolEntity>[];
+      const textFilter = ILike(`%${validatedSearchSymbolsPayload.searchText}%`);
+      const typeFilter = In(validatedSearchSymbolsPayload.types);
+      if (0 < validatedSearchSymbolsPayload.searchText.length && validatedSearchSymbolsPayload.types.length) {
+        where.push({
+          systemId,
+          name: textFilter,
+          type: typeFilter
+        });
+        where.push({
+          systemId,
+          description: textFilter,
+          type: typeFilter
+        });
+        where.push({
+          systemId,
+          type: typeFilter,
+          content: textFilter
+        });
+      } else if (0 < validatedSearchSymbolsPayload.searchText.length) {
+        where.push({
+          systemId,
+          name: textFilter
+        });
+        where.push({
+          systemId,
+          description: textFilter
+        });
+        where.push({
+          systemId,
+          type: typeFilter
+        });
+      } else if (0 < validatedSearchSymbolsPayload.types.length) {
+        where.push({
+          systemId,
+          type: typeFilter
+        });
+      }
+
+      const [symbols, total] = await this.repository.findAndCount({
         skip,
         take,
-        systemId,
-        keywords: validatedSearchSymbolsPayload.keywords,
-        types: validatedSearchSymbolsPayload.types
+        where
       });
 
       return new PaginatedSymbolsPayload(symbols, total);
