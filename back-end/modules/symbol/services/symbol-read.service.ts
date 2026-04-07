@@ -22,7 +22,7 @@ export class SymbolReadService {
       const where = [] as FindOptionsWhere<SymbolEntity>[];
       const textFilter = ILike(`%${validatedSearchSymbolsPayload.searchText}%`);
       const typeFilter = In(validatedSearchSymbolsPayload.types);
-      if (0 < validatedSearchSymbolsPayload.searchText.length && validatedSearchSymbolsPayload.types.length) {
+      if (0 < validatedSearchSymbolsPayload.searchText.length && 0 < validatedSearchSymbolsPayload.types.length) {
         where.push({
           systemId,
           name: textFilter,
