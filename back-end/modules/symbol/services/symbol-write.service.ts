@@ -127,8 +127,6 @@ export class SymbolWriteService {
         }
       }
 
-      const originalSymbol = Object.assign(new SymbolEntity(), symbol);
-
       symbol.title = validatedEditSymbolPayload.newTitle;
       symbol.description = validatedEditSymbolPayload.newDescription;
       symbol.type = validatedEditSymbolPayload.newType;
