@@ -22,7 +22,7 @@ export class SystemReadService {
       const where = [] as FindOptionsWhere<SystemEntity>[];
       const usersFilter = In(validatedSearchSystemsPayload.ownerUserIds);
       const textFilter = ILike(`%${validatedSearchSystemsPayload.searchText}%`);
-      if (0 < validatedSearchSystemsPayload.searchText.length && 0 < validatedSearchSystemsPayload.ownerUserIds.length) {
+      if (0 < validatedSearchSystemsPayload.ownerUserIds.length && 0 < validatedSearchSystemsPayload.searchText.length) {
         where.push({
           ownerUserId: usersFilter,
           name: textFilter
@@ -30,6 +30,10 @@ export class SystemReadService {
         where.push({
           ownerUserId: usersFilter,
           description: textFilter
+        });
+      } else if (0 < validatedSearchSystemsPayload.ownerUserIds.length) {
+        where.push({
+          ownerUserId: usersFilter
         });
       } else if (0 < validatedSearchSystemsPayload.searchText.length) {
         where.push({
@@ -37,10 +41,6 @@ export class SystemReadService {
         });
         where.push({
           description: textFilter
-        });
-      } else if (0 < validatedSearchSystemsPayload.ownerUserIds.length) {
-        where.push({
-          ownerUserId: usersFilter
         });
       }
 
