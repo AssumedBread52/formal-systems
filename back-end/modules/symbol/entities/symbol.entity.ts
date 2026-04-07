@@ -2,6 +2,7 @@ import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { IsEnum, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
 
+@Entity('symbols')
 @ObjectType()
 export class SymbolEntity {
   @Field((): typeof String => {
