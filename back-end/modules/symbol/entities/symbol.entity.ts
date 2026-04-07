@@ -1,6 +1,6 @@
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsEnum, IsInt, IsMongoId, IsNotEmpty, IsUUID, MaxLength, Min } from 'class-validator';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { IsEnum, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity('symbols')
@@ -69,37 +69,4 @@ export class SymbolEntity {
   @IsNotEmpty()
   @MaxLength(250)
   public content: string = '';
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public distinctVariablePairAppearanceCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public constantVariablePairExpressionAppearanceCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public constantPrefixedExpressionAppearanceCount: number = 0;
-  @Field((): typeof Int => {
-    return Int;
-  })
-  @IsInt()
-  @Min(0)
-  public standardExpressionAppearanceCount: number = 0;
-  @Field((): typeof String => {
-    return String;
-  })
-  @IsMongoId()
-  public createdByUserId: string = '';
-
-  public isInUse(): boolean {
-    return (0 < this.distinctVariablePairAppearanceCount) || (0 < this.constantVariablePairExpressionAppearanceCount) || (0 < this.constantPrefixedExpressionAppearanceCount) || (0 < this.standardExpressionAppearanceCount);
-  }
 };
