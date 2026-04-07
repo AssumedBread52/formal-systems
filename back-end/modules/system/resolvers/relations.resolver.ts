@@ -13,7 +13,7 @@ export class RelationsResolver {
   @ResolveField((): typeof UserEntity => {
     return UserEntity;
   })
-  owner(@Parent() system: SystemEntity): Promise<UserEntity> {
+  public owner(@Parent() system: SystemEntity): Promise<UserEntity> {
     return this.userBySystemService.loader.load(system.ownerUserId);
   }
 };
