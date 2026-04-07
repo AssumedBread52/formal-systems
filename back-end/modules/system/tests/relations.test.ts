@@ -3,6 +3,8 @@ import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findByMock } from '@/common/tests/mocks/find-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
@@ -39,7 +41,18 @@ describe('Relations', (): void => {
       name,
       description
     }, SystemEntity);
+    const symbol = validatePayload({
+      id: '7bde3313-f751-42f0-8d89-88c4ab394282',
+      systemId,
+      name: 'TestSymbol1',
+      description: 'Test Symbol 1',
+      type: SymbolType.variable,
+      content: 'test-content'
+    }, SymbolEntity);
 
+    findBy.mockResolvedValueOnce([
+      symbol
+    ]);
     findBy.mockResolvedValueOnce([
       user
     ]);
@@ -52,11 +65,12 @@ describe('Relations', (): void => {
       }
     });
 
-    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenCalledTimes(2);
     expect(findBy).toHaveBeenNthCalledWith(1, {
-      id: In([
-        userId
-      ])
+      id: In([userId])
+    });
+    expect(findBy).toHaveBeenNthCalledWith(2, {
+      id: In([userId])
     });
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -70,7 +84,8 @@ describe('Relations', (): void => {
           ownerUserId: userId,
           name,
           description,
-          owner: instanceToPlain(user)
+          owner: instanceToPlain(user),
+          symbols: [instanceToPlain(symbol)]
         }
       }
     });
