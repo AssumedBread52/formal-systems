@@ -3,52 +3,53 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { InUseException } from '@/symbol/exceptions/in-use.exception';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
+import { UniqueNameException } from '@/symbol/exceptions/unique-name.exception';
 import { UniqueTitleException } from '@/symbol/exceptions/unique-title.exception';
 import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
-import { SymbolRepository } from '@/symbol/repositories/symbol.repository';
 import { SystemReadService } from '@/system/services/system-read.service';
 import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SymbolWriteService {
-  public constructor(private readonly symbolRepository: SymbolRepository, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService) {
+  public constructor(private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
   }
 
   public async create(userId: string, systemId: string, newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
     try {
       const validatedNewSymbolPayload = validatePayload(newSymbolPayload, NewSymbolPayload);
 
-      const system = await this.systemReadService.selectById(systemId);
-
       const user = await this.userReadService.selectById(userId);
 
-      if (user.id !== system.createdByUserId) {
+      const system = await this.systemReadService.selectById(systemId);
+
+      if (user.id !== system.ownerUserId) {
         throw new OwnershipException();
       }
 
-      const conflict = await this.symbolRepository.findOneBy({
-        title: validatedNewSymbolPayload.title,
-        systemId: system.id
+      const nameConflict = await this.repository.existsBy({
+        systemId: system.id,
+        name: validatedNewSymbolPayload.name,
       });
 
-      if (conflict) {
-        throw new UniqueTitleException();
+      if (nameConflict) {
+        throw new UniqueNameException();
       }
 
       const symbol = new SymbolEntity();
 
-      symbol.title = validatedNewSymbolPayload.title;
+      symbol.systemId = system.id;
+      symbol.name = validatedNewSymbolPayload.name;
       symbol.description = validatedNewSymbolPayload.description;
       symbol.type = validatedNewSymbolPayload.type;
       symbol.content = validatedNewSymbolPayload.content;
-      symbol.systemId = system.id;
-      symbol.createdByUserId = user.id;
 
-      const savedSymbol = await this.symbolRepository.save(symbol);
+      const savedSymbol = await this.repository.save(symbol);
 
-      return savedSymbol;
+      return validatePayload(savedSymbol, SymbolEntity);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
