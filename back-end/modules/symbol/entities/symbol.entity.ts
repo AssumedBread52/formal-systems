@@ -4,6 +4,14 @@ import { IsEnum, IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
 
 @Entity('symbols')
 @ObjectType()
+@Unique('symbols_system_id_name_unique', [
+  'system',
+  'name'
+])
+@Unique('symbols_id_system_id_unique', [
+  'id',
+  'system'
+])
 export class SymbolEntity {
   @Field((): typeof String => {
     return String;
