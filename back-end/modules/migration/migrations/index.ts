@@ -6,6 +6,7 @@ import { AddExpressionsTable0000000000005 } from './05-add-expressions-table.mig
 import { AddExpressionTokensTable0000000000006 } from './06-add-expression-tokens-table.migration';
 import { AddStatementsTable0000000000007 } from './07-add-statements-table.migration';
 import { AddStatementTypeHypothesesTable0000000000008 } from './08-add-statement-type-hypotheses-table.migration';
+import { AddStatementLogicalHypothesesTable0000000000009 } from './09-add-statement-logical-hypotheses-table.migration';
 
 export default {
   AddUsersTable0000000000001,
@@ -15,5 +16,6 @@ export default {
   AddExpressionsTable0000000000005,
   AddExpressionTokensTable0000000000006,
   AddStatementsTable0000000000007,
-  AddStatementTypeHypothesesTable0000000000008
+  AddStatementTypeHypothesesTable0000000000008,
+  AddStatementLogicalHypothesesTable0000000000009
 };
