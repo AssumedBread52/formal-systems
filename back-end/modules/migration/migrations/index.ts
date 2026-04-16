@@ -8,6 +8,7 @@ import { AddStatementsTable0000000000007 } from './07-add-statements-table.migra
 import { AddStatementTypeHypothesesTable0000000000008 } from './08-add-statement-type-hypotheses-table.migration';
 import { AddStatementLogicalHypothesesTable0000000000009 } from './09-add-statement-logical-hypotheses-table.migration';
 import { AddStatementDistinctVariablesTable0000000000010 } from './10-add-statement-distinct-variables-table.migration';
+import { AddProofsTable0000000000011 } from './11-add-proofs-table.migration';
 
 export default {
   AddUsersTable0000000000001,
@@ -19,5 +20,6 @@ export default {
   AddStatementsTable0000000000007,
   AddStatementTypeHypothesesTable0000000000008,
   AddStatementLogicalHypothesesTable0000000000009,
-  AddStatementDistinctVariablesTable0000000000010
+  AddStatementDistinctVariablesTable0000000000010,
+  AddProofsTable0000000000011
 };
