@@ -7,13 +7,13 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique }
 
 @Entity('symbols')
 @ObjectType()
-@Unique('symbols_system_id_name_unique', [
+@Unique('symbols_system_name_unique', [
   'system',
   'name'
 ])
-@Unique('symbols_id_system_id_unique', [
-  'id',
-  'system'
+@Unique('symbols_id_system_unique', [
+  'system',
+  'id'
 ])
 export class SymbolEntity {
   @Field((): typeof String => {

@@ -7,7 +7,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
 
 @Entity('systems')
 @ObjectType()
-@Unique('systems_owner_name_unique', [
+@Unique('systems_owner_user_id_name_unique', [
   'owner',
   'name'
 ])
