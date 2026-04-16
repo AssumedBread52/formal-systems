@@ -1,6 +1,6 @@
 import { AddUsersTable0000000000001 } from './01-add-users-table.migration';
 import { AddSystemsTable0000000000002 } from './02-add-systems-table.migration';
-import { AddSymbolType0000000000003 } from './3-add-symbol-type.migration';
+import { AddSymbolType0000000000003 } from './03-add-symbol-type.migration';
 import { AddSymbolsTable0000000000004 } from './4-add-symbols-table.migration';
 
 export default {
