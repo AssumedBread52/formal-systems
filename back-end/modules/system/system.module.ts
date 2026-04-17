@@ -4,7 +4,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SystemController } from './controllers/system.controller';
 import { SystemEntity } from './entities/system.entity';
-import { RelationsResolver } from './resolvers/relations.resolver';
+import { SystemRelationsResolver } from './resolvers/system-relations.resolver';
 import { SystemResolver } from './resolvers/system.resolver';
 import { SystemLoadingService } from './services/system-loading.service';
 import { SystemReadService } from './services/system-read.service';
@@ -24,9 +24,9 @@ import { SystemWriteService } from './services/system-write.service';
     SystemController
   ],
   providers: [
-    RelationsResolver,
     SystemLoadingService,
     SystemReadService,
+    SystemRelationsResolver,
     SystemResolver,
     SystemWriteService
   ],

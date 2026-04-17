@@ -8,7 +8,7 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 @Resolver((): typeof SystemEntity => {
   return SystemEntity;
 })
-export class RelationsResolver {
+export class SystemRelationsResolver {
   public constructor(private readonly symbolsBySystemService: SymbolsBySystemService, private readonly userLoadingService: UserLoadingService) {
   }
 
