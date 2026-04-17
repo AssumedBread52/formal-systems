@@ -6,7 +6,7 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 @Resolver((): typeof UserEntity => {
   return UserEntity;
 })
-export class RelationsResolver {
+export class UserRelationsResolver {
   public constructor(private readonly systemsByOwnerService: SystemsByOwnerService) {
   }
 

@@ -4,7 +4,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './controllers/user.controller';
 import { UserEntity } from './entities/user.entity';
-import { RelationsResolver } from './resolvers/relations.resolver';
+import { UserRelationsResolver } from './resolvers/user-relations.resolver';
 import { UserResolver } from './resolvers/user.resolver';
 import { UserLoadingService } from './services/user-loading.service';
 import { UserReadService } from './services/user-read.service';
@@ -24,9 +24,9 @@ import { UserWriteService } from './services/user-write.service';
     UserController
   ],
   providers: [
-    RelationsResolver,
     UserLoadingService,
     UserReadService,
+    UserRelationsResolver,
     UserResolver,
     UserWriteService
   ],
