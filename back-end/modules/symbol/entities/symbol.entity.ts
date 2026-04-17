@@ -1,9 +1,10 @@
+import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
 import { Allow, IsEnum, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity('symbols')
 @ObjectType()
@@ -86,4 +87,15 @@ export class SymbolEntity {
     return system.symbols;
   })
   public readonly system!: Promise<SystemEntity>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof ExpressionTokenEntity] => {
+    return [ExpressionTokenEntity];
+  })
+  @OneToMany((): typeof ExpressionTokenEntity => {
+    return ExpressionTokenEntity;
+  }, (expressionToken: ExpressionTokenEntity): Promise<SymbolEntity> => {
+    return expressionToken.symbol;
+  })
+  public readonly expressionTokens!: Promise<ExpressionTokenEntity[]>;
 };

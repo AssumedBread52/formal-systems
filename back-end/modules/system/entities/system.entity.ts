@@ -1,3 +1,4 @@
+import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { UserEntity } from '@/user/entities/user.entity';
@@ -85,4 +86,15 @@ export class SystemEntity {
     return expression.system;
   })
   public readonly expressions!: Promise<ExpressionEntity[]>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof ExpressionTokenEntity] => {
+    return [ExpressionTokenEntity];
+  })
+  @OneToMany((): typeof ExpressionTokenEntity => {
+    return ExpressionTokenEntity;
+  }, (expressionToken: ExpressionTokenEntity): Promise<SystemEntity> => {
+    return expressionToken.system;
+  })
+  public readonly expressionTokens!: Promise<ExpressionTokenEntity[]>;
 };

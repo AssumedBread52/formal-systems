@@ -7,6 +7,7 @@ type ExpressionEntity {
   systemId: String!
   canonical: [String!]!
   system: SystemEntity!
+  expressionTokens: [ExpressionTokenEntity!]!
 }
 
 type UserEntity {
@@ -24,6 +25,17 @@ type SystemEntity {
   owner: UserEntity!
   symbols: [SymbolEntity!]!
   expressions: [ExpressionEntity!]!
+  expressionTokens: [ExpressionTokenEntity!]!
+}
+
+type ExpressionTokenEntity {
+  systemId: String!
+  symbolId: String!
+  expressionId: String!
+  position: Int!
+  system: SystemEntity!
+  symbol: SymbolEntity!
+  expression: ExpressionEntity!
 }
 
 type SymbolEntity {
@@ -34,6 +46,7 @@ type SymbolEntity {
   type: SymbolType!
   content: String!
   system: SystemEntity!
+  expressionTokens: [ExpressionTokenEntity!]!
 }
 
 enum SymbolType {

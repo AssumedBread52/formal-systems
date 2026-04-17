@@ -2,7 +2,8 @@ import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
 import { Allow, IsUUID } from 'class-validator';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { ExpressionTokenEntity } from './expression-token.entity';
 
 @Entity('expressions')
 @ObjectType()
@@ -56,4 +57,15 @@ export class ExpressionEntity {
     return system.expressions;
   })
   public readonly system!: Promise<SystemEntity>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof ExpressionTokenEntity] => {
+    return [ExpressionTokenEntity];
+  })
+  @OneToMany((): typeof ExpressionTokenEntity => {
+    return ExpressionTokenEntity;
+  }, (expressionToken: ExpressionTokenEntity): Promise<ExpressionEntity> => {
+    return expressionToken.expression;
+  })
+  public readonly expressionTokens!: Promise<ExpressionTokenEntity[]>;
 };
