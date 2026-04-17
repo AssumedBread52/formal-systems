@@ -1,3 +1,7 @@
+import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
+import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { ExpressionLoadingService } from '@/expression/services/expression-loading.service';
+import { ExpressionTokenLoadingService } from '@/expression/services/expression-token-loading.service';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolLoadingService } from '@/symbol/services/symbol-loading.service';
 import { SystemEntity } from '@/system/entities/system.entity';
@@ -9,7 +13,21 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
   return SystemEntity;
 })
 export class SystemRelationsResolver {
-  public constructor(private readonly symbolLoadingService: SymbolLoadingService, private readonly userLoadingService: UserLoadingService) {
+  public constructor(private readonly expressionLoadingService: ExpressionLoadingService, private readonly expressionTokenLoadingService: ExpressionTokenLoadingService, private readonly symbolLoadingService: SymbolLoadingService, private readonly userLoadingService: UserLoadingService) {
+  }
+
+  @ResolveField((): [typeof ExpressionEntity] => {
+    return [ExpressionEntity];
+  })
+  public expressions(@Parent() system: SystemEntity): Promise<ExpressionEntity[]> {
+    return this.expressionLoadingService.loaderBySystemIds.load(system.id);
+  }
+
+  @ResolveField((): [typeof ExpressionTokenEntity] => {
+    return [ExpressionTokenEntity];
+  })
+  public expressionTokens(@Parent() system: SystemEntity): Promise<ExpressionTokenEntity[]> {
+    return this.expressionTokenLoadingService.loaderBySystemIds.load(system.id);
   }
 
   @ResolveField((): typeof UserEntity => {

@@ -28,16 +28,6 @@ type SystemEntity {
   expressionTokens: [ExpressionTokenEntity!]!
 }
 
-type ExpressionTokenEntity {
-  systemId: String!
-  symbolId: String!
-  expressionId: String!
-  position: Int!
-  system: SystemEntity!
-  symbol: SymbolEntity!
-  expression: ExpressionEntity!
-}
-
 type SymbolEntity {
   id: String!
   systemId: String!
@@ -52,6 +42,16 @@ type SymbolEntity {
 enum SymbolType {
   constant
   variable
+}
+
+type ExpressionTokenEntity {
+  systemId: String!
+  symbolId: String!
+  expressionId: String!
+  position: Int!
+  system: SystemEntity!
+  symbol: SymbolEntity!
+  expression: ExpressionEntity!
 }
 
 type PaginatedSymbolsPayload {
