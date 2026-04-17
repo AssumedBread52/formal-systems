@@ -11,6 +11,40 @@ export class ExpressionTokenLoadingService {
   public constructor(@InjectRepository(ExpressionTokenEntity) private readonly repository: Repository<ExpressionTokenEntity>) {
   }
 
+  public readonly loaderBySymbolIds = new DataLoader(async (symbolIds: readonly string[]): Promise<ExpressionTokenEntity[][]> => {
+    try {
+      const expressionTokens = await this.repository.findBy({
+        symbolId: In(symbolIds)
+      });
+
+      const expressionTokensMap = expressionTokens.reduce((map: Map<string, ExpressionTokenEntity[]>, expressionToken: ExpressionTokenEntity): Map<string, ExpressionTokenEntity[]> => {
+        const expressionTokensWithSymbol = map.get(expressionToken.symbolId);
+
+        if (!expressionTokensWithSymbol) {
+          map.set(expressionToken.symbolId, [
+            expressionToken
+          ]);
+        } else {
+          expressionTokensWithSymbol.push(expressionToken);
+        }
+
+        return map;
+      }, new Map<string, ExpressionTokenEntity[]>());
+
+      return symbolIds.map((symbolId: string): ExpressionTokenEntity[] => {
+        const symbolExpressionTokens = expressionTokensMap.get(symbolId);
+
+        if (!symbolExpressionTokens) {
+          return [];
+        }
+
+        return symbolExpressionTokens;
+      });
+    } catch {
+      throw new InternalServerErrorException('Loading expression tokens by symbol ID failed');
+    }
+  });
+
   public readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<ExpressionTokenEntity[][]> => {
     try {
       const expressionTokens = await this.repository.findBy({

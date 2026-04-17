@@ -3,6 +3,7 @@ import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { findByMock } from '@/common/tests/mocks/find-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
+import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
@@ -43,22 +44,36 @@ describe('Symbol Relations', (): void => {
       type,
       content
     }, SymbolEntity);
+    const expressionToken = validatePayload({
+      systemId,
+      symbolId,
+      expressionId: 'cfe59823-eb13-4faf-a90b-c5e82022821f',
+      position: 0
+    }, ExpressionTokenEntity);
 
+    findBy.mockResolvedValueOnce([
+      expressionToken
+    ]);
     findBy.mockResolvedValueOnce([
       system
     ]);
     findOneBy.mockResolvedValueOnce(symbol);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query ($systemId: String!, $symbolId: String!) { symbol(systemId: $systemId, symbolId: $symbolId) { id systemId name description type content system { id ownerUserId name description } } }',
+      query: 'query ($systemId: String!, $symbolId: String!) { symbol(systemId: $systemId, symbolId: $symbolId) { id systemId name description type content system { id ownerUserId name description } expressionTokens { systemId symbolId expressionId position } } }',
       variables: {
         systemId,
         symbolId
       }
     });
 
-    expect(findBy).toHaveBeenCalledTimes(1);
+    expect(findBy).toHaveBeenCalledTimes(2);
     expect(findBy).toHaveBeenNthCalledWith(1, {
+      symbolId: In([
+        symbolId
+      ])
+    });
+    expect(findBy).toHaveBeenNthCalledWith(2, {
       id: In([
         systemId
       ])
@@ -78,7 +93,10 @@ describe('Symbol Relations', (): void => {
           description,
           type,
           content,
-          system: instanceToPlain(system)
+          system: instanceToPlain(system),
+          expressionTokens: [
+            instanceToPlain(expressionToken)
+          ]
         }
       }
     });

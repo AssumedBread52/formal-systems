@@ -1,3 +1,4 @@
+import { ExpressionModule } from '@/expression/expression.module';
 import { SystemModule } from '@/system/system.module';
 import { UserModule } from '@/user/user.module';
 import { forwardRef, Module } from '@nestjs/common';
@@ -18,6 +19,7 @@ import { SymbolWriteService } from './services/symbol-write.service';
     forwardRef((): typeof UserModule => {
       return UserModule;
     }),
+    ExpressionModule,
     TypeOrmModule.forFeature([
       SymbolEntity
     ])
