@@ -1,19 +1,19 @@
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
-import { SystemBySymbolService } from '@/system/services/system-by-symbol.service';
+import { SystemLoadingService } from '@/system/services/system-loading.service';
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 @Resolver((): typeof SymbolEntity => {
   return SymbolEntity;
 })
 export class RelationsResolver {
-  public constructor(private readonly systemBySymbolService: SystemBySymbolService) {
+  public constructor(private readonly systemLoadingService: SystemLoadingService) {
   }
 
   @ResolveField((): typeof SystemEntity => {
     return SystemEntity;
   })
   public system(@Parent() symbol: SymbolEntity): Promise<SystemEntity> {
-    return this.systemBySymbolService.loader.load(symbol.systemId);
+    return this.systemLoadingService.loaderByIds.load(symbol.systemId);
   }
 };

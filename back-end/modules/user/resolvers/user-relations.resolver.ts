@@ -1,5 +1,5 @@
 import { SystemEntity } from '@/system/entities/system.entity';
-import { SystemsByOwnerService } from '@/system/services/systems-by-owner.service';
+import { SystemLoadingService } from '@/system/services/system-loading.service';
 import { UserEntity } from '@/user/entities/user.entity';
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
@@ -7,13 +7,13 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
   return UserEntity;
 })
 export class UserRelationsResolver {
-  public constructor(private readonly systemsByOwnerService: SystemsByOwnerService) {
+  public constructor(private readonly systemLoadingService: SystemLoadingService) {
   }
 
   @ResolveField((): [typeof SystemEntity] => {
     return [SystemEntity];
   })
   public systems(@Parent() user: UserEntity): Promise<SystemEntity[]> {
-    return this.systemsByOwnerService.loader.load(user.id);
+    return this.systemLoadingService.loaderByOwnerUserIds.load(user.id);
   }
 };

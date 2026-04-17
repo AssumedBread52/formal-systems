@@ -6,10 +6,9 @@ import { SystemController } from './controllers/system.controller';
 import { SystemEntity } from './entities/system.entity';
 import { RelationsResolver } from './resolvers/relations.resolver';
 import { SystemResolver } from './resolvers/system.resolver';
-import { SystemBySymbolService } from './services/system-by-symbol.service';
+import { SystemLoadingService } from './services/system-loading.service';
 import { SystemReadService } from './services/system-read.service';
 import { SystemWriteService } from './services/system-write.service';
-import { SystemsByOwnerService } from './services/systems-by-owner.service';
 
 @Module({
   imports: [
@@ -26,16 +25,14 @@ import { SystemsByOwnerService } from './services/systems-by-owner.service';
   ],
   providers: [
     RelationsResolver,
-    SystemBySymbolService,
+    SystemLoadingService,
     SystemReadService,
     SystemResolver,
-    SystemsByOwnerService,
     SystemWriteService
   ],
   exports: [
-    SystemBySymbolService,
-    SystemReadService,
-    SystemsByOwnerService
+    SystemLoadingService,
+    SystemReadService
   ]
 })
 export class SystemModule {
