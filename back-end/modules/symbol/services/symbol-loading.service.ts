@@ -7,11 +7,11 @@ import { In, Repository } from 'typeorm';
 @Injectable({
   scope: Scope.REQUEST
 })
-export class SymbolsBySystemService {
+export class SymbolLoadingService {
   public constructor(@InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
   }
 
-  public readonly loader = new DataLoader(async (systemIds: readonly string[]): Promise<SymbolEntity[][]> => {
+  public readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<SymbolEntity[][]> => {
     try {
       const symbols = await this.repository.findBy({
         systemId: In(systemIds)
@@ -32,16 +32,16 @@ export class SymbolsBySystemService {
       }, new Map<string, SymbolEntity[]>());
 
       return systemIds.map((systemId: string): SymbolEntity[] => {
-        const symbols = symbolsMap.get(systemId);
+        const systemSymbols = symbolsMap.get(systemId);
 
-        if (!symbols) {
+        if (!systemSymbols) {
           return [];
         }
 
-        return symbols;
+        return systemSymbols;
       });
     } catch {
-      throw new InternalServerErrorException('Loading symbols failed');
+      throw new InternalServerErrorException('Loading symbols by system ID failed');
     }
   });
 };

@@ -6,9 +6,9 @@ import { SymbolController } from './controllers/symbol.controller';
 import { SymbolEntity } from './entities/symbol.entity';
 import { RelationsResolver } from './resolvers/relations.resolver';
 import { SymbolResolver } from './resolvers/symbol.resolver';
+import { SymbolLoadingService } from './services/symbol-loading.service';
 import { SymbolReadService } from './services/symbol-read.service';
 import { SymbolWriteService } from './services/symbol-write.service';
-import { SymbolsBySystemService } from './services/symbols-by-system.service';
 
 @Module({
   imports: [
@@ -27,13 +27,13 @@ import { SymbolsBySystemService } from './services/symbols-by-system.service';
   ],
   providers: [
     RelationsResolver,
+    SymbolLoadingService,
     SymbolReadService,
     SymbolResolver,
-    SymbolsBySystemService,
     SymbolWriteService
   ],
   exports: [
-    SymbolsBySystemService
+    SymbolLoadingService
   ]
 })
 export class SymbolModule {

@@ -1,5 +1,5 @@
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
-import { SymbolsBySystemService } from '@/symbol/services/symbols-by-system.service';
+import { SymbolLoadingService } from '@/symbol/services/symbol-loading.service';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { UserLoadingService } from '@/user/services/user-loading.service';
@@ -9,7 +9,7 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
   return SystemEntity;
 })
 export class SystemRelationsResolver {
-  public constructor(private readonly symbolsBySystemService: SymbolsBySystemService, private readonly userLoadingService: UserLoadingService) {
+  public constructor(private readonly symbolLoadingService: SymbolLoadingService, private readonly userLoadingService: UserLoadingService) {
   }
 
   @ResolveField((): typeof UserEntity => {
@@ -23,6 +23,6 @@ export class SystemRelationsResolver {
     return [SymbolEntity];
   })
   public symbols(@Parent() system: SystemEntity): Promise<SymbolEntity[]> {
-    return this.symbolsBySystemService.loader.load(system.id);
+    return this.symbolLoadingService.loaderBySystemIds.load(system.id);
   }
 };
