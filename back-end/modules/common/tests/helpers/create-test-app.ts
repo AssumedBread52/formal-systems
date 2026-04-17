@@ -1,5 +1,6 @@
 import { AuthModule } from '@/auth/auth.module';
 import { DependencyModule } from '@/dependency/dependency.module';
+import { ExpressionModule } from '@/expression/expression.module';
 import { HealthModule } from '@/health/health.module';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
@@ -21,6 +22,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
     imports: [
       AuthModule,
       DependencyModule,
+      ExpressionModule,
       GraphQLModule.forRootAsync({
         driver: ApolloDriver,
         useFactory: (): Omit<ApolloDriverConfig, 'driver'> => {
