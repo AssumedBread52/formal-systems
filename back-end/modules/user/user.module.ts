@@ -6,7 +6,7 @@ import { UserController } from './controllers/user.controller';
 import { UserEntity } from './entities/user.entity';
 import { RelationsResolver } from './resolvers/relations.resolver';
 import { UserResolver } from './resolvers/user.resolver';
-import { UserBySystemService } from './services/user-by-system.service';
+import { UserLoadingService } from './services/user-loading.service';
 import { UserReadService } from './services/user-read.service';
 import { UserWriteService } from './services/user-write.service';
 
@@ -25,13 +25,13 @@ import { UserWriteService } from './services/user-write.service';
   ],
   providers: [
     RelationsResolver,
-    UserBySystemService,
+    UserLoadingService,
     UserReadService,
     UserResolver,
     UserWriteService
   ],
   exports: [
-    UserBySystemService,
+    UserLoadingService,
     UserReadService
   ]
 })

@@ -8,14 +8,14 @@ import { In, Repository } from 'typeorm';
 @Injectable({
   scope: Scope.REQUEST
 })
-export class UserBySystemService {
+export class UserLoadingService {
   public constructor(@InjectRepository(UserEntity) private readonly repository: Repository<UserEntity>) {
   }
 
-  public readonly loader = new DataLoader(async (ownerUserIds: readonly string[]): Promise<UserEntity[]> => {
+  public readonly loaderByIds = new DataLoader(async (userIds: readonly string[]): Promise<UserEntity[]> => {
     try {
       const users = await this.repository.findBy({
-        id: In(ownerUserIds)
+        id: In(userIds)
       });
 
       const usersMap = users.reduce((map: Map<string, UserEntity>, user: UserEntity): Map<string, UserEntity> => {
@@ -26,8 +26,8 @@ export class UserBySystemService {
         return map;
       }, new Map<string, UserEntity>());
 
-      return ownerUserIds.map((ownerUserId: string): UserEntity => {
-        const user = usersMap.get(ownerUserId);
+      return userIds.map((userId: string): UserEntity => {
+        const user = usersMap.get(userId);
 
         if (!user) {
           throw new UserNotFoundException();
@@ -40,7 +40,7 @@ export class UserBySystemService {
         throw error;
       }
 
-      throw new InternalServerErrorException('Loading users failed');
+      throw new InternalServerErrorException('Loading users by ID failed');
     }
-  })
+  });
 };
