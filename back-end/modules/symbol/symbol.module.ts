@@ -4,7 +4,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SymbolController } from './controllers/symbol.controller';
 import { SymbolEntity } from './entities/symbol.entity';
-import { RelationsResolver } from './resolvers/relations.resolver';
+import { SymbolRelationsResolver } from './resolvers/symbol-relations.resolver';
 import { SymbolResolver } from './resolvers/symbol.resolver';
 import { SymbolLoadingService } from './services/symbol-loading.service';
 import { SymbolReadService } from './services/symbol-read.service';
@@ -26,9 +26,9 @@ import { SymbolWriteService } from './services/symbol-write.service';
     SymbolController
   ],
   providers: [
-    RelationsResolver,
     SymbolLoadingService,
     SymbolReadService,
+    SymbolRelationsResolver,
     SymbolResolver,
     SymbolWriteService
   ],

@@ -6,7 +6,7 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 @Resolver((): typeof SymbolEntity => {
   return SymbolEntity;
 })
-export class RelationsResolver {
+export class SymbolRelationsResolver {
   public constructor(private readonly systemLoadingService: SystemLoadingService) {
   }
 
