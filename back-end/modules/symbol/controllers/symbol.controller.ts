@@ -7,9 +7,14 @@ import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.pay
 import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SymbolWriteService } from '@/symbol/services/symbol-write.service';
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, SerializeOptions, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system/:systemId/symbol')
+@SerializeOptions({
+  excludePrefixes: [
+    '__'
+  ]
+})
 export class SymbolController {
   public constructor(private readonly symbolReadService: SymbolReadService, private readonly symbolWriteService: SymbolWriteService) {
   }

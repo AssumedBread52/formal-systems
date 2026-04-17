@@ -7,10 +7,15 @@ import { PaginatedUsersPayload } from '@/user/payloads/paginated-users.payload';
 import { SearchUsersPayload } from '@/user/payloads/search-users.payload';
 import { UserReadService } from '@/user/services/user-read.service';
 import { UserWriteService } from '@/user/services/user-write.service';
-import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Query, Res, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Query, Res, SerializeOptions, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import type { Response } from 'express';
 
 @Controller('user')
+@SerializeOptions({
+  excludePrefixes: [
+    '__'
+  ]
+})
 export class UserController {
   public constructor(private readonly userReadService: UserReadService, private readonly userWriteService: UserWriteService) {
   }

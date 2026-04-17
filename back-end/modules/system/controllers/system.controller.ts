@@ -7,9 +7,14 @@ import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.pay
 import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
 import { SystemReadService } from '@/system/services/system-read.service';
 import { SystemWriteService } from '@/system/services/system-write.service';
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, SerializeOptions, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system')
+@SerializeOptions({
+  excludePrefixes: [
+    '__'
+  ]
+})
 export class SystemController {
   public constructor(private readonly systemReadService: SystemReadService, private readonly systemWriteService: SystemWriteService) {
   }
