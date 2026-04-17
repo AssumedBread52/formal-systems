@@ -1,5 +1,6 @@
 import { AuthModule } from '@/auth/auth.module';
 import { DependencyModule } from '@/dependency/dependency.module';
+import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { ExpressionModule } from '@/expression/expression.module';
 import { HealthModule } from '@/health/health.module';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
@@ -43,7 +44,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
       SystemModule,
       UserModule
     ]
-  }).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(Repository).overrideProvider(getRepositoryToken(SystemEntity)).useClass(Repository).overrideProvider(getRepositoryToken(UserEntity)).useClass(Repository).compile();
+  }).overrideProvider(getRepositoryToken(ExpressionEntity)).useClass(Repository).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(Repository).overrideProvider(getRepositoryToken(SystemEntity)).useClass(Repository).overrideProvider(getRepositoryToken(UserEntity)).useClass(Repository).compile();
 
   const app = testingModule.createNestApplication<NestExpressApplication>();
 

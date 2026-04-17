@@ -2,6 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ExpressionEntity {
+  id: String!
+  systemId: String!
+  canonical: [String!]!
+  system: SystemEntity!
+}
+
 type UserEntity {
   id: String!
   handle: String!
@@ -16,6 +23,7 @@ type SystemEntity {
   description: String!
   owner: UserEntity!
   symbols: [SymbolEntity!]!
+  expressions: [ExpressionEntity!]!
 }
 
 type SymbolEntity {
