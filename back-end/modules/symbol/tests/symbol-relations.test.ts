@@ -12,7 +12,7 @@ import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
 import { In } from 'typeorm';
 
-describe('Relations', (): void => {
+describe('Symbol Relations', (): void => {
   const findBy = findByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
