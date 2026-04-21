@@ -62,7 +62,7 @@ export class SystemLoadingService {
         }
 
         return map;
-      }, new Map<string, SystemEntity[]>())
+      }, new Map<string, SystemEntity[]>());
 
       return ownerUserIds.map((ownerUserId: string): SystemEntity[] => {
         const userSystems = systemsMap.get(ownerUserId);
