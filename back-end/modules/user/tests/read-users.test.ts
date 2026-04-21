@@ -81,11 +81,6 @@ describe('Read Users', (): void => {
       user
     ], total]);
 
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.set('page', page.toString());
-    urlSearchParams.set('pageSize', pageSize.toString());
-    urlSearchParams.set('searchText', searchText);
-
     const response = await request(app.getHttpServer()).post('/graphql').send({
       query: 'query ($filters: SearchUsersPayload!) { users(filters: $filters) { results { id handle email } total } }',
       variables: {

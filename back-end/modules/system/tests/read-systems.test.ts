@@ -89,12 +89,6 @@ describe('Read Systems', (): void => {
       system
     ], total]);
 
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.set('page', page.toString());
-    urlSearchParams.set('pageSize', pageSize.toString());
-    urlSearchParams.set('ownerUserIds[]', userId);
-    urlSearchParams.set('searchText', searchText);
-
     const response = await request(app.getHttpServer()).post('/graphql').send({
       query: 'query ($filters: SearchSystemsPayload!) { systems(filters: $filters) { results { id ownerUserId name description } total } }',
       variables: {
