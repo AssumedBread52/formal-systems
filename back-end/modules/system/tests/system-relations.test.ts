@@ -103,7 +103,7 @@ describe('System Relations', (): void => {
       systemId: In([
         systemId
       ])
-    })
+    });
     expect(findBy).toHaveBeenNthCalledWith(4, {
       id: In([
         userId
