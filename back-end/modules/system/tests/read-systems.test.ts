@@ -22,7 +22,7 @@ describe('Read Systems', (): void => {
     const page = 2;
     const pageSize = 20;
     const searchText = 't S';
-    const total = 1;
+    const total = 21;
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
     const system = validatePayload({
       id: '1222051d-2638-424f-a193-68b26615345a',
@@ -76,7 +76,7 @@ describe('Read Systems', (): void => {
     const page = 2;
     const pageSize = 20;
     const searchText = 't S';
-    const total = 1;
+    const total = 21;
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
     const system = validatePayload({
       id: '1222051d-2638-424f-a193-68b26615345a',

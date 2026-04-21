@@ -23,7 +23,7 @@ describe('Read Users', (): void => {
     const page = 2;
     const pageSize = 20;
     const searchText = '1 User';
-    const total = 1;
+    const total = 21;
     const user = validatePayload({
       id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
       handle: 'Test1 User1',
@@ -69,7 +69,7 @@ describe('Read Users', (): void => {
     const page = 2;
     const pageSize = 20;
     const searchText = '1 User';
-    const total = 1;
+    const total = 21;
     const user = validatePayload({
       id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
       handle: 'Test1 User1',
