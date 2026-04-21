@@ -103,6 +103,10 @@ function generate_ssh_files() {
   fi
 }
 
+if [ ! -d database ]; then
+  mkdir database
+fi
+
 generate_environment_variables database-credentials
 generate_environment_variables back-end-configuration
 generate_environment_variables front-end-configuration
