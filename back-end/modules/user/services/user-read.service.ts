@@ -58,7 +58,7 @@ export class UserReadService {
         throw error;
       }
 
-      throw new InternalServerErrorException('Selecting user failed');
+      throw new InternalServerErrorException('Reading user failed');
     }
   }
 
@@ -78,7 +78,7 @@ export class UserReadService {
         throw error;
       }
 
-      throw new InternalServerErrorException('Selecting user failed');
+      throw new InternalServerErrorException('Reading user failed');
     }
   }
 };
