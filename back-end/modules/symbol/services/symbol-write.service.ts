@@ -45,9 +45,9 @@ export class SymbolWriteService {
       symbol.type = validatedNewSymbolPayload.type;
       symbol.content = validatedNewSymbolPayload.content;
 
-      const savedSymbol = await this.repository.save(symbol);
+      await this.repository.save(symbol);
 
-      return validatePayload(savedSymbol, SymbolEntity);
+      return symbol;
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
@@ -76,11 +76,11 @@ export class SymbolWriteService {
         throw new OwnershipException();
       }
 
-      const deletedSymbol = await this.repository.remove(symbol);
+      await this.repository.remove(symbol);
 
-      deletedSymbol.id = symbolId;
+      symbol.id = symbolId;
 
-      return validatePayload(deletedSymbol, SymbolEntity);
+      return symbol;
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
@@ -127,9 +127,9 @@ export class SymbolWriteService {
       symbol.type = validatedEditSymbolPayload.newType;
       symbol.content = validatedEditSymbolPayload.newContent;
 
-      const updatedSymbol = await this.repository.save(symbol);
+      await this.repository.save(symbol);
 
-      return validatePayload(updatedSymbol, SymbolEntity);
+      return symbol;
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
