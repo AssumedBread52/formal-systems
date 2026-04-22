@@ -56,7 +56,7 @@ export class UserWriteService {
         throw error;
       }
 
-      throw new InternalServerErrorException('Editting profile failed');
+      throw new InternalServerErrorException('Editing profile failed');
     }
   }
 
