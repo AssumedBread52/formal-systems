@@ -28,7 +28,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('sign-out')
   @UseGuards(JwtGuard)
-  signOut(@Res({ passthrough: true }) response: Response): void {
+  public signOut(@Res({ passthrough: true }) response: Response): void {
     this.authService.signOut(response);
   }
 };
