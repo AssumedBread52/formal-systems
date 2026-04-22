@@ -81,7 +81,7 @@ export class SymbolReadService {
         throw new SymbolNotFoundException();
       }
 
-      return validatePayload(symbol, SymbolEntity);
+      return symbol;
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;

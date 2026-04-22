@@ -52,7 +52,7 @@ export class UserReadService {
         throw new UserNotFoundException();
       }
 
-      return validatePayload(user, UserEntity);
+      return user;
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
@@ -72,7 +72,7 @@ export class UserReadService {
         throw new UserNotFoundException();
       }
 
-      return validatePayload(user, UserEntity);
+      return user;
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;

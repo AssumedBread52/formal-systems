@@ -66,7 +66,7 @@ export class SystemReadService {
         throw new SystemNotFoundException();
       }
 
-      return validatePayload(system, SystemEntity);
+      return system;
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
