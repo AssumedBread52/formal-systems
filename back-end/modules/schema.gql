@@ -69,6 +69,11 @@ type PaginatedUsersPayload {
   total: Int!
 }
 
+type PaginatedExpressionsPayload {
+  results: [ExpressionEntity!]!
+  total: Int!
+}
+
 type DependencyPayload {
   name: String!
   version: String!
@@ -107,6 +112,7 @@ type Query {
   system(systemId: String!): SystemEntity!
   systems(filters: SearchSystemsPayload!): PaginatedSystemsPayload!
   expression(systemId: String!, expressionId: String!): ExpressionEntity!
+  expressions(systemId: String!, filters: SearchExpressionsPayload!): PaginatedExpressionsPayload!
   symbol(systemId: String!, symbolId: String!): SymbolEntity!
   symbols(systemId: String!, filters: SearchSymbolsPayload!): PaginatedSymbolsPayload!
   dependencies: [DependencyPayload!]!
@@ -124,6 +130,12 @@ input SearchSystemsPayload {
   pageSize: Int! = 10
   ownerUserIds: [String!]! = []
   searchText: String! = ""
+}
+
+input SearchExpressionsPayload {
+  page: Int! = 1
+  pageSize: Int! = 10
+  symbolIds: [String!]! = []
 }
 
 input SearchSymbolsPayload {
