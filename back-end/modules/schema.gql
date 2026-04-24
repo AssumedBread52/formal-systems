@@ -154,6 +154,8 @@ type Mutation {
   createSystem(systemPayload: NewSystemPayload!): SystemEntity!
   deleteSystem(systemId: String!): SystemEntity!
   updateSystem(systemId: String!, systemPayload: EditSystemPayload!): SystemEntity!
+  createExpression(systemId: String!, expressionPayload: NewExpressionPayload!): ExpressionEntity!
+  deleteExpression(systemId: String!, expressionId: String!): ExpressionEntity!
   createSymbol(systemId: String!, symbolPayload: NewSymbolPayload!): SymbolEntity!
   deleteSymbol(systemId: String!, symbolId: String!): SymbolEntity!
   updateSymbol(systemId: String!, symbolId: String!, symbolPayload: EditSymbolPayload!): SymbolEntity!
@@ -179,6 +181,10 @@ input NewSystemPayload {
 input EditSystemPayload {
   newName: String! = ""
   newDescription: String! = ""
+}
+
+input NewExpressionPayload {
+  canonical: [String!]! = []
 }
 
 input NewSymbolPayload {

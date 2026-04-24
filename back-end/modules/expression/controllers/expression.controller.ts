@@ -6,7 +6,7 @@ import { PaginatedExpressionsPayload } from '@/expression/payloads/paginated-exp
 import { SearchExpressionsPayload } from '@/expression/payloads/search-expressions.payload';
 import { ExpressionReadService } from '@/expression/services/expression-read.service';
 import { ExpressionWriteService } from '@/expression/services/expression-write.service';
-import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Post, Query, SerializeOptions, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, SerializeOptions, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system/:systemId/expression')
 @SerializeOptions({
@@ -16,6 +16,13 @@ import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe
 })
 export class ExpressionController {
   public constructor(private readonly expressionReadService: ExpressionReadService, private readonly expressionWriteService: ExpressionWriteService) {
+  }
+
+  @Delete(':expressionId')
+  @UseGuards(JwtGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public deleteExpression(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('expressionId', new ParseUUIDPipe()) expressionId: string): Promise<ExpressionEntity> {
+    return this.expressionWriteService.delete(sessionUserId, systemId, expressionId);
   }
 
   @Get()

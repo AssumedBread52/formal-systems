@@ -22,6 +22,14 @@ export class ExpressionResolver {
     return this.expressionWriteService.create(sessionUserId, systemId, newExpressionPayload);
   }
 
+  @Mutation((): typeof ExpressionEntity => {
+    return ExpressionEntity;
+  })
+  @UseGuards(JwtGuard)
+  public deleteExpression(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('expressionId', new ParseUUIDPipe()) expressionId: string): Promise<ExpressionEntity> {
+    return this.expressionWriteService.delete(sessionUserId, systemId, expressionId);
+  }
+
   @Query((): typeof ExpressionEntity => {
     return ExpressionEntity;
   })
