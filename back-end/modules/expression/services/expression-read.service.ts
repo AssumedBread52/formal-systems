@@ -1,11 +1,13 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
+import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { ExpressionNotFoundException } from '@/expression/exceptions/expression-not-found.exception';
+import { SymbolInUseException } from '@/expression/exceptions/symbol-in-use.exception';
 import { PaginatedExpressionsPayload } from '@/expression/payloads/paginated-expressions.payload';
 import { SearchExpressionsPayload } from '@/expression/payloads/search-expressions.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArrayContains, FindOptionsWhere, Repository } from 'typeorm';
+import { ArrayContains, EntityManager, FindOptionsWhere, Repository } from 'typeorm';
 
 @Injectable()
 export class ExpressionReadService {
@@ -57,6 +59,26 @@ export class ExpressionReadService {
       }
 
       throw new InternalServerErrorException('Reading expression failed');
+    }
+  }
+
+  public async verifySymbolNotInUse(entityManager: EntityManager, symbolId: string): Promise<void> {
+    try {
+      const expressionTokenRepository = entityManager.getRepository(ExpressionTokenEntity);
+
+      const inUse = await expressionTokenRepository.existsBy({
+        symbolId
+      });
+
+      if (inUse) {
+        throw new SymbolInUseException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying symbol not in use failed');
     }
   }
 };

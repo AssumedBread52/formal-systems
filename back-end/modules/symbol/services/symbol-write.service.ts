@@ -1,5 +1,6 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
+import { ExpressionReadService } from '@/expression/services/expression-read.service';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
 import { UniqueNameException } from '@/symbol/exceptions/unique-name.exception';
@@ -9,11 +10,11 @@ import { SystemReadService } from '@/system/services/system-read.service';
 import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class SymbolWriteService {
-  public constructor(private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
+  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
   }
 
   public async create(userId: string, systemId: string, newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
@@ -125,7 +126,13 @@ export class SymbolWriteService {
       symbol.type = validatedEditSymbolPayload.newType;
       symbol.content = validatedEditSymbolPayload.newContent;
 
-      return await this.repository.save(symbol);
+      return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<SymbolEntity> => {
+        const symbolRepository = entityManager.getRepository(SymbolEntity);
+
+        await this.expressionReadService.verifySymbolNotInUse(entityManager, symbol.id);
+
+        return await symbolRepository.save(symbol);
+      });
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;

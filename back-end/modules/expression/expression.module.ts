@@ -42,6 +42,7 @@ import { ExpressionWriteService } from './services/expression-write.service';
   ],
   exports: [
     ExpressionLoadingService,
+    ExpressionReadService,
     ExpressionTokenLoadingService
   ]
 })

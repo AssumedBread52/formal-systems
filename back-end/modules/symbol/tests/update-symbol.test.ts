@@ -3,7 +3,11 @@ import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
+import { getRepositoryMock } from '@/common/tests/mocks/get-repository.mock';
+import { managerMock } from '@/common/tests/mocks/manager.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
+import { transactionMock } from '@/common/tests/mocks/transaction.mock';
+import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
@@ -19,7 +23,10 @@ describe('Update Symbol', (): void => {
   const existsBy = existsByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
+  const getRepository = getRepositoryMock();
+  const manager = managerMock();
   const save = saveMock();
+  const transaction = transactionMock();
   let app: NestExpressApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -64,6 +71,7 @@ describe('Update Symbol', (): void => {
     }, SymbolEntity);
 
     existsBy.mockResolvedValueOnce(false);
+    existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
     findOneBy.mockResolvedValueOnce(user);
@@ -83,10 +91,13 @@ describe('Update Symbol', (): void => {
       newContent
     });
 
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
       systemId,
       name: newName
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
+      symbolId
     });
     expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -103,8 +114,14 @@ describe('Update Symbol', (): void => {
       id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(getRepository).toHaveBeenCalledTimes(2);
+    expect(getRepository).toHaveBeenNthCalledWith(1, SymbolEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(2, ExpressionTokenEntity);
+    expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);
+    expect(transaction).toHaveBeenCalledTimes(1);
+    expect(response.body).toStrictEqual(instanceToPlain(updatedSymbol));
     expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
@@ -146,6 +163,7 @@ describe('Update Symbol', (): void => {
     }, SymbolEntity);
 
     existsBy.mockResolvedValueOnce(false);
+    existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
     findOneBy.mockResolvedValueOnce(user);
@@ -172,10 +190,13 @@ describe('Update Symbol', (): void => {
       }
     });
 
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
       systemId,
       name: newName
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
+      symbolId
     });
     expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -192,8 +213,13 @@ describe('Update Symbol', (): void => {
       id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(getRepository).toHaveBeenCalledTimes(2);
+    expect(getRepository).toHaveBeenNthCalledWith(1, SymbolEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(2, ExpressionTokenEntity);
+    expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);
+    expect(transaction).toHaveBeenCalledTimes(1);
     expect(response.body).toStrictEqual({
       data: {
         updateSymbol: instanceToPlain(updatedSymbol)

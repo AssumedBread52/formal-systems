@@ -59,6 +59,11 @@ type PaginatedSymbolsPayload {
   total: Int!
 }
 
+type PaginatedExpressionsPayload {
+  results: [ExpressionEntity!]!
+  total: Int!
+}
+
 type PaginatedSystemsPayload {
   results: [SystemEntity!]!
   total: Int!
@@ -66,11 +71,6 @@ type PaginatedSystemsPayload {
 
 type PaginatedUsersPayload {
   results: [UserEntity!]!
-  total: Int!
-}
-
-type PaginatedExpressionsPayload {
-  results: [ExpressionEntity!]!
   total: Int!
 }
 
