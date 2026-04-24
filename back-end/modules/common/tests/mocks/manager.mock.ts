@@ -1,6 +1,6 @@
 import { EntityManager, Repository } from 'typeorm';
 
-export const managerMock = () => {
+export const managerMock = (): jest.Mock<EntityManager, [], any> => {
   const entityManager = Reflect.construct(EntityManager, []);
   const manager = jest.fn((): EntityManager => {
     return entityManager;
