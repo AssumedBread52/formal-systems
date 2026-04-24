@@ -7,7 +7,7 @@ import { PaginatedUsersPayload } from '@/user/payloads/paginated-users.payload';
 import { SearchUsersPayload } from '@/user/payloads/search-users.payload';
 import { UserReadService } from '@/user/services/user-read.service';
 import { UserWriteService } from '@/user/services/user-write.service';
-import { UseGuards, ValidationPipe } from '@nestjs/common';
+import { ParseUUIDPipe, UseGuards, ValidationPipe } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import type { Response } from 'express';
 
@@ -42,7 +42,7 @@ export class UserResolver {
   @Query((): typeof UserEntity => {
     return UserEntity;
   })
-  public user(@Args('userId') userId: string): Promise<UserEntity> {
+  public user(@Args('userId', new ParseUUIDPipe()) userId: string): Promise<UserEntity> {
     return this.userReadService.selectById(userId);
   }
 
