@@ -37,7 +37,8 @@ import { SymbolWriteService } from './services/symbol-write.service';
     SymbolWriteService
   ],
   exports: [
-    SymbolLoadingService
+    SymbolLoadingService,
+    SymbolReadService
   ]
 })
 export class SymbolModule {

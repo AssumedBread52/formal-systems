@@ -90,4 +90,31 @@ export class SymbolReadService {
       throw new InternalServerErrorException('Reading symbol failed');
     }
   }
+
+  public async verifyAllExist(systemId: string, symbolIds: string[]): Promise<void> {
+    try {
+      const uniqueSymbolIds = symbolIds.reduce((uniqueSymbolIds: string[], symbolId: string): string[] => {
+        if (!uniqueSymbolIds.includes(symbolId)) {
+          uniqueSymbolIds.push(symbolId);
+        }
+
+        return uniqueSymbolIds;
+      }, []);
+
+      const count = await this.repository.countBy({
+        id: In(uniqueSymbolIds),
+        systemId
+      });
+
+      if (count !== uniqueSymbolIds.length) {
+        throw new SymbolNotFoundException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying symbols failed');
+    }
+  }
 };

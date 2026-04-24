@@ -1,5 +1,6 @@
 import { SymbolModule } from '@/symbol/symbol.module';
 import { SystemModule } from '@/system/system.module';
+import { UserModule } from '@/user/user.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExpressionController } from './controllers/expression.controller';
@@ -11,11 +12,15 @@ import { ExpressionResolver } from './resolvers/expression.resolver';
 import { ExpressionLoadingService } from './services/expression-loading.service';
 import { ExpressionReadService } from './services/expression-read.service';
 import { ExpressionTokenLoadingService } from './services/expression-token-loading.service';
+import { ExpressionWriteService } from './services/expression-write.service';
 
 @Module({
   imports: [
     forwardRef((): typeof SystemModule => {
       return SystemModule;
+    }),
+    forwardRef((): typeof UserModule => {
+      return UserModule;
     }),
     SymbolModule,
     TypeOrmModule.forFeature([
@@ -32,7 +37,8 @@ import { ExpressionTokenLoadingService } from './services/expression-token-loadi
     ExpressionRelationsResolver,
     ExpressionResolver,
     ExpressionTokenLoadingService,
-    ExpressionTokenRelationsResolver
+    ExpressionTokenRelationsResolver,
+    ExpressionWriteService
   ],
   exports: [
     ExpressionLoadingService,

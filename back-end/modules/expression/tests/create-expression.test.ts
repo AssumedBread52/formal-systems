@@ -217,7 +217,11 @@ describe('Create Expression', (): void => {
       expressionToken
     ]);
     expect(transaction).toHaveBeenCalledTimes(1);
-    expect(response.body).toStrictEqual(instanceToPlain(expression));
+    expect(response.body).toStrictEqual({
+      data: {
+        createExpression: instanceToPlain(expression)
+      }
+    });
     expect(response.statusCode).toBe(HttpStatus.CREATED);
   });
 

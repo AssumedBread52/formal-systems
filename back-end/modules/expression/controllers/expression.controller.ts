@@ -1,8 +1,12 @@
+import { SessionUser } from '@/auth/decorators/session-user.decorator';
+import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { NewExpressionPayload } from '@/expression/payloads/new-expression.payload';
 import { PaginatedExpressionsPayload } from '@/expression/payloads/paginated-expressions.payload';
 import { SearchExpressionsPayload } from '@/expression/payloads/search-expressions.payload';
 import { ExpressionReadService } from '@/expression/services/expression-read.service';
-import { ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Query, SerializeOptions, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { ExpressionWriteService } from '@/expression/services/expression-write.service';
+import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Post, Query, SerializeOptions, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system/:systemId/expression')
 @SerializeOptions({
@@ -11,7 +15,7 @@ import { ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Quer
   ]
 })
 export class ExpressionController {
-  public constructor(private readonly expressionReadService: ExpressionReadService) {
+  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly expressionWriteService: ExpressionWriteService) {
   }
 
   @Get()
@@ -24,5 +28,12 @@ export class ExpressionController {
   @UseInterceptors(ClassSerializerInterceptor)
   public getById(@Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('expressionId', new ParseUUIDPipe()) expressionId: string): Promise<ExpressionEntity> {
     return this.expressionReadService.selectById(systemId, expressionId);
+  }
+
+  @Post()
+  @UseGuards(JwtGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public postExpression(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newExpressionPayload: NewExpressionPayload): Promise<ExpressionEntity> {
+    return this.expressionWriteService.create(sessionUserId, systemId, newExpressionPayload);
   }
 };

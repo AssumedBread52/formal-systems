@@ -1,13 +1,25 @@
+import { SessionUser } from '@/auth/decorators/session-user.decorator';
+import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { NewExpressionPayload } from '@/expression/payloads/new-expression.payload';
 import { PaginatedExpressionsPayload } from '@/expression/payloads/paginated-expressions.payload';
 import { SearchExpressionsPayload } from '@/expression/payloads/search-expressions.payload';
 import { ExpressionReadService } from '@/expression/services/expression-read.service';
-import { ParseUUIDPipe, ValidationPipe } from '@nestjs/common';
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { ExpressionWriteService } from '@/expression/services/expression-write.service';
+import { ParseUUIDPipe, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 @Resolver()
 export class ExpressionResolver {
-  public constructor(private readonly expressionReadService: ExpressionReadService) {
+  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly expressionWriteService: ExpressionWriteService) {
+  }
+
+  @Mutation((): typeof ExpressionEntity => {
+    return ExpressionEntity;
+  })
+  @UseGuards(JwtGuard)
+  public createExpression(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('expressionPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newExpressionPayload: NewExpressionPayload): Promise<ExpressionEntity> {
+    return this.expressionWriteService.create(sessionUserId, systemId, newExpressionPayload);
   }
 
   @Query((): typeof ExpressionEntity => {
