@@ -97,8 +97,8 @@ describe('Create Symbol', (): void => {
       type,
       content
     });
-    expect(response.statusCode).toBe(HttpStatus.CREATED);
     expect(response.body).toStrictEqual(instanceToPlain(symbol));
+    expect(response.statusCode).toBe(HttpStatus.CREATED);
   });
 
   it('POST /graphql mutation createSymbol', async (): Promise<void> => {
@@ -178,12 +178,12 @@ describe('Create Symbol', (): void => {
       type,
       content
     });
-    expect(response.statusCode).toBe(HttpStatus.OK);
     expect(response.body).toStrictEqual({
       data: {
         createSymbol: instanceToPlain(symbol)
       }
     });
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   afterAll(async (): Promise<void> => {
