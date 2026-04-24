@@ -2,32 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type ExpressionEntity {
-  id: String!
-  systemId: String!
-  canonical: [String!]!
-  system: SystemEntity!
-  expressionTokens: [ExpressionTokenEntity!]!
-}
-
-type UserEntity {
-  id: String!
-  handle: String!
-  email: String!
-  systems: [SystemEntity!]!
-}
-
-type SystemEntity {
-  id: String!
-  ownerUserId: String!
-  name: String!
-  description: String!
-  owner: UserEntity!
-  symbols: [SymbolEntity!]!
-  expressions: [ExpressionEntity!]!
-  expressionTokens: [ExpressionTokenEntity!]!
-}
-
 type SymbolEntity {
   id: String!
   systemId: String!
@@ -52,6 +26,32 @@ type ExpressionTokenEntity {
   system: SystemEntity!
   symbol: SymbolEntity!
   expression: ExpressionEntity!
+}
+
+type UserEntity {
+  id: String!
+  handle: String!
+  email: String!
+  systems: [SystemEntity!]!
+}
+
+type SystemEntity {
+  id: String!
+  ownerUserId: String!
+  name: String!
+  description: String!
+  owner: UserEntity!
+  symbols: [SymbolEntity!]!
+  expressions: [ExpressionEntity!]!
+  expressionTokens: [ExpressionTokenEntity!]!
+}
+
+type ExpressionEntity {
+  id: String!
+  systemId: String!
+  canonical: [String!]!
+  system: SystemEntity!
+  expressionTokens: [ExpressionTokenEntity!]!
 }
 
 type PaginatedSymbolsPayload {
@@ -106,6 +106,7 @@ type Query {
   users(filters: SearchUsersPayload!): PaginatedUsersPayload!
   system(systemId: String!): SystemEntity!
   systems(filters: SearchSystemsPayload!): PaginatedSystemsPayload!
+  expression(systemId: String!, expressionId: String!): ExpressionEntity!
   symbol(systemId: String!, symbolId: String!): SymbolEntity!
   symbols(systemId: String!, filters: SearchSymbolsPayload!): PaginatedSymbolsPayload!
   dependencies: [DependencyPayload!]!
