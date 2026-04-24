@@ -39,7 +39,7 @@ describe('Read Expressions', (): void => {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('page', page.toString());
     urlSearchParams.set('pageSize', pageSize.toString());
-    urlSearchParams.append('symbolIds[]', symbolId)
+    urlSearchParams.append('symbolIds[]', symbolId);
 
     const response = await request(app.getHttpServer()).get(`/system/${systemId}/expression?${urlSearchParams}`);
 
