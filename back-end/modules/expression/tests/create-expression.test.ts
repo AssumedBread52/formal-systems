@@ -35,7 +35,7 @@ describe('Create Expression', (): void => {
     app = await createTestApp();
   });
 
-  it('POST /system/:system/expression', async (): Promise<void> => {
+  it('POST /system/:systemId/expression', async (): Promise<void> => {
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
     const symbolId = '7bde3313-f751-42f0-8d89-88c4ab394282';
