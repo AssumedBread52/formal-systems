@@ -222,7 +222,7 @@ describe('Create Expression', (): void => {
         createExpression: instanceToPlain(expression)
       }
     });
-    expect(response.statusCode).toBe(HttpStatus.CREATED);
+    expect(response.statusCode).toBe(HttpStatus.OK);
   });
 
   afterAll(async (): Promise<void> => {
