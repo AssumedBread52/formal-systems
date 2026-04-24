@@ -13,13 +13,15 @@ import { SymbolWriteService } from './services/symbol-write.service';
 
 @Module({
   imports: [
+    forwardRef((): typeof ExpressionModule => {
+      return ExpressionModule;
+    }),
     forwardRef((): typeof SystemModule => {
       return SystemModule;
     }),
     forwardRef((): typeof UserModule => {
       return UserModule;
     }),
-    ExpressionModule,
     TypeOrmModule.forFeature([
       SymbolEntity
     ])
