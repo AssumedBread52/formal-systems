@@ -36,9 +36,7 @@ export class SystemWriteService {
       system.name = validatedNewSystemPayload.name;
       system.description = validatedNewSystemPayload.description;
 
-      await this.repository.save(system);
-
-      return system;
+      return await this.repository.save(system);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
@@ -64,11 +62,11 @@ export class SystemWriteService {
         throw new OwnershipException();
       }
 
-      await this.repository.remove(system);
+      const removedSystem = await this.repository.remove(system);
 
-      system.id = systemId;
+      removedSystem.id = systemId;
 
-      return system;
+      return removedSystem;
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
@@ -110,9 +108,7 @@ export class SystemWriteService {
       system.name = validatedEditSystemPayload.newName;
       system.description = validatedEditSystemPayload.newDescription;
 
-      await this.repository.save(system);
-
-      return system;
+      return await this.repository.save(system);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
