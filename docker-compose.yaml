@@ -11,6 +11,7 @@ services:
       start_period: 5s
     image: postgres:18.3
     volumes:
+      - pg:/var/lib/postgresql:rw
       - pgdata:/var/lib/postgresql/18/docker:rw
 
   back-end:
@@ -72,5 +73,7 @@ services:
     working_dir: /app
 
 volumes:
+  pg:
+    name: pg
   pgdata:
     name: pgdata
