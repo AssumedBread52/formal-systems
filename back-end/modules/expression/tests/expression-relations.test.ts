@@ -26,6 +26,9 @@ describe('Expression Relations', (): void => {
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
     const symbolId = '7bde3313-f751-42f0-8d89-88c4ab394282';
     const expressionId = 'cfe59823-eb13-4faf-a90b-c5e82022821f';
+    const canonical = [
+      symbolId
+    ];
     const system = validatePayload({
       id: systemId,
       ownerUserId: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
@@ -35,9 +38,7 @@ describe('Expression Relations', (): void => {
     const expression = validatePayload({
       id: expressionId,
       systemId,
-      canonical: [
-        symbolId
-      ]
+      canonical
     }, ExpressionEntity);
     const expressionToken = validatePayload({
       systemId,
@@ -84,9 +85,7 @@ describe('Expression Relations', (): void => {
         expression: {
           id: expressionId,
           systemId,
-          canonical: [
-            symbolId
-          ],
+          canonical,
           system: instanceToPlain(system),
           expressionTokens: [
             instanceToPlain(expressionToken)
