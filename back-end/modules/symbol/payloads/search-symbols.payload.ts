@@ -28,7 +28,7 @@ export class SearchSymbolsPayload {
   })
   @IsString()
   public readonly searchText: string = '';
-  @ArrayMaxSize(Object.keys(SymbolType).length)
+  @ArrayMaxSize(Reflect.ownKeys(SymbolType).length)
   @ArrayUnique()
   @Field((): [typeof SymbolType] => {
     return [SymbolType];
