@@ -123,16 +123,21 @@ export class SymbolWriteService {
 
       symbol.name = validatedEditSymbolPayload.newName;
       symbol.description = validatedEditSymbolPayload.newDescription;
-      symbol.type = validatedEditSymbolPayload.newType;
       symbol.content = validatedEditSymbolPayload.newContent;
 
-      return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<SymbolEntity> => {
-        const symbolRepository = entityManager.getRepository(SymbolEntity);
+      if (validatedEditSymbolPayload.newType !== symbol.type) {
+        symbol.type = validatedEditSymbolPayload.newType;
 
-        await this.expressionReadService.verifySymbolNotInUse(entityManager, symbol.id);
+        return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<SymbolEntity> => {
+          const symbolRepository = entityManager.getRepository(SymbolEntity);
 
-        return await symbolRepository.save(symbol);
-      });
+          await this.expressionReadService.verifySymbolNotInUse(entityManager, symbol.id);
+
+          return await symbolRepository.save(symbol);
+        });
+      }
+
+      return await this.repository.save(symbol);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
