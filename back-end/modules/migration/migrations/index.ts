@@ -7,7 +7,7 @@ import { AddExpressionTokensTable0000000000006 } from './06-add-expression-token
 import { AddStatementsTable0000000000007 } from './07-add-statements-table.migration';
 import { AddStatementTypeHypothesesTable0000000000008 } from './08-add-statement-type-hypotheses-table.migration';
 import { AddStatementLogicalHypothesesTable0000000000009 } from './09-add-statement-logical-hypotheses-table.migration';
-import { AddStatementDistinctVariablesTable0000000000010 } from './10-add-statement-distinct-variables-table.migration';
+import { AddStatementDistinctVariablePairsTable0000000000010 } from './10-add-statement-distinct-variable-pairs-table.migration';
 import { AddProofsTable0000000000011 } from './11-add-proofs-table.migration';
 import { AddProofStepsTable0000000000012 } from './12-add-proof-steps-table.migration';
 import { AddProofStepSubstitutionsTable0000000000013 } from './13-add-proof-step-substitutions-table.migration';
@@ -25,7 +25,7 @@ export default {
   AddStatementsTable0000000000007,
   AddStatementTypeHypothesesTable0000000000008,
   AddStatementLogicalHypothesesTable0000000000009,
-  AddStatementDistinctVariablesTable0000000000010,
+  AddStatementDistinctVariablePairsTable0000000000010,
   AddProofsTable0000000000011,
   AddProofStepsTable0000000000012,
   AddProofStepSubstitutionsTable0000000000013,

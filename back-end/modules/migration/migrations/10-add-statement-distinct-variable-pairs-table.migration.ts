@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddStatementDistinctVariablesTable0000000000010 implements MigrationInterface {
+export class AddStatementDistinctVariablePairsTable0000000000010 implements MigrationInterface {
   public up(queryRunner: QueryRunner): Promise<any> {
     return queryRunner.query(`
-      CREATE TABLE statement_distinct_variables (
+      CREATE TABLE statement_distinct_variable_pairs (
         system_id             UUID  NOT NULL,
         statement_id          UUID  NOT NULL,
         variable_symbol_1_id  UUID  NOT NULL,
