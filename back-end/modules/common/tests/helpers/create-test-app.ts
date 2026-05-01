@@ -4,6 +4,7 @@ import { ExpressionTokenEntity } from '@/expression/entities/expression-token.en
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { ExpressionModule } from '@/expression/expression.module';
 import { HealthModule } from '@/health/health.module';
+import { StatementModule } from '@/statement/statement.module';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
 import { SystemEntity } from '@/system/entities/system.entity';
@@ -41,6 +42,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
         }
       }),
       HealthModule,
+      StatementModule,
       SymbolModule,
       SystemModule,
       UserModule
