@@ -5,6 +5,7 @@ import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
@@ -66,6 +67,13 @@ describe('System Relations', (): void => {
       expressionId,
       position: 0
     }, ExpressionTokenEntity);
+    const statement = validatePayload({
+      id: '9df17e91-7e96-40b6-a455-c57148d7c92b',
+      systemId,
+      assertionExpressionId: expressionId,
+      name: 'TestStatement1',
+      description: 'Test Statement 1'
+    }, StatementEntity);
 
     findBy.mockResolvedValueOnce([
       symbol
@@ -77,18 +85,21 @@ describe('System Relations', (): void => {
       expressionToken
     ]);
     findBy.mockResolvedValueOnce([
+      statement
+    ]);
+    findBy.mockResolvedValueOnce([
       user
     ]);
     findOneBy.mockResolvedValueOnce(system);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query ($systemId: String!) { system(systemId: $systemId) { id ownerUserId name description owner { id handle email } symbols { id systemId name description type content } expressions { id systemId canonical } expressionTokens { systemId symbolId expressionId position } } }',
+      query: 'query ($systemId: String!) { system(systemId: $systemId) { id ownerUserId name description owner { id handle email } symbols { id systemId name description type content } expressions { id systemId canonical } expressionTokens { systemId symbolId expressionId position } statements { id systemId assertionExpressionId name description } } }',
       variables: {
         systemId
       }
     });
 
-    expect(findBy).toHaveBeenCalledTimes(4);
+    expect(findBy).toHaveBeenCalledTimes(5);
     expect(findBy).toHaveBeenNthCalledWith(1, {
       systemId: In([
         systemId
@@ -105,6 +116,11 @@ describe('System Relations', (): void => {
       ])
     });
     expect(findBy).toHaveBeenNthCalledWith(4, {
+      systemId: In([
+        systemId
+      ])
+    });
+    expect(findBy).toHaveBeenNthCalledWith(5, {
       id: In([
         userId
       ])
@@ -130,6 +146,9 @@ describe('System Relations', (): void => {
           ],
           expressionTokens: [
             instanceToPlain(expressionToken)
+          ],
+          statements: [
+            instanceToPlain(statement)
           ]
         }
       }

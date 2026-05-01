@@ -1,0 +1,77 @@
+import { SystemEntity } from '@/system/entities/system.entity';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { Exclude } from 'class-transformer';
+import { Allow, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+
+@Entity('statements')
+@ObjectType()
+@Unique('statements_system_name_unique', [
+  'system',
+  'name'
+])
+@Unique('statements_id_system_unique', [
+  'system',
+  'id'
+])
+export class StatementEntity {
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsUUID()
+  @PrimaryGeneratedColumn('uuid')
+  public id!: string;
+  @Column({
+    name: 'system_id',
+    type: 'uuid'
+  })
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsUUID()
+  public systemId: string = '';
+  @Column({
+    name: 'assertion_expression_id',
+    type: 'uuid'
+  })
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsUUID()
+  public assertionExpressionId: string = '';
+  @Column({
+    length: 200,
+    type: 'varchar'
+  })
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsNotEmpty()
+  @MaxLength(200)
+  public name: string = '';
+  @Column({
+    length: 5000,
+    type: 'varchar'
+  })
+  @Field((): typeof String => {
+    return String;
+  })
+  @IsNotEmpty()
+  @MaxLength(5000)
+  public description: string = '';
+
+  @Allow()
+  @Exclude()
+  @Field((): typeof SystemEntity => {
+    return SystemEntity;
+  })
+  @JoinColumn({
+    name: 'system_id'
+  })
+  @ManyToOne((): typeof SystemEntity => {
+    return SystemEntity;
+  }, (system: SystemEntity): Promise<StatementEntity[]> => {
+    return system.statements;
+  })
+  public readonly system!: Promise<SystemEntity>;
+};

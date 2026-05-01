@@ -10,6 +10,15 @@ type ExpressionEntity {
   expressionTokens: [ExpressionTokenEntity!]!
 }
 
+type StatementEntity {
+  id: String!
+  systemId: String!
+  assertionExpressionId: String!
+  name: String!
+  description: String!
+  system: SystemEntity!
+}
+
 type UserEntity {
   id: String!
   handle: String!
@@ -26,6 +35,7 @@ type SystemEntity {
   symbols: [SymbolEntity!]!
   expressions: [ExpressionEntity!]!
   expressionTokens: [ExpressionTokenEntity!]!
+  statements: [StatementEntity!]!
 }
 
 type ExpressionTokenEntity {
@@ -113,6 +123,7 @@ type Query {
   systems(filters: SearchSystemsPayload!): PaginatedSystemsPayload!
   expression(systemId: String!, expressionId: String!): ExpressionEntity!
   expressions(systemId: String!, filters: SearchExpressionsPayload!): PaginatedExpressionsPayload!
+  statement(systemId: String!, statementId: String!): StatementEntity!
   symbol(systemId: String!, symbolId: String!): SymbolEntity!
   symbols(systemId: String!, filters: SearchSymbolsPayload!): PaginatedSymbolsPayload!
   dependencies: [DependencyPayload!]!

@@ -4,6 +4,7 @@ import { ExpressionTokenEntity } from '@/expression/entities/expression-token.en
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { ExpressionModule } from '@/expression/expression.module';
 import { HealthModule } from '@/health/health.module';
+import { StatementEntity } from '@/statement/entities/statement.entity';
 import { StatementModule } from '@/statement/statement.module';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolModule } from '@/symbol/symbol.module';
@@ -47,7 +48,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
       SystemModule,
       UserModule
     ]
-  }).overrideProvider(getRepositoryToken(ExpressionEntity)).useClass(Repository).overrideProvider(getRepositoryToken(ExpressionTokenEntity)).useClass(Repository).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(Repository).overrideProvider(getRepositoryToken(SystemEntity)).useClass(Repository).overrideProvider(getRepositoryToken(UserEntity)).useClass(Repository).compile();
+  }).overrideProvider(getRepositoryToken(ExpressionEntity)).useClass(Repository).overrideProvider(getRepositoryToken(ExpressionTokenEntity)).useClass(Repository).overrideProvider(getRepositoryToken(StatementEntity)).useClass(Repository).overrideProvider(getRepositoryToken(SymbolEntity)).useClass(Repository).overrideProvider(getRepositoryToken(SystemEntity)).useClass(Repository).overrideProvider(getRepositoryToken(UserEntity)).useClass(Repository).compile();
 
   const app = testingModule.createNestApplication<NestExpressApplication>();
 

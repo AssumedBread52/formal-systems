@@ -1,5 +1,6 @@
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
@@ -97,4 +98,15 @@ export class SystemEntity {
     return expressionToken.system;
   })
   public readonly expressionTokens!: Promise<ExpressionTokenEntity[]>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof StatementEntity] => {
+    return [StatementEntity];
+  })
+  @OneToMany((): typeof StatementEntity => {
+    return StatementEntity;
+  }, (statement: StatementEntity): Promise<SystemEntity> => {
+    return statement.system;
+  })
+  public readonly statements!: Promise<StatementEntity[]>;
 };

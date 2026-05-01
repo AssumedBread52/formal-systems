@@ -1,4 +1,5 @@
 import { ExpressionModule } from '@/expression/expression.module';
+import { StatementModule } from '@/statement/statement.module';
 import { SymbolModule } from '@/symbol/symbol.module';
 import { UserModule } from '@/user/user.module';
 import { forwardRef, Module } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { SystemWriteService } from './services/system-write.service';
       return UserModule;
     }),
     ExpressionModule,
+    StatementModule,
     SymbolModule,
     TypeOrmModule.forFeature([
       SystemEntity

@@ -1,0 +1,83 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
+import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
+import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
+import { StatementEntity } from '@/statement/entities/statement.entity';
+import { HttpStatus } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { instanceToPlain } from 'class-transformer';
+import request from 'supertest';
+
+describe('Read Statement by ID', (): void => {
+  const findOneBy = findOneByMock();
+  const getOrThrow = getOrThrowMock();
+  let app: NestExpressApplication;
+
+  beforeAll(async (): Promise<void> => {
+    app = await createTestApp();
+  });
+
+  it('GET /system/:systemId/symbol/:statementId', async (): Promise<void> => {
+    const systemId = '1222051d-2638-424f-a193-68b26615345a';
+    const statementId = '9df17e91-7e96-40b6-a455-c57148d7c92b';
+    const statement = validatePayload({
+      id: statementId,
+      systemId,
+      assertionExpressionId: 'cfe59823-eb13-4faf-a90b-c5e82022821f',
+      name: 'TestStatement1',
+      description: 'Test Statement 1'
+    }, StatementEntity);
+
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const response = await request(app.getHttpServer()).get(`/system/${systemId}/statement/${statementId}`);
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(response.body).toStrictEqual(instanceToPlain(statement));
+    expect(response.statusCode).toBe(HttpStatus.OK);
+  });
+
+  it('POST /graphql query statement', async (): Promise<void> => {
+    const systemId = '1222051d-2638-424f-a193-68b26615345a';
+    const statementId = '9df17e91-7e96-40b6-a455-c57148d7c92b';
+    const statement = validatePayload({
+      id: statementId,
+      systemId,
+      assertionExpressionId: 'cfe59823-eb13-4faf-a90b-c5e82022821f',
+      name: 'TestStatement1',
+      description: 'Test Statement 1'
+    }, StatementEntity);
+
+    findOneBy.mockResolvedValueOnce(statement);
+
+    const response = await request(app.getHttpServer()).post('/graphql').send({
+      query: 'query ($systemId: String!, $statementId: String!) { statement(systemId: $systemId, statementId: $statementId) { id systemId assertionExpressionId name description } }',
+      variables: {
+        systemId,
+        statementId
+      }
+    });
+
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      id: statementId,
+      systemId
+    });
+    expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(response.body).toStrictEqual({
+      data: {
+        statement: instanceToPlain(statement)
+      }
+    });
+    expect(response.statusCode).toBe(HttpStatus.OK);
+  });
+
+  afterAll(async (): Promise<void> => {
+    await app.close();
+  });
+});
