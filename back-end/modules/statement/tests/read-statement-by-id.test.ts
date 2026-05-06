@@ -17,7 +17,7 @@ describe('Read Statement by ID', (): void => {
     app = await createTestApp();
   });
 
-  it('GET /system/:systemId/symbol/:statementId', async (): Promise<void> => {
+  it('GET /system/:systemId/statement/:statementId', async (): Promise<void> => {
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
     const statementId = '9df17e91-7e96-40b6-a455-c57148d7c92b';
     const statement = validatePayload({
