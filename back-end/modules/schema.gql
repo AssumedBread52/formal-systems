@@ -2,21 +2,30 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type ExpressionEntity {
+type SymbolEntity {
   id: String!
   systemId: String!
-  canonical: [String!]!
+  name: String!
+  description: String!
+  type: SymbolType!
+  content: String!
   system: SystemEntity!
   expressionTokens: [ExpressionTokenEntity!]!
 }
 
-type StatementEntity {
-  id: String!
+enum SymbolType {
+  constant
+  variable
+}
+
+type ExpressionTokenEntity {
   systemId: String!
-  assertionExpressionId: String!
-  name: String!
-  description: String!
+  symbolId: String!
+  expressionId: String!
+  position: Int!
   system: SystemEntity!
+  symbol: SymbolEntity!
+  expression: ExpressionEntity!
 }
 
 type UserEntity {
@@ -38,30 +47,23 @@ type SystemEntity {
   statements: [StatementEntity!]!
 }
 
-type ExpressionTokenEntity {
-  systemId: String!
-  symbolId: String!
-  expressionId: String!
-  position: Int!
-  system: SystemEntity!
-  symbol: SymbolEntity!
-  expression: ExpressionEntity!
-}
-
-type SymbolEntity {
+type ExpressionEntity {
   id: String!
   systemId: String!
-  name: String!
-  description: String!
-  type: SymbolType!
-  content: String!
+  canonical: [String!]!
   system: SystemEntity!
   expressionTokens: [ExpressionTokenEntity!]!
+  statements: [StatementEntity!]!
 }
 
-enum SymbolType {
-  constant
-  variable
+type StatementEntity {
+  id: String!
+  systemId: String!
+  assertionExpressionId: String!
+  name: String!
+  description: String!
+  system: SystemEntity!
+  assertion: ExpressionEntity!
 }
 
 type PaginatedSymbolsPayload {
