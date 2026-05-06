@@ -1,3 +1,4 @@
+import { StatementModule } from '@/statement/statement.module';
 import { SymbolModule } from '@/symbol/symbol.module';
 import { SystemModule } from '@/system/system.module';
 import { UserModule } from '@/user/user.module';
@@ -22,6 +23,7 @@ import { ExpressionWriteService } from './services/expression-write.service';
     forwardRef((): typeof UserModule => {
       return UserModule;
     }),
+    StatementModule,
     SymbolModule,
     TypeOrmModule.forFeature([
       ExpressionEntity,

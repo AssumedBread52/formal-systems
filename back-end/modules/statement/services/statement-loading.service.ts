@@ -11,6 +11,40 @@ export class StatementLoadingService {
   public constructor(@InjectRepository(StatementEntity) private readonly repository: Repository<StatementEntity>) {
   }
 
+  public readonly loaderByExpressionIds = new DataLoader(async (expressionIds: readonly string[]): Promise<StatementEntity[][]> => {
+    try {
+      const statements = await this.repository.findBy({
+        assertionExpressionId: In(expressionIds)
+      });
+
+      const statementsMap = statements.reduce((map: Map<string, StatementEntity[]>, statement: StatementEntity): Map<string, StatementEntity[]> => {
+        const statementsAssertingExpression = map.get(statement.assertionExpressionId);
+
+        if (!statementsAssertingExpression) {
+          map.set(statement.assertionExpressionId, [
+            statement
+          ]);
+        } else {
+          statementsAssertingExpression.push(statement);
+        }
+
+        return map;
+      }, new Map<string, StatementEntity[]>());
+
+      return expressionIds.map((expressionId: string): StatementEntity[] => {
+        const expressionStatements = statementsMap.get(expressionId);
+
+        if (!expressionStatements) {
+          return [];
+        }
+
+        return expressionStatements;
+      });
+    } catch {
+      throw new InternalServerErrorException('Loading statements by expression ID failed');
+    }
+  });
+
   public readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<StatementEntity[][]> => {
     try {
       const statements = await this.repository.findBy({
