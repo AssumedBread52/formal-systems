@@ -1,3 +1,4 @@
+import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
@@ -68,4 +69,15 @@ export class ExpressionEntity {
     return expressionToken.expression;
   })
   public readonly expressionTokens!: Promise<ExpressionTokenEntity[]>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof StatementEntity] => {
+    return [StatementEntity];
+  })
+  @OneToMany((): typeof StatementEntity => {
+    return StatementEntity;
+  }, (statement: StatementEntity): Promise<ExpressionEntity> => {
+    return statement.assertion;
+  })
+  public readonly statements!: Promise<StatementEntity[]>;
 };
