@@ -1,3 +1,4 @@
+import { ExpressionModule } from '@/expression/expression.module';
 import { SystemModule } from '@/system/system.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,6 +11,9 @@ import { StatementReadService } from './services/statement-read.service';
 
 @Module({
   imports: [
+    forwardRef((): typeof ExpressionModule => {
+      return ExpressionModule;
+    }),
     forwardRef((): typeof SystemModule => {
       return SystemModule;
     }),
