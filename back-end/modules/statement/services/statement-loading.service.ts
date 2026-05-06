@@ -1,7 +1,7 @@
-import { Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
-import DataLoader from 'dataloader';
 import { StatementEntity } from '@/statement/entities/statement.entity';
+import { Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import DataLoader from 'dataloader';
 import { In, Repository } from 'typeorm';
 
 @Injectable({
