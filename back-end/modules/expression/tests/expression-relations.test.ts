@@ -5,6 +5,7 @@ import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -46,9 +47,19 @@ describe('Expression Relations', (): void => {
       expressionId,
       position: 0
     }, ExpressionTokenEntity);
+    const statement = validatePayload({
+      id: '9df17e91-7e96-40b6-a455-c57148d7c92b',
+      systemId,
+      assertionExpressionId: expressionId,
+      name: 'TestStatement1',
+      description: 'Test Statement 1'
+    }, StatementEntity);
 
     findBy.mockResolvedValueOnce([
       expressionToken
+    ]);
+    findBy.mockResolvedValueOnce([
+      statement
     ]);
     findBy.mockResolvedValueOnce([
       system
@@ -56,20 +67,25 @@ describe('Expression Relations', (): void => {
     findOneBy.mockResolvedValueOnce(expression);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query ($systemId: String!, $expressionId: String!) { expression(systemId: $systemId, expressionId: $expressionId) { id systemId canonical system { id ownerUserId name description } expressionTokens { systemId symbolId expressionId position } } }',
+      query: 'query ($systemId: String!, $expressionId: String!) { expression(systemId: $systemId, expressionId: $expressionId) { id systemId canonical system { id ownerUserId name description } expressionTokens { systemId symbolId expressionId position } statements { id systemId assertionExpressionId name description } } }',
       variables: {
         systemId,
         expressionId
       }
     });
 
-    expect(findBy).toHaveBeenCalledTimes(2);
+    expect(findBy).toHaveBeenCalledTimes(3);
     expect(findBy).toHaveBeenNthCalledWith(1, {
       expressionId: In([
         expressionId
       ])
     });
     expect(findBy).toHaveBeenNthCalledWith(2, {
+      assertionExpressionId: In([
+        expressionId
+      ])
+    });
+    expect(findBy).toHaveBeenNthCalledWith(3, {
       id: In([
         systemId
       ])
@@ -89,6 +105,9 @@ describe('Expression Relations', (): void => {
           system: instanceToPlain(system),
           expressionTokens: [
             instanceToPlain(expressionToken)
+          ],
+          statements: [
+            instanceToPlain(statement)
           ]
         }
       }
