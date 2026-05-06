@@ -1,3 +1,4 @@
+import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
@@ -74,4 +75,25 @@ export class StatementEntity {
     return system.statements;
   })
   public readonly system!: Promise<SystemEntity>;
+  @Allow()
+  @Exclude()
+  @Field((): typeof ExpressionEntity => {
+    return ExpressionEntity;
+  })
+  @JoinColumn([
+    {
+      name: 'system_id',
+      referencedColumnName: 'systemId'
+    },
+    {
+      name: 'assertion_expression_id',
+      referencedColumnName: 'id'
+    }
+  ])
+  @ManyToOne((): typeof ExpressionEntity => {
+    return ExpressionEntity;
+  }, (expression: ExpressionEntity): Promise<StatementEntity[]> => {
+    return expression.statements;
+  })
+  public readonly assertion!: Promise<ExpressionEntity>;
 };
