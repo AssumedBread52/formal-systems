@@ -1,13 +1,13 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddReferenceSource0000000000015 implements MigrationInterface {
+export class AddHypothesisType0000000000008 implements MigrationInterface {
   public up(queryRunner: QueryRunner): Promise<any> {
     return queryRunner.query(`
-      CREATE TYPE reference_source AS ENUM ('step', 'type', 'logic');
+      CREATE TYPE hypothesis_type AS ENUM ('type', 'logic');
     `);
   }
 
   public down(queryRunner: QueryRunner): Promise<any> {
-    return queryRunner.query('DROP TYPE reference_source;');
+    return queryRunner.query('DROP TYPE hypothesis_type;');
   }
 };

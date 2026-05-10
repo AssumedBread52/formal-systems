@@ -5,15 +5,13 @@ import { AddSymbolsTable0000000000004 } from './04-add-symbols-table.migration';
 import { AddExpressionsTable0000000000005 } from './05-add-expressions-table.migration';
 import { AddExpressionTokensTable0000000000006 } from './06-add-expression-tokens-table.migration';
 import { AddStatementsTable0000000000007 } from './07-add-statements-table.migration';
-import { AddStatementTypeHypothesesTable0000000000008 } from './08-add-statement-type-hypotheses-table.migration';
-import { AddStatementLogicalHypothesesTable0000000000009 } from './09-add-statement-logical-hypotheses-table.migration';
+import { AddHypothesisType0000000000008 } from './08-add-hypothesis-type.migration';
+import { AddStatementHypothesesTable0000000000009 } from './09-add-statement-hypotheses-table.migration';
 import { AddStatementDistinctVariablePairsTable0000000000010 } from './10-add-statement-distinct-variable-pairs-table.migration';
 import { AddProofsTable0000000000011 } from './11-add-proofs-table.migration';
 import { AddProofStepsTable0000000000012 } from './12-add-proof-steps-table.migration';
 import { AddProofStepSubstitutionsTable0000000000013 } from './13-add-proof-step-substitutions-table.migration';
-import { AddHypothesisType0000000000014 } from './14-add-hypothesis-type.migration';
-import { AddReferenceSource0000000000015 } from './15-add-reference-source.migration';
-import { AddProofStepReferencesTable0000000000016 } from './16-add-proof-step-references-table.migration';
+import { AddProofStepReferencesTable0000000000014 } from './14-add-proof-step-references-table.migration';
 
 export default {
   AddUsersTable0000000000001,
@@ -23,13 +21,11 @@ export default {
   AddExpressionsTable0000000000005,
   AddExpressionTokensTable0000000000006,
   AddStatementsTable0000000000007,
-  AddStatementTypeHypothesesTable0000000000008,
-  AddStatementLogicalHypothesesTable0000000000009,
+  AddHypothesisType0000000000008,
+  AddStatementHypothesesTable0000000000009,
   AddStatementDistinctVariablePairsTable0000000000010,
   AddProofsTable0000000000011,
   AddProofStepsTable0000000000012,
   AddProofStepSubstitutionsTable0000000000013,
-  AddHypothesisType0000000000014,
-  AddReferenceSource0000000000015,
-  AddProofStepReferencesTable0000000000016
+  AddProofStepReferencesTable0000000000014
 };
