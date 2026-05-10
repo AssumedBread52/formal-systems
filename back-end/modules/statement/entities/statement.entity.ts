@@ -7,11 +7,11 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique }
 
 @Entity('statements')
 @ObjectType()
-@Unique('statements_system_name_unique', [
+@Unique('statements_system_id_name_unique', [
   'system',
   'name'
 ])
-@Unique('statements_id_system_unique', [
+@Unique('statements_system_id_id_unique', [
   'system',
   'id'
 ])

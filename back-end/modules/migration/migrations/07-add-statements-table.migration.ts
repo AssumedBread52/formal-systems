@@ -15,8 +15,8 @@ export class AddStatementsTable0000000000007 implements MigrationInterface {
         CONSTRAINT statements_assertion_expression_foreign_key  FOREIGN KEY (system_id, assertion_expression_id) REFERENCES expressions(system_id, id),
         CONSTRAINT statements_name_nonempty                     CHECK(LENGTH(name) > 0),
         CONSTRAINT statements_description_nonempty              CHECK(LENGTH(description) > 0),
-        CONSTRAINT statements_system_name_unique                UNIQUE(system_id, name),
-        CONSTRAINT statements_id_system_unique                  UNIQUE(system_id, id)
+        CONSTRAINT statements_system_id_name_unique             UNIQUE(system_id, name),
+        CONSTRAINT statements_system_id_id_unique               UNIQUE(system_id, id)
       );
     `);
   }
