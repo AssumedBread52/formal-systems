@@ -8,11 +8,11 @@ import { ExpressionTokenEntity } from './expression-token.entity';
 
 @Entity('expressions')
 @ObjectType()
-@Unique('expressions_system_canonical_unique', [
+@Unique('expressions_system_id_canonical_unique', [
   'system',
   'canonical'
 ])
-@Unique('expressions_id_system_unique', [
+@Unique('expressions_system_id_id_unique', [
   'system',
   'id'
 ])

@@ -8,10 +8,10 @@ export class AddExpressionsTable0000000000005 implements MigrationInterface {
         system_id UUID    NOT NULL,
         canonical UUID[]  NOT NULL,
 
-        CONSTRAINT expressions_primary_key              PRIMARY KEY (id),
-        CONSTRAINT expressions_system_foreign_key       FOREIGN KEY (system_id) REFERENCES systems(id),
-        CONSTRAINT expressions_id_system_unique         UNIQUE(system_id, id),
-        CONSTRAINT expressions_system_canonical_unique  UNIQUE(system_id, canonical)
+        CONSTRAINT expressions_primary_key                PRIMARY KEY (id),
+        CONSTRAINT expressions_system_foreign_key         FOREIGN KEY (system_id) REFERENCES systems(id),
+        CONSTRAINT expressions_system_id_id_unique        UNIQUE(system_id, id),
+        CONSTRAINT expressions_system_id_canonical_unique UNIQUE(system_id, canonical)
       );
     `);
   }
