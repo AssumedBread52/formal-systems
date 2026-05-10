@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class AddSymbolType0000000000003 implements MigrationInterface {
   public up(queryRunner: QueryRunner): Promise<any> {
     return queryRunner.query(`
-      CREATE TYPE symbol_type as enum ('constant', 'variable');
+      CREATE TYPE symbol_type AS ENUM ('constant', 'variable');
     `);
   }
 
