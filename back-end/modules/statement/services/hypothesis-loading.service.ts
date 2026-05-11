@@ -45,6 +45,40 @@ export class HypothesisLoadingService {
     }
   });
 
+  public readonly loaderByStatementIds = new DataLoader(async (statementIds: readonly string[]): Promise<HypothesisEntity[][]> => {
+    try {
+      const hypotheses = await this.repository.findBy({
+        statementId: In(statementIds)
+      });
+
+      const hypothesesMap = hypotheses.reduce((map: Map<string, HypothesisEntity[]>, hypothesis: HypothesisEntity): Map<string, HypothesisEntity[]> => {
+        const hypothesesForStatement = map.get(hypothesis.statementId);
+
+        if (!hypothesesForStatement) {
+          map.set(hypothesis.statementId, [
+            hypothesis
+          ]);
+        } else {
+          hypothesesForStatement.push(hypothesis);
+        }
+
+        return map;
+      }, new Map<string, HypothesisEntity[]>());
+
+      return statementIds.map((statementId: string): HypothesisEntity[] => {
+        const statementHypotheses = hypothesesMap.get(statementId);
+
+        if (!statementHypotheses) {
+          return [];
+        }
+
+        return statementHypotheses;
+      });
+    } catch {
+      throw new InternalServerErrorException('Loading hypotheses by statement ID failed');
+    }
+  });
+
   public readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<HypothesisEntity[][]> => {
     try {
       const hypotheses = await this.repository.findBy({

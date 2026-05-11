@@ -4,7 +4,9 @@ import { findByMock } from '@/common/tests/mocks/find-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { StatementEntity } from '@/statement/entities/statement.entity';
+import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -48,9 +50,19 @@ describe('Statement Relations', (): void => {
       name,
       description
     }, StatementEntity);
+    const hypothesis = validatePayload({
+      id: '72b9158b-bba0-46c7-b898-5e80a64d1ed4',
+      systemId,
+      statementId,
+      expressionId,
+      type: HypothesisType.type
+    }, HypothesisEntity);
 
     findBy.mockResolvedValueOnce([
       expression
+    ]);
+    findBy.mockResolvedValueOnce([
+      hypothesis
     ]);
     findBy.mockResolvedValueOnce([
       system
@@ -58,20 +70,25 @@ describe('Statement Relations', (): void => {
     findOneBy.mockResolvedValueOnce(statement);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query ($systemId: String!, $statementId: String!) { statement(systemId: $systemId, statementId: $statementId) { id systemId assertionExpressionId name description system { id ownerUserId name description } assertion { id systemId canonical } } }',
+      query: 'query ($systemId: String!, $statementId: String!) { statement(systemId: $systemId, statementId: $statementId) { id systemId assertionExpressionId name description system { id ownerUserId name description } assertion { id systemId canonical } hypotheses { id systemId statementId expressionId type } } }',
       variables: {
         systemId,
         statementId
       }
     });
 
-    expect(findBy).toHaveBeenCalledTimes(2);
+    expect(findBy).toHaveBeenCalledTimes(3);
     expect(findBy).toHaveBeenNthCalledWith(1, {
       id: In([
         expressionId
       ])
     });
     expect(findBy).toHaveBeenNthCalledWith(2, {
+      statementId: In([
+        statementId
+      ])
+    });
+    expect(findBy).toHaveBeenNthCalledWith(3, {
       id: In([
         systemId
       ])
@@ -91,7 +108,10 @@ describe('Statement Relations', (): void => {
           name,
           description,
           system: instanceToPlain(system),
-          assertion: instanceToPlain(expression)
+          assertion: instanceToPlain(expression),
+          hypotheses: [
+            instanceToPlain(hypothesis)
+          ]
         }
       }
     });
