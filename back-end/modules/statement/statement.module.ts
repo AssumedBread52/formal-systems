@@ -6,6 +6,7 @@ import { HypothesisController } from './controllers/hypothesis.controller';
 import { StatementController } from './controllers/statement.controller';
 import { HypothesisEntity } from './entities/hypothesis.entity';
 import { StatementEntity } from './entities/statement.entity';
+import { HypothesisRelationsResolver } from './resolvers/hypothesis-relations.resolver';
 import { HypothesisResolver } from './resolvers/hypothesis.resolver';
 import { StatementRelationsResolver } from './resolvers/statement-relations.resolver';
 import { StatementResolver } from './resolvers/statement.resolver';
@@ -34,6 +35,7 @@ import { StatementReadService } from './services/statement-read.service';
   providers: [
     HypothesisLoadingService,
     HypothesisReadService,
+    HypothesisRelationsResolver,
     HypothesisResolver,
     StatementLoadingService,
     StatementReadService,

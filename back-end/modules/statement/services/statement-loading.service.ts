@@ -1,5 +1,6 @@
 import { StatementEntity } from '@/statement/entities/statement.entity';
-import { Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
+import { StatementNotFoundException } from '@/statement/exceptions/statement-not-found.exception';
+import { HttpException, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import DataLoader from 'dataloader';
 import { In, Repository } from 'typeorm';
@@ -42,6 +43,38 @@ export class StatementLoadingService {
       });
     } catch {
       throw new InternalServerErrorException('Loading statements by expression ID failed');
+    }
+  });
+
+  public readonly loaderByIds = new DataLoader(async (statementIds: readonly string[]): Promise<StatementEntity[]> => {
+    try {
+      const statements = await this.repository.findBy({
+        id: In(statementIds)
+      });
+
+      const statementsMap = statements.reduce((map: Map<string, StatementEntity>, statement: StatementEntity): Map<string, StatementEntity> => {
+        if (!map.has(statement.id)) {
+          map.set(statement.id, statement);
+        }
+
+        return map;
+      }, new Map<string, StatementEntity>());
+
+      return statementIds.map((statementId: string): StatementEntity => {
+        const statement = statementsMap.get(statementId);
+
+        if (!statement) {
+          throw new StatementNotFoundException();
+        }
+
+        return statement;
+      });
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Loading statements by ID failed');
     }
   });
 
