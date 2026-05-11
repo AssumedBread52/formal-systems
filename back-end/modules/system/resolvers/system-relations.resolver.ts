@@ -2,7 +2,9 @@ import { ExpressionTokenEntity } from '@/expression/entities/expression-token.en
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { ExpressionLoadingService } from '@/expression/services/expression-loading.service';
 import { ExpressionTokenLoadingService } from '@/expression/services/expression-token-loading.service';
+import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { StatementEntity } from '@/statement/entities/statement.entity';
+import { HypothesisLoadingService } from '@/statement/services/hypothesis-loading.service';
 import { StatementLoadingService } from '@/statement/services/statement-loading.service';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolLoadingService } from '@/symbol/services/symbol-loading.service';
@@ -15,7 +17,7 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
   return SystemEntity;
 })
 export class SystemRelationsResolver {
-  public constructor(private readonly expressionLoadingService: ExpressionLoadingService, private readonly expressionTokenLoadingService: ExpressionTokenLoadingService, private readonly statementLoadingService: StatementLoadingService, private readonly symbolLoadingService: SymbolLoadingService, private readonly userLoadingService: UserLoadingService) {
+  public constructor(private readonly expressionLoadingService: ExpressionLoadingService, private readonly expressionTokenLoadingService: ExpressionTokenLoadingService, private readonly hypothesisLoadingService: HypothesisLoadingService, private readonly statementLoadingService: StatementLoadingService, private readonly symbolLoadingService: SymbolLoadingService, private readonly userLoadingService: UserLoadingService) {
   }
 
   @ResolveField((): [typeof ExpressionEntity] => {
@@ -30,6 +32,13 @@ export class SystemRelationsResolver {
   })
   public expressionTokens(@Parent() system: SystemEntity): Promise<ExpressionTokenEntity[]> {
     return this.expressionTokenLoadingService.loaderBySystemIds.load(system.id);
+  }
+
+  @ResolveField((): [typeof HypothesisEntity] => {
+    return [HypothesisEntity];
+  })
+  public hypotheses(@Parent() system: SystemEntity): Promise<HypothesisEntity[]> {
+    return this.hypothesisLoadingService.loaderBySystemIds.load(system.id);
   }
 
   @ResolveField((): typeof UserEntity => {
