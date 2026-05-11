@@ -1,5 +1,6 @@
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { UserEntity } from '@/user/entities/user.entity';
@@ -109,4 +110,15 @@ export class SystemEntity {
     return statement.system;
   })
   public readonly statements!: Promise<StatementEntity[]>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof HypothesisEntity] => {
+    return [HypothesisEntity];
+  })
+  @OneToMany((): typeof HypothesisEntity => {
+    return HypothesisEntity;
+  }, (hypothesis: HypothesisEntity): Promise<SystemEntity> => {
+    return hypothesis.system;
+  })
+  public readonly hypotheses!: Promise<HypothesisEntity[]>;
 };

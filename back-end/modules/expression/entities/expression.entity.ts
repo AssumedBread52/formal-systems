@@ -1,3 +1,4 @@
+import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
@@ -80,4 +81,15 @@ export class ExpressionEntity {
     return statement.assertion;
   })
   public readonly statements!: Promise<StatementEntity[]>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof HypothesisEntity] => {
+    return [HypothesisEntity];
+  })
+  @OneToMany((): typeof HypothesisEntity => {
+    return HypothesisEntity;
+  }, (hypothesis: HypothesisEntity): Promise<ExpressionEntity> => {
+    return hypothesis.expression;
+  })
+  public readonly hypotheses!: Promise<HypothesisEntity[]>;
 };

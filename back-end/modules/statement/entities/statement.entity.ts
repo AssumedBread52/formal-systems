@@ -3,7 +3,8 @@ import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
 import { Allow, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { HypothesisEntity } from './hypothesis.entity';
 
 @Entity('statements')
 @ObjectType()
@@ -96,4 +97,15 @@ export class StatementEntity {
     return expression.statements;
   })
   public readonly assertion!: Promise<ExpressionEntity>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof HypothesisEntity] => {
+    return [HypothesisEntity];
+  })
+  @OneToMany((): typeof HypothesisEntity => {
+    return HypothesisEntity;
+  }, (hypothesis: HypothesisEntity): Promise<StatementEntity> => {
+    return hypothesis.statement;
+  })
+  public readonly hypotheses!: Promise<HypothesisEntity[]>;
 };
