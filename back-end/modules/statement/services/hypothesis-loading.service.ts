@@ -11,6 +11,40 @@ export class HypothesisLoadingService {
   public constructor(@InjectRepository(HypothesisEntity) private readonly repository: Repository<HypothesisEntity>) {
   }
 
+  public readonly loaderByExpressionIds = new DataLoader(async (expressionIds: readonly string[]): Promise<HypothesisEntity[][]> => {
+    try {
+      const hypotheses = await this.repository.findBy({
+        expressionId: In(expressionIds)
+      });
+
+      const hypothesesMap = hypotheses.reduce((map: Map<string, HypothesisEntity[]>, hypothesis: HypothesisEntity): Map<string, HypothesisEntity[]> => {
+        const hypothesesWithExpression = map.get(hypothesis.expressionId);
+
+        if (!hypothesesWithExpression) {
+          map.set(hypothesis.expressionId, [
+            hypothesis
+          ]);
+        } else {
+          hypothesesWithExpression.push(hypothesis);
+        }
+
+        return map;
+      }, new Map<string, HypothesisEntity[]>());
+
+      return expressionIds.map((expressionId: string): HypothesisEntity[] => {
+        const expressionHypotheses = hypothesesMap.get(expressionId);
+
+        if (!expressionHypotheses) {
+          return [];
+        }
+
+        return expressionHypotheses;
+      });
+    } catch {
+      throw new InternalServerErrorException('Loading hypotheses by expression ID failed');
+    }
+  });
+
   public readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<HypothesisEntity[][]> => {
     try {
       const hypotheses = await this.repository.findBy({

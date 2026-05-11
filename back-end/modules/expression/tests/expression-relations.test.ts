@@ -5,7 +5,9 @@ import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { StatementEntity } from '@/statement/entities/statement.entity';
+import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -27,6 +29,7 @@ describe('Expression Relations', (): void => {
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
     const symbolId = '7bde3313-f751-42f0-8d89-88c4ab394282';
     const expressionId = 'cfe59823-eb13-4faf-a90b-c5e82022821f';
+    const statementId = '9df17e91-7e96-40b6-a455-c57148d7c92b';
     const canonical = [
       symbolId
     ];
@@ -48,12 +51,19 @@ describe('Expression Relations', (): void => {
       position: 0
     }, ExpressionTokenEntity);
     const statement = validatePayload({
-      id: '9df17e91-7e96-40b6-a455-c57148d7c92b',
+      id: statementId,
       systemId,
       assertionExpressionId: expressionId,
       name: 'TestStatement1',
       description: 'Test Statement 1'
     }, StatementEntity);
+    const hypothesis = validatePayload({
+      id: '72b9158b-bba0-46c7-b898-5e80a64d1ed4',
+      systemId,
+      statementId,
+      expressionId,
+      type: HypothesisType.type
+    }, HypothesisEntity);
 
     findBy.mockResolvedValueOnce([
       expressionToken
@@ -62,19 +72,22 @@ describe('Expression Relations', (): void => {
       statement
     ]);
     findBy.mockResolvedValueOnce([
+      hypothesis
+    ]);
+    findBy.mockResolvedValueOnce([
       system
     ]);
     findOneBy.mockResolvedValueOnce(expression);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query ($systemId: String!, $expressionId: String!) { expression(systemId: $systemId, expressionId: $expressionId) { id systemId canonical system { id ownerUserId name description } expressionTokens { systemId symbolId expressionId position } statements { id systemId assertionExpressionId name description } } }',
+      query: 'query ($systemId: String!, $expressionId: String!) { expression(systemId: $systemId, expressionId: $expressionId) { id systemId canonical system { id ownerUserId name description } expressionTokens { systemId symbolId expressionId position } statements { id systemId assertionExpressionId name description } hypotheses { id systemId statementId expressionId type } } }',
       variables: {
         systemId,
         expressionId
       }
     });
 
-    expect(findBy).toHaveBeenCalledTimes(3);
+    expect(findBy).toHaveBeenCalledTimes(4);
     expect(findBy).toHaveBeenNthCalledWith(1, {
       expressionId: In([
         expressionId
@@ -86,6 +99,11 @@ describe('Expression Relations', (): void => {
       ])
     });
     expect(findBy).toHaveBeenNthCalledWith(3, {
+      expressionId: In([
+        expressionId
+      ])
+    });
+    expect(findBy).toHaveBeenNthCalledWith(4, {
       id: In([
         systemId
       ])
@@ -108,6 +126,9 @@ describe('Expression Relations', (): void => {
           ],
           statements: [
             instanceToPlain(statement)
+          ],
+          hypotheses: [
+            instanceToPlain(hypothesis)
           ]
         }
       }
