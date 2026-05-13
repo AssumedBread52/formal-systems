@@ -1,4 +1,5 @@
 import { ExpressionModule } from '@/expression/expression.module';
+import { StatementModule } from '@/statement/statement.module';
 import { SystemModule } from '@/system/system.module';
 import { UserModule } from '@/user/user.module';
 import { forwardRef, Module } from '@nestjs/common';
@@ -15,6 +16,9 @@ import { SymbolWriteService } from './services/symbol-write.service';
   imports: [
     forwardRef((): typeof ExpressionModule => {
       return ExpressionModule;
+    }),
+    forwardRef((): typeof StatementModule => {
+      return StatementModule;
     }),
     forwardRef((): typeof SystemModule => {
       return SystemModule;
