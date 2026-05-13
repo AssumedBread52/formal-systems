@@ -2,6 +2,17 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type DistinctVariablePairEntity {
+  systemId: String!
+  statementId: String!
+  variableSymbol1Id: String!
+  variableSymbol2Id: String!
+  system: SystemEntity!
+  statement: StatementEntity!
+  variableSymbol1: SymbolEntity!
+  variableSymbol2: SymbolEntity!
+}
+
 type StatementEntity {
   id: String!
   systemId: String!
@@ -87,17 +98,6 @@ type SymbolEntity {
 enum SymbolType {
   constant
   variable
-}
-
-type DistinctVariablePairEntity {
-  systemId: String!
-  statementId: String!
-  variableSymbol1Id: String!
-  variableSymbol2Id: String!
-  system: SystemEntity!
-  statement: StatementEntity!
-  variableSymbol1: SymbolEntity!
-  variableSymbol2: SymbolEntity!
 }
 
 type PaginatedSymbolsPayload {

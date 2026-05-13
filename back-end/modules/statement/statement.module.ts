@@ -1,4 +1,5 @@
 import { ExpressionModule } from '@/expression/expression.module';
+import { SymbolModule } from '@/symbol/symbol.module';
 import { SystemModule } from '@/system/system.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,6 +9,7 @@ import { StatementController } from './controllers/statement.controller';
 import { DistinctVariablePairEntity } from './entities/distinct-variable-pair.entity';
 import { HypothesisEntity } from './entities/hypothesis.entity';
 import { StatementEntity } from './entities/statement.entity';
+import { DistinctVariablePairRelationsResolver } from './resolvers/distinct-variable-pair-relations.resolver';
 import { DistinctVariablePairResolver } from './resolvers/distinct-variable-pair.resolver';
 import { HypothesisRelationsResolver } from './resolvers/hypothesis-relations.resolver';
 import { HypothesisResolver } from './resolvers/hypothesis.resolver';
@@ -28,6 +30,7 @@ import { StatementReadService } from './services/statement-read.service';
     forwardRef((): typeof SystemModule => {
       return SystemModule;
     }),
+    SymbolModule,
     TypeOrmModule.forFeature([
       DistinctVariablePairEntity,
       HypothesisEntity,
@@ -42,6 +45,7 @@ import { StatementReadService } from './services/statement-read.service';
   providers: [
     DistinctVariablePairLoadingService,
     DistinctVariablePairReadService,
+    DistinctVariablePairRelationsResolver,
     DistinctVariablePairResolver,
     HypothesisLoadingService,
     HypothesisReadService,
