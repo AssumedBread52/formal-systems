@@ -2,43 +2,42 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type DistinctVariablePairEntity {
-  systemId: String!
-  statementId: String!
-  variableSymbol1Id: String!
-  variableSymbol2Id: String!
-  system: SystemEntity!
-  statement: StatementEntity!
-  variableSymbol1: SymbolEntity!
-  variableSymbol2: SymbolEntity!
-}
-
-type SymbolEntity {
+type StatementEntity {
   id: String!
   systemId: String!
+  assertionExpressionId: String!
   name: String!
   description: String!
-  type: SymbolType!
-  content: String!
+  system: SystemEntity!
+  assertion: ExpressionEntity!
+  hypotheses: [HypothesisEntity!]!
+  distinctVariablePairs: [DistinctVariablePairEntity!]!
+}
+
+type HypothesisEntity {
+  id: String!
+  systemId: String!
+  statementId: String!
+  expressionId: String!
+  type: HypothesisType!
+  system: SystemEntity!
+  statement: StatementEntity!
+  expression: ExpressionEntity!
+}
+
+enum HypothesisType {
+  type
+  logic
+}
+
+type ExpressionEntity {
+  id: String!
+  systemId: String!
+  canonical: [String!]!
   system: SystemEntity!
   expressionTokens: [ExpressionTokenEntity!]!
-  distinctVariable1Pairs: [DistinctVariablePairEntity!]!
-  distinctVariable2Pairs: [DistinctVariablePairEntity!]!
-}
-
-enum SymbolType {
-  constant
-  variable
-}
-
-type ExpressionTokenEntity {
-  systemId: String!
-  symbolId: String!
-  expressionId: String!
-  position: Int!
-  system: SystemEntity!
-  symbol: SymbolEntity!
-  expression: ExpressionEntity!
+  statements: [StatementEntity!]!
+  hypotheses: [HypothesisEntity!]!
 }
 
 type UserEntity {
@@ -62,42 +61,43 @@ type SystemEntity {
   distinctVariablePairs: [DistinctVariablePairEntity!]!
 }
 
-type StatementEntity {
-  id: String!
+type ExpressionTokenEntity {
   systemId: String!
-  assertionExpressionId: String!
-  name: String!
-  description: String!
-  system: SystemEntity!
-  assertion: ExpressionEntity!
-  hypotheses: [HypothesisEntity!]!
-  distinctVariablePairs: [DistinctVariablePairEntity!]!
-}
-
-type ExpressionEntity {
-  id: String!
-  systemId: String!
-  canonical: [String!]!
-  system: SystemEntity!
-  expressionTokens: [ExpressionTokenEntity!]!
-  statements: [StatementEntity!]!
-  hypotheses: [HypothesisEntity!]!
-}
-
-type HypothesisEntity {
-  id: String!
-  systemId: String!
-  statementId: String!
+  symbolId: String!
   expressionId: String!
-  type: HypothesisType!
+  position: Int!
   system: SystemEntity!
-  statement: StatementEntity!
+  symbol: SymbolEntity!
   expression: ExpressionEntity!
 }
 
-enum HypothesisType {
-  type
-  logic
+type SymbolEntity {
+  id: String!
+  systemId: String!
+  name: String!
+  description: String!
+  type: SymbolType!
+  content: String!
+  system: SystemEntity!
+  expressionTokens: [ExpressionTokenEntity!]!
+  distinctVariable1Pairs: [DistinctVariablePairEntity!]!
+  distinctVariable2Pairs: [DistinctVariablePairEntity!]!
+}
+
+enum SymbolType {
+  constant
+  variable
+}
+
+type DistinctVariablePairEntity {
+  systemId: String!
+  statementId: String!
+  variableSymbol1Id: String!
+  variableSymbol2Id: String!
+  system: SystemEntity!
+  statement: StatementEntity!
+  variableSymbol1: SymbolEntity!
+  variableSymbol2: SymbolEntity!
 }
 
 type PaginatedSymbolsPayload {
@@ -159,6 +159,7 @@ type Query {
   systems(filters: SearchSystemsPayload!): PaginatedSystemsPayload!
   expression(systemId: String!, expressionId: String!): ExpressionEntity!
   expressions(systemId: String!, filters: SearchExpressionsPayload!): PaginatedExpressionsPayload!
+  distinctVariablePair(systemId: String!, statementId: String!, variableSymbol1Id: String!, variableSymbol2Id: String!): DistinctVariablePairEntity!
   hypothesis(systemId: String!, statementId: String!, hypothesisId: String!): HypothesisEntity!
   statement(systemId: String!, statementId: String!): StatementEntity!
   symbol(systemId: String!, symbolId: String!): SymbolEntity!
