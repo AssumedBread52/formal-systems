@@ -4,6 +4,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
 import { Allow, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { DistinctVariablePairEntity } from './distinct-variable-pair.entity';
 import { HypothesisEntity } from './hypothesis.entity';
 
 @Entity('statements')
@@ -108,4 +109,15 @@ export class StatementEntity {
     return hypothesis.statement;
   })
   public readonly hypotheses!: Promise<HypothesisEntity[]>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof DistinctVariablePairEntity] => {
+    return [DistinctVariablePairEntity];
+  })
+  @OneToMany((): typeof DistinctVariablePairEntity => {
+    return DistinctVariablePairEntity;
+  }, (distinctVariablePair: DistinctVariablePairEntity): Promise<StatementEntity> => {
+    return distinctVariablePair.statement;
+  })
+  public readonly distinctVariablePairs!: Promise<DistinctVariablePairEntity[]>;
 };

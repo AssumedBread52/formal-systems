@@ -4,6 +4,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HypothesisController } from './controllers/hypothesis.controller';
 import { StatementController } from './controllers/statement.controller';
+import { DistinctVariablePairEntity } from './entities/distinct-variable-pair.entity';
 import { HypothesisEntity } from './entities/hypothesis.entity';
 import { StatementEntity } from './entities/statement.entity';
 import { HypothesisRelationsResolver } from './resolvers/hypothesis-relations.resolver';
@@ -24,6 +25,7 @@ import { StatementReadService } from './services/statement-read.service';
       return SystemModule;
     }),
     TypeOrmModule.forFeature([
+      DistinctVariablePairEntity,
       HypothesisEntity,
       StatementEntity
     ])

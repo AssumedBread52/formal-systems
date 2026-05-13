@@ -2,6 +2,17 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type DistinctVariablePairEntity {
+  systemId: String!
+  statementId: String!
+  variableSymbol1Id: String!
+  variableSymbol2Id: String!
+  system: SystemEntity!
+  statement: StatementEntity!
+  variableSymbol1: SymbolEntity!
+  variableSymbol2: SymbolEntity!
+}
+
 type SymbolEntity {
   id: String!
   systemId: String!
@@ -11,6 +22,8 @@ type SymbolEntity {
   content: String!
   system: SystemEntity!
   expressionTokens: [ExpressionTokenEntity!]!
+  distinctVariable1Pairs: [DistinctVariablePairEntity!]!
+  distinctVariable2Pairs: [DistinctVariablePairEntity!]!
 }
 
 enum SymbolType {
@@ -45,15 +58,8 @@ type SystemEntity {
   expressions: [ExpressionEntity!]!
   expressionTokens: [ExpressionTokenEntity!]!
   statements: [StatementEntity!]!
-}
-
-type ExpressionEntity {
-  id: String!
-  systemId: String!
-  canonical: [String!]!
-  system: SystemEntity!
-  expressionTokens: [ExpressionTokenEntity!]!
-  statements: [StatementEntity!]!
+  hypotheses: [HypothesisEntity!]!
+  distinctVariablePairs: [DistinctVariablePairEntity!]!
 }
 
 type StatementEntity {
@@ -64,6 +70,34 @@ type StatementEntity {
   description: String!
   system: SystemEntity!
   assertion: ExpressionEntity!
+  hypotheses: [HypothesisEntity!]!
+  distinctVariablePairs: [DistinctVariablePairEntity!]!
+}
+
+type ExpressionEntity {
+  id: String!
+  systemId: String!
+  canonical: [String!]!
+  system: SystemEntity!
+  expressionTokens: [ExpressionTokenEntity!]!
+  statements: [StatementEntity!]!
+  hypotheses: [HypothesisEntity!]!
+}
+
+type HypothesisEntity {
+  id: String!
+  systemId: String!
+  statementId: String!
+  expressionId: String!
+  type: HypothesisType!
+  system: SystemEntity!
+  statement: StatementEntity!
+  expression: ExpressionEntity!
+}
+
+enum HypothesisType {
+  type
+  logic
 }
 
 type PaginatedSymbolsPayload {
@@ -125,6 +159,7 @@ type Query {
   systems(filters: SearchSystemsPayload!): PaginatedSystemsPayload!
   expression(systemId: String!, expressionId: String!): ExpressionEntity!
   expressions(systemId: String!, filters: SearchExpressionsPayload!): PaginatedExpressionsPayload!
+  hypothesis(systemId: String!, statementId: String!, hypothesisId: String!): HypothesisEntity!
   statement(systemId: String!, statementId: String!): StatementEntity!
   symbol(systemId: String!, symbolId: String!): SymbolEntity!
   symbols(systemId: String!, filters: SearchSymbolsPayload!): PaginatedSymbolsPayload!

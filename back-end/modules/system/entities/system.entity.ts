@@ -1,5 +1,6 @@
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
@@ -121,4 +122,15 @@ export class SystemEntity {
     return hypothesis.system;
   })
   public readonly hypotheses!: Promise<HypothesisEntity[]>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof DistinctVariablePairEntity] => {
+    return [DistinctVariablePairEntity];
+  })
+  @OneToMany((): typeof DistinctVariablePairEntity => {
+    return DistinctVariablePairEntity;
+  }, (distinctVariablePair: DistinctVariablePairEntity): Promise<SystemEntity> => {
+    return distinctVariablePair.system;
+  })
+  public readonly distinctVariablePairs!: Promise<DistinctVariablePairEntity[]>;
 };

@@ -1,4 +1,5 @@
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
+import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
@@ -98,4 +99,26 @@ export class SymbolEntity {
     return expressionToken.symbol;
   })
   public readonly expressionTokens!: Promise<ExpressionTokenEntity[]>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof DistinctVariablePairEntity] => {
+    return [DistinctVariablePairEntity];
+  })
+  @OneToMany((): typeof DistinctVariablePairEntity => {
+    return DistinctVariablePairEntity;
+  }, (distinctVariablePair: DistinctVariablePairEntity): Promise<SymbolEntity> => {
+    return distinctVariablePair.variableSymbol1;
+  })
+  public readonly distinctVariable1Pairs!: Promise<DistinctVariablePairEntity[]>;
+  @Allow()
+  @Exclude()
+  @Field((): [typeof DistinctVariablePairEntity] => {
+    return [DistinctVariablePairEntity];
+  })
+  @OneToMany((): typeof DistinctVariablePairEntity => {
+    return DistinctVariablePairEntity;
+  }, (distinctVariablePair: DistinctVariablePairEntity): Promise<SymbolEntity> => {
+    return distinctVariablePair.variableSymbol2;
+  })
+  public readonly distinctVariable2Pairs!: Promise<DistinctVariablePairEntity[]>;
 };
