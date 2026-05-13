@@ -5,6 +5,7 @@ import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { StatementEntity } from '@/statement/entities/statement.entity';
 import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
@@ -84,6 +85,12 @@ describe('System Relations', (): void => {
       expressionId,
       type: HypothesisType.type
     }, HypothesisEntity);
+    const distinctVariablePair = validatePayload({
+      systemId,
+      statementId,
+      variableSymbol1Id: '630e5c73-6231-4128-aae6-1d528f6b4de4',
+      variableSymbol2Id: 'e8172cec-118f-4185-a405-a6cf46869ee0'
+    }, DistinctVariablePairEntity);
 
     findBy.mockResolvedValueOnce([
       symbol
@@ -101,18 +108,21 @@ describe('System Relations', (): void => {
       hypothesis
     ]);
     findBy.mockResolvedValueOnce([
+      distinctVariablePair
+    ]);
+    findBy.mockResolvedValueOnce([
       user
     ]);
     findOneBy.mockResolvedValueOnce(system);
 
     const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query ($systemId: String!) { system(systemId: $systemId) { id ownerUserId name description owner { id handle email } symbols { id systemId name description type content } expressions { id systemId canonical } expressionTokens { systemId symbolId expressionId position } statements { id systemId assertionExpressionId name description } hypotheses { id systemId statementId expressionId type } } }',
+      query: 'query ($systemId: String!) { system(systemId: $systemId) { id ownerUserId name description owner { id handle email } symbols { id systemId name description type content } expressions { id systemId canonical } expressionTokens { systemId symbolId expressionId position } statements { id systemId assertionExpressionId name description } hypotheses { id systemId statementId expressionId type } distinctVariablePairs { systemId statementId variableSymbol1Id variableSymbol2Id } } }',
       variables: {
         systemId
       }
     });
 
-    expect(findBy).toHaveBeenCalledTimes(6);
+    expect(findBy).toHaveBeenCalledTimes(7);
     expect(findBy).toHaveBeenNthCalledWith(1, {
       systemId: In([
         systemId
@@ -139,6 +149,11 @@ describe('System Relations', (): void => {
       ])
     });
     expect(findBy).toHaveBeenNthCalledWith(6, {
+      systemId: In([
+        systemId
+      ])
+    });
+    expect(findBy).toHaveBeenNthCalledWith(7, {
       id: In([
         userId
       ])
@@ -170,6 +185,9 @@ describe('System Relations', (): void => {
           ],
           hypotheses: [
             instanceToPlain(hypothesis)
+          ],
+          distinctVariablePairs: [
+            instanceToPlain(distinctVariablePair)
           ]
         }
       }

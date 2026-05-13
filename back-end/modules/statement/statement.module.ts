@@ -11,6 +11,7 @@ import { HypothesisRelationsResolver } from './resolvers/hypothesis-relations.re
 import { HypothesisResolver } from './resolvers/hypothesis.resolver';
 import { StatementRelationsResolver } from './resolvers/statement-relations.resolver';
 import { StatementResolver } from './resolvers/statement.resolver';
+import { DistinctVariablePairLoadingService } from './services/distinct-variable-pair-loading.service';
 import { HypothesisLoadingService } from './services/hypothesis-loading.service';
 import { HypothesisReadService } from './services/hypothesis-read.service';
 import { StatementLoadingService } from './services/statement-loading.service';
@@ -35,6 +36,7 @@ import { StatementReadService } from './services/statement-read.service';
     StatementController
   ],
   providers: [
+    DistinctVariablePairLoadingService,
     HypothesisLoadingService,
     HypothesisReadService,
     HypothesisRelationsResolver,
@@ -45,6 +47,7 @@ import { StatementReadService } from './services/statement-read.service';
     StatementResolver
   ],
   exports: [
+    DistinctVariablePairLoadingService,
     HypothesisLoadingService,
     StatementLoadingService
   ]
