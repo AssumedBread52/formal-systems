@@ -54,7 +54,7 @@ export class SystemRelationsResolver {
     return UserEntity;
   })
   public owner(@Parent() system: SystemEntity): Promise<UserEntity> {
-    return this.userLoadingService.loaderByIds.load(system.ownerUserId);
+    return this.userLoadingService.loadById(system.ownerUserId);
   }
 
   @ResolveField((): [typeof StatementEntity] => {

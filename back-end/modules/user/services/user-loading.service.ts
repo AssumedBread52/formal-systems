@@ -12,7 +12,11 @@ export class UserLoadingService {
   public constructor(@InjectRepository(UserEntity) private readonly repository: Repository<UserEntity>) {
   }
 
-  public readonly loaderByIds = new DataLoader(async (userIds: readonly string[]): Promise<UserEntity[]> => {
+  public loadById(userId: string): Promise<UserEntity> {
+    return this.loaderByIds.load(userId);
+  }
+
+  private readonly loaderByIds = new DataLoader(async (userIds: readonly string[]): Promise<UserEntity[]> => {
     try {
       const users = await this.repository.findBy({
         id: In(userIds)
