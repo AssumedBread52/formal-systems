@@ -11,7 +11,23 @@ export class DistinctVariablePairLoadingService {
   public constructor(@InjectRepository(DistinctVariablePairEntity) private readonly repository: Repository<DistinctVariablePairEntity>) {
   }
 
-  public readonly loaderBySymbol1Ids = new DataLoader(async (symbolIds: readonly string[]): Promise<DistinctVariablePairEntity[][]> => {
+  public loadByVariableSymbol1Id(symbolId: string): Promise<DistinctVariablePairEntity[]> {
+    return this.loaderByVariableSymbol1Ids.load(symbolId);
+  }
+
+  public loadByVariableSymbol2Id(symbolId: string): Promise<DistinctVariablePairEntity[]> {
+    return this.loaderByVariableSymbol2Ids.load(symbolId);
+  }
+
+  public loadByStatementId(statementId: string): Promise<DistinctVariablePairEntity[]> {
+    return this.loaderByStatementIds.load(statementId);
+  }
+
+  public loadBySystemId(systemId: string): Promise<DistinctVariablePairEntity[]> {
+    return this.loaderBySystemIds.load(systemId);
+  }
+
+  private readonly loaderByVariableSymbol1Ids = new DataLoader(async (symbolIds: readonly string[]): Promise<DistinctVariablePairEntity[][]> => {
     try {
       const distinctVariablePairs = await this.repository.findBy({
         variableSymbol1Id: In(symbolIds)
@@ -45,7 +61,7 @@ export class DistinctVariablePairLoadingService {
     }
   });
 
-  public readonly loaderBySymbol2Ids = new DataLoader(async (symbolIds: readonly string[]): Promise<DistinctVariablePairEntity[][]> => {
+  private readonly loaderByVariableSymbol2Ids = new DataLoader(async (symbolIds: readonly string[]): Promise<DistinctVariablePairEntity[][]> => {
     try {
       const distinctVariablePairs = await this.repository.findBy({
         variableSymbol2Id: In(symbolIds)
@@ -79,7 +95,7 @@ export class DistinctVariablePairLoadingService {
     }
   });
 
-  public readonly loaderByStatementIds = new DataLoader(async (statementIds: readonly string[]): Promise<DistinctVariablePairEntity[][]> => {
+  private readonly loaderByStatementIds = new DataLoader(async (statementIds: readonly string[]): Promise<DistinctVariablePairEntity[][]> => {
     try {
       const distinctVariablePairs = await this.repository.findBy({
         statementId: In(statementIds)
@@ -113,7 +129,7 @@ export class DistinctVariablePairLoadingService {
     }
   });
 
-  public readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<DistinctVariablePairEntity[][]> => {
+  private readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<DistinctVariablePairEntity[][]> => {
     try {
       const distinctVariablePairs = await this.repository.findBy({
         systemId: In(systemIds)

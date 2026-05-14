@@ -18,14 +18,14 @@ export class SymbolRelationsResolver {
     return [DistinctVariablePairEntity];
   })
   public distinctVariable1Pairs(@Parent() symbol: SymbolEntity): Promise<DistinctVariablePairEntity[]> {
-    return this.distinctVariablePairLoadingService.loaderBySymbol1Ids.load(symbol.id);
+    return this.distinctVariablePairLoadingService.loadByVariableSymbol1Id(symbol.id);
   }
 
   @ResolveField((): [typeof DistinctVariablePairEntity] => {
     return [DistinctVariablePairEntity];
   })
   public distinctVariable2Pairs(@Parent() symbol: SymbolEntity): Promise<DistinctVariablePairEntity[]> {
-    return this.distinctVariablePairLoadingService.loaderBySymbol2Ids.load(symbol.id);
+    return this.distinctVariablePairLoadingService.loadByVariableSymbol2Id(symbol.id);
   }
 
   @ResolveField((): [typeof ExpressionTokenEntity] => {
