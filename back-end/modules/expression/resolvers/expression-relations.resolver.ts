@@ -20,7 +20,7 @@ export class ExpressionRelationsResolver {
     return [ExpressionTokenEntity];
   })
   public expressionTokens(@Parent() expression: ExpressionEntity): Promise<ExpressionTokenEntity[]> {
-    return this.expressionTokenLoadingService.loaderByExpressionIds.load(expression.id);
+    return this.expressionTokenLoadingService.loadByExpressionId(expression.id);
   }
 
   @ResolveField((): [typeof HypothesisEntity] => {

@@ -40,7 +40,7 @@ export class SystemRelationsResolver {
     return [ExpressionTokenEntity];
   })
   public expressionTokens(@Parent() system: SystemEntity): Promise<ExpressionTokenEntity[]> {
-    return this.expressionTokenLoadingService.loaderBySystemIds.load(system.id);
+    return this.expressionTokenLoadingService.loadBySystemId(system.id);
   }
 
   @ResolveField((): [typeof HypothesisEntity] => {

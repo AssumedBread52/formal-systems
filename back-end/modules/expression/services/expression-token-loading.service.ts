@@ -11,7 +11,19 @@ export class ExpressionTokenLoadingService {
   public constructor(@InjectRepository(ExpressionTokenEntity) private readonly repository: Repository<ExpressionTokenEntity>) {
   }
 
-  public readonly loaderByExpressionIds = new DataLoader(async (expressionIds: readonly string[]): Promise<ExpressionTokenEntity[][]> => {
+  public loadByExpressionId(expressionId: string): Promise<ExpressionTokenEntity[]> {
+    return this.loaderByExpressionIds.load(expressionId);
+  }
+
+  public loadBySymbolId(symbolId: string): Promise<ExpressionTokenEntity[]> {
+    return this.loaderBySymbolIds.load(symbolId);
+  }
+
+  public loadBySystemId(systemId: string): Promise<ExpressionTokenEntity[]> {
+    return this.loaderBySystemIds.load(systemId);
+  }
+
+  private readonly loaderByExpressionIds = new DataLoader(async (expressionIds: readonly string[]): Promise<ExpressionTokenEntity[][]> => {
     try {
       const expressionTokens = await this.repository.findBy({
         expressionId: In(expressionIds)
@@ -45,7 +57,7 @@ export class ExpressionTokenLoadingService {
     }
   });
 
-  public readonly loaderBySymbolIds = new DataLoader(async (symbolIds: readonly string[]): Promise<ExpressionTokenEntity[][]> => {
+  private readonly loaderBySymbolIds = new DataLoader(async (symbolIds: readonly string[]): Promise<ExpressionTokenEntity[][]> => {
     try {
       const expressionTokens = await this.repository.findBy({
         symbolId: In(symbolIds)
@@ -79,7 +91,7 @@ export class ExpressionTokenLoadingService {
     }
   });
 
-  public readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<ExpressionTokenEntity[][]> => {
+  private readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<ExpressionTokenEntity[][]> => {
     try {
       const expressionTokens = await this.repository.findBy({
         systemId: In(systemIds)

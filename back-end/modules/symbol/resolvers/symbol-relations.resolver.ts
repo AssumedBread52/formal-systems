@@ -32,7 +32,7 @@ export class SymbolRelationsResolver {
     return [ExpressionTokenEntity];
   })
   public expressionTokens(@Parent() symbol: SymbolEntity): Promise<ExpressionTokenEntity[]> {
-    return this.expressionTokenLoadingService.loaderBySymbolIds.load(symbol.id);
+    return this.expressionTokenLoadingService.loadBySymbolId(symbol.id);
   }
 
   @ResolveField((): typeof SystemEntity => {
