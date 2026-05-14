@@ -34,7 +34,7 @@ export class ExpressionRelationsResolver {
     return [StatementEntity];
   })
   public statements(@Parent() expression: ExpressionEntity): Promise<StatementEntity[]> {
-    return this.statementLoadingService.loaderByExpressionIds.load(expression.id);
+    return this.statementLoadingService.loadByAssertionExpressionId(expression.id);
   }
 
   @ResolveField((): typeof SystemEntity => {

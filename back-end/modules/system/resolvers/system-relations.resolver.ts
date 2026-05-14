@@ -61,7 +61,7 @@ export class SystemRelationsResolver {
     return [StatementEntity];
   })
   public statements(@Parent() system: SystemEntity): Promise<StatementEntity[]> {
-    return this.statementLoadingService.loaderBySystemIds.load(system.id);
+    return this.statementLoadingService.loadBySystemId(system.id);
   }
 
   @ResolveField((): [typeof SymbolEntity] => {

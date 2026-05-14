@@ -12,7 +12,19 @@ export class StatementLoadingService {
   public constructor(@InjectRepository(StatementEntity) private readonly repository: Repository<StatementEntity>) {
   }
 
-  public readonly loaderByExpressionIds = new DataLoader(async (expressionIds: readonly string[]): Promise<StatementEntity[][]> => {
+  public loadByAssertionExpressionId(expressionId: string): Promise<StatementEntity[]> {
+    return this.loaderByAssertionExpressionIds.load(expressionId);
+  }
+
+  public loadById(statementId: string): Promise<StatementEntity> {
+    return this.loaderByIds.load(statementId);
+  }
+
+  public loadBySystemId(systemId: string): Promise<StatementEntity[]> {
+    return this.loaderBySystemIds.load(systemId);
+  }
+
+  private readonly loaderByAssertionExpressionIds = new DataLoader(async (expressionIds: readonly string[]): Promise<StatementEntity[][]> => {
     try {
       const statements = await this.repository.findBy({
         assertionExpressionId: In(expressionIds)
@@ -46,7 +58,7 @@ export class StatementLoadingService {
     }
   });
 
-  public readonly loaderByIds = new DataLoader(async (statementIds: readonly string[]): Promise<StatementEntity[]> => {
+  private readonly loaderByIds = new DataLoader(async (statementIds: readonly string[]): Promise<StatementEntity[]> => {
     try {
       const statements = await this.repository.findBy({
         id: In(statementIds)
@@ -78,7 +90,7 @@ export class StatementLoadingService {
     }
   });
 
-  public readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<StatementEntity[][]> => {
+  private readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<StatementEntity[][]> => {
     try {
       const statements = await this.repository.findBy({
         systemId: In(systemIds)
