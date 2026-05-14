@@ -20,7 +20,7 @@ export class StatementRelationsResolver {
     return ExpressionEntity;
   })
   public assertion(@Parent() statement: StatementEntity): Promise<ExpressionEntity> {
-    return this.expressionLoadingService.loaderByIds.load(statement.assertionExpressionId);
+    return this.expressionLoadingService.loadById(statement.assertionExpressionId);
   }
 
   @ResolveField((): [typeof DistinctVariablePairEntity] => {

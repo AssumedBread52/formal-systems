@@ -33,7 +33,7 @@ export class SystemRelationsResolver {
     return [ExpressionEntity];
   })
   public expressions(@Parent() system: SystemEntity): Promise<ExpressionEntity[]> {
-    return this.expressionLoadingService.loaderBySystemIds.load(system.id);
+    return this.expressionLoadingService.loadBySystemId(system.id);
   }
 
   @ResolveField((): [typeof ExpressionTokenEntity] => {

@@ -12,7 +12,15 @@ export class ExpressionLoadingService {
   public constructor(@InjectRepository(ExpressionEntity) private readonly repository: Repository<ExpressionEntity>) {
   }
 
-  public readonly loaderByIds = new DataLoader(async (expressionIds: readonly string[]): Promise<ExpressionEntity[]> => {
+  public loadById(expressionId: string): Promise<ExpressionEntity> {
+    return this.loaderByIds.load(expressionId);
+  }
+
+  public loadBySystemId(systemId: string): Promise<ExpressionEntity[]> {
+    return this.loaderBySystemIds.load(systemId);
+  }
+
+  private readonly loaderByIds = new DataLoader(async (expressionIds: readonly string[]): Promise<ExpressionEntity[]> => {
     try {
       const expressions = await this.repository.findBy({
         id: In(expressionIds)
@@ -44,7 +52,7 @@ export class ExpressionLoadingService {
     }
   });
 
-  public readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<ExpressionEntity[][]> => {
+  private readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<ExpressionEntity[][]> => {
     try {
       const expressions = await this.repository.findBy({
         systemId: In(systemIds)

@@ -18,7 +18,7 @@ export class HypothesisRelationsResolver {
     return ExpressionEntity;
   })
   public expression(@Parent() hypothesis: HypothesisEntity): Promise<ExpressionEntity> {
-    return this.expressionLoadingService.loaderByIds.load(hypothesis.expressionId);
+    return this.expressionLoadingService.loadById(hypothesis.expressionId);
   }
 
   @ResolveField((): typeof StatementEntity => {
