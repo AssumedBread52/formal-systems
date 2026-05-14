@@ -32,13 +32,13 @@ export class DistinctVariablePairRelationsResolver {
     return SymbolEntity;
   })
   public variableSymbol1(@Parent() distinctVariablePair: DistinctVariablePairEntity): Promise<SymbolEntity> {
-    return this.symbolLoadingService.loaderByIds.load(distinctVariablePair.variableSymbol1Id);
+    return this.symbolLoadingService.loadById(distinctVariablePair.variableSymbol1Id);
   }
 
   @ResolveField((): typeof SymbolEntity => {
     return SymbolEntity;
   })
   public variableSymbol2(@Parent() distinctVariablePair: DistinctVariablePairEntity): Promise<SymbolEntity> {
-    return this.symbolLoadingService.loaderByIds.load(distinctVariablePair.variableSymbol2Id);
+    return this.symbolLoadingService.loadById(distinctVariablePair.variableSymbol2Id);
   }
 };

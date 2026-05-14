@@ -25,7 +25,7 @@ export class ExpressionTokenRelationsResolver {
     return SymbolEntity;
   })
   public symbol(@Parent() expressionToken: ExpressionTokenEntity): Promise<SymbolEntity> {
-    return this.symbolLoadingService.loaderByIds.load(expressionToken.symbolId);
+    return this.symbolLoadingService.loadById(expressionToken.symbolId);
   }
 
   @ResolveField((): typeof SystemEntity => {

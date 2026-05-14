@@ -12,7 +12,15 @@ export class SymbolLoadingService {
   public constructor(@InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
   }
 
-  public readonly loaderByIds = new DataLoader(async (symbolIds: readonly string[]): Promise<SymbolEntity[]> => {
+  public loadById(symbolId: string): Promise<SymbolEntity> {
+    return this.loaderByIds.load(symbolId);
+  }
+
+  public loadBySystemId(systemId: string): Promise<SymbolEntity[]> {
+    return this.loaderBySystemIds.load(systemId);
+  }
+
+  private readonly loaderByIds = new DataLoader(async (symbolIds: readonly string[]): Promise<SymbolEntity[]> => {
     try {
       const symbols = await this.repository.findBy({
         id: In(symbolIds)
@@ -44,7 +52,7 @@ export class SymbolLoadingService {
     }
   });
 
-  public readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<SymbolEntity[][]> => {
+  private readonly loaderBySystemIds = new DataLoader(async (systemIds: readonly string[]): Promise<SymbolEntity[][]> => {
     try {
       const symbols = await this.repository.findBy({
         systemId: In(systemIds)
