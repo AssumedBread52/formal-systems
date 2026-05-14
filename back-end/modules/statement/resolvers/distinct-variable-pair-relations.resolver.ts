@@ -25,7 +25,7 @@ export class DistinctVariablePairRelationsResolver {
     return SystemEntity;
   })
   public system(@Parent() distinctVariablePair: DistinctVariablePairEntity): Promise<SystemEntity> {
-    return this.systemLoadingService.loaderByIds.load(distinctVariablePair.systemId);
+    return this.systemLoadingService.loadById(distinctVariablePair.systemId);
   }
 
   @ResolveField((): typeof SymbolEntity => {

@@ -14,6 +14,6 @@ export class UserRelationsResolver {
     return [SystemEntity];
   })
   public systems(@Parent() user: UserEntity): Promise<SystemEntity[]> {
-    return this.systemLoadingService.loaderByOwnerUserIds.load(user.id);
+    return this.systemLoadingService.looadByOwnerUserId(user.id);
   }
 };

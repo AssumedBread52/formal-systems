@@ -12,7 +12,15 @@ export class SystemLoadingService {
   public constructor(@InjectRepository(SystemEntity) private readonly repository: Repository<SystemEntity>) {
   }
 
-  public readonly loaderByIds = new DataLoader(async (systemIds: readonly string[]): Promise<SystemEntity[]> => {
+  public loadById(systemId: string): Promise<SystemEntity> {
+    return this.loaderByIds.load(systemId);
+  }
+
+  public looadByOwnerUserId(userId: string): Promise<SystemEntity[]> {
+    return this.loaderByOwnerUserIds.load(userId);
+  }
+
+  private readonly loaderByIds = new DataLoader(async (systemIds: readonly string[]): Promise<SystemEntity[]> => {
     try {
       const systems = await this.repository.findBy({
         id: In(systemIds)
@@ -44,7 +52,7 @@ export class SystemLoadingService {
     }
   });
 
-  public readonly loaderByOwnerUserIds = new DataLoader(async (ownerUserIds: readonly string[]): Promise<SystemEntity[][]> => {
+  private readonly loaderByOwnerUserIds = new DataLoader(async (ownerUserIds: readonly string[]): Promise<SystemEntity[][]> => {
     try {
       const systems = await this.repository.findBy({
         ownerUserId: In(ownerUserIds)

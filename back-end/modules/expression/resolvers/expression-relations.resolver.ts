@@ -41,6 +41,6 @@ export class ExpressionRelationsResolver {
     return SystemEntity;
   })
   public system(@Parent() expression: ExpressionEntity): Promise<SystemEntity> {
-    return this.systemLoadingService.loaderByIds.load(expression.systemId);
+    return this.systemLoadingService.loadById(expression.systemId);
   }
 };

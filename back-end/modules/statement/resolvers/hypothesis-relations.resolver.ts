@@ -32,6 +32,6 @@ export class HypothesisRelationsResolver {
     return SystemEntity;
   })
   public system(@Parent() hypothesis: HypothesisEntity): Promise<SystemEntity> {
-    return this.systemLoadingService.loaderByIds.load(hypothesis.systemId);
+    return this.systemLoadingService.loadById(hypothesis.systemId);
   }
 };

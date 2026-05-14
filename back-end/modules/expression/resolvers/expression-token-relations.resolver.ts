@@ -32,6 +32,6 @@ export class ExpressionTokenRelationsResolver {
     return SystemEntity;
   })
   public system(@Parent() expressionToken: ExpressionTokenEntity): Promise<SystemEntity> {
-    return this.systemLoadingService.loaderByIds.load(expressionToken.systemId);
+    return this.systemLoadingService.loadById(expressionToken.systemId);
   }
 };

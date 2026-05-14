@@ -39,6 +39,6 @@ export class SymbolRelationsResolver {
     return SystemEntity;
   })
   public system(@Parent() symbol: SymbolEntity): Promise<SystemEntity> {
-    return this.systemLoadingService.loaderByIds.load(symbol.systemId);
+    return this.systemLoadingService.loadById(symbol.systemId);
   }
 };
