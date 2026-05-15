@@ -1,7 +1,10 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
-import { ExpressionReadService } from '@/expression/services/expression-read.service';
+import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
+import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { SymbolInUseException } from '@/symbol/exceptions/symbol-in-use.exception';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
 import { UniqueNameException } from '@/symbol/exceptions/unique-name.exception';
 import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
@@ -10,11 +13,11 @@ import { SystemReadService } from '@/system/services/system-read.service';
 import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { ArrayContains, EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class SymbolWriteService {
-  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
+  public constructor(private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
   }
 
   public async create(userId: string, systemId: string, newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
@@ -126,12 +129,14 @@ export class SymbolWriteService {
       symbol.content = validatedEditSymbolPayload.newContent;
 
       if (validatedEditSymbolPayload.newType !== symbol.type) {
+        const previousType = symbol.type;
+
         symbol.type = validatedEditSymbolPayload.newType;
 
         return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<SymbolEntity> => {
           const symbolRepository = entityManager.getRepository(SymbolEntity);
 
-          await this.expressionReadService.verifySymbolNotInUse(entityManager, symbol.id);
+          await this.verifySymbolNotInUse(entityManager, symbol.id, previousType);
 
           return await symbolRepository.save(symbol);
         });
@@ -144,6 +149,48 @@ export class SymbolWriteService {
       }
 
       throw new InternalServerErrorException('Updating symbol failed');
+    }
+  }
+
+  private async verifySymbolNotInUse(entityManager: EntityManager, symbolId: string, currentType: SymbolType): Promise<void> {
+    try {
+      const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
+
+      const inUseInHypotheses = await hypothesisRepository.existsBy({
+        expression: {
+          canonical: ArrayContains([
+            symbolId
+          ])
+        }
+      });
+
+      if (inUseInHypotheses) {
+        throw new SymbolInUseException();
+      }
+
+      if (SymbolType.variable === currentType) {
+        return;
+      }
+
+      const statementRepository = entityManager.getRepository(StatementEntity);
+
+      const inUseInStatements = await statementRepository.existsBy({
+        assertion: {
+          canonical: ArrayContains([
+            symbolId
+          ])
+        }
+      });
+
+      if (inUseInStatements) {
+        throw new SymbolInUseException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying symbol not in use failed');
     }
   }
 };

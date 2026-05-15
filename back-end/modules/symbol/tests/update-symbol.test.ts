@@ -7,7 +7,8 @@ import { getRepositoryMock } from '@/common/tests/mocks/get-repository.mock';
 import { managerMock } from '@/common/tests/mocks/manager.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { transactionMock } from '@/common/tests/mocks/transaction.mock';
-import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
+import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
+import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
@@ -18,6 +19,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
 import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
+import { ArrayContains } from 'typeorm';
 
 describe('Update Symbol', (): void => {
   const existsBy = existsByMock();
@@ -39,7 +41,7 @@ describe('Update Symbol', (): void => {
     const symbolId = '7bde3313-f751-42f0-8d89-88c4ab394282';
     const newName = 'NewTestSymbol1';
     const newDescription = 'New Test Symbol 1';
-    const newType = SymbolType.constant;
+    const newType = SymbolType.variable;
     const newContent = '\\vdash';
     const user = validatePayload({
       id: userId,
@@ -58,7 +60,7 @@ describe('Update Symbol', (): void => {
       systemId,
       name: 'TestSymbol1',
       description: 'Test Symbol 1',
-      type: SymbolType.variable,
+      type: SymbolType.constant,
       content: '\\alpha'
     }, SymbolEntity);
     const updatedSymbol = validatePayload({
@@ -70,6 +72,7 @@ describe('Update Symbol', (): void => {
       content: newContent
     }, SymbolEntity);
 
+    existsBy.mockResolvedValueOnce(false);
     existsBy.mockResolvedValueOnce(false);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
@@ -91,13 +94,24 @@ describe('Update Symbol', (): void => {
       newContent
     });
 
-    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenCalledTimes(3);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
       systemId,
       name: newName
     });
     expect(existsBy).toHaveBeenNthCalledWith(2, {
-      symbolId
+      expression: {
+        canonical: ArrayContains([
+          symbolId
+        ])
+      }
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(3, {
+      assertion: {
+        canonical: ArrayContains([
+          symbolId
+        ])
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -114,9 +128,10 @@ describe('Update Symbol', (): void => {
       id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(getRepository).toHaveBeenCalledTimes(2);
+    expect(getRepository).toHaveBeenCalledTimes(3);
     expect(getRepository).toHaveBeenNthCalledWith(1, SymbolEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(2, ExpressionTokenEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(2, HypothesisEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(3, StatementEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);
@@ -131,7 +146,7 @@ describe('Update Symbol', (): void => {
     const symbolId = '7bde3313-f751-42f0-8d89-88c4ab394282';
     const newName = 'NewTestSymbol1';
     const newDescription = 'New Test Symbol 1';
-    const newType = SymbolType.constant;
+    const newType = SymbolType.variable;
     const newContent = '\\vdash';
     const user = validatePayload({
       id: userId,
@@ -150,7 +165,7 @@ describe('Update Symbol', (): void => {
       systemId,
       name: 'TestSymbol1',
       description: 'Test Symbol 1',
-      type: SymbolType.variable,
+      type: SymbolType.constant,
       content: '\\alpha'
     }, SymbolEntity);
     const updatedSymbol = validatePayload({
@@ -162,6 +177,7 @@ describe('Update Symbol', (): void => {
       content: newContent
     }, SymbolEntity);
 
+    existsBy.mockResolvedValueOnce(false);
     existsBy.mockResolvedValueOnce(false);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
@@ -190,13 +206,24 @@ describe('Update Symbol', (): void => {
       }
     });
 
-    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenCalledTimes(3);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
       systemId,
       name: newName
     });
     expect(existsBy).toHaveBeenNthCalledWith(2, {
-      symbolId
+      expression: {
+        canonical: ArrayContains([
+          symbolId
+        ])
+      }
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(3, {
+      assertion: {
+        canonical: ArrayContains([
+          symbolId
+        ])
+      }
     });
     expect(findOneBy).toHaveBeenCalledTimes(4);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -213,9 +240,10 @@ describe('Update Symbol', (): void => {
       id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(getRepository).toHaveBeenCalledTimes(2);
+    expect(getRepository).toHaveBeenCalledTimes(3);
     expect(getRepository).toHaveBeenNthCalledWith(1, SymbolEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(2, ExpressionTokenEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(2, HypothesisEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(3, StatementEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);
