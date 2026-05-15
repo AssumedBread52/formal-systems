@@ -126,4 +126,8 @@ describe('Read Statements', (): void => {
     });
     expect(response.statusCode).toBe(HttpStatus.OK);
   });
+
+  afterAll(async (): Promise<void> => {
+    await app.close();
+  });
 });
