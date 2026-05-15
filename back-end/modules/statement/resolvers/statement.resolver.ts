@@ -1,13 +1,24 @@
+import { SessionUser } from '@/auth/decorators/session-user.decorator';
+import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { StatementEntity } from '@/statement/entities/statement.entity';
 import { PaginatedStatementsPayload } from '@/statement/payloads/paginated-statements.payload';
 import { SearchStatementsPayload } from '@/statement/payloads/search-statements.payload';
 import { StatementReadService } from '@/statement/services/statement-read.service';
-import { ParseUUIDPipe, ValidationPipe } from '@nestjs/common';
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { StatementWriteService } from '@/statement/services/statement-write.service';
+import { ParseUUIDPipe, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 @Resolver()
 export class StatementResolver {
-  public constructor(private readonly statementReadService: StatementReadService) {
+  public constructor(private readonly statementReadService: StatementReadService, private readonly statementWriteService: StatementWriteService) {
+  }
+
+  @Mutation((): typeof StatementEntity => {
+    return StatementEntity;
+  })
+  @UseGuards(JwtGuard)
+  public deleteStatement(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementId', new ParseUUIDPipe()) statementId: string): Promise<StatementEntity> {
+    return this.statementWriteService.delete(sessionUserId, systemId, statementId);
   }
 
   @Query((): typeof StatementEntity => {

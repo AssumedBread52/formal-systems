@@ -1,6 +1,7 @@
 import { ExpressionModule } from '@/expression/expression.module';
 import { SymbolModule } from '@/symbol/symbol.module';
 import { SystemModule } from '@/system/system.module';
+import { UserModule } from '@/user/user.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DistinctVariablePairController } from './controllers/distinct-variable-pair.controller';
@@ -21,6 +22,7 @@ import { HypothesisLoadingService } from './services/hypothesis-loading.service'
 import { HypothesisReadService } from './services/hypothesis-read.service';
 import { StatementLoadingService } from './services/statement-loading.service';
 import { StatementReadService } from './services/statement-read.service';
+import { StatementWriteService } from './services/statement-write.service';
 
 @Module({
   imports: [
@@ -29,6 +31,9 @@ import { StatementReadService } from './services/statement-read.service';
     }),
     forwardRef((): typeof SystemModule => {
       return SystemModule;
+    }),
+    forwardRef((): typeof UserModule => {
+      return UserModule;
     }),
     SymbolModule,
     TypeOrmModule.forFeature([
@@ -54,7 +59,8 @@ import { StatementReadService } from './services/statement-read.service';
     StatementLoadingService,
     StatementReadService,
     StatementRelationsResolver,
-    StatementResolver
+    StatementResolver,
+    StatementWriteService
   ],
   exports: [
     DistinctVariablePairLoadingService,
