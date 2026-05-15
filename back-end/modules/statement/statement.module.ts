@@ -18,6 +18,7 @@ import { StatementRelationsResolver } from './resolvers/statement-relations.reso
 import { StatementResolver } from './resolvers/statement.resolver';
 import { DistinctVariablePairLoadingService } from './services/distinct-variable-pair-loading.service';
 import { DistinctVariablePairReadService } from './services/distinct-variable-pair-read.service';
+import { DistinctVariablePairWriteService } from './services/distinct-variable-pair-write.service';
 import { HypothesisLoadingService } from './services/hypothesis-loading.service';
 import { HypothesisReadService } from './services/hypothesis-read.service';
 import { StatementLoadingService } from './services/statement-loading.service';
@@ -52,6 +53,7 @@ import { StatementWriteService } from './services/statement-write.service';
     DistinctVariablePairReadService,
     DistinctVariablePairRelationsResolver,
     DistinctVariablePairResolver,
+    DistinctVariablePairWriteService,
     HypothesisLoadingService,
     HypothesisReadService,
     HypothesisRelationsResolver,

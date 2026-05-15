@@ -230,6 +230,7 @@ type Mutation {
   updateSystem(systemId: String!, systemPayload: EditSystemPayload!): SystemEntity!
   createExpression(systemId: String!, expressionPayload: NewExpressionPayload!): ExpressionEntity!
   deleteExpression(systemId: String!, expressionId: String!): ExpressionEntity!
+  deleteDistinctVariablePair(systemId: String!, statementId: String!, variableSymbol1Id: String!, variableSymbol2Id: String!): DistinctVariablePairEntity!
   deleteStatement(systemId: String!, statementId: String!): StatementEntity!
   createSymbol(systemId: String!, symbolPayload: NewSymbolPayload!): SymbolEntity!
   deleteSymbol(systemId: String!, symbolId: String!): SymbolEntity!

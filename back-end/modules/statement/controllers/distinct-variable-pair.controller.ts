@@ -1,12 +1,22 @@
+import { SessionUser } from '@/auth/decorators/session-user.decorator';
+import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
 import { PaginatedDistinctVariablePairsPayload } from '@/statement/payloads/paginated-distinct-variable-pairs.payload';
 import { SearchDistinctVariablePairsPayload } from '@/statement/payloads/search-distinct-variable-pairs.payload';
 import { DistinctVariablePairReadService } from '@/statement/services/distinct-variable-pair-read.service';
-import { ClassSerializerInterceptor, Controller, Get, Param, ParseUUIDPipe, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { DistinctVariablePairWriteService } from '@/statement/services/distinct-variable-pair-write.service';
+import { ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system/:systemId/statement/:statementId/distinct-variable-pair')
 export class DistinctVariablePairController {
-  public constructor(private readonly distinctVariablePairReadService: DistinctVariablePairReadService) {
+  public constructor(private readonly distinctVariablePairReadService: DistinctVariablePairReadService, private readonly distinctVariablePairWriteService: DistinctVariablePairWriteService) {
+  }
+
+  @Delete(':variableSymbol1Id/:variableSymbol2Id')
+  @UseGuards(JwtGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public deleteDistinctVariablePair(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('statementId', new ParseUUIDPipe()) statementId: string, @Param('variableSymbol1Id', new ParseUUIDPipe()) variableSymbol1Id: string, @Param('variableSymbol2Id', new ParseUUIDPipe()) variableSymbol2Id: string): Promise<DistinctVariablePairEntity> {
+    return this.distinctVariablePairWriteService.delete(sessionUserId, systemId, statementId, variableSymbol1Id, variableSymbol2Id);
   }
 
   @Get()
