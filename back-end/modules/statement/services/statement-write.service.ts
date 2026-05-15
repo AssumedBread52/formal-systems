@@ -38,21 +38,19 @@ export class StatementWriteService {
         const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
         const distinctVariablePairRepository = entityManager.getRepository(DistinctVariablePairEntity);
 
-        const [hypotheses, distinctVariablePairs] = await Promise.all([
-          hypothesisRepository.findBy({
-            systemId,
-            statementId
-          }),
-          distinctVariablePairRepository.findBy({
-            systemId,
-            statementId
-          })
-        ]);
+        const hypotheses = await hypothesisRepository.findBy({
+          systemId,
+          statementId
+        });
 
-        await Promise.all([
-          hypothesisRepository.remove(hypotheses),
-          distinctVariablePairRepository.remove(distinctVariablePairs)
-        ]);
+        await hypothesisRepository.remove(hypotheses);
+
+        const distinctVariablePairs = await distinctVariablePairRepository.findBy({
+          systemId,
+          statementId
+        });
+
+        await distinctVariablePairRepository.remove(distinctVariablePairs);
 
         return statementRepository.remove(statement);
       });
