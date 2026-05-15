@@ -120,6 +120,11 @@ type PaginatedUsersPayload {
   total: Int!
 }
 
+type PaginatedStatementsPayload {
+  results: [StatementEntity!]!
+  total: Int!
+}
+
 type DependencyPayload {
   name: String!
   version: String!
@@ -162,6 +167,7 @@ type Query {
   distinctVariablePair(systemId: String!, statementId: String!, variableSymbol1Id: String!, variableSymbol2Id: String!): DistinctVariablePairEntity!
   hypothesis(systemId: String!, statementId: String!, hypothesisId: String!): HypothesisEntity!
   statement(systemId: String!, statementId: String!): StatementEntity!
+  statements(systemId: String!, filters: SearchStatementsPayload!): PaginatedStatementsPayload!
   symbol(systemId: String!, symbolId: String!): SymbolEntity!
   symbols(systemId: String!, filters: SearchSymbolsPayload!): PaginatedSymbolsPayload!
   dependencies: [DependencyPayload!]!
@@ -187,6 +193,12 @@ input SearchExpressionsPayload {
   symbolIds: [String!]! = []
 }
 
+input SearchStatementsPayload {
+  page: Int! = 1
+  pageSize: Int! = 10
+  searchText: String! = ""
+}
+
 input SearchSymbolsPayload {
   page: Int! = 1
   pageSize: Int! = 10
@@ -205,6 +217,7 @@ type Mutation {
   updateSystem(systemId: String!, systemPayload: EditSystemPayload!): SystemEntity!
   createExpression(systemId: String!, expressionPayload: NewExpressionPayload!): ExpressionEntity!
   deleteExpression(systemId: String!, expressionId: String!): ExpressionEntity!
+  deleteStatement(systemId: String!, statementId: String!): StatementEntity!
   createSymbol(systemId: String!, symbolPayload: NewSymbolPayload!): SymbolEntity!
   deleteSymbol(systemId: String!, symbolId: String!): SymbolEntity!
   updateSymbol(systemId: String!, symbolId: String!, symbolPayload: EditSymbolPayload!): SymbolEntity!
