@@ -120,6 +120,11 @@ type PaginatedDistinctVariablePairsPayload {
   total: Int!
 }
 
+type PaginatedHypothesesPayload {
+  results: [HypothesisEntity!]!
+  total: Int!
+}
+
 type PaginatedStatementsPayload {
   results: [StatementEntity!]!
   total: Int!
@@ -172,6 +177,7 @@ type Query {
   distinctVariablePair(systemId: String!, statementId: String!, variableSymbol1Id: String!, variableSymbol2Id: String!): DistinctVariablePairEntity!
   distinctVariablePairs(systemId: String!, statementId: String!, filters: SearchDistinctVariablePairsPayload!): PaginatedDistinctVariablePairsPayload!
   hypothesis(systemId: String!, statementId: String!, hypothesisId: String!): HypothesisEntity!
+  hypotheses(systemId: String!, statementId: String!, filters: SearchHypothesesPayload!): PaginatedHypothesesPayload!
   statement(systemId: String!, statementId: String!): StatementEntity!
   statements(systemId: String!, filters: SearchStatementsPayload!): PaginatedStatementsPayload!
   symbol(systemId: String!, symbolId: String!): SymbolEntity!
@@ -204,6 +210,12 @@ input SearchDistinctVariablePairsPayload {
   pageSize: Int! = 10
   includeSymbolIds: [String!]! = []
   excludeSymbolIds: [String!]! = []
+}
+
+input SearchHypothesesPayload {
+  page: Int! = 1
+  pageSize: Int! = 10
+  types: [HypothesisType!]! = []
 }
 
 input SearchStatementsPayload {
