@@ -56,6 +56,10 @@ export class SymbolReadService {
           systemId,
           type: typeFilter
         });
+      } else {
+        where.push({
+          systemId
+        });
       }
 
       const [symbols, total] = await this.repository.findAndCount({
