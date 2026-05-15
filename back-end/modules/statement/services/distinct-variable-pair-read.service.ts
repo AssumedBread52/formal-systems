@@ -1,12 +1,73 @@
+import { validatePayload } from '@/common/helpers/validate-payload';
 import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
 import { DistinctVariablePairNotFoundException } from '@/statement/exceptions/distinct-variable-pair-not-found.exception';
+import { PaginatedDistinctVariablePairsPayload } from '@/statement/payloads/paginated-distinct-variable-pairs.payload';
+import { SearchDistinctVariablePairsPayload } from '@/statement/payloads/search-distinct-variable-pairs.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { And, FindOptionsWhere, In, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class DistinctVariablePairReadService {
   public constructor(@InjectRepository(DistinctVariablePairEntity) private readonly repository: Repository<DistinctVariablePairEntity>) {
+  }
+
+  public async searchDistinctVariablePairs(systemId: string, statementId: string, searchDistinctVariablePairsPayload: SearchDistinctVariablePairsPayload): Promise<PaginatedDistinctVariablePairsPayload> {
+    try {
+      const validatedSearchDistinctVariablePairsPayload = validatePayload(searchDistinctVariablePairsPayload, SearchDistinctVariablePairsPayload);
+
+      const take = validatedSearchDistinctVariablePairsPayload.pageSize;
+      const skip = (validatedSearchDistinctVariablePairsPayload.page - 1) * validatedSearchDistinctVariablePairsPayload.pageSize;
+
+      const where = [] as FindOptionsWhere<DistinctVariablePairEntity>[];
+      if (0 < validatedSearchDistinctVariablePairsPayload.includeSymbolIds.length && 0 < validatedSearchDistinctVariablePairsPayload.excludeSymbolIds.length) {
+        where.push({
+          systemId,
+          statementId,
+          variableSymbol1Id: And(Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds)), In(validatedSearchDistinctVariablePairsPayload.includeSymbolIds)),
+          variableSymbol2Id: Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds))
+        });
+        where.push({
+          systemId,
+          statementId,
+          variableSymbol1Id: Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds)),
+          variableSymbol2Id: And(Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds)), In(validatedSearchDistinctVariablePairsPayload.includeSymbolIds))
+        });
+      } else if (0 < validatedSearchDistinctVariablePairsPayload.excludeSymbolIds.length) {
+        where.push({
+          systemId,
+          statementId,
+          variableSymbol1Id: Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds)),
+          variableSymbol2Id: Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds))
+        });
+      } else if (0 < validatedSearchDistinctVariablePairsPayload.includeSymbolIds.length) {
+        where.push({
+          systemId,
+          statementId,
+          variableSymbol1Id: In(validatedSearchDistinctVariablePairsPayload.includeSymbolIds)
+        });
+        where.push({
+          systemId,
+          statementId,
+          variableSymbol2Id: In(validatedSearchDistinctVariablePairsPayload.includeSymbolIds)
+        });
+      } else {
+        where.push({
+          systemId,
+          statementId
+        });
+      }
+
+      const [distinctVariablePairs, total] = await this.repository.findAndCount({
+        skip,
+        take,
+        where
+      });
+
+      return new PaginatedDistinctVariablePairsPayload(distinctVariablePairs, total);
+    } catch {
+      throw new InternalServerErrorException('Reading distinct variable pairs failed');
+    }
   }
 
   public async selectById(systemId: string, statementId: string, unorderedVariableSymbol1Id: string, unorderedVariableSymbol2Id: string): Promise<DistinctVariablePairEntity> {

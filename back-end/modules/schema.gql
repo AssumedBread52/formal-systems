@@ -115,6 +115,11 @@ type PaginatedUsersPayload {
   total: Int!
 }
 
+type PaginatedDistinctVariablePairsPayload {
+  results: [DistinctVariablePairEntity!]!
+  total: Int!
+}
+
 type PaginatedStatementsPayload {
   results: [StatementEntity!]!
   total: Int!
@@ -165,6 +170,7 @@ type Query {
   expression(systemId: String!, expressionId: String!): ExpressionEntity!
   expressions(systemId: String!, filters: SearchExpressionsPayload!): PaginatedExpressionsPayload!
   distinctVariablePair(systemId: String!, statementId: String!, variableSymbol1Id: String!, variableSymbol2Id: String!): DistinctVariablePairEntity!
+  distinctVariablePairs(systemId: String!, statementId: String!, filters: SearchDistinctVariablePairsPayload!): PaginatedDistinctVariablePairsPayload!
   hypothesis(systemId: String!, statementId: String!, hypothesisId: String!): HypothesisEntity!
   statement(systemId: String!, statementId: String!): StatementEntity!
   statements(systemId: String!, filters: SearchStatementsPayload!): PaginatedStatementsPayload!
@@ -191,6 +197,13 @@ input SearchExpressionsPayload {
   page: Int! = 1
   pageSize: Int! = 10
   symbolIds: [String!]! = []
+}
+
+input SearchDistinctVariablePairsPayload {
+  page: Int! = 1
+  pageSize: Int! = 10
+  includeSymbolIds: [String!]! = []
+  excludeSymbolIds: [String!]! = []
 }
 
 input SearchStatementsPayload {
