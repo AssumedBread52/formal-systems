@@ -11,7 +11,7 @@ export class PaginatedStatementsPayload {
     return Int;
   })
   public readonly total: number;
-  
+
   public constructor(statements: StatementEntity[], total: number) {
     this.results = statements;
     this.total = total;
