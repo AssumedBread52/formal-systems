@@ -2,6 +2,6 @@ import { ConflictException } from '@nestjs/common';
 
 export class SymbolInUseException extends ConflictException {
   public constructor() {
-    super('Symbols referenced by expressions cannot change their type');
+    super('Symbols in use cannot change their type');
   }
 };
