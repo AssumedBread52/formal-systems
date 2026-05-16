@@ -1,6 +1,8 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
+import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
 import { HypothesisNotFoundException } from '@/statement/exceptions/hypothesis-not-found.exception';
+import { VariableSymbolNotTypedException } from '@/statement/exceptions/variable-symbol-not-typed.exception';
 import { PaginatedHypothesesPayload } from '@/statement/payloads/paginated-hypotheses.payload';
 import { SearchHypothesesPayload } from '@/statement/payloads/search-hypotheses.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -58,6 +60,40 @@ export class HypothesisReadService {
       }
 
       throw new InternalServerErrorException('Reading hypothesis failed');
+    }
+  }
+
+  public async verifyAllSymbolsTyped(systemId: string, statementId: string, variableSymbolIds: string[]): Promise<void> {
+    try {
+      const uniqueVariableSymbolIds = variableSymbolIds.reduce((uniqueVariableSymbolIds: string[], variableSymbolId: string): string[] => {
+        if (!uniqueVariableSymbolIds.includes(variableSymbolId)) {
+          uniqueVariableSymbolIds.push(variableSymbolId);
+        }
+
+        return uniqueVariableSymbolIds;
+      }, []);
+
+      const count = await this.repository.countBy({
+        systemId,
+        statementId,
+        type: HypothesisType.type,
+        expression: {
+          expressionTokens: {
+            symbolId: In(uniqueVariableSymbolIds),
+            position: 1
+          }
+        }
+      });
+
+      if (count !== uniqueVariableSymbolIds.length) {
+        throw new VariableSymbolNotTypedException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying symbols are typed failed');
     }
   }
 };

@@ -1,5 +1,7 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { InvalidSymbolTypeException } from '@/symbol/exceptions/invalid-symbol-type.exception';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
 import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.payload';
 import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
@@ -95,7 +97,7 @@ export class SymbolReadService {
     }
   }
 
-  public async verifyAllExist(systemId: string, symbolIds: string[]): Promise<void> {
+  public async verifyAllExist(systemId: string, symbolIds: string[], type?: SymbolType): Promise<void> {
     try {
       const uniqueSymbolIds = symbolIds.reduce((uniqueSymbolIds: string[], symbolId: string): string[] => {
         if (!uniqueSymbolIds.includes(symbolId)) {
@@ -112,6 +114,20 @@ export class SymbolReadService {
 
       if (count !== uniqueSymbolIds.length) {
         throw new SymbolNotFoundException();
+      }
+
+      if (!type) {
+        return;
+      }
+
+      const typeCount = await this.repository.countBy({
+        id: In(uniqueSymbolIds),
+        systemId,
+        type
+      });
+
+      if (typeCount !== uniqueSymbolIds.length) {
+        throw new InvalidSymbolTypeException();
       }
     } catch (error: unknown) {
       if (error instanceof HttpException) {

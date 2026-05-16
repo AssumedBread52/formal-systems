@@ -1,6 +1,7 @@
 import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
+import { NewDistinctVariablePairPayload } from '@/statement/payloads/new-distinct-variable-pair.payload';
 import { PaginatedDistinctVariablePairsPayload } from '@/statement/payloads/paginated-distinct-variable-pairs.payload';
 import { SearchDistinctVariablePairsPayload } from '@/statement/payloads/search-distinct-variable-pairs.payload';
 import { DistinctVariablePairReadService } from '@/statement/services/distinct-variable-pair-read.service';
@@ -11,6 +12,14 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 @Resolver()
 export class DistinctVariablePairResolver {
   public constructor(private readonly distinctVariablePairReadService: DistinctVariablePairReadService, private readonly distinctVariablePairWriteService: DistinctVariablePairWriteService) {
+  }
+
+  @Mutation((): typeof DistinctVariablePairEntity => {
+    return DistinctVariablePairEntity;
+  })
+  @UseGuards(JwtGuard)
+  public createDistinctVariablePair(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementId', new ParseUUIDPipe()) statementId: string, @Args('distinctVariablePairPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newDistinctVariablePairPayload: NewDistinctVariablePairPayload): Promise<DistinctVariablePairEntity> {
+    return this.distinctVariablePairWriteService.create(sessionUserId, systemId, statementId, newDistinctVariablePairPayload);
   }
 
   @Mutation((): typeof DistinctVariablePairEntity => {
