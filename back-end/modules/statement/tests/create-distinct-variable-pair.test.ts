@@ -7,17 +7,17 @@ import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
 import { StatementEntity } from '@/statement/entities/statement.entity';
+import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
+import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
+import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
 import { In } from 'typeorm';
-import { HypothesisType } from '../enums/hypothesis-type.enum';
-import { instanceToPlain } from 'class-transformer';
-import { HttpStatus } from '@nestjs/common';
 
 describe('Create Distinct Variable Pair', (): void => {
   const countBy = countByMock();
