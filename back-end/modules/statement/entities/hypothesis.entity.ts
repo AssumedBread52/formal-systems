@@ -117,8 +117,8 @@ export class HypothesisEntity {
       referencedColumnName: 'id'
     }
   ])
-  @ManyToOne((): typeof StatementEntity => {
-    return StatementEntity;
+  @ManyToOne((): typeof ExpressionEntity => {
+    return ExpressionEntity;
   }, (expression: ExpressionEntity): Promise<HypothesisEntity[]> => {
     return expression.hypotheses;
   })
