@@ -244,6 +244,7 @@ type Mutation {
   deleteExpression(systemId: String!, expressionId: String!): ExpressionEntity!
   createDistinctVariablePair(systemId: String!, statementId: String!, distinctVariablePairPayload: NewDistinctVariablePairPayload!): DistinctVariablePairEntity!
   deleteDistinctVariablePair(systemId: String!, statementId: String!, variableSymbol1Id: String!, variableSymbol2Id: String!): DistinctVariablePairEntity!
+  deleteHypothesis(systemId: String!, statementId: String!, hypothesisId: String!): HypothesisEntity!
   deleteStatement(systemId: String!, statementId: String!): StatementEntity!
   createSymbol(systemId: String!, symbolPayload: NewSymbolPayload!): SymbolEntity!
   deleteSymbol(systemId: String!, symbolId: String!): SymbolEntity!

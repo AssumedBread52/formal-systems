@@ -21,6 +21,7 @@ import { DistinctVariablePairReadService } from './services/distinct-variable-pa
 import { DistinctVariablePairWriteService } from './services/distinct-variable-pair-write.service';
 import { HypothesisLoadingService } from './services/hypothesis-loading.service';
 import { HypothesisReadService } from './services/hypothesis-read.service';
+import { HypothesisWriteService } from './services/hypothesis-write.service';
 import { StatementLoadingService } from './services/statement-loading.service';
 import { StatementReadService } from './services/statement-read.service';
 import { StatementWriteService } from './services/statement-write.service';
@@ -58,6 +59,7 @@ import { StatementWriteService } from './services/statement-write.service';
     HypothesisReadService,
     HypothesisRelationsResolver,
     HypothesisResolver,
+    HypothesisWriteService,
     StatementLoadingService,
     StatementReadService,
     StatementRelationsResolver,
