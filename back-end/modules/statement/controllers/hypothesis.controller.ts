@@ -1,11 +1,12 @@
 import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
+import { NewHypothesisPayload } from '@/statement/payloads/new-hypothesis.payload';
 import { PaginatedHypothesesPayload } from '@/statement/payloads/paginated-hypotheses.payload';
 import { SearchHypothesesPayload } from '@/statement/payloads/search-hypotheses.payload';
 import { HypothesisReadService } from '@/statement/services/hypothesis-read.service';
 import { HypothesisWriteService } from '@/statement/services/hypothesis-write.service';
-import { ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system/:systemId/statement/:statementId/hypothesis')
 export class HypothesisController {
@@ -29,5 +30,12 @@ export class HypothesisController {
   @UseInterceptors(ClassSerializerInterceptor)
   public getById(@Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('statementId', new ParseUUIDPipe()) statementId: string, @Param('hypothesisId', new ParseUUIDPipe()) hypothesisId: string): Promise<HypothesisEntity> {
     return this.hypothesisReadService.selectById(systemId, statementId, hypothesisId);
+  }
+
+  @Post()
+  @UseGuards(JwtGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public postHypothesis(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('statementId', new ParseUUIDPipe()) statementId: string, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newHypothesisPayload: NewHypothesisPayload): Promise<HypothesisEntity> {
+    return this.hypothesisWriteService.create(sessionUserId, systemId, statementId, newHypothesisPayload);
   }
 };

@@ -1,6 +1,7 @@
 import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
+import { NewHypothesisPayload } from '@/statement/payloads/new-hypothesis.payload';
 import { PaginatedHypothesesPayload } from '@/statement/payloads/paginated-hypotheses.payload';
 import { SearchHypothesesPayload } from '@/statement/payloads/search-hypotheses.payload';
 import { HypothesisReadService } from '@/statement/services/hypothesis-read.service';
@@ -11,6 +12,14 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 @Resolver()
 export class HypothesisResolver {
   public constructor(private readonly hypothesisReadService: HypothesisReadService, private readonly hypothesisWriteService: HypothesisWriteService) {
+  }
+
+  @Mutation((): typeof HypothesisEntity => {
+    return HypothesisEntity;
+  })
+  @UseGuards(JwtGuard)
+  public createHypothesis(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementId', new ParseUUIDPipe()) statementId: string, @Args('hypothesisPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newHypothesisPayload: NewHypothesisPayload): Promise<HypothesisEntity> {
+    return this.hypothesisWriteService.create(sessionUserId, systemId, statementId, newHypothesisPayload);
   }
 
   @Mutation((): typeof HypothesisEntity => {
