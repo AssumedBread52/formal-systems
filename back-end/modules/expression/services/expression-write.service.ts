@@ -29,28 +29,28 @@ export class ExpressionWriteService {
         throw new OwnershipException();
       }
 
-      await this.symbolReadService.verifyAllExist(systemId, validatedNewExpressionPayload.canonical);
-
-      // TypeORM limitation: array columns, in the FindOptionsWhere type, are
-      // typed as the element of the array, however, the underlying pg driver
-      // correctly constructs the desired query
-      const symbolSequenceConflict = await this.repository.existsBy({
-        systemId,
-        canonical: validatedNewExpressionPayload.canonical as any
-      });
-
-      if (symbolSequenceConflict) {
-        throw new UniqueSymbolSequenceException();
-      }
-
-      const expression = new ExpressionEntity();
-
-      expression.systemId = system.id;
-      expression.canonical = validatedNewExpressionPayload.canonical;
-
       return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<ExpressionEntity> => {
         const expressionRepository = entityManager.getRepository(ExpressionEntity);
         const expressionTokenRepository = entityManager.getRepository(ExpressionTokenEntity);
+
+        await this.symbolReadService.verifyAllExist(entityManager, systemId, validatedNewExpressionPayload.canonical);
+
+        // TypeORM limitation: array columns, in the FindOptionsWhere type, are
+        // typed as the element of the array, however, the underlying pg driver
+        // correctly constructs the desired query
+        const symbolSequenceConflict = await expressionRepository.existsBy({
+          systemId,
+          canonical: validatedNewExpressionPayload.canonical as any
+        });
+
+        if (symbolSequenceConflict) {
+          throw new UniqueSymbolSequenceException();
+        }
+
+        const expression = new ExpressionEntity();
+
+        expression.systemId = system.id;
+        expression.canonical = validatedNewExpressionPayload.canonical;
 
         const savedExpression = await expressionRepository.save(expression);
 

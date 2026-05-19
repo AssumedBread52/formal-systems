@@ -10,6 +10,7 @@ import { saveMock } from '@/common/tests/mocks/save.mock';
 import { transactionMock } from '@/common/tests/mocks/transaction.mock';
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
@@ -108,9 +109,10 @@ describe('Create Expression', (): void => {
       id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(getRepository).toHaveBeenCalledTimes(2);
+    expect(getRepository).toHaveBeenCalledTimes(3);
     expect(getRepository).toHaveBeenNthCalledWith(1, ExpressionEntity);
     expect(getRepository).toHaveBeenNthCalledWith(2, ExpressionTokenEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(3, SymbolEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(2);
     expect(save).toHaveBeenNthCalledWith(1, {
@@ -204,9 +206,10 @@ describe('Create Expression', (): void => {
       id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(getRepository).toHaveBeenCalledTimes(2);
+    expect(getRepository).toHaveBeenCalledTimes(3);
     expect(getRepository).toHaveBeenNthCalledWith(1, ExpressionEntity);
     expect(getRepository).toHaveBeenNthCalledWith(2, ExpressionTokenEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(3, SymbolEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(2);
     expect(save).toHaveBeenNthCalledWith(1, {

@@ -7,7 +7,7 @@ import { PaginatedHypothesesPayload } from '@/statement/payloads/paginated-hypot
 import { SearchHypothesesPayload } from '@/statement/payloads/search-hypotheses.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, In, Repository } from 'typeorm';
+import { EntityManager, FindOptionsWhere, In, Repository } from 'typeorm';
 
 @Injectable()
 export class HypothesisReadService {
@@ -63,8 +63,10 @@ export class HypothesisReadService {
     }
   }
 
-  public async verifyAllSymbolsTyped(systemId: string, statementId: string, variableSymbolIds: string[]): Promise<void> {
+  public async verifyAllSymbolsTyped(entityManager: EntityManager, systemId: string, statementId: string, variableSymbolIds: string[]): Promise<void> {
     try {
+      const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
+
       const uniqueVariableSymbolIds = variableSymbolIds.reduce((uniqueVariableSymbolIds: string[], variableSymbolId: string): string[] => {
         if (!uniqueVariableSymbolIds.includes(variableSymbolId)) {
           uniqueVariableSymbolIds.push(variableSymbolId);
@@ -73,7 +75,7 @@ export class HypothesisReadService {
         return uniqueVariableSymbolIds;
       }, []);
 
-      const count = await this.repository.countBy({
+      const count = await hypothesisRepository.countBy({
         systemId,
         statementId,
         type: HypothesisType.type,

@@ -11,7 +11,7 @@ import { SystemReadService } from '@/system/services/system-read.service';
 import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { HypothesisReadService } from './hypothesis-read.service';
 import { StatementReadService } from './statement-read.service';
 
@@ -38,37 +38,41 @@ export class DistinctVariablePairWriteService {
 
       const statement = await this.statementReadService.selectById(systemId, statementId);
 
-      await this.symbolReadService.verifyAllExist(systemId, [
-        validatedNewDistinctVariablePairPayload.variableSymbol1Id,
-        validatedNewDistinctVariablePairPayload.variableSymbol2Id
-      ], SymbolType.variable);
+      return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<DistinctVariablePairEntity> => {
+        const distinctVariablePairRepository = entityManager.getRepository(DistinctVariablePairEntity);
 
-      await this.hypothesisReadService.verifyAllSymbolsTyped(systemId, statementId, [
-        validatedNewDistinctVariablePairPayload.variableSymbol1Id,
-        validatedNewDistinctVariablePairPayload.variableSymbol2Id
-      ]);
+        await this.symbolReadService.verifyAllExist(entityManager, systemId, [
+          validatedNewDistinctVariablePairPayload.variableSymbol1Id,
+          validatedNewDistinctVariablePairPayload.variableSymbol2Id
+        ], SymbolType.variable);
 
-      const [variableSymbol1Id, variableSymbol2Id] = this.orderIds(validatedNewDistinctVariablePairPayload.variableSymbol1Id, validatedNewDistinctVariablePairPayload.variableSymbol2Id);
+        await this.hypothesisReadService.verifyAllSymbolsTyped(entityManager, systemId, statementId, [
+          validatedNewDistinctVariablePairPayload.variableSymbol1Id,
+          validatedNewDistinctVariablePairPayload.variableSymbol2Id
+        ]);
 
-      const pairConflict = await this.repository.existsBy({
-        systemId,
-        statementId,
-        variableSymbol1Id,
-        variableSymbol2Id
+        const [variableSymbol1Id, variableSymbol2Id] = this.orderIds(validatedNewDistinctVariablePairPayload.variableSymbol1Id, validatedNewDistinctVariablePairPayload.variableSymbol2Id);
+
+        const pairConflict = await distinctVariablePairRepository.existsBy({
+          systemId,
+          statementId,
+          variableSymbol1Id,
+          variableSymbol2Id
+        });
+
+        if (pairConflict) {
+          throw new UniqueVariablePairException();
+        }
+
+        const distinctVariablePair = new DistinctVariablePairEntity();
+
+        distinctVariablePair.systemId = system.id;
+        distinctVariablePair.statementId = statement.id;
+        distinctVariablePair.variableSymbol1Id = variableSymbol1Id;
+        distinctVariablePair.variableSymbol2Id = variableSymbol2Id;
+
+        return await distinctVariablePairRepository.save(distinctVariablePair);
       });
-
-      if (pairConflict) {
-        throw new UniqueVariablePairException();
-      }
-
-      const distinctVariablePair = new DistinctVariablePairEntity();
-
-      distinctVariablePair.systemId = system.id;
-      distinctVariablePair.statementId = statement.id;
-      distinctVariablePair.variableSymbol1Id = variableSymbol1Id;
-      distinctVariablePair.variableSymbol2Id = variableSymbol2Id;
-
-      return await this.repository.save(distinctVariablePair);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;

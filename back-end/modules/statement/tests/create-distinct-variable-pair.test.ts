@@ -4,10 +4,15 @@ import { countByMock } from '@/common/tests/mocks/count-by.mock';
 import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
+import { getRepositoryMock } from '@/common/tests/mocks/get-repository.mock';
+import { managerMock } from '@/common/tests/mocks/manager.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
+import { transactionMock } from '@/common/tests/mocks/transaction.mock';
 import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
+import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { StatementEntity } from '@/statement/entities/statement.entity';
 import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
@@ -24,7 +29,10 @@ describe('Create Distinct Variable Pair', (): void => {
   const existsBy = existsByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
+  const getRepository = getRepositoryMock();
+  const manager = managerMock();
   const save = saveMock();
+  const transaction = transactionMock();
   let app: NestExpressApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -136,6 +144,11 @@ describe('Create Distinct Variable Pair', (): void => {
       systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(getRepository).toHaveBeenCalledTimes(3);
+    expect(getRepository).toHaveBeenNthCalledWith(1, DistinctVariablePairEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(2, SymbolEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(3, HypothesisEntity);
+    expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
       systemId,
@@ -143,6 +156,7 @@ describe('Create Distinct Variable Pair', (): void => {
       variableSymbol1Id,
       variableSymbol2Id
     });
+    expect(transaction).toHaveBeenCalledTimes(1);
     expect(response.body).toStrictEqual(instanceToPlain(distinctVariablePair));
     expect(response.statusCode).toBe(HttpStatus.CREATED);
   });
@@ -259,6 +273,11 @@ describe('Create Distinct Variable Pair', (): void => {
       systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
+    expect(getRepository).toHaveBeenCalledTimes(3);
+    expect(getRepository).toHaveBeenNthCalledWith(1, DistinctVariablePairEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(2, SymbolEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(3, HypothesisEntity);
+    expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
       systemId,
@@ -266,6 +285,7 @@ describe('Create Distinct Variable Pair', (): void => {
       variableSymbol1Id,
       variableSymbol2Id
     });
+    expect(transaction).toHaveBeenCalledTimes(1);
     expect(response.body).toStrictEqual({
       data: {
         createDistinctVariablePair: instanceToPlain(distinctVariablePair)

@@ -7,7 +7,7 @@ import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.pay
 import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, ILike, In, Repository } from 'typeorm';
+import { EntityManager, FindOptionsWhere, ILike, In, Repository } from 'typeorm';
 
 @Injectable()
 export class SymbolReadService {
@@ -97,8 +97,28 @@ export class SymbolReadService {
     }
   }
 
-  public async verifyAllExist(systemId: string, symbolIds: string[], type?: SymbolType): Promise<void> {
+  public async selectVariableSymbolIds(systemId: string, expressionId: string): Promise<string[]> {
     try {
+      const variableSymbols = await this.repository.findBy({
+        type: SymbolType.variable,
+        expressionTokens: {
+          systemId,
+          expressionId
+        }
+      });
+
+      return variableSymbols.map((variableSymbol: SymbolEntity): string => {
+        return variableSymbol.id;
+      });
+    } catch {
+      throw new InternalServerErrorException('Reading the variable symbols from an expression failed');
+    }
+  }
+
+  public async verifyAllExist(entityManager: EntityManager, systemId: string, symbolIds: string[], type?: SymbolType): Promise<void> {
+    try {
+      const symbolRepository = entityManager.getRepository(SymbolEntity);
+
       const uniqueSymbolIds = symbolIds.reduce((uniqueSymbolIds: string[], symbolId: string): string[] => {
         if (!uniqueSymbolIds.includes(symbolId)) {
           uniqueSymbolIds.push(symbolId);
@@ -107,7 +127,7 @@ export class SymbolReadService {
         return uniqueSymbolIds;
       }, []);
 
-      const count = await this.repository.countBy({
+      const count = await symbolRepository.countBy({
         id: In(uniqueSymbolIds),
         systemId
       });
@@ -120,7 +140,7 @@ export class SymbolReadService {
         return;
       }
 
-      const typeCount = await this.repository.countBy({
+      const typeCount = await symbolRepository.countBy({
         id: In(uniqueSymbolIds),
         systemId,
         type
