@@ -1,6 +1,7 @@
 import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { StatementEntity } from '@/statement/entities/statement.entity';
+import { NewStatementPayload } from '@/statement/payloads/new-statement.payload';
 import { PaginatedStatementsPayload } from '@/statement/payloads/paginated-statements.payload';
 import { SearchStatementsPayload } from '@/statement/payloads/search-statements.payload';
 import { StatementReadService } from '@/statement/services/statement-read.service';
@@ -11,6 +12,14 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 @Resolver()
 export class StatementResolver {
   public constructor(private readonly statementReadService: StatementReadService, private readonly statementWriteService: StatementWriteService) {
+  }
+
+  @Mutation((): typeof StatementEntity => {
+    return StatementEntity;
+  })
+  @UseGuards(JwtGuard)
+  public createStatement(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newStatementPayload: NewStatementPayload): Promise<StatementEntity> {
+    return this.statementWriteService.create(sessionUserId, systemId, newStatementPayload);
   }
 
   @Mutation((): typeof StatementEntity => {

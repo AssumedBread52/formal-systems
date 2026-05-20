@@ -1,17 +1,132 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
+import { validatePayload } from '@/common/helpers/validate-payload';
+import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { ExpressionNotFoundException } from '@/expression/exceptions/expression-not-found.exception';
+import { ExpressionReadService } from '@/expression/services/expression-read.service';
 import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { StatementEntity } from '@/statement/entities/statement.entity';
+import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
+import { InvalidExpressionLengthException } from '@/statement/exceptions/invalid-expression-length.exception';
 import { StatementNotFoundException } from '@/statement/exceptions/statement-not-found.exception';
+import { UniqueNameException } from '@/statement/exceptions/unique-name.exception';
+import { UniqueVariableSymbolTypeException } from '@/statement/exceptions/unique-variable-symbol-type.exception';
+import { VariableSymbolNotTypedException } from '@/statement/exceptions/variable-symbol-not-typed.exception';
+import { NewStatementPayload } from '@/statement/payloads/new-statement.payload';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
+import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SystemReadService } from '@/system/services/system-read.service';
 import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Raw, Repository } from 'typeorm';
 
 @Injectable()
 export class StatementWriteService {
-  public constructor(private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(StatementEntity) private readonly repository: Repository<StatementEntity>) {
+  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(StatementEntity) private readonly repository: Repository<StatementEntity>) {
+  }
+
+  public async create(userId: string, systemId: string, newStatementPayload: NewStatementPayload): Promise<StatementEntity> {
+    try {
+      const validatedNewStatementPayload = validatePayload(newStatementPayload, NewStatementPayload);
+
+      const user = await this.userReadService.selectById(userId);
+
+      const system = await this.systemReadService.selectById(systemId);
+
+      if (user.id !== system.ownerUserId) {
+        throw new OwnershipException();
+      }
+
+      const nameConflict = await this.repository.existsBy({
+        systemId: system.id,
+        name: validatedNewStatementPayload.name
+      });
+
+      if (nameConflict) {
+        throw new UniqueNameException();
+      }
+
+      const assertion = await this.expressionReadService.selectById(system.id, validatedNewStatementPayload.assertionExpressionId);
+
+      if (0 === assertion.canonical.length) {
+        throw new InvalidExpressionLengthException();
+      }
+
+      return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<StatementEntity> => {
+        const expressionRepository = entityManager.getRepository(ExpressionEntity);
+        const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
+        const statementRepository = entityManager.getRepository(StatementEntity);
+
+        await this.symbolReadService.verifyAllExist(entityManager, system.id, [assertion.canonical[0]!], SymbolType.constant);
+
+        const typeExpressions = await expressionRepository.findBy({
+          id: In(validatedNewStatementPayload.typeHypothesesExpressionIds),
+          systemId: system.id,
+          canonical: Raw((columnAlias: string): string => {
+            return `cardinality(${columnAlias}) = 2`;
+          })
+        });
+
+        if (typeExpressions.length !== validatedNewStatementPayload.typeHypothesesExpressionIds.length) {
+          throw new ExpressionNotFoundException();
+        }
+
+        await this.symbolReadService.verifyAllExist(entityManager, system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
+          return typeExpression.canonical[0]!;
+        }), SymbolType.constant);
+
+        await this.symbolReadService.verifyAllExist(entityManager, system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
+          return typeExpression.canonical[1]!;
+        }), SymbolType.variable);
+
+        typeExpressions.forEach((typeExpression: ExpressionEntity, typeIndex: number, expressions: ExpressionEntity[]): void => {
+          expressions.forEach((expression: ExpressionEntity, index: number): void => {
+            if (typeExpression.canonical[1] === expression.canonical[1] && typeIndex !== index) {
+              throw new UniqueVariableSymbolTypeException();
+            }
+          });
+        });
+
+        const variableSymbolIds = await this.symbolReadService.selectVariableSymbolIds(assertion.systemId, assertion.id);
+
+        variableSymbolIds.forEach((variableSymbolId: string): void => {
+          if (!typeExpressions.some((typeExpression: ExpressionEntity): boolean => {
+            return variableSymbolId === typeExpression.canonical[1]!;
+          })) {
+            throw new VariableSymbolNotTypedException();
+          }
+        });
+
+        const statement = new StatementEntity();
+
+        statement.systemId = system.id;
+        statement.name = validatedNewStatementPayload.name;
+        statement.description = validatedNewStatementPayload.description;
+        statement.assertionExpressionId = validatedNewStatementPayload.assertionExpressionId;
+
+        const savedStatement = await statementRepository.save(statement);
+
+        await hypothesisRepository.save(validatedNewStatementPayload.typeHypothesesExpressionIds.map((typeHypothesisExpressionId: string): HypothesisEntity => {
+          const hypothesis = new HypothesisEntity();
+
+          hypothesis.expressionId = typeHypothesisExpressionId;
+          hypothesis.statementId = savedStatement.id;
+          hypothesis.systemId = system.id;
+          hypothesis.type = HypothesisType.type;
+
+          return hypothesis;
+        }));
+
+        return savedStatement;
+      });
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Creating statement failed');
+    }
   }
 
   public async delete(userId: string, systemId: string, statementId: string): Promise<StatementEntity> {

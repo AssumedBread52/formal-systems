@@ -1,11 +1,12 @@
 import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { StatementEntity } from '@/statement/entities/statement.entity';
+import { NewStatementPayload } from '@/statement/payloads/new-statement.payload';
 import { PaginatedStatementsPayload } from '@/statement/payloads/paginated-statements.payload';
 import { SearchStatementsPayload } from '@/statement/payloads/search-statements.payload';
 import { StatementReadService } from '@/statement/services/statement-read.service';
 import { StatementWriteService } from '@/statement/services/statement-write.service';
-import { ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
@@ -29,5 +30,12 @@ export class StatementController {
   @UseInterceptors(ClassSerializerInterceptor)
   public getById(@Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('statementId', new ParseUUIDPipe()) statementId: string): Promise<StatementEntity> {
     return this.statementReadService.selectById(systemId, statementId);
+  }
+
+  @Post()
+  @UseGuards(JwtGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public postStatement(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newStatementPayload: NewStatementPayload): Promise<StatementEntity> {
+    return this.statementWriteService.create(sessionUserId, systemId, newStatementPayload);
   }
 };

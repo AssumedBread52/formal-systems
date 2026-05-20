@@ -244,7 +244,9 @@ type Mutation {
   deleteExpression(systemId: String!, expressionId: String!): ExpressionEntity!
   createDistinctVariablePair(systemId: String!, statementId: String!, distinctVariablePairPayload: NewDistinctVariablePairPayload!): DistinctVariablePairEntity!
   deleteDistinctVariablePair(systemId: String!, statementId: String!, variableSymbol1Id: String!, variableSymbol2Id: String!): DistinctVariablePairEntity!
+  createHypothesis(systemId: String!, statementId: String!, hypothesisPayload: NewHypothesisPayload!): HypothesisEntity!
   deleteHypothesis(systemId: String!, statementId: String!, hypothesisId: String!): HypothesisEntity!
+  createStatement(systemId: String!, statementPayload: NewStatementPayload!): StatementEntity!
   deleteStatement(systemId: String!, statementId: String!): StatementEntity!
   createSymbol(systemId: String!, symbolPayload: NewSymbolPayload!): SymbolEntity!
   deleteSymbol(systemId: String!, symbolId: String!): SymbolEntity!
@@ -280,6 +282,18 @@ input NewExpressionPayload {
 input NewDistinctVariablePairPayload {
   variableSymbol1Id: String! = ""
   variableSymbol2Id: String! = ""
+}
+
+input NewHypothesisPayload {
+  expressionId: String! = ""
+  type: HypothesisType! = logic
+}
+
+input NewStatementPayload {
+  name: String! = ""
+  description: String! = ""
+  assertionExpressionId: String! = ""
+  typeHypothesesExpressionIds: [String!]! = []
 }
 
 input NewSymbolPayload {
