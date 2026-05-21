@@ -25,9 +25,9 @@ describe('Update Session User', (): void => {
 
   it('PATCH /user/session-user', async (): Promise<void> => {
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
-    const newHandle = 'NewTest1 NewUser1';
-    const newEmail = 'newtest1.newuser1@example.com';
-    const newPassword = 'NewTest1NewUser1!';
+    const handle = 'NewTest1 NewUser1';
+    const email = 'newtest1.newuser1@example.com';
+    const password = 'NewTest1NewUser1!';
     const user = validatePayload({
       id: userId,
       handle: 'Test1 User1',
@@ -36,9 +36,9 @@ describe('Update Session User', (): void => {
     }, UserEntity);
     const updatedUser = validatePayload({
       id: userId,
-      handle: newHandle,
-      email: newEmail,
-      passwordHash: hashSync(newPassword)
+      handle,
+      email,
+      passwordHash: hashSync(password)
     }, UserEntity);
 
     existsBy.mockResolvedValueOnce(false);
@@ -53,17 +53,17 @@ describe('Update Session User', (): void => {
     const response = await request(app.getHttpServer()).patch('/user/session-user').set('Cookie', [
       `token=${token}`
     ]).send({
-      newHandle,
-      newEmail,
-      newPassword
+      handle,
+      email,
+      password
     });
 
     expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
-      handle: newHandle
+      handle
     });
     expect(existsBy).toHaveBeenNthCalledWith(2, {
-      email: newEmail
+      email
     });
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -73,8 +73,8 @@ describe('Update Session User', (): void => {
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
       id: userId,
-      handle: newHandle,
-      email: newEmail,
+      handle,
+      email,
       passwordHash: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
     });
     expect(response.body).toStrictEqual(instanceToPlain(updatedUser));
@@ -83,9 +83,9 @@ describe('Update Session User', (): void => {
 
   it('POST /graphql mutation updateUser', async (): Promise<void> => {
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
-    const newHandle = 'NewTest1 NewUser1';
-    const newEmail = 'newtest1.newuser1@example.com';
-    const newPassword = 'NewTest1NewUser1!';
+    const handle = 'NewTest1 NewUser1';
+    const email = 'newtest1.newuser1@example.com';
+    const password = 'NewTest1NewUser1!';
     const user = validatePayload({
       id: userId,
       handle: 'Test1 User1',
@@ -94,9 +94,9 @@ describe('Update Session User', (): void => {
     }, UserEntity);
     const updatedUser = validatePayload({
       id: userId,
-      handle: newHandle,
-      email: newEmail,
-      passwordHash: hashSync(newPassword)
+      handle,
+      email,
+      passwordHash: hashSync(password)
     }, UserEntity);
 
     existsBy.mockResolvedValueOnce(false);
@@ -114,19 +114,19 @@ describe('Update Session User', (): void => {
       query: 'mutation ($userPayload: EditUserPayload!) { updateUser(userPayload: $userPayload) { id handle email } }',
       variables: {
         userPayload: {
-          newHandle,
-          newEmail,
-          newPassword
+          handle,
+          email,
+          password
         }
       }
     });
 
     expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
-      handle: newHandle
+      handle
     });
     expect(existsBy).toHaveBeenNthCalledWith(2, {
-      email: newEmail
+      email
     });
     expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -136,8 +136,8 @@ describe('Update Session User', (): void => {
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
       id: userId,
-      handle: newHandle,
-      email: newEmail,
+      handle,
+      email,
       passwordHash: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
     });
     expect(response.body).toStrictEqual({

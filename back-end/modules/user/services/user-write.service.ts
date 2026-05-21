@@ -22,30 +22,32 @@ export class UserWriteService {
       const validatedUser = validatePayload(user, UserEntity);
       const validatedEditUserPayload = validatePayload(editUserPayload, EditUserPayload);
 
-      if (validatedEditUserPayload.newHandle !== validatedUser.handle) {
+      if (validatedEditUserPayload.handle !== undefined && validatedEditUserPayload.handle !== validatedUser.handle) {
         const handleConflict = await this.repository.existsBy({
-          handle: validatedEditUserPayload.newHandle
+          handle: validatedEditUserPayload.handle
         });
 
         if (handleConflict) {
           throw new UniqueHandleException();
         }
+
+        validatedUser.handle = validatedEditUserPayload.handle;
       }
 
-      if (validatedEditUserPayload.newEmail !== validatedUser.email) {
+      if (validatedEditUserPayload.email !== undefined && validatedEditUserPayload.email !== validatedUser.email) {
         const emailConflict = await this.repository.existsBy({
-          email: validatedEditUserPayload.newEmail
+          email: validatedEditUserPayload.email
         });
 
         if (emailConflict) {
           throw new UniqueEmailAddressException();
         }
+
+        validatedUser.email = validatedEditUserPayload.email;
       }
 
-      validatedUser.handle = validatedEditUserPayload.newHandle;
-      validatedUser.email = validatedEditUserPayload.newEmail;
-      if (validatedEditUserPayload.newPassword) {
-        validatedUser.passwordHash = hashSync(validatedEditUserPayload.newPassword);
+      if (validatedEditUserPayload.password) {
+        validatedUser.passwordHash = hashSync(validatedEditUserPayload.password);
       }
 
       return await this.repository.save(validatedUser);

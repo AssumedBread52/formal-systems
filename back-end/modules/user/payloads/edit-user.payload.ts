@@ -1,26 +1,6 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { IsEmail, IsNotEmpty, IsOptional, IsStrongPassword, MaxLength } from 'class-validator';
+import { InputType, PartialType } from '@nestjs/graphql';
+import { NewUserPayload } from './new-user.payload';
 
 @InputType()
-export class EditUserPayload {
-  @Field((): typeof String => {
-    return String;
-  })
-  @IsNotEmpty()
-  @MaxLength(50)
-  public readonly newHandle: string = '';
-  @Field((): typeof String => {
-    return String;
-  })
-  @IsEmail()
-  @MaxLength(254)
-  public readonly newEmail: string = '';
-  @Field((): typeof String => {
-    return String;
-  }, {
-    nullable: true
-  })
-  @IsOptional()
-  @IsStrongPassword()
-  public readonly newPassword?: string;
+export class EditUserPayload extends PartialType(NewUserPayload) {
 };
