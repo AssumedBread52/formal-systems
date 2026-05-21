@@ -94,19 +94,22 @@ export class SystemWriteService {
         throw new OwnershipException();
       }
 
-      if (validatedEditSystemPayload.newName !== system.name) {
+      if (validatedEditSystemPayload.name !== undefined && validatedEditSystemPayload.name !== system.name) {
         const nameConflict = await this.repository.existsBy({
           ownerUserId: user.id,
-          name: validatedEditSystemPayload.newName
+          name: validatedEditSystemPayload.name
         });
 
         if (nameConflict) {
           throw new UniqueNameException();
         }
+
+        system.name = validatedEditSystemPayload.name;
       }
 
-      system.name = validatedEditSystemPayload.newName;
-      system.description = validatedEditSystemPayload.newDescription;
+      if (validatedEditSystemPayload.description !== undefined && validatedEditSystemPayload.description !== system.description) {
+        system.description = validatedEditSystemPayload.description;
+      }
 
       return await this.repository.save(system);
     } catch (error: unknown) {

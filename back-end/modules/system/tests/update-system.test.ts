@@ -27,8 +27,8 @@ describe('Update System', (): void => {
   it('PATCH /system/:systemId', async (): Promise<void> => {
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
-    const newName = 'NewTestSystem1';
-    const newDescription = 'New Test System 1';
+    const name = 'NewTestSystem1';
+    const description = 'New Test System 1';
     const user = validatePayload({
       id: userId,
       handle: 'Test1 User1',
@@ -44,8 +44,8 @@ describe('Update System', (): void => {
     const updatedSystem = validatePayload({
       id: systemId,
       ownerUserId: userId,
-      name: newName,
-      description: newDescription
+      name,
+      description
     }, SystemEntity);
 
     existsBy.mockResolvedValueOnce(false);
@@ -61,14 +61,14 @@ describe('Update System', (): void => {
     const response = await request(app.getHttpServer()).patch(`/system/${systemId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newName,
-      newDescription
+      name,
+      description
     });
 
     expect(existsBy).toHaveBeenCalledTimes(1);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
       ownerUserId: userId,
-      name: newName
+      name
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
@@ -90,8 +90,8 @@ describe('Update System', (): void => {
   it('POST /graphql mutation updateSystem', async (): Promise<void> => {
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
-    const newName = 'NewTestSystem1';
-    const newDescription = 'New Test System 1';
+    const name = 'NewTestSystem1';
+    const description = 'New Test System 1';
     const user = validatePayload({
       id: userId,
       handle: 'Test1 User1',
@@ -107,8 +107,8 @@ describe('Update System', (): void => {
     const updatedSystem = validatePayload({
       id: systemId,
       ownerUserId: userId,
-      name: newName,
-      description: newDescription
+      name,
+      description
     }, SystemEntity);
 
     existsBy.mockResolvedValueOnce(false);
@@ -128,8 +128,8 @@ describe('Update System', (): void => {
       variables: {
         systemId,
         systemPayload: {
-          newName,
-          newDescription
+          name,
+          description
         }
       }
     });
@@ -137,7 +137,7 @@ describe('Update System', (): void => {
     expect(existsBy).toHaveBeenCalledTimes(1);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
       ownerUserId: userId,
-      name: newName
+      name
     });
     expect(findOneBy).toHaveBeenCalledTimes(3);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {

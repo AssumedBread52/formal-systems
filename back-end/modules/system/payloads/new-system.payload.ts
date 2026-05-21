@@ -8,11 +8,11 @@ export class NewSystemPayload {
   })
   @IsNotEmpty()
   @MaxLength(200)
-  public readonly name: string = '';
+  public readonly name!: string;
   @Field((): typeof String => {
     return String;
   })
   @IsNotEmpty()
   @MaxLength(5000)
-  public readonly description: string = '';
+  public readonly description!: string;
 };
