@@ -8,16 +8,16 @@ export class NewUserPayload {
   })
   @IsNotEmpty()
   @MaxLength(50)
-  public readonly handle: string = '';
+  public readonly handle!: string;
   @Field((): typeof String => {
     return String;
   })
   @IsEmail()
   @MaxLength(254)
-  public readonly email: string = '';
+  public readonly email!: string;
   @Field((): typeof String => {
     return String;
   })
   @IsStrongPassword()
-  public readonly password: string = '';
+  public readonly password!: string;
 };
