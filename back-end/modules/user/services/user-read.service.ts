@@ -1,5 +1,7 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { UserEntity } from '@/user/entities/user.entity';
+import { UniqueEmailAddressException } from '@/user/exceptions/unique-email-address.exception';
+import { UniqueHandleException } from '@/user/exceptions/unique-handle.exception';
 import { UserNotFoundException } from '@/user/exceptions/user-not-found.exception';
 import { PaginatedUsersPayload } from '@/user/payloads/paginated-users.payload';
 import { SearchUsersPayload } from '@/user/payloads/search-users.payload';
@@ -79,6 +81,42 @@ export class UserReadService {
       }
 
       throw new InternalServerErrorException('Reading user failed');
+    }
+  }
+
+  public async verifyUniqueHandle(handle: string): Promise<void> {
+    try {
+      const conflict = await this.repository.existsBy({
+        handle
+      });
+
+      if (conflict) {
+        throw new UniqueHandleException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying unique handle failed');
+    }
+  }
+
+  public async verifyUniqueEmail(email: string): Promise<void> {
+    try {
+      const conflict = await this.repository.existsBy({
+        email
+      });
+
+      if (conflict) {
+        throw new UniqueEmailAddressException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying unique e-mail address failed');
     }
   }
 };

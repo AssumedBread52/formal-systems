@@ -2,8 +2,6 @@ import { CookieService } from '@/auth/services/cookie.service';
 import { TokenService } from '@/auth/services/token.service';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { UserEntity } from '@/user/entities/user.entity';
-import { UniqueEmailAddressException } from '@/user/exceptions/unique-email-address.exception';
-import { UniqueHandleException } from '@/user/exceptions/unique-handle.exception';
 import { EditUserPayload } from '@/user/payloads/edit-user.payload';
 import { NewUserPayload } from '@/user/payloads/new-user.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -11,10 +9,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { hashSync } from 'bcryptjs';
 import { Response } from 'express';
 import { Repository } from 'typeorm';
+import { UserReadService } from './user-read.service';
 
 @Injectable()
 export class UserWriteService {
-  public constructor(private readonly cookieService: CookieService, private readonly tokenService: TokenService, @InjectRepository(UserEntity) private readonly repository: Repository<UserEntity>) {
+  public constructor(private readonly cookieService: CookieService, private readonly tokenService: TokenService, private readonly userReadService: UserReadService, @InjectRepository(UserEntity) private readonly repository: Repository<UserEntity>) {
   }
 
   public async editProfile(user: UserEntity, editUserPayload: EditUserPayload): Promise<UserEntity> {
@@ -23,30 +22,18 @@ export class UserWriteService {
       const validatedEditUserPayload = validatePayload(editUserPayload, EditUserPayload);
 
       if (validatedEditUserPayload.handle !== undefined && validatedEditUserPayload.handle !== validatedUser.handle) {
-        const handleConflict = await this.repository.existsBy({
-          handle: validatedEditUserPayload.handle
-        });
-
-        if (handleConflict) {
-          throw new UniqueHandleException();
-        }
+        await this.userReadService.verifyUniqueHandle(validatedEditUserPayload.handle);
 
         validatedUser.handle = validatedEditUserPayload.handle;
       }
 
       if (validatedEditUserPayload.email !== undefined && validatedEditUserPayload.email !== validatedUser.email) {
-        const emailConflict = await this.repository.existsBy({
-          email: validatedEditUserPayload.email
-        });
-
-        if (emailConflict) {
-          throw new UniqueEmailAddressException();
-        }
+        await this.userReadService.verifyUniqueEmail(validatedEditUserPayload.email);
 
         validatedUser.email = validatedEditUserPayload.email;
       }
 
-      if (validatedEditUserPayload.password) {
+      if (validatedEditUserPayload.password !== undefined) {
         validatedUser.passwordHash = hashSync(validatedEditUserPayload.password);
       }
 
@@ -64,21 +51,9 @@ export class UserWriteService {
     try {
       const validatedNewUserPayload = validatePayload(newUserPayload, NewUserPayload);
 
-      const handleConflict = await this.repository.existsBy({
-        handle: validatedNewUserPayload.handle
-      });
+      await this.userReadService.verifyUniqueHandle(validatedNewUserPayload.handle);
 
-      if (handleConflict) {
-        throw new UniqueHandleException();
-      }
-
-      const emailConflict = await this.repository.existsBy({
-        email: validatedNewUserPayload.email
-      });
-
-      if (emailConflict) {
-        throw new UniqueEmailAddressException();
-      }
+      await this.userReadService.verifyUniqueEmail(validatedNewUserPayload.email);
 
       const user = new UserEntity();
 
