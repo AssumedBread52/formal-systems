@@ -3,6 +3,7 @@ import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { InvalidSymbolTypeException } from '@/symbol/exceptions/invalid-symbol-type.exception';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
+import { UniqueNameException } from '@/symbol/exceptions/unique-name.exception';
 import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.payload';
 import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -155,6 +156,25 @@ export class SymbolReadService {
       }
 
       throw new InternalServerErrorException('Verifying symbols failed');
+    }
+  }
+
+  public async verifyUniqueName(systemId: string, name: string): Promise<void> {
+    try {
+      const conflict = await this.repository.existsBy({
+        systemId,
+        name
+      });
+
+      if (conflict) {
+        throw new UniqueNameException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying unique name failed');
     }
   }
 };

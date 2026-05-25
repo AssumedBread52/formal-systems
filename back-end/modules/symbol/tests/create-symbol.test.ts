@@ -6,7 +6,6 @@ import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -39,12 +38,6 @@ describe('Create Symbol', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const symbol = validatePayload({
       id: '7bde3313-f751-42f0-8d89-88c4ab394282',
       systemId,
@@ -54,10 +47,9 @@ describe('Create Symbol', (): void => {
       content
     }, SymbolEntity);
 
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(symbol);
 
     const token = app.get(JwtService).sign({
@@ -73,20 +65,18 @@ describe('Create Symbol', (): void => {
       content
     });
 
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       systemId,
       name
     });
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(1);
@@ -114,12 +104,6 @@ describe('Create Symbol', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const symbol = validatePayload({
       id: '7bde3313-f751-42f0-8d89-88c4ab394282',
       systemId,
@@ -129,10 +113,9 @@ describe('Create Symbol', (): void => {
       content
     }, SymbolEntity);
 
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(symbol);
 
     const token = app.get(JwtService).sign({
@@ -154,20 +137,18 @@ describe('Create Symbol', (): void => {
       }
     });
 
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       systemId,
       name
     });
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(1);

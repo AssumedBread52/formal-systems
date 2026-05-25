@@ -14,36 +14,24 @@ import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ArrayContains, EntityManager, Repository } from 'typeorm';
+import { SymbolReadService } from './symbol-read.service';
 
 @Injectable()
 export class SymbolWriteService {
-  public constructor(private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
+  public constructor(private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
   }
 
   public async create(userId: string, systemId: string, newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
     try {
       const validatedNewSymbolPayload = validatePayload(newSymbolPayload, NewSymbolPayload);
 
-      const user = await this.userReadService.selectById(userId);
+      await this.systemReadService.verifyOwnership(userId, systemId);
 
-      const system = await this.systemReadService.selectById(systemId);
-
-      if (user.id !== system.ownerUserId) {
-        throw new OwnershipException();
-      }
-
-      const nameConflict = await this.repository.existsBy({
-        systemId: system.id,
-        name: validatedNewSymbolPayload.name
-      });
-
-      if (nameConflict) {
-        throw new UniqueNameException();
-      }
+      await this.symbolReadService.verifyUniqueName(systemId, validatedNewSymbolPayload.name);
 
       const symbol = new SymbolEntity();
 
-      symbol.systemId = system.id;
+      symbol.systemId = systemId;
       symbol.name = validatedNewSymbolPayload.name;
       symbol.description = validatedNewSymbolPayload.description;
       symbol.type = validatedNewSymbolPayload.type;
