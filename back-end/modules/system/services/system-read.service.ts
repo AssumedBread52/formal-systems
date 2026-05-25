@@ -3,6 +3,7 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { SystemInUseException } from '@/system/exceptions/system-in-use.exception';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
+import { UniqueNameException } from '@/system/exceptions/unique-name.exception';
 import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.payload';
 import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -115,6 +116,25 @@ export class SystemReadService {
       }
 
       throw new InternalServerErrorException('Verifying system not in use failed');
+    }
+  }
+
+  public async verifyUniqueName(userId: string, name: string): Promise<void> {
+    try {
+      const conflict = await this.repository.existsBy({
+        name,
+        ownerUserId: userId
+      });
+
+      if (conflict) {
+        throw new UniqueNameException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying unique name failed');
     }
   }
 };

@@ -1,4 +1,3 @@
-import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
@@ -87,21 +86,10 @@ export class SystemWriteService {
         throw new SystemNotFoundException();
       }
 
-      const user = await this.userReadService.selectById(userId);
-
-      if (user.id !== system.ownerUserId) {
-        throw new OwnershipException();
-      }
+      await this.systemReadService.verifyOwnership(userId, systemId);
 
       if (validatedEditSystemPayload.name !== undefined && validatedEditSystemPayload.name !== system.name) {
-        const nameConflict = await this.repository.existsBy({
-          ownerUserId: user.id,
-          name: validatedEditSystemPayload.name
-        });
-
-        if (nameConflict) {
-          throw new UniqueNameException();
-        }
+        await this.systemReadService.verifyUniqueName(userId, validatedEditSystemPayload.name);
 
         system.name = validatedEditSystemPayload.name;
       }

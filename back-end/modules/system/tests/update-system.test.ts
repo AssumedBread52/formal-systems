@@ -48,10 +48,10 @@ describe('Update System', (): void => {
       description
     }, SystemEntity);
 
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
-    findOneBy.mockResolvedValueOnce(user);
     save.mockResolvedValueOnce(updatedSystem);
 
     const token = app.get(JwtService).sign({
@@ -65,20 +65,21 @@ describe('Update System', (): void => {
       description
     });
 
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       ownerUserId: userId,
       name
     });
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(1);
@@ -111,10 +112,10 @@ describe('Update System', (): void => {
       description
     }, SystemEntity);
 
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
-    findOneBy.mockResolvedValueOnce(user);
     save.mockResolvedValueOnce(updatedSystem);
 
     const token = app.get(JwtService).sign({
@@ -134,20 +135,21 @@ describe('Update System', (): void => {
       }
     });
 
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       ownerUserId: userId,
       name
     });
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(save).toHaveBeenCalledTimes(1);
