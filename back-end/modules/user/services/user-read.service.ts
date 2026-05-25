@@ -119,4 +119,22 @@ export class UserReadService {
       throw new InternalServerErrorException('Verifying unique e-mail address failed');
     }
   }
+
+  public async verifyExists(userId: string): Promise<void> {
+    try {
+      const exists = await this.repository.existsBy({
+        id: userId
+      });
+
+      if (!exists) {
+        throw new UserNotFoundException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying user existence failed');
+    }
+  }
 };

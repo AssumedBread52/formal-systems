@@ -1,7 +1,6 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
-import { UniqueNameException } from '@/system/exceptions/unique-name.exception';
 import { EditSystemPayload } from '@/system/payloads/edit-system.payload';
 import { NewSystemPayload } from '@/system/payloads/new-system.payload';
 import { UserReadService } from '@/user/services/user-read.service';
@@ -19,20 +18,13 @@ export class SystemWriteService {
     try {
       const validatedNewSystemPayload = validatePayload(newSystemPayload, NewSystemPayload);
 
-      const user = await this.userReadService.selectById(userId);
+      await this.userReadService.verifyExists(userId);
 
-      const nameConflict = await this.repository.existsBy({
-        name: validatedNewSystemPayload.name,
-        ownerUserId: user.id
-      });
-
-      if (nameConflict) {
-        throw new UniqueNameException();
-      }
+      await this.systemReadService.verifyUniqueName(userId, validatedNewSystemPayload.name);
 
       const system = new SystemEntity();
 
-      system.ownerUserId = user.id;
+      system.ownerUserId = userId;
       system.name = validatedNewSystemPayload.name;
       system.description = validatedNewSystemPayload.description;
 

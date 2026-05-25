@@ -41,8 +41,8 @@ describe('Create System', (): void => {
       description
     }, SystemEntity);
 
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
-    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(user);
     save.mockResolvedValueOnce(system);
 
@@ -57,16 +57,16 @@ describe('Create System', (): void => {
       description
     });
 
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       ownerUserId: userId,
       name
     });
-    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
@@ -97,8 +97,8 @@ describe('Create System', (): void => {
       description
     }, SystemEntity);
 
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
-    findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(user);
     save.mockResolvedValueOnce(system);
 
@@ -118,16 +118,16 @@ describe('Create System', (): void => {
       }
     });
 
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       ownerUserId: userId,
       name
     });
-    expect(findOneBy).toHaveBeenCalledTimes(2);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
