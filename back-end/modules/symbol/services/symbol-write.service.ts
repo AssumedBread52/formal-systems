@@ -1,11 +1,9 @@
-import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
 import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
 import { SystemReadService } from '@/system/services/system-read.service';
-import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
@@ -13,7 +11,7 @@ import { SymbolReadService } from './symbol-read.service';
 
 @Injectable()
 export class SymbolWriteService {
-  public constructor(private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
+  public constructor(private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, @InjectRepository(SymbolEntity) private readonly repository: Repository<SymbolEntity>) {
   }
 
   public async create(userId: string, systemId: string, newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
@@ -53,13 +51,9 @@ export class SymbolWriteService {
         throw new SymbolNotFoundException();
       }
 
-      const user = await this.userReadService.selectById(userId);
+      await this.systemReadService.verifyOwnership(userId, systemId);
 
-      const system = await this.systemReadService.selectById(systemId);
-
-      if (user.id !== system.ownerUserId) {
-        throw new OwnershipException();
-      }
+      await this.symbolReadService.verifySymbolNotInUse(symbolId);
 
       const removedSymbol = await this.repository.remove(symbol);
 

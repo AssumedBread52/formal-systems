@@ -2,6 +2,7 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { InvalidSymbolTypeException } from '@/symbol/exceptions/invalid-symbol-type.exception';
+import { SymbolInUseException } from '@/symbol/exceptions/symbol-in-use.exception';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
 import { SymbolTypeNotChangeableException } from '@/symbol/exceptions/symbol-type-not-changeable.exception';
 import { UniqueNameException } from '@/symbol/exceptions/unique-name.exception';
@@ -157,6 +158,27 @@ export class SymbolReadService {
       }
 
       throw new InternalServerErrorException('Verifying symbols failed');
+    }
+  }
+
+  public async verifySymbolNotInUse(symbolId: string): Promise<void> {
+    try {
+      const inUse = await this.repository.existsBy({
+        id: symbolId,
+        expressionTokens: {
+          symbolId: Not(IsNull())
+        }
+      });
+
+      if (inUse) {
+        throw new SymbolInUseException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying symbol not in use failed');
     }
   }
 

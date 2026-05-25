@@ -1,11 +1,11 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { removeMock } from '@/common/tests/mocks/remove.mock';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -13,8 +13,10 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
 import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
+import { IsNull, Not } from 'typeorm';
 
 describe('Delete Symbol', (): void => {
+  const existsBy = existsByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   const remove = removeMock();
@@ -34,12 +36,6 @@ describe('Delete Symbol', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const symbol = validatePayload({
       id: symbolId,
       systemId,
@@ -49,10 +45,10 @@ describe('Delete Symbol', (): void => {
       content: '\\alpha'
     }, SymbolEntity);
 
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce(symbol);
 
     const token = app.get(JwtService).sign({
@@ -63,19 +59,24 @@ describe('Delete Symbol', (): void => {
       `token=${token}`
     ]);
 
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
+      id: symbolId,
+      expressionTokens: {
+        symbolId: Not(IsNull())
+      }
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: symbolId,
       systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(remove).toHaveBeenCalledTimes(1);
@@ -94,12 +95,6 @@ describe('Delete Symbol', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const symbol = validatePayload({
       id: symbolId,
       systemId,
@@ -109,10 +104,10 @@ describe('Delete Symbol', (): void => {
       content: '\\alpha'
     }, SymbolEntity);
 
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce(symbol);
 
     const token = app.get(JwtService).sign({
@@ -129,19 +124,24 @@ describe('Delete Symbol', (): void => {
       }
     });
 
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
+      id: symbolId,
+      expressionTokens: {
+        symbolId: Not(IsNull())
+      }
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: symbolId,
       systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(remove).toHaveBeenCalledTimes(1);
