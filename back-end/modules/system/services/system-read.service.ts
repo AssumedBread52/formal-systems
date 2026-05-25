@@ -1,11 +1,13 @@
+import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { SystemEntity } from '@/system/entities/system.entity';
+import { SystemInUseException } from '@/system/exceptions/system-in-use.exception';
 import { SystemNotFoundException } from '@/system/exceptions/system-not-found.exception';
 import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.payload';
 import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, ILike, In, Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, In, IsNull, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class SystemReadService {
@@ -73,6 +75,46 @@ export class SystemReadService {
       }
 
       throw new InternalServerErrorException('Reading system failed');
+    }
+  }
+
+  public async verifyOwnership(userId: string, systemId: string): Promise<void> {
+    try {
+      const isOwned = await this.repository.existsBy({
+        id: systemId,
+        ownerUserId: userId
+      });
+
+      if (!isOwned) {
+        throw new OwnershipException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying ownership failed');
+    }
+  }
+
+  public async verifySystemNotInUse(systemId: string): Promise<void> {
+    try {
+      const inUse = await this.repository.existsBy({
+        id: systemId,
+        symbols: {
+          id: Not(IsNull())
+        }
+      });
+
+      if (inUse) {
+        throw new SystemInUseException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying system not in use failed');
     }
   }
 };

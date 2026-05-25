@@ -1,5 +1,6 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { removeMock } from '@/common/tests/mocks/remove.mock';
@@ -11,8 +12,10 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
 import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
+import { IsNull, Not } from 'typeorm';
 
 describe('Delete System', (): void => {
+  const existsBy = existsByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
   const remove = removeMock();
@@ -38,9 +41,10 @@ describe('Delete System', (): void => {
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
 
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
-    findOneBy.mockResolvedValueOnce(user);
     remove.mockResolvedValueOnce(system);
 
     const token = app.get(JwtService).sign({
@@ -51,15 +55,23 @@ describe('Delete System', (): void => {
       `token=${token}`
     ]);
 
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
+      id: systemId,
+      symbols: {
+        id: Not(IsNull())
+      }
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(remove).toHaveBeenCalledTimes(1);
@@ -84,9 +96,10 @@ describe('Delete System', (): void => {
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
 
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(system);
-    findOneBy.mockResolvedValueOnce(user);
     remove.mockResolvedValueOnce(system);
 
     const token = app.get(JwtService).sign({
@@ -102,15 +115,23 @@ describe('Delete System', (): void => {
       }
     });
 
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
+      id: systemId,
+      symbols: {
+        id: Not(IsNull())
+      }
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(remove).toHaveBeenCalledTimes(1);

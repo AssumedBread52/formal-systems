@@ -9,10 +9,11 @@ import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { SystemReadService } from './system-read.service';
 
 @Injectable()
 export class SystemWriteService {
-  public constructor(private readonly userReadService: UserReadService, @InjectRepository(SystemEntity) private readonly repository: Repository<SystemEntity>) {
+  public constructor(private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(SystemEntity) private readonly repository: Repository<SystemEntity>) {
   }
 
   public async create(userId: string, newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
@@ -56,11 +57,9 @@ export class SystemWriteService {
         throw new SystemNotFoundException();
       }
 
-      const user = await this.userReadService.selectById(userId);
+      await this.systemReadService.verifyOwnership(userId, systemId);
 
-      if (user.id !== system.ownerUserId) {
-        throw new OwnershipException();
-      }
+      await this.systemReadService.verifySystemNotInUse(systemId);
 
       const removedSystem = await this.repository.remove(system);
 
