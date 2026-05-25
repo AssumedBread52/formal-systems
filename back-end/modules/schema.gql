@@ -110,13 +110,13 @@ type PaginatedSystemsPayload {
   total: Int!
 }
 
-type PaginatedUsersPayload {
-  results: [UserEntity!]!
+type PaginatedDistinctVariablePairsPayload {
+  results: [DistinctVariablePairEntity!]!
   total: Int!
 }
 
-type PaginatedDistinctVariablePairsPayload {
-  results: [DistinctVariablePairEntity!]!
+type PaginatedUsersPayload {
+  results: [UserEntity!]!
   total: Int!
 }
 
@@ -254,25 +254,25 @@ type Mutation {
 }
 
 input NewUserPayload {
-  handle: String! = ""
-  email: String! = ""
-  password: String! = ""
+  handle: String!
+  email: String!
+  password: String!
 }
 
 input EditUserPayload {
-  newHandle: String! = ""
-  newEmail: String! = ""
-  newPassword: String
+  handle: String
+  email: String
+  password: String
 }
 
 input NewSystemPayload {
-  name: String! = ""
-  description: String! = ""
+  name: String!
+  description: String!
 }
 
 input EditSystemPayload {
-  newName: String! = ""
-  newDescription: String! = ""
+  name: String
+  description: String
 }
 
 input NewExpressionPayload {
@@ -297,15 +297,15 @@ input NewStatementPayload {
 }
 
 input NewSymbolPayload {
-  name: String! = ""
-  description: String! = ""
-  type: SymbolType! = constant
-  content: String! = ""
+  name: String!
+  description: String!
+  type: SymbolType!
+  content: String!
 }
 
 input EditSymbolPayload {
-  newName: String! = ""
-  newDescription: String! = ""
-  newType: SymbolType! = constant
-  newContent: String! = ""
+  name: String
+  description: String
+  type: SymbolType
+  content: String
 }
