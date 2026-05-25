@@ -1,19 +1,14 @@
 import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
-import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
-import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
-import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { SymbolInUseException } from '@/symbol/exceptions/symbol-in-use.exception';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
-import { UniqueNameException } from '@/symbol/exceptions/unique-name.exception';
 import { EditSymbolPayload } from '@/symbol/payloads/edit-symbol.payload';
 import { NewSymbolPayload } from '@/symbol/payloads/new-symbol.payload';
 import { SystemReadService } from '@/system/services/system-read.service';
 import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArrayContains, EntityManager, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { SymbolReadService } from './symbol-read.service';
 
 @Injectable()
@@ -93,40 +88,33 @@ export class SymbolWriteService {
         throw new SymbolNotFoundException();
       }
 
-      const user = await this.userReadService.selectById(userId);
+      await this.systemReadService.verifyOwnership(userId, systemId);
 
-      const system = await this.systemReadService.selectById(systemId);
+      if (validatedEditSymbolPayload.name !== undefined && validatedEditSymbolPayload.name !== symbol.name) {
+        await this.symbolReadService.verifyUniqueName(systemId, validatedEditSymbolPayload.name);
 
-      if (user.id !== system.ownerUserId) {
-        throw new OwnershipException();
+        symbol.name = validatedEditSymbolPayload.name;
       }
 
-      if (validatedEditSymbolPayload.newName !== symbol.name) {
-        const nameConflict = await this.repository.existsBy({
-          systemId,
-          name: validatedEditSymbolPayload.newName
-        });
-
-        if (nameConflict) {
-          throw new UniqueNameException();
-        }
+      if (validatedEditSymbolPayload.description !== undefined && validatedEditSymbolPayload.description !== symbol.description) {
+        symbol.description = validatedEditSymbolPayload.description;
       }
 
-      symbol.name = validatedEditSymbolPayload.newName;
-      symbol.description = validatedEditSymbolPayload.newDescription;
-      symbol.content = validatedEditSymbolPayload.newContent;
+      if (validatedEditSymbolPayload.content !== undefined && validatedEditSymbolPayload.content !== symbol.content) {
+        symbol.content = validatedEditSymbolPayload.content;
+      }
 
-      if (validatedEditSymbolPayload.newType !== symbol.type) {
-        const previousType = symbol.type;
-
-        symbol.type = validatedEditSymbolPayload.newType;
+      if (validatedEditSymbolPayload.type !== undefined && validatedEditSymbolPayload.type !== symbol.type) {
+        const newType = validatedEditSymbolPayload.type;
 
         return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<SymbolEntity> => {
           const symbolRepository = entityManager.getRepository(SymbolEntity);
 
-          await this.verifySymbolNotInUse(entityManager, symbol.id, previousType);
+          await this.symbolReadService.verifySymbolTypeChangeable(entityManager, symbolId);
 
-          return await symbolRepository.save(symbol);
+          symbol.type = newType;
+
+          return symbolRepository.save(symbol);
         });
       }
 
@@ -137,48 +125,6 @@ export class SymbolWriteService {
       }
 
       throw new InternalServerErrorException('Updating symbol failed');
-    }
-  }
-
-  private async verifySymbolNotInUse(entityManager: EntityManager, symbolId: string, currentType: SymbolType): Promise<void> {
-    try {
-      const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
-
-      const inUseInHypotheses = await hypothesisRepository.existsBy({
-        expression: {
-          canonical: ArrayContains([
-            symbolId
-          ])
-        }
-      });
-
-      if (inUseInHypotheses) {
-        throw new SymbolInUseException();
-      }
-
-      if (SymbolType.variable === currentType) {
-        return;
-      }
-
-      const statementRepository = entityManager.getRepository(StatementEntity);
-
-      const inUseInStatements = await statementRepository.existsBy({
-        assertion: {
-          canonical: ArrayContains([
-            symbolId
-          ])
-        }
-      });
-
-      if (inUseInStatements) {
-        throw new SymbolInUseException();
-      }
-    } catch (error: unknown) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      throw new InternalServerErrorException('Verifying symbol not in use failed');
     }
   }
 };

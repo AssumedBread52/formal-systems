@@ -7,11 +7,8 @@ import { getRepositoryMock } from '@/common/tests/mocks/get-repository.mock';
 import { managerMock } from '@/common/tests/mocks/manager.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { transactionMock } from '@/common/tests/mocks/transaction.mock';
-import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
-import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -19,7 +16,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
 import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
-import { ArrayContains } from 'typeorm';
+import { IsNull, Not } from 'typeorm';
 
 describe('Update Symbol', (): void => {
   const existsBy = existsByMock();
@@ -39,22 +36,16 @@ describe('Update Symbol', (): void => {
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
     const symbolId = '7bde3313-f751-42f0-8d89-88c4ab394282';
-    const newName = 'NewTestSymbol1';
-    const newDescription = 'New Test Symbol 1';
-    const newType = SymbolType.variable;
-    const newContent = '\\vdash';
+    const name = 'NewTestSymbol1';
+    const description = 'New Test Symbol 1';
+    const type = SymbolType.variable;
+    const content = '\\vdash';
     const user = validatePayload({
       id: userId,
       handle: 'Test1 User1',
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const symbol = validatePayload({
       id: symbolId,
       systemId,
@@ -66,19 +57,17 @@ describe('Update Symbol', (): void => {
     const updatedSymbol = validatePayload({
       id: symbolId,
       systemId,
-      name: newName,
-      description: newDescription,
-      type: newType,
-      content: newContent
+      name,
+      description,
+      type,
+      content
     }, SymbolEntity);
 
-    existsBy.mockResolvedValueOnce(false);
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(updatedSymbol);
 
     const token = app.get(JwtService).sign({
@@ -88,32 +77,39 @@ describe('Update Symbol', (): void => {
     const response = await request(app.getHttpServer()).patch(`/system/${systemId}/symbol/${symbolId}`).set('Cookie', [
       `token=${token}`
     ]).send({
-      newName,
-      newDescription,
-      newType,
-      newContent
+      name,
+      description,
+      type,
+      content
     });
 
     expect(existsBy).toHaveBeenCalledTimes(3);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
-      systemId,
-      name: newName
+      id: systemId,
+      ownerUserId: userId
     });
     expect(existsBy).toHaveBeenNthCalledWith(2, {
-      expression: {
-        canonical: ArrayContains([
-          symbolId
-        ])
-      }
+      systemId,
+      name
     });
     expect(existsBy).toHaveBeenNthCalledWith(3, {
-      assertion: {
-        canonical: ArrayContains([
-          symbolId
-        ])
+      id: symbolId,
+      expressionTokens: {
+        expression: [
+          {
+            statements: {
+              id: Not(IsNull())
+            }
+          },
+          {
+            hypotheses: {
+              id: Not(IsNull())
+            }
+          }
+        ]
       }
     });
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
@@ -121,17 +117,10 @@ describe('Update Symbol', (): void => {
       id: symbolId,
       systemId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: systemId
-    });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(getRepository).toHaveBeenCalledTimes(3);
+    expect(getRepository).toHaveBeenCalledTimes(2);
     expect(getRepository).toHaveBeenNthCalledWith(1, SymbolEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(2, HypothesisEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(3, StatementEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(2, SymbolEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);
@@ -144,22 +133,16 @@ describe('Update Symbol', (): void => {
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
     const symbolId = '7bde3313-f751-42f0-8d89-88c4ab394282';
-    const newName = 'NewTestSymbol1';
-    const newDescription = 'New Test Symbol 1';
-    const newType = SymbolType.variable;
-    const newContent = '\\vdash';
+    const name = 'NewTestSymbol1';
+    const description = 'New Test Symbol 1';
+    const type = SymbolType.variable;
+    const content = '\\vdash';
     const user = validatePayload({
       id: userId,
       handle: 'Test1 User1',
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const symbol = validatePayload({
       id: symbolId,
       systemId,
@@ -171,19 +154,17 @@ describe('Update Symbol', (): void => {
     const updatedSymbol = validatePayload({
       id: symbolId,
       systemId,
-      name: newName,
-      description: newDescription,
-      type: newType,
-      content: newContent
+      name,
+      description,
+      type,
+      content
     }, SymbolEntity);
 
-    existsBy.mockResolvedValueOnce(false);
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(symbol);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(updatedSymbol);
 
     const token = app.get(JwtService).sign({
@@ -198,34 +179,41 @@ describe('Update Symbol', (): void => {
         systemId,
         symbolId,
         symbolPayload: {
-          newName,
-          newDescription,
-          newType,
-          newContent
+          name,
+          description,
+          type,
+          content
         }
       }
     });
 
     expect(existsBy).toHaveBeenCalledTimes(3);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
-      systemId,
-      name: newName
+      id: systemId,
+      ownerUserId: userId
     });
     expect(existsBy).toHaveBeenNthCalledWith(2, {
-      expression: {
-        canonical: ArrayContains([
-          symbolId
-        ])
-      }
+      systemId,
+      name
     });
     expect(existsBy).toHaveBeenNthCalledWith(3, {
-      assertion: {
-        canonical: ArrayContains([
-          symbolId
-        ])
+      id: symbolId,
+      expressionTokens: {
+        expression: [
+          {
+            statements: {
+              id: Not(IsNull())
+            }
+          },
+          {
+            hypotheses: {
+              id: Not(IsNull())
+            }
+          }
+        ]
       }
     });
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
@@ -233,17 +221,10 @@ describe('Update Symbol', (): void => {
       id: symbolId,
       systemId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: systemId
-    });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(getRepository).toHaveBeenCalledTimes(3);
+    expect(getRepository).toHaveBeenCalledTimes(2);
     expect(getRepository).toHaveBeenNthCalledWith(1, SymbolEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(2, HypothesisEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(3, StatementEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(2, SymbolEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, updatedSymbol);

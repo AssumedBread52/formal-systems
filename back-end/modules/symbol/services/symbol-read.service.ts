@@ -3,12 +3,13 @@ import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { InvalidSymbolTypeException } from '@/symbol/exceptions/invalid-symbol-type.exception';
 import { SymbolNotFoundException } from '@/symbol/exceptions/symbol-not-found.exception';
+import { SymbolTypeNotChangeableException } from '@/symbol/exceptions/symbol-type-not-changeable.exception';
 import { UniqueNameException } from '@/symbol/exceptions/unique-name.exception';
 import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.payload';
 import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, FindOptionsWhere, ILike, In, Repository } from 'typeorm';
+import { EntityManager, FindOptionsWhere, ILike, In, IsNull, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class SymbolReadService {
@@ -156,6 +157,40 @@ export class SymbolReadService {
       }
 
       throw new InternalServerErrorException('Verifying symbols failed');
+    }
+  }
+
+  public async verifySymbolTypeChangeable(entityManager: EntityManager, symbolId: string): Promise<void> {
+    try {
+      const symbolRepository = entityManager.getRepository(SymbolEntity);
+
+      const inUse = await symbolRepository.existsBy({
+        id: symbolId,
+        expressionTokens: {
+          expression: [
+            {
+              statements: {
+                id: Not(IsNull())
+              }
+            },
+            {
+              hypotheses: {
+                id: Not(IsNull())
+              }
+            }
+          ]
+        }
+      });
+
+      if (inUse) {
+        throw new SymbolTypeNotChangeableException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying symbol type is changeable failed');
     }
   }
 
