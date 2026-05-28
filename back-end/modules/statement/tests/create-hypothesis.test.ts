@@ -1,6 +1,5 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
-import { countByMock } from '@/common/tests/mocks/count-by.mock';
 import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
@@ -8,13 +7,10 @@ import { getRepositoryMock } from '@/common/tests/mocks/get-repository.mock';
 import { managerMock } from '@/common/tests/mocks/manager.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { transactionMock } from '@/common/tests/mocks/transaction.mock';
-import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
-import { StatementEntity } from '@/statement/entities/statement.entity';
 import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
-import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -22,10 +18,9 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
 import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
-import { ArrayContains, In } from 'typeorm';
+import { MoreThan } from 'typeorm';
 
 describe('Create Hypothesis', (): void => {
-  const countBy = countByMock();
   const existsBy = existsByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
@@ -51,27 +46,6 @@ describe('Create Hypothesis', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
-    const statement = validatePayload({
-      id: statementId,
-      systemId,
-      assertionExpressionId: expressionId,
-      name: 'TestStatement1',
-      description: 'Test Statement 1'
-    }, StatementEntity);
-    const expression = validatePayload({
-      id: expressionId,
-      systemId,
-      canonical: [
-        '7bde3313-f751-42f0-8d89-88c4ab394282',
-        '630e5c73-6231-4128-aae6-1d528f6b4de4'
-      ]
-    }, ExpressionEntity);
     const hypothesis = validatePayload({
       id: '72b9158b-bba0-46c7-b898-5e80a64d1ed4',
       systemId,
@@ -80,17 +54,15 @@ describe('Create Hypothesis', (): void => {
       type
     }, HypothesisEntity);
 
-    countBy.mockResolvedValueOnce(1);
-    countBy.mockResolvedValueOnce(1);
-    countBy.mockResolvedValueOnce(1);
-    countBy.mockResolvedValueOnce(1);
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(false);
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
-    findOneBy.mockResolvedValueOnce(statement);
-    findOneBy.mockResolvedValueOnce(expression);
     save.mockResolvedValueOnce(hypothesis);
 
     const token = app.get(JwtService).sign({
@@ -104,72 +76,65 @@ describe('Create Hypothesis', (): void => {
       type
     });
 
-    expect(countBy).toHaveBeenCalledTimes(4);
-    expect(countBy).toHaveBeenNthCalledWith(1, {
-      id: In([
-        '7bde3313-f751-42f0-8d89-88c4ab394282'
-      ]),
-      systemId
-    });
-    expect(countBy).toHaveBeenNthCalledWith(2, {
-      id: In([
-        '7bde3313-f751-42f0-8d89-88c4ab394282'
-      ]),
-      systemId,
-      type: SymbolType.constant
-    });
-    expect(countBy).toHaveBeenNthCalledWith(3, {
-      id: In([
-        '630e5c73-6231-4128-aae6-1d528f6b4de4'
-      ]),
-      systemId
-    });
-    expect(countBy).toHaveBeenNthCalledWith(4, {
-      id: In([
-        '630e5c73-6231-4128-aae6-1d528f6b4de4'
-      ]),
-      systemId,
-      type: SymbolType.variable
-    });
-    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenCalledTimes(8);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
-      systemId,
-      statementId,
-      expressionId
+      id: systemId,
+      ownerUserId: userId
     });
     expect(existsBy).toHaveBeenNthCalledWith(2, {
-      systemId,
-      statementId,
-      type: HypothesisType.type,
-      expression: {
-        canonical: ArrayContains([
-          '630e5c73-6231-4128-aae6-1d528f6b4de4'
-        ])
-      }
-    });
-    expect(findOneBy).toHaveBeenCalledTimes(5);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       id: statementId,
       systemId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(5, {
+    expect(existsBy).toHaveBeenNthCalledWith(3, {
       id: expressionId,
       systemId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(4, {
+      statementId,
+      expressionId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(5, {
+      expressionId,
+      position: 0,
+      symbol: {
+        type: SymbolType.constant
+      }
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(6, {
+      expressionId,
+      position: 1,
+      symbol: {
+        type: SymbolType.variable
+      }
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(7, {
+      expressionId,
+      position: MoreThan(1)
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(8, {
+      statementId,
+      type: HypothesisType.type,
+      expression: {
+        expressionTokens: {
+          position: 1,
+          symbol: {
+            expressionTokens: {
+              expressionId,
+              position: 1
+            }
+          }
+        }
+      }
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(getRepository).toHaveBeenCalledTimes(3);
     expect(getRepository).toHaveBeenNthCalledWith(1, HypothesisEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(2, SymbolEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(3, SymbolEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(2, ExpressionTokenEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(3, HypothesisEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
@@ -195,27 +160,6 @@ describe('Create Hypothesis', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
-    const statement = validatePayload({
-      id: statementId,
-      systemId,
-      assertionExpressionId: expressionId,
-      name: 'TestStatement1',
-      description: 'Test Statement 1'
-    }, StatementEntity);
-    const expression = validatePayload({
-      id: expressionId,
-      systemId,
-      canonical: [
-        '7bde3313-f751-42f0-8d89-88c4ab394282',
-        '630e5c73-6231-4128-aae6-1d528f6b4de4'
-      ]
-    }, ExpressionEntity);
     const hypothesis = validatePayload({
       id: '72b9158b-bba0-46c7-b898-5e80a64d1ed4',
       systemId,
@@ -224,17 +168,15 @@ describe('Create Hypothesis', (): void => {
       type
     }, HypothesisEntity);
 
-    countBy.mockResolvedValueOnce(1);
-    countBy.mockResolvedValueOnce(1);
-    countBy.mockResolvedValueOnce(1);
-    countBy.mockResolvedValueOnce(1);
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(false);
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
-    findOneBy.mockResolvedValueOnce(statement);
-    findOneBy.mockResolvedValueOnce(expression);
     save.mockResolvedValueOnce(hypothesis);
 
     const token = app.get(JwtService).sign({
@@ -255,72 +197,65 @@ describe('Create Hypothesis', (): void => {
       }
     });
 
-    expect(countBy).toHaveBeenCalledTimes(4);
-    expect(countBy).toHaveBeenNthCalledWith(1, {
-      id: In([
-        '7bde3313-f751-42f0-8d89-88c4ab394282'
-      ]),
-      systemId
-    });
-    expect(countBy).toHaveBeenNthCalledWith(2, {
-      id: In([
-        '7bde3313-f751-42f0-8d89-88c4ab394282'
-      ]),
-      systemId,
-      type: SymbolType.constant
-    });
-    expect(countBy).toHaveBeenNthCalledWith(3, {
-      id: In([
-        '630e5c73-6231-4128-aae6-1d528f6b4de4'
-      ]),
-      systemId
-    });
-    expect(countBy).toHaveBeenNthCalledWith(4, {
-      id: In([
-        '630e5c73-6231-4128-aae6-1d528f6b4de4'
-      ]),
-      systemId,
-      type: SymbolType.variable
-    });
-    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenCalledTimes(8);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
-      systemId,
-      statementId,
-      expressionId
+      id: systemId,
+      ownerUserId: userId
     });
     expect(existsBy).toHaveBeenNthCalledWith(2, {
-      systemId,
-      statementId,
-      type: HypothesisType.type,
-      expression: {
-        canonical: ArrayContains([
-          '630e5c73-6231-4128-aae6-1d528f6b4de4'
-        ])
-      }
-    });
-    expect(findOneBy).toHaveBeenCalledTimes(5);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
       id: statementId,
       systemId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(5, {
+    expect(existsBy).toHaveBeenNthCalledWith(3, {
       id: expressionId,
       systemId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(4, {
+      statementId,
+      expressionId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(5, {
+      expressionId,
+      position: 0,
+      symbol: {
+        type: SymbolType.constant
+      }
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(6, {
+      expressionId,
+      position: 1,
+      symbol: {
+        type: SymbolType.variable
+      }
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(7, {
+      expressionId,
+      position: MoreThan(1)
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(8, {
+      statementId,
+      type: HypothesisType.type,
+      expression: {
+        expressionTokens: {
+          position: 1,
+          symbol: {
+            expressionTokens: {
+              expressionId,
+              position: 1
+            }
+          }
+        }
+      }
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(1);
+    expect(findOneBy).toHaveBeenNthCalledWith(1, {
+      id: userId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(getRepository).toHaveBeenCalledTimes(3);
     expect(getRepository).toHaveBeenNthCalledWith(1, HypothesisEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(2, SymbolEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(3, SymbolEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(2, ExpressionTokenEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(3, HypothesisEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {

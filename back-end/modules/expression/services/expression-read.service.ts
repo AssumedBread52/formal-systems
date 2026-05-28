@@ -1,13 +1,16 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
+import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { ExpressionInUseException } from '@/expression/exceptions/expression-in-use.exception';
 import { ExpressionNotFoundException } from '@/expression/exceptions/expression-not-found.exception';
+import { InvalidExpressionTypeException } from '@/expression/exceptions/invalid-expression-type.exception';
 import { UniqueSymbolSequenceException } from '@/expression/exceptions/unique-symbol-sequence.exception';
 import { PaginatedExpressionsPayload } from '@/expression/payloads/paginated-expressions.payload';
 import { SearchExpressionsPayload } from '@/expression/payloads/search-expressions.payload';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArrayContains, FindOptionsWhere, IsNull, Not, Repository } from 'typeorm';
+import { ArrayContains, EntityManager, FindOptionsWhere, IsNull, MoreThan, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class ExpressionReadService {
@@ -62,6 +65,25 @@ export class ExpressionReadService {
     }
   }
 
+  public async verifyExists(systemId: string, expressionId: string): Promise<void> {
+    try {
+      const exists = await this.repository.existsBy({
+        id: expressionId,
+        systemId
+      });
+
+      if (!exists) {
+        throw new ExpressionNotFoundException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying expression existence failed');
+    }
+  }
+
   public async verifyExpressionNotInUse(expressionId: string): Promise<void> {
     try {
       const inUse = await this.repository.existsBy([
@@ -88,6 +110,55 @@ export class ExpressionReadService {
       }
 
       throw new InternalServerErrorException('Verifying expression not in use failed');
+    }
+  }
+
+  public async verifyExpressionType(entityManager: EntityManager, expressionId: string, type: 'constant_prefixed' | 'constant_variable_pair'): Promise<void> {
+    try {
+      const expressionTokenRepository = entityManager.getRepository(ExpressionTokenEntity);
+
+      const isConstantPrefixed = await expressionTokenRepository.existsBy({
+        expressionId,
+        position: 0,
+        symbol: {
+          type: SymbolType.constant
+        }
+      });
+
+      if (!isConstantPrefixed) {
+        throw new InvalidExpressionTypeException();
+      }
+
+      if ('constant_prefixed' === type) {
+        return;
+      }
+
+      const isPairedWithVariable = await expressionTokenRepository.existsBy({
+        expressionId,
+        position: 1,
+        symbol: {
+          type: SymbolType.variable
+        }
+      });
+
+      if (!isPairedWithVariable) {
+        throw new InvalidExpressionTypeException();
+      }
+
+      const exceedsMaximumLength = await expressionTokenRepository.existsBy({
+        expressionId,
+        position: MoreThan(1)
+      });
+
+      if (exceedsMaximumLength) {
+        throw new InvalidExpressionTypeException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying expression type failed');
     }
   }
 

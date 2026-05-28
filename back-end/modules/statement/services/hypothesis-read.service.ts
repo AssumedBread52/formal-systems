@@ -1,10 +1,14 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
+import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
 import { HypothesisNotFoundException } from '@/statement/exceptions/hypothesis-not-found.exception';
+import { UniqueHypothesisExpressionException } from '@/statement/exceptions/unique-hypothesis-expression.exception';
+import { UniqueVariableSymbolTypeException } from '@/statement/exceptions/unique-variable-symbol-type.exception';
 import { VariableSymbolNotTypedException } from '@/statement/exceptions/variable-symbol-not-typed.exception';
 import { PaginatedHypothesesPayload } from '@/statement/payloads/paginated-hypotheses.payload';
 import { SearchHypothesesPayload } from '@/statement/payloads/search-hypotheses.payload';
+import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, FindOptionsWhere, In, Repository } from 'typeorm';
@@ -63,6 +67,45 @@ export class HypothesisReadService {
     }
   }
 
+  public async verifyAllSymbolsInExpressionTyped(entityManager: EntityManager, statementId: string, expressionId: string): Promise<void> {
+    try {
+      const expressionTokenRepository = entityManager.getRepository(ExpressionTokenEntity);
+
+      const variableSymbolCount = await expressionTokenRepository.countBy({
+        expressionId,
+        symbol: {
+          type: SymbolType.variable
+        }
+      });
+
+      const relevantHypothesesCount = await expressionTokenRepository.countBy({
+        expressionId,
+        symbol: {
+          type: SymbolType.variable,
+          expressionTokens: {
+            position: 1,
+            expression: {
+              hypotheses: {
+                statementId,
+                type: HypothesisType.type
+              }
+            }
+          }
+        }
+      });
+
+      if (variableSymbolCount !== relevantHypothesesCount) {
+        throw new VariableSymbolNotTypedException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying all symbols in expression are typed failed');
+    }
+  }
+
   public async verifyAllSymbolsTyped(entityManager: EntityManager, systemId: string, statementId: string, variableSymbolIds: string[]): Promise<void> {
     try {
       const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
@@ -96,6 +139,57 @@ export class HypothesisReadService {
       }
 
       throw new InternalServerErrorException('Verifying symbols are typed failed');
+    }
+  }
+
+  public async verifyUniqueHypothesisExpression(statementId: string, expressionId: string): Promise<void> {
+    try {
+      const conflict = await this.repository.existsBy({
+        statementId,
+        expressionId
+      });
+
+      if (conflict) {
+        throw new UniqueHypothesisExpressionException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying unique expression failed');
+    }
+  }
+
+  public async verifyUniqueVariableSymbolType(entityManager: EntityManager, statementId: string, expressionId: string): Promise<void> {
+    try {
+      const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
+
+      const conflict = await hypothesisRepository.existsBy({
+        statementId,
+        type: HypothesisType.type,
+        expression: {
+          expressionTokens: {
+            position: 1,
+            symbol: {
+              expressionTokens: {
+                expressionId,
+                position: 1
+              }
+            }
+          }
+        }
+      });
+
+      if (conflict) {
+        throw new UniqueVariableSymbolTypeException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying unique variable symbol type failed');
     }
   }
 };
