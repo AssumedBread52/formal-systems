@@ -10,5 +10,5 @@ export class NewExpressionPayload {
   @IsUUID('all', {
     each: true
   })
-  public readonly canonical: string[] = [];
+  public readonly canonical!: string[];
 };
