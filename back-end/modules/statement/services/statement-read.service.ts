@@ -68,4 +68,23 @@ export class StatementReadService {
       throw new InternalServerErrorException('Reading statement failed');
     }
   }
+
+  public async verifyExists(systemId: string, statementId: string): Promise<void> {
+    try {
+      const exists = await this.repository.existsBy({
+        id: statementId,
+        systemId
+      });
+
+      if (!exists) {
+        throw new StatementNotFoundException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying statement existence failed');
+    }
+  }
 };

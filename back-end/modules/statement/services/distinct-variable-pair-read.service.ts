@@ -1,6 +1,7 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
 import { DistinctVariablePairNotFoundException } from '@/statement/exceptions/distinct-variable-pair-not-found.exception';
+import { UniqueVariablePairException } from '@/statement/exceptions/unique-variable-pair.exception';
 import { PaginatedDistinctVariablePairsPayload } from '@/statement/payloads/paginated-distinct-variable-pairs.payload';
 import { SearchDistinctVariablePairsPayload } from '@/statement/payloads/search-distinct-variable-pairs.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -92,6 +93,28 @@ export class DistinctVariablePairReadService {
       }
 
       throw new InternalServerErrorException('Reading distinct variable pair failed');
+    }
+  }
+
+  public async verifyUniqueVariablePair(statementId: string, unorderedVariableSymbol1Id: string, unorderedVariableSymbol2Id: string): Promise<void> {
+    try {
+      const [variableSymbol1Id, variableSymbol2Id] = this.orderIds(unorderedVariableSymbol1Id, unorderedVariableSymbol2Id);
+
+      const conflict = await this.repository.existsBy({
+        statementId,
+        variableSymbol1Id,
+        variableSymbol2Id
+      });
+
+      if (conflict) {
+        throw new UniqueVariablePairException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying unique variable pair failed');
     }
   }
 

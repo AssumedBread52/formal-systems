@@ -10,11 +10,9 @@ import { saveMock } from '@/common/tests/mocks/save.mock';
 import { transactionMock } from '@/common/tests/mocks/transaction.mock';
 import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
-import { StatementEntity } from '@/statement/entities/statement.entity';
 import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
-import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -51,19 +49,6 @@ describe('Create Distinct Variable Pair', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
-    const statement = validatePayload({
-      id: statementId,
-      systemId,
-      assertionExpressionId: 'cfe59823-eb13-4faf-a90b-c5e82022821f',
-      name: 'TestStatement1',
-      description: 'Test Statement 1'
-    }, StatementEntity);
     const distinctVariablePair = validatePayload({
       systemId,
       statementId,
@@ -74,11 +59,10 @@ describe('Create Distinct Variable Pair', (): void => {
     countBy.mockResolvedValueOnce(2);
     countBy.mockResolvedValueOnce(2);
     countBy.mockResolvedValueOnce(2);
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
-    findOneBy.mockResolvedValueOnce(statement);
     save.mockResolvedValueOnce(distinctVariablePair);
 
     const token = app.get(JwtService).sign({
@@ -122,26 +106,23 @@ describe('Create Distinct Variable Pair', (): void => {
         }
       }
     });
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(3);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
-      systemId,
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
+      id: statementId,
+      systemId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(3, {
       statementId,
       variableSymbol1Id,
       variableSymbol2Id
     });
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: statementId,
-      systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(getRepository).toHaveBeenCalledTimes(3);
@@ -173,19 +154,6 @@ describe('Create Distinct Variable Pair', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
-    const statement = validatePayload({
-      id: statementId,
-      systemId,
-      assertionExpressionId: 'cfe59823-eb13-4faf-a90b-c5e82022821f',
-      name: 'TestStatement1',
-      description: 'Test Statement 1'
-    }, StatementEntity);
     const distinctVariablePair = validatePayload({
       systemId,
       statementId,
@@ -196,11 +164,10 @@ describe('Create Distinct Variable Pair', (): void => {
     countBy.mockResolvedValueOnce(2);
     countBy.mockResolvedValueOnce(2);
     countBy.mockResolvedValueOnce(2);
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
-    findOneBy.mockResolvedValueOnce(statement);
     save.mockResolvedValueOnce(distinctVariablePair);
 
     const token = app.get(JwtService).sign({
@@ -251,26 +218,23 @@ describe('Create Distinct Variable Pair', (): void => {
         }
       }
     });
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(3);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
-      systemId,
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
+      id: statementId,
+      systemId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(3, {
       statementId,
       variableSymbol1Id,
       variableSymbol2Id
     });
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: statementId,
-      systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(getRepository).toHaveBeenCalledTimes(3);

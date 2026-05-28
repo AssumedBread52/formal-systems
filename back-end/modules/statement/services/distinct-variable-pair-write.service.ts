@@ -3,7 +3,6 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
 import { DistinctVariablePairNotFoundException } from '@/statement/exceptions/distinct-variable-pair-not-found.exception';
 import { NonDistinctVariableSymbolIdsException } from '@/statement/exceptions/non-distinct-variable-symbol-ids.exception';
-import { UniqueVariablePairException } from '@/statement/exceptions/unique-variable-pair.exception';
 import { NewDistinctVariablePairPayload } from '@/statement/payloads/new-distinct-variable-pair.payload';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
@@ -12,12 +11,13 @@ import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
+import { DistinctVariablePairReadService } from './distinct-variable-pair-read.service';
 import { HypothesisReadService } from './hypothesis-read.service';
 import { StatementReadService } from './statement-read.service';
 
 @Injectable()
 export class DistinctVariablePairWriteService {
-  public constructor(private readonly hypothesisReadService: HypothesisReadService, private readonly statementReadService: StatementReadService, private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(DistinctVariablePairEntity) private readonly repository: Repository<DistinctVariablePairEntity>) {
+  public constructor(private readonly distinctVariablePairReadService: DistinctVariablePairReadService, private readonly hypothesisReadService: HypothesisReadService, private readonly statementReadService: StatementReadService, private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(DistinctVariablePairEntity) private readonly repository: Repository<DistinctVariablePairEntity>) {
   }
 
   public async create(userId: string, systemId: string, statementId: string, newDistinctVariablePairPayload: NewDistinctVariablePairPayload): Promise<DistinctVariablePairEntity> {
@@ -28,23 +28,19 @@ export class DistinctVariablePairWriteService {
         throw new NonDistinctVariableSymbolIdsException();
       }
 
-      const user = await this.userReadService.selectById(userId);
+      await this.systemReadService.verifyOwnership(userId, systemId);
 
-      const system = await this.systemReadService.selectById(systemId);
+      await this.symbolReadService.verifyAllExist(systemId, [
+        validatedNewDistinctVariablePairPayload.variableSymbol1Id,
+        validatedNewDistinctVariablePairPayload.variableSymbol2Id
+      ]);
 
-      if (user.id !== system.ownerUserId) {
-        throw new OwnershipException();
-      }
+      await this.statementReadService.verifyExists(systemId, statementId);
 
-      const statement = await this.statementReadService.selectById(systemId, statementId);
+      await this.distinctVariablePairReadService.verifyUniqueVariablePair(statementId, validatedNewDistinctVariablePairPayload.variableSymbol1Id, validatedNewDistinctVariablePairPayload.variableSymbol2Id);
 
       return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<DistinctVariablePairEntity> => {
         const distinctVariablePairRepository = entityManager.getRepository(DistinctVariablePairEntity);
-
-        await this.symbolReadService.verifyAllExist(systemId, [
-          validatedNewDistinctVariablePairPayload.variableSymbol1Id,
-          validatedNewDistinctVariablePairPayload.variableSymbol2Id
-        ]);
 
         await this.symbolReadService.verifySymbolType(entityManager, systemId, [
           validatedNewDistinctVariablePairPayload.variableSymbol1Id,
@@ -58,21 +54,10 @@ export class DistinctVariablePairWriteService {
 
         const [variableSymbol1Id, variableSymbol2Id] = this.orderIds(validatedNewDistinctVariablePairPayload.variableSymbol1Id, validatedNewDistinctVariablePairPayload.variableSymbol2Id);
 
-        const pairConflict = await distinctVariablePairRepository.existsBy({
-          systemId,
-          statementId,
-          variableSymbol1Id,
-          variableSymbol2Id
-        });
-
-        if (pairConflict) {
-          throw new UniqueVariablePairException();
-        }
-
         const distinctVariablePair = new DistinctVariablePairEntity();
 
-        distinctVariablePair.systemId = system.id;
-        distinctVariablePair.statementId = statement.id;
+        distinctVariablePair.systemId = systemId;
+        distinctVariablePair.statementId = statementId;
         distinctVariablePair.variableSymbol1Id = variableSymbol1Id;
         distinctVariablePair.variableSymbol2Id = variableSymbol2Id;
 
