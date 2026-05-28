@@ -285,8 +285,8 @@ input NewDistinctVariablePairPayload {
 }
 
 input NewHypothesisPayload {
-  expressionId: String! = ""
-  type: HypothesisType! = logic
+  expressionId: String!
+  type: HypothesisType!
 }
 
 input NewStatementPayload {
