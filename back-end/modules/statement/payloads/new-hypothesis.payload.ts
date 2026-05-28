@@ -8,10 +8,10 @@ export class NewHypothesisPayload {
     return String;
   })
   @IsUUID()
-  public readonly expressionId: string = '';
+  public readonly expressionId!: string;
   @Field((): typeof HypothesisType => {
     return HypothesisType;
   })
   @IsEnum(HypothesisType)
-  public readonly type: HypothesisType = HypothesisType.logic;
+  public readonly type!: HypothesisType;
 };
