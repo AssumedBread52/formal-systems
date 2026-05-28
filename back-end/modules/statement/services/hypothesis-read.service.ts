@@ -3,6 +3,7 @@ import { ExpressionTokenEntity } from '@/expression/entities/expression-token.en
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
 import { HypothesisNotFoundException } from '@/statement/exceptions/hypothesis-not-found.exception';
+import { TypeHypothesisInUseException } from '@/statement/exceptions/type-hypothesis-in-use.exception';
 import { UniqueHypothesisExpressionException } from '@/statement/exceptions/unique-hypothesis-expression.exception';
 import { UniqueVariableSymbolTypeException } from '@/statement/exceptions/unique-variable-symbol-type.exception';
 import { VariableSymbolNotTypedException } from '@/statement/exceptions/variable-symbol-not-typed.exception';
@@ -139,6 +140,61 @@ export class HypothesisReadService {
       }
 
       throw new InternalServerErrorException('Verifying symbols are typed failed');
+    }
+  }
+
+  public async verifyTypeHypothesisNotInUse(entityManager: EntityManager, statementId: string, hypothesisId: string): Promise<void> {
+    try {
+      const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
+
+      const inUse = await hypothesisRepository.existsBy({
+        id: hypothesisId,
+        type: HypothesisType.type,
+        expression: {
+          expressionTokens: {
+            position: 1,
+            symbol: [
+              {
+                expressionTokens: {
+                  expression: [
+                    {
+                      hypotheses: {
+                        statementId,
+                        type: HypothesisType.logic
+                      }
+                    },
+                    {
+                      statements: {
+                        id: statementId
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                distinctVariable1Pairs: {
+                  statementId
+                }
+              },
+              {
+                distinctVariable2Pairs: {
+                  statementId
+                }
+              }
+            ]
+          }
+        }
+      });
+
+      if (inUse) {
+        throw new TypeHypothesisInUseException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying type hypothesis not in use failed');
     }
   }
 

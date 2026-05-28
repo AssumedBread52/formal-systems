@@ -1,14 +1,10 @@
-import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
-import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionReadService } from '@/expression/services/expression-read.service';
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
 import { HypothesisNotFoundException } from '@/statement/exceptions/hypothesis-not-found.exception';
-import { TypeHypothesisInUseException } from '@/statement/exceptions/type-hypothesis-in-use.exception';
 import { NewHypothesisPayload } from '@/statement/payloads/new-hypothesis.payload';
 import { SystemReadService } from '@/system/services/system-read.service';
-import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
@@ -17,7 +13,7 @@ import { StatementReadService } from './statement-read.service';
 
 @Injectable()
 export class HypothesisWriteService {
-  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly hypothesisReadService: HypothesisReadService, private readonly statementReadService: StatementReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(HypothesisEntity) private readonly repository: Repository<HypothesisEntity>) {
+  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly hypothesisReadService: HypothesisReadService, private readonly statementReadService: StatementReadService, private readonly systemReadService: SystemReadService, @InjectRepository(HypothesisEntity) private readonly repository: Repository<HypothesisEntity>) {
   }
 
   public async create(userId: string, systemId: string, statementId: string, newHypothesisPayload: NewHypothesisPayload): Promise<HypothesisEntity> {
@@ -78,13 +74,7 @@ export class HypothesisWriteService {
         throw new HypothesisNotFoundException();
       }
 
-      const user = await this.userReadService.selectById(userId);
-
-      const system = await this.systemReadService.selectById(systemId);
-
-      if (user.id !== system.ownerUserId) {
-        throw new OwnershipException();
-      }
+      await this.systemReadService.verifyOwnership(userId, systemId);
 
       if (HypothesisType.type !== hypothesis.type) {
         const removedHypothesis = await this.repository.remove(hypothesis);
@@ -95,51 +85,9 @@ export class HypothesisWriteService {
       }
 
       const removedHypothesis = await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<HypothesisEntity> => {
-        const expressionTokenRepository = entityManager.getRepository(ExpressionTokenEntity);
         const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
 
-        const inUse = await expressionTokenRepository.existsBy({
-          expressionId: hypothesis.expressionId,
-          systemId: hypothesis.systemId,
-          position: 1,
-          symbol: [
-            {
-              expressionTokens: {
-                expression: [
-                  {
-                    hypotheses: {
-                      systemId: hypothesis.systemId,
-                      statementId: hypothesis.statementId,
-                      type: HypothesisType.logic
-                    }
-                  },
-                  {
-                    statements: {
-                      id: hypothesis.statementId,
-                      systemId: hypothesis.systemId
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              distinctVariable1Pairs: {
-                systemId: hypothesis.systemId,
-                statementId: hypothesis.statementId
-              }
-            },
-            {
-              distinctVariable2Pairs: {
-                systemId: hypothesis.systemId,
-                statementId: hypothesis.statementId
-              }
-            }
-          ]
-        });
-
-        if (inUse) {
-          throw new TypeHypothesisInUseException();
-        }
+        await this.hypothesisReadService.verifyTypeHypothesisNotInUse(entityManager, statementId, hypothesisId);
 
         return await hypothesisRepository.remove(hypothesis);
       });

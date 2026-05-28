@@ -7,10 +7,8 @@ import { getRepositoryMock } from '@/common/tests/mocks/get-repository.mock';
 import { managerMock } from '@/common/tests/mocks/manager.mock';
 import { removeMock } from '@/common/tests/mocks/remove.mock';
 import { transactionMock } from '@/common/tests/mocks/transaction.mock';
-import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
-import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -36,7 +34,6 @@ describe('Delete Hypothesis', (): void => {
   it('DELETE /system/:systemId/statement/:statementId/hypothesis/:hypothesisId', async (): Promise<void> => {
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
-    const expressionId = 'cfe59823-eb13-4faf-a90b-c5e82022821f';
     const statementId = '9df17e91-7e96-40b6-a455-c57148d7c92b';
     const hypothesisId = '72b9158b-bba0-46c7-b898-5e80a64d1ed4';
     const user = validatePayload({
@@ -45,12 +42,6 @@ describe('Delete Hypothesis', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const hypothesis = validatePayload({
       id: hypothesisId,
       systemId,
@@ -59,11 +50,10 @@ describe('Delete Hypothesis', (): void => {
       type: HypothesisType.type
     }, HypothesisEntity);
 
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(hypothesis);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce(hypothesis);
 
     const token = app.get(JwtService).sign({
@@ -74,46 +64,50 @@ describe('Delete Hypothesis', (): void => {
       `token=${token}`
     ]);
 
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
-      expressionId,
-      systemId,
-      position: 1,
-      symbol: [
-        {
-          expressionTokens: {
-            expression: [
-              {
-                hypotheses: {
-                  systemId,
-                  statementId,
-                  type: HypothesisType.logic
-                }
-              },
-              {
-                statements: {
-                  id: statementId,
-                  systemId
-                }
-              }
-            ]
-          }
-        },
-        {
-          distinctVariable1Pairs: {
-            systemId,
-            statementId
-          }
-        },
-        {
-          distinctVariable2Pairs: {
-            systemId,
-            statementId
-          }
-        }
-      ]
+      id: systemId,
+      ownerUserId: userId
     });
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
+      id: hypothesisId,
+      type: HypothesisType.type,
+      expression: {
+        expressionTokens: {
+          position: 1,
+          symbol: [
+            {
+              expressionTokens: {
+                expression: [
+                  {
+                    hypotheses: {
+                      statementId,
+                      type: HypothesisType.logic
+                    }
+                  },
+                  {
+                    statements: {
+                      id: statementId
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              distinctVariable1Pairs: {
+                statementId
+              }
+            },
+            {
+              distinctVariable2Pairs: {
+                statementId
+              }
+            }
+          ]
+        }
+      }
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
@@ -122,15 +116,9 @@ describe('Delete Hypothesis', (): void => {
       systemId,
       statementId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: systemId
-    });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(getRepository).toHaveBeenCalledTimes(2);
-    expect(getRepository).toHaveBeenNthCalledWith(1, ExpressionTokenEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(1, HypothesisEntity);
     expect(getRepository).toHaveBeenNthCalledWith(2, HypothesisEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(remove).toHaveBeenCalledTimes(1);
@@ -143,7 +131,6 @@ describe('Delete Hypothesis', (): void => {
   it('POST /graphql mutation deleteHypothesis', async (): Promise<void> => {
     const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
     const systemId = '1222051d-2638-424f-a193-68b26615345a';
-    const expressionId = 'cfe59823-eb13-4faf-a90b-c5e82022821f';
     const statementId = '9df17e91-7e96-40b6-a455-c57148d7c92b';
     const hypothesisId = '72b9158b-bba0-46c7-b898-5e80a64d1ed4';
     const user = validatePayload({
@@ -152,12 +139,6 @@ describe('Delete Hypothesis', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const hypothesis = validatePayload({
       id: hypothesisId,
       systemId,
@@ -166,11 +147,10 @@ describe('Delete Hypothesis', (): void => {
       type: HypothesisType.type
     }, HypothesisEntity);
 
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(hypothesis);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce(hypothesis);
 
     const token = app.get(JwtService).sign({
@@ -188,46 +168,50 @@ describe('Delete Hypothesis', (): void => {
       }
     });
 
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
-      expressionId,
-      systemId,
-      position: 1,
-      symbol: [
-        {
-          expressionTokens: {
-            expression: [
-              {
-                hypotheses: {
-                  systemId,
-                  statementId,
-                  type: HypothesisType.logic
-                }
-              },
-              {
-                statements: {
-                  id: statementId,
-                  systemId
-                }
-              }
-            ]
-          }
-        },
-        {
-          distinctVariable1Pairs: {
-            systemId,
-            statementId
-          }
-        },
-        {
-          distinctVariable2Pairs: {
-            systemId,
-            statementId
-          }
-        }
-      ]
+      id: systemId,
+      ownerUserId: userId
     });
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
+      id: hypothesisId,
+      type: HypothesisType.type,
+      expression: {
+        expressionTokens: {
+          position: 1,
+          symbol: [
+            {
+              expressionTokens: {
+                expression: [
+                  {
+                    hypotheses: {
+                      statementId,
+                      type: HypothesisType.logic
+                    }
+                  },
+                  {
+                    statements: {
+                      id: statementId
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              distinctVariable1Pairs: {
+                statementId
+              }
+            },
+            {
+              distinctVariable2Pairs: {
+                statementId
+              }
+            }
+          ]
+        }
+      }
+    });
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
@@ -236,15 +220,9 @@ describe('Delete Hypothesis', (): void => {
       systemId,
       statementId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: systemId
-    });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(getRepository).toHaveBeenCalledTimes(2);
-    expect(getRepository).toHaveBeenNthCalledWith(1, ExpressionTokenEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(1, HypothesisEntity);
     expect(getRepository).toHaveBeenNthCalledWith(2, HypothesisEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(remove).toHaveBeenCalledTimes(1);
