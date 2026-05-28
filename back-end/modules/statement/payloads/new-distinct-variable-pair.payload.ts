@@ -7,10 +7,10 @@ export class NewDistinctVariablePairPayload {
     return String;
   })
   @IsUUID()
-  public readonly variableSymbol1Id: string = '';
+  public readonly variableSymbol1Id!: string;
   @Field((): typeof String => {
     return String;
   })
   @IsUUID()
-  public readonly variableSymbol2Id: string = '';
+  public readonly variableSymbol2Id!: string;
 };
