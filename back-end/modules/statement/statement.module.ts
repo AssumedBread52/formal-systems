@@ -1,7 +1,6 @@
 import { ExpressionModule } from '@/expression/expression.module';
 import { SymbolModule } from '@/symbol/symbol.module';
 import { SystemModule } from '@/system/system.module';
-import { UserModule } from '@/user/user.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DistinctVariablePairController } from './controllers/distinct-variable-pair.controller';
@@ -33,9 +32,6 @@ import { StatementWriteService } from './services/statement-write.service';
     }),
     forwardRef((): typeof SystemModule => {
       return SystemModule;
-    }),
-    forwardRef((): typeof UserModule => {
-      return UserModule;
     }),
     SymbolModule,
     TypeOrmModule.forFeature([

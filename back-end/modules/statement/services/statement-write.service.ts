@@ -1,4 +1,3 @@
-import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { ExpressionNotFoundException } from '@/expression/exceptions/expression-not-found.exception';
@@ -12,34 +11,28 @@ import { StatementNotFoundException } from '@/statement/exceptions/statement-not
 import { UniqueNameException } from '@/statement/exceptions/unique-name.exception';
 import { UniqueVariableSymbolTypeException } from '@/statement/exceptions/unique-variable-symbol-type.exception';
 import { VariableSymbolNotTypedException } from '@/statement/exceptions/variable-symbol-not-typed.exception';
+import { EditStatementPayload } from '@/statement/payloads/edit-statement.payload';
 import { NewStatementPayload } from '@/statement/payloads/new-statement.payload';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SystemReadService } from '@/system/services/system-read.service';
-import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Raw, Repository } from 'typeorm';
 
 @Injectable()
 export class StatementWriteService {
-  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(StatementEntity) private readonly repository: Repository<StatementEntity>) {
+  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, @InjectRepository(StatementEntity) private readonly repository: Repository<StatementEntity>) {
   }
 
   public async create(userId: string, systemId: string, newStatementPayload: NewStatementPayload): Promise<StatementEntity> {
     try {
       const validatedNewStatementPayload = validatePayload(newStatementPayload, NewStatementPayload);
 
-      const user = await this.userReadService.selectById(userId);
-
-      const system = await this.systemReadService.selectById(systemId);
-
-      if (user.id !== system.ownerUserId) {
-        throw new OwnershipException();
-      }
+      await this.systemReadService.verifyOwnership(userId, systemId);
 
       const nameConflict = await this.repository.existsBy({
-        systemId: system.id,
+        systemId,
         name: validatedNewStatementPayload.name
       });
 
@@ -47,7 +40,7 @@ export class StatementWriteService {
         throw new UniqueNameException();
       }
 
-      const assertion = await this.expressionReadService.selectById(system.id, validatedNewStatementPayload.assertionExpressionId);
+      const assertion = await this.expressionReadService.selectById(systemId, validatedNewStatementPayload.assertionExpressionId);
 
       if (0 === assertion.canonical.length) {
         throw new InvalidExpressionLengthException();
@@ -58,13 +51,17 @@ export class StatementWriteService {
         const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
         const statementRepository = entityManager.getRepository(StatementEntity);
 
-        await this.symbolReadService.verifyAllExist(system.id, [assertion.canonical[0]!]);
+        await this.symbolReadService.verifyAllExist(systemId, [
+          assertion.canonical[0]!
+        ]);
 
-        await this.symbolReadService.verifySymbolType(entityManager, system.id, [assertion.canonical[0]!], SymbolType.constant);
+        await this.symbolReadService.verifySymbolType(entityManager, systemId, [
+          assertion.canonical[0]!
+        ], SymbolType.constant);
 
         const typeExpressions = await expressionRepository.findBy({
           id: In(validatedNewStatementPayload.typeHypothesesExpressionIds),
-          systemId: system.id,
+          systemId,
           canonical: Raw((columnAlias: string): string => {
             return `cardinality(${columnAlias}) = 2`;
           })
@@ -74,19 +71,19 @@ export class StatementWriteService {
           throw new ExpressionNotFoundException();
         }
 
-        await this.symbolReadService.verifyAllExist(system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
+        await this.symbolReadService.verifyAllExist(systemId, typeExpressions.map((typeExpression: ExpressionEntity): string => {
           return typeExpression.canonical[0]!;
         }));
 
-        await this.symbolReadService.verifySymbolType(entityManager, system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
+        await this.symbolReadService.verifySymbolType(entityManager, systemId, typeExpressions.map((typeExpression: ExpressionEntity): string => {
           return typeExpression.canonical[0]!;
         }), SymbolType.constant);
 
-        await this.symbolReadService.verifyAllExist(system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
+        await this.symbolReadService.verifyAllExist(systemId, typeExpressions.map((typeExpression: ExpressionEntity): string => {
           return typeExpression.canonical[1]!;
         }));
 
-        await this.symbolReadService.verifySymbolType(entityManager, system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
+        await this.symbolReadService.verifySymbolType(entityManager, systemId, typeExpressions.map((typeExpression: ExpressionEntity): string => {
           return typeExpression.canonical[1]!;
         }), SymbolType.variable);
 
@@ -110,7 +107,7 @@ export class StatementWriteService {
 
         const statement = new StatementEntity();
 
-        statement.systemId = system.id;
+        statement.systemId = systemId;
         statement.name = validatedNewStatementPayload.name;
         statement.description = validatedNewStatementPayload.description;
         statement.assertionExpressionId = validatedNewStatementPayload.assertionExpressionId;
@@ -122,7 +119,7 @@ export class StatementWriteService {
 
           hypothesis.expressionId = typeHypothesisExpressionId;
           hypothesis.statementId = savedStatement.id;
-          hypothesis.systemId = system.id;
+          hypothesis.systemId = systemId;
           hypothesis.type = HypothesisType.type;
 
           return hypothesis;
@@ -150,13 +147,7 @@ export class StatementWriteService {
         throw new StatementNotFoundException();
       }
 
-      const user = await this.userReadService.selectById(userId);
-
-      const system = await this.systemReadService.selectById(systemId);
-
-      if (user.id !== system.ownerUserId) {
-        throw new OwnershipException();
-      }
+      await this.systemReadService.verifyOwnership(userId, systemId);
 
       const removedStatement = await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<StatementEntity> => {
         const statementRepository = entityManager.getRepository(StatementEntity);
@@ -189,6 +180,34 @@ export class StatementWriteService {
       }
 
       throw new InternalServerErrorException('Deleting statement failed');
+    }
+  }
+
+  public async update(userId: string, systemId: string, statementId: string, editStatementPayload: EditStatementPayload): Promise<StatementEntity> {
+    try {
+      const validatedEditStatementPayload = validatePayload(editStatementPayload, EditStatementPayload);
+
+      const statement = await this.repository.findOneBy({
+        id: statementId,
+        systemId
+      });
+
+      if (!statement) {
+        throw new StatementNotFoundException();
+      }
+
+      await this.systemReadService.verifyOwnership(userId, systemId);
+
+      // everything in the try block below this line still needs work
+      console.log(validatedEditStatementPayload);
+
+      return new StatementEntity();
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Updating statement failed');
     }
   }
 };

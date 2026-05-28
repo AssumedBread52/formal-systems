@@ -1,6 +1,7 @@
 import { SessionUser } from '@/auth/decorators/session-user.decorator';
 import { JwtGuard } from '@/auth/guards/jwt.guard';
 import { StatementEntity } from '@/statement/entities/statement.entity';
+import { EditStatementPayload } from '@/statement/payloads/edit-statement.payload';
 import { NewStatementPayload } from '@/statement/payloads/new-statement.payload';
 import { PaginatedStatementsPayload } from '@/statement/payloads/paginated-statements.payload';
 import { SearchStatementsPayload } from '@/statement/payloads/search-statements.payload';
@@ -42,5 +43,13 @@ export class StatementResolver {
   })
   public statements(@Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('filters', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchStatementsPayload: SearchStatementsPayload): Promise<PaginatedStatementsPayload> {
     return this.statementReadService.searchStatements(systemId, searchStatementsPayload);
+  }
+
+  @Mutation((): typeof StatementEntity => {
+    return StatementEntity;
+  })
+  @UseGuards(JwtGuard)
+  public updateStatement(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementId', new ParseUUIDPipe()) statementId: string, @Args('statementPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) editStatementPayload: EditStatementPayload): Promise<StatementEntity> {
+    return this.statementWriteService.update(sessionUserId, systemId, statementId, editStatementPayload);
   }
 };

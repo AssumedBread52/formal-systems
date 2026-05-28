@@ -8,18 +8,18 @@ export class NewStatementPayload {
   })
   @IsNotEmpty()
   @MaxLength(200)
-  public readonly name: string = '';
+  public readonly name!: string;
   @Field((): typeof String => {
     return String;
   })
   @IsNotEmpty()
   @MaxLength(5000)
-  public readonly description: string = '';
+  public readonly description!: string;
   @Field((): typeof String => {
     return String;
   })
   @IsUUID()
-  public readonly assertionExpressionId: string = '';
+  public readonly assertionExpressionId!: string;
   @ArrayUnique()
   @Field((): [typeof String] => {
     return [String];
@@ -28,5 +28,5 @@ export class NewStatementPayload {
   @IsUUID('all', {
     each: true
   })
-  public readonly typeHypothesesExpressionIds: string[] = [];
+  public readonly typeHypothesesExpressionIds!: string[];
 };

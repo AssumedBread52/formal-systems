@@ -248,6 +248,7 @@ type Mutation {
   deleteHypothesis(systemId: String!, statementId: String!, hypothesisId: String!): HypothesisEntity!
   createStatement(systemId: String!, statementPayload: NewStatementPayload!): StatementEntity!
   deleteStatement(systemId: String!, statementId: String!): StatementEntity!
+  updateStatement(systemId: String!, statementId: String!, statementPayload: EditStatementPayload!): StatementEntity!
   createSymbol(systemId: String!, symbolPayload: NewSymbolPayload!): SymbolEntity!
   deleteSymbol(systemId: String!, symbolId: String!): SymbolEntity!
   updateSymbol(systemId: String!, symbolId: String!, symbolPayload: EditSymbolPayload!): SymbolEntity!
@@ -290,10 +291,16 @@ input NewHypothesisPayload {
 }
 
 input NewStatementPayload {
-  name: String! = ""
-  description: String! = ""
-  assertionExpressionId: String! = ""
-  typeHypothesesExpressionIds: [String!]! = []
+  name: String!
+  description: String!
+  assertionExpressionId: String!
+  typeHypothesesExpressionIds: [String!]!
+}
+
+input EditStatementPayload {
+  name: String
+  description: String
+  assertionExpressionId: String
 }
 
 input NewSymbolPayload {
