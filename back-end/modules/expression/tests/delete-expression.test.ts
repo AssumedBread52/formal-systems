@@ -1,5 +1,6 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { findByMock } from '@/common/tests/mocks/find-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
@@ -9,7 +10,6 @@ import { removeMock } from '@/common/tests/mocks/remove.mock';
 import { transactionMock } from '@/common/tests/mocks/transaction.mock';
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
-import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -17,8 +17,10 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { hashSync } from 'bcryptjs';
 import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
+import { IsNull, Not } from 'typeorm';
 
 describe('Delete Expression', (): void => {
+  const existsBy = existsByMock();
   const findBy = findByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
@@ -43,12 +45,6 @@ describe('Delete Expression', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const expression = validatePayload({
       id: expressionId,
       systemId,
@@ -63,13 +59,13 @@ describe('Delete Expression', (): void => {
       position: 0
     }, ExpressionTokenEntity);
 
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(false);
     findBy.mockResolvedValueOnce([
       expressionToken
     ]);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(expression);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce([
       expressionToken
     ]);
@@ -83,24 +79,37 @@ describe('Delete Expression', (): void => {
       `token=${token}`
     ]);
 
+    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, [
+      {
+        id: expressionId,
+        statements: {
+          id: Not(IsNull())
+        }
+      },
+      {
+        id: expressionId,
+        hypotheses: {
+          id: Not(IsNull())
+        }
+      }
+    ]);
     expect(findBy).toHaveBeenCalledTimes(1);
     expect(findBy).toHaveBeenNthCalledWith(1, {
       systemId,
       expressionId
     });
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: expressionId,
       systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(getRepository).toHaveBeenCalledTimes(2);
@@ -128,12 +137,6 @@ describe('Delete Expression', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const expression = validatePayload({
       id: expressionId,
       systemId,
@@ -148,13 +151,13 @@ describe('Delete Expression', (): void => {
       position: 0
     }, ExpressionTokenEntity);
 
+    existsBy.mockResolvedValueOnce(true);
+    existsBy.mockResolvedValueOnce(false);
     findBy.mockResolvedValueOnce([
       expressionToken
     ]);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(expression);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce([
       expressionToken
     ]);
@@ -174,24 +177,37 @@ describe('Delete Expression', (): void => {
       }
     });
 
+    expect(existsBy).toHaveBeenCalledTimes(2);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, [
+      {
+        id: expressionId,
+        statements: {
+          id: Not(IsNull())
+        }
+      },
+      {
+        id: expressionId,
+        hypotheses: {
+          id: Not(IsNull())
+        }
+      }
+    ]);
     expect(findBy).toHaveBeenCalledTimes(1);
     expect(findBy).toHaveBeenNthCalledWith(1, {
       systemId,
       expressionId
     });
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: expressionId,
       systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(getRepository).toHaveBeenCalledTimes(2);

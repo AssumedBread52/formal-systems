@@ -1,7 +1,6 @@
 import { StatementModule } from '@/statement/statement.module';
 import { SymbolModule } from '@/symbol/symbol.module';
 import { SystemModule } from '@/system/system.module';
-import { UserModule } from '@/user/user.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExpressionController } from './controllers/expression.controller';
@@ -19,9 +18,6 @@ import { ExpressionWriteService } from './services/expression-write.service';
   imports: [
     forwardRef((): typeof SystemModule => {
       return SystemModule;
-    }),
-    forwardRef((): typeof UserModule => {
-      return UserModule;
     }),
     StatementModule,
     SymbolModule,

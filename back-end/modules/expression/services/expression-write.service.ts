@@ -1,4 +1,3 @@
-import { OwnershipException } from '@/auth/exceptions/ownership.exception';
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
@@ -6,7 +5,6 @@ import { ExpressionNotFoundException } from '@/expression/exceptions/expression-
 import { NewExpressionPayload } from '@/expression/payloads/new-expression.payload';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SystemReadService } from '@/system/services/system-read.service';
-import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
@@ -14,7 +12,7 @@ import { ExpressionReadService } from './expression-read.service';
 
 @Injectable()
 export class ExpressionWriteService {
-  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(ExpressionEntity) private readonly repository: Repository<ExpressionEntity>) {
+  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, @InjectRepository(ExpressionEntity) private readonly repository: Repository<ExpressionEntity>) {
   }
 
   public async create(userId: string, systemId: string, newExpressionPayload: NewExpressionPayload): Promise<ExpressionEntity> {
@@ -73,13 +71,9 @@ export class ExpressionWriteService {
         throw new ExpressionNotFoundException();
       }
 
-      const user = await this.userReadService.selectById(userId);
+      await this.systemReadService.verifyOwnership(userId, systemId);
 
-      const system = await this.systemReadService.selectById(systemId);
-
-      if (user.id !== system.ownerUserId) {
-        throw new OwnershipException();
-      }
+      await this.expressionReadService.verifyExpressionNotInUse(expressionId);
 
       const removedExpression = await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<ExpressionEntity> => {
         const expressionRepository = entityManager.getRepository(ExpressionEntity);

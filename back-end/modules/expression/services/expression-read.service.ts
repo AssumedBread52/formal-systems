@@ -1,12 +1,13 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
+import { ExpressionInUseException } from '@/expression/exceptions/expression-in-use.exception';
 import { ExpressionNotFoundException } from '@/expression/exceptions/expression-not-found.exception';
 import { UniqueSymbolSequenceException } from '@/expression/exceptions/unique-symbol-sequence.exception';
 import { PaginatedExpressionsPayload } from '@/expression/payloads/paginated-expressions.payload';
 import { SearchExpressionsPayload } from '@/expression/payloads/search-expressions.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArrayContains, FindOptionsWhere, Repository } from 'typeorm';
+import { ArrayContains, FindOptionsWhere, IsNull, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class ExpressionReadService {
@@ -58,6 +59,35 @@ export class ExpressionReadService {
       }
 
       throw new InternalServerErrorException('Reading expression failed');
+    }
+  }
+
+  public async verifyExpressionNotInUse(expressionId: string): Promise<void> {
+    try {
+      const inUse = await this.repository.existsBy([
+        {
+          id: expressionId,
+          statements: {
+            id: Not(IsNull())
+          }
+        },
+        {
+          id: expressionId,
+          hypotheses: {
+            id: Not(IsNull())
+          }
+        }
+      ]);
+
+      if (inUse) {
+        throw new ExpressionInUseException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying expression not in use failed');
     }
   }
 
