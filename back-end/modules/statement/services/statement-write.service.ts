@@ -58,7 +58,9 @@ export class StatementWriteService {
         const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
         const statementRepository = entityManager.getRepository(StatementEntity);
 
-        await this.symbolReadService.verifyAllExist(entityManager, system.id, [assertion.canonical[0]!], SymbolType.constant);
+        await this.symbolReadService.verifyAllExist(system.id, [assertion.canonical[0]!]);
+
+        await this.symbolReadService.verifySymbolType(entityManager, system.id, [assertion.canonical[0]!], SymbolType.constant);
 
         const typeExpressions = await expressionRepository.findBy({
           id: In(validatedNewStatementPayload.typeHypothesesExpressionIds),
@@ -72,11 +74,19 @@ export class StatementWriteService {
           throw new ExpressionNotFoundException();
         }
 
-        await this.symbolReadService.verifyAllExist(entityManager, system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
+        await this.symbolReadService.verifyAllExist(system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
+          return typeExpression.canonical[0]!;
+        }));
+
+        await this.symbolReadService.verifySymbolType(entityManager, system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
           return typeExpression.canonical[0]!;
         }), SymbolType.constant);
 
-        await this.symbolReadService.verifyAllExist(entityManager, system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
+        await this.symbolReadService.verifyAllExist(system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
+          return typeExpression.canonical[1]!;
+        }));
+
+        await this.symbolReadService.verifySymbolType(entityManager, system.id, typeExpressions.map((typeExpression: ExpressionEntity): string => {
           return typeExpression.canonical[1]!;
         }), SymbolType.variable);
 

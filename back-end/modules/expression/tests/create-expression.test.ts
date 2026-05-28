@@ -10,8 +10,6 @@ import { saveMock } from '@/common/tests/mocks/save.mock';
 import { transactionMock } from '@/common/tests/mocks/transaction.mock';
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
-import { SymbolEntity } from '@/symbol/entities/symbol.entity';
-import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -50,12 +48,6 @@ describe('Create Expression', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const expression = validatePayload({
       id: expressionId,
       systemId,
@@ -69,10 +61,9 @@ describe('Create Expression', (): void => {
     }, ExpressionTokenEntity);
 
     countBy.mockResolvedValueOnce(1);
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(expression);
     save.mockResolvedValueOnce([
       expressionToken
@@ -93,26 +84,23 @@ describe('Create Expression', (): void => {
       id: In(canonical),
       systemId
     });
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       systemId,
       canonical
     });
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: systemId
-    });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(getRepository).toHaveBeenCalledTimes(3);
+    expect(getRepository).toHaveBeenCalledTimes(2);
     expect(getRepository).toHaveBeenNthCalledWith(1, ExpressionEntity);
     expect(getRepository).toHaveBeenNthCalledWith(2, ExpressionTokenEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(3, SymbolEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(2);
     expect(save).toHaveBeenNthCalledWith(1, {
@@ -141,12 +129,6 @@ describe('Create Expression', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const expression = validatePayload({
       id: expressionId,
       systemId,
@@ -160,10 +142,9 @@ describe('Create Expression', (): void => {
     }, ExpressionTokenEntity);
 
     countBy.mockResolvedValueOnce(1);
+    existsBy.mockResolvedValueOnce(true);
     existsBy.mockResolvedValueOnce(false);
     findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     save.mockResolvedValueOnce(expression);
     save.mockResolvedValueOnce([
       expressionToken
@@ -190,26 +171,23 @@ describe('Create Expression', (): void => {
       id: In(canonical),
       systemId
     });
-    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenCalledTimes(2);
     expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
+    expect(existsBy).toHaveBeenNthCalledWith(2, {
       systemId,
       canonical
     });
-    expect(findOneBy).toHaveBeenCalledTimes(3);
+    expect(findOneBy).toHaveBeenCalledTimes(1);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
-    expect(findOneBy).toHaveBeenNthCalledWith(2, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: systemId
-    });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(getRepository).toHaveBeenCalledTimes(3);
+    expect(getRepository).toHaveBeenCalledTimes(2);
     expect(getRepository).toHaveBeenNthCalledWith(1, ExpressionEntity);
     expect(getRepository).toHaveBeenNthCalledWith(2, ExpressionTokenEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(3, SymbolEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(2);
     expect(save).toHaveBeenNthCalledWith(1, {

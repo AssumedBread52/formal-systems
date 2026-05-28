@@ -118,7 +118,34 @@ export class SymbolReadService {
     }
   }
 
-  public async verifyAllExist(entityManager: EntityManager, systemId: string, symbolIds: string[], type?: SymbolType): Promise<void> {
+  public async verifyAllExist(systemId: string, symbolIds: string[]): Promise<void> {
+    try {
+      const uniqueSymbolIds = symbolIds.reduce((uniqueSymbolIds: string[], symbolId: string): string[] => {
+        if (!uniqueSymbolIds.includes(symbolId)) {
+          uniqueSymbolIds.push(symbolId);
+        }
+
+        return uniqueSymbolIds;
+      }, []);
+
+      const count = await this.repository.countBy({
+        id: In(uniqueSymbolIds),
+        systemId
+      });
+
+      if (count !== uniqueSymbolIds.length) {
+        throw new SymbolNotFoundException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying symbols failed');
+    }
+  }
+
+  public async verifySymbolType(entityManager: EntityManager, systemId: string, symbolIds: string[], type: SymbolType): Promise<void> {
     try {
       const symbolRepository = entityManager.getRepository(SymbolEntity);
 
@@ -132,24 +159,11 @@ export class SymbolReadService {
 
       const count = await symbolRepository.countBy({
         id: In(uniqueSymbolIds),
-        systemId
-      });
-
-      if (count !== uniqueSymbolIds.length) {
-        throw new SymbolNotFoundException();
-      }
-
-      if (!type) {
-        return;
-      }
-
-      const typeCount = await symbolRepository.countBy({
-        id: In(uniqueSymbolIds),
         systemId,
         type
       });
 
-      if (typeCount !== uniqueSymbolIds.length) {
+      if (count !== uniqueSymbolIds.length) {
         throw new InvalidSymbolTypeException();
       }
     } catch (error: unknown) {
@@ -157,7 +171,7 @@ export class SymbolReadService {
         throw error;
       }
 
-      throw new InternalServerErrorException('Verifying symbols failed');
+      throw new InternalServerErrorException('Verifying symbol type failed');
     }
   }
 

@@ -58,7 +58,11 @@ export class HypothesisWriteService {
       return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<HypothesisEntity> => {
         const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
 
-        await this.symbolReadService.verifyAllExist(entityManager, system.id, [
+        await this.symbolReadService.verifyAllExist(system.id, [
+          expression.canonical[0]!
+        ]);
+
+        await this.symbolReadService.verifySymbolType(entityManager, system.id, [
           expression.canonical[0]!
         ], SymbolType.constant);
 
@@ -75,7 +79,11 @@ export class HypothesisWriteService {
 
             const variableSymbolId = expression.canonical[1]!;
 
-            await this.symbolReadService.verifyAllExist(entityManager, system.id, [
+            await this.symbolReadService.verifyAllExist(system.id, [
+              variableSymbolId
+            ]);
+
+            await this.symbolReadService.verifySymbolType(entityManager, system.id, [
               variableSymbolId
             ], SymbolType.variable);
 

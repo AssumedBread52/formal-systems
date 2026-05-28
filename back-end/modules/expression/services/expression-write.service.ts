@@ -3,7 +3,6 @@ import { validatePayload } from '@/common/helpers/validate-payload';
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { ExpressionNotFoundException } from '@/expression/exceptions/expression-not-found.exception';
-import { UniqueSymbolSequenceException } from '@/expression/exceptions/unique-symbol-sequence.exception';
 import { NewExpressionPayload } from '@/expression/payloads/new-expression.payload';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SystemReadService } from '@/system/services/system-read.service';
@@ -11,45 +10,30 @@ import { UserReadService } from '@/user/services/user-read.service';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
+import { ExpressionReadService } from './expression-read.service';
 
 @Injectable()
 export class ExpressionWriteService {
-  public constructor(private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(ExpressionEntity) private readonly repository: Repository<ExpressionEntity>) {
+  public constructor(private readonly expressionReadService: ExpressionReadService, private readonly symbolReadService: SymbolReadService, private readonly systemReadService: SystemReadService, private readonly userReadService: UserReadService, @InjectRepository(ExpressionEntity) private readonly repository: Repository<ExpressionEntity>) {
   }
 
   public async create(userId: string, systemId: string, newExpressionPayload: NewExpressionPayload): Promise<ExpressionEntity> {
     try {
       const validatedNewExpressionPayload = validatePayload(newExpressionPayload, NewExpressionPayload);
 
-      const user = await this.userReadService.selectById(userId);
+      await this.systemReadService.verifyOwnership(userId, systemId);
 
-      const system = await this.systemReadService.selectById(systemId);
+      await this.expressionReadService.verifyUniqueSymbolSequence(systemId, validatedNewExpressionPayload.canonical);
 
-      if (user.id !== system.ownerUserId) {
-        throw new OwnershipException();
-      }
+      await this.symbolReadService.verifyAllExist(systemId, validatedNewExpressionPayload.canonical);
 
       return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<ExpressionEntity> => {
         const expressionRepository = entityManager.getRepository(ExpressionEntity);
         const expressionTokenRepository = entityManager.getRepository(ExpressionTokenEntity);
 
-        await this.symbolReadService.verifyAllExist(entityManager, systemId, validatedNewExpressionPayload.canonical);
-
-        // TypeORM limitation: array columns, in the FindOptionsWhere type, are
-        // typed as the element of the array, however, the underlying pg driver
-        // correctly constructs the desired query
-        const symbolSequenceConflict = await expressionRepository.existsBy({
-          systemId,
-          canonical: validatedNewExpressionPayload.canonical as any
-        });
-
-        if (symbolSequenceConflict) {
-          throw new UniqueSymbolSequenceException();
-        }
-
         const expression = new ExpressionEntity();
 
-        expression.systemId = system.id;
+        expression.systemId = systemId;
         expression.canonical = validatedNewExpressionPayload.canonical;
 
         const savedExpression = await expressionRepository.save(expression);
@@ -57,7 +41,7 @@ export class ExpressionWriteService {
         const expressionTokens = validatedNewExpressionPayload.canonical.map((symbolId: string, position: number): ExpressionTokenEntity => {
           const expressionToken = new ExpressionTokenEntity();
 
-          expressionToken.systemId = system.id;
+          expressionToken.systemId = systemId;
           expressionToken.symbolId = symbolId;
           expressionToken.expressionId = savedExpression.id;
           expressionToken.position = position;

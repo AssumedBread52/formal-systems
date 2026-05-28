@@ -41,7 +41,12 @@ export class DistinctVariablePairWriteService {
       return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<DistinctVariablePairEntity> => {
         const distinctVariablePairRepository = entityManager.getRepository(DistinctVariablePairEntity);
 
-        await this.symbolReadService.verifyAllExist(entityManager, systemId, [
+        await this.symbolReadService.verifyAllExist(systemId, [
+          validatedNewDistinctVariablePairPayload.variableSymbol1Id,
+          validatedNewDistinctVariablePairPayload.variableSymbol2Id
+        ]);
+
+        await this.symbolReadService.verifySymbolType(entityManager, systemId, [
           validatedNewDistinctVariablePairPayload.variableSymbol1Id,
           validatedNewDistinctVariablePairPayload.variableSymbol2Id
         ], SymbolType.variable);

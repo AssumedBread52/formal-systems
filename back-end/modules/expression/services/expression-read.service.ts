@@ -1,6 +1,7 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { ExpressionNotFoundException } from '@/expression/exceptions/expression-not-found.exception';
+import { UniqueSymbolSequenceException } from '@/expression/exceptions/unique-symbol-sequence.exception';
 import { PaginatedExpressionsPayload } from '@/expression/payloads/paginated-expressions.payload';
 import { SearchExpressionsPayload } from '@/expression/payloads/search-expressions.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -57,6 +58,28 @@ export class ExpressionReadService {
       }
 
       throw new InternalServerErrorException('Reading expression failed');
+    }
+  }
+
+  public async verifyUniqueSymbolSequence(systemId: string, sequence: string[]): Promise<void> {
+    try {
+      // TypeORM limitation: array columns, in the FindOptionsWhere type, are
+      // typed as the element of the array, however, the underlying pg driver
+      // correctly constructs the desired query
+      const symbolSequenceConflict = await this.repository.existsBy({
+        systemId,
+        canonical: sequence as any
+      });
+
+      if (symbolSequenceConflict) {
+        throw new UniqueSymbolSequenceException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying unique symbol sequence failed');
     }
   }
 };
