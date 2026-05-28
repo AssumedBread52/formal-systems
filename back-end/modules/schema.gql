@@ -115,11 +115,6 @@ type PaginatedDistinctVariablePairsPayload {
   total: Int!
 }
 
-type PaginatedUsersPayload {
-  results: [UserEntity!]!
-  total: Int!
-}
-
 type PaginatedHypothesesPayload {
   results: [HypothesisEntity!]!
   total: Int!
@@ -132,6 +127,11 @@ type PaginatedStatementsPayload {
 
 type PaginatedExpressionsPayload {
   results: [ExpressionEntity!]!
+  total: Int!
+}
+
+type PaginatedUsersPayload {
+  results: [UserEntity!]!
   total: Int!
 }
 
@@ -276,12 +276,12 @@ input EditSystemPayload {
 }
 
 input NewExpressionPayload {
-  canonical: [String!]! = []
+  canonical: [String!]!
 }
 
 input NewDistinctVariablePairPayload {
-  variableSymbol1Id: String! = ""
-  variableSymbol2Id: String! = ""
+  variableSymbol1Id: String!
+  variableSymbol2Id: String!
 }
 
 input NewHypothesisPayload {
