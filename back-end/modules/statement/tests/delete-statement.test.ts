@@ -1,5 +1,6 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { findByMock } from '@/common/tests/mocks/find-by.mock';
 import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
@@ -11,7 +12,6 @@ import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variab
 import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { StatementEntity } from '@/statement/entities/statement.entity';
 import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
-import { SystemEntity } from '@/system/entities/system.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -21,6 +21,7 @@ import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
 
 describe('Delete Statement', (): void => {
+  const existsBy = existsByMock();
   const findBy = findByMock();
   const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
@@ -44,12 +45,6 @@ describe('Delete Statement', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const statement = validatePayload({
       id: statementId,
       systemId,
@@ -71,6 +66,7 @@ describe('Delete Statement', (): void => {
       variableSymbol2Id:  'e8172cec-118f-4185-a405-a6cf46869ee0'
     }, DistinctVariablePairEntity);
 
+    existsBy.mockResolvedValueOnce(true);
     findBy.mockResolvedValueOnce([
       hypothesis
     ]);
@@ -79,8 +75,6 @@ describe('Delete Statement', (): void => {
     ]);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(statement);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce([
       hypothesis
     ]);
@@ -97,6 +91,11 @@ describe('Delete Statement', (): void => {
       `token=${token}`
     ]);
 
+    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
     expect(findBy).toHaveBeenCalledTimes(2);
     expect(findBy).toHaveBeenNthCalledWith(1, {
       systemId,
@@ -106,19 +105,13 @@ describe('Delete Statement', (): void => {
       systemId,
       statementId
     });
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: statementId,
       systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(getRepository).toHaveBeenCalledTimes(3);
@@ -149,12 +142,6 @@ describe('Delete Statement', (): void => {
       email: 'test1.user1@example.com',
       passwordHash: hashSync('Test1User1!')
     }, UserEntity);
-    const system = validatePayload({
-      id: systemId,
-      ownerUserId: userId,
-      name: 'TestSystem1',
-      description: 'Test System 1'
-    }, SystemEntity);
     const statement = validatePayload({
       id: statementId,
       systemId,
@@ -176,6 +163,7 @@ describe('Delete Statement', (): void => {
       variableSymbol2Id:  'e8172cec-118f-4185-a405-a6cf46869ee0'
     }, DistinctVariablePairEntity);
 
+    existsBy.mockResolvedValueOnce(true);
     findBy.mockResolvedValueOnce([
       hypothesis
     ]);
@@ -184,8 +172,6 @@ describe('Delete Statement', (): void => {
     ]);
     findOneBy.mockResolvedValueOnce(user);
     findOneBy.mockResolvedValueOnce(statement);
-    findOneBy.mockResolvedValueOnce(user);
-    findOneBy.mockResolvedValueOnce(system);
     remove.mockResolvedValueOnce([
       hypothesis
     ]);
@@ -208,6 +194,11 @@ describe('Delete Statement', (): void => {
       }
     });
 
+    expect(existsBy).toHaveBeenCalledTimes(1);
+    expect(existsBy).toHaveBeenNthCalledWith(1, {
+      id: systemId,
+      ownerUserId: userId
+    });
     expect(findBy).toHaveBeenCalledTimes(2);
     expect(findBy).toHaveBeenNthCalledWith(1, {
       systemId,
@@ -217,19 +208,13 @@ describe('Delete Statement', (): void => {
       systemId,
       statementId
     });
-    expect(findOneBy).toHaveBeenCalledTimes(4);
+    expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
     });
     expect(findOneBy).toHaveBeenNthCalledWith(2, {
       id: statementId,
       systemId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(3, {
-      id: userId
-    });
-    expect(findOneBy).toHaveBeenNthCalledWith(4, {
-      id: systemId
     });
     expect(getOrThrow).toHaveBeenCalledTimes(0);
     expect(getRepository).toHaveBeenCalledTimes(3);
