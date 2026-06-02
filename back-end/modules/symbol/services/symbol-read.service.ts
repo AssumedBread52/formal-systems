@@ -100,24 +100,6 @@ export class SymbolReadService {
     }
   }
 
-  public async selectVariableSymbolIds(systemId: string, expressionId: string): Promise<string[]> {
-    try {
-      const variableSymbols = await this.repository.findBy({
-        type: SymbolType.variable,
-        expressionTokens: {
-          systemId,
-          expressionId
-        }
-      });
-
-      return variableSymbols.map((variableSymbol: SymbolEntity): string => {
-        return variableSymbol.id;
-      });
-    } catch {
-      throw new InternalServerErrorException('Reading the variable symbols from an expression failed');
-    }
-  }
-
   public async verifyAllExist(systemId: string, symbolIds: string[]): Promise<void> {
     try {
       const uniqueSymbolIds = symbolIds.reduce((uniqueSymbolIds: string[], symbolId: string): string[] => {
