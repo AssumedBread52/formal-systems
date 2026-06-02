@@ -9,6 +9,7 @@ import { UniqueVariableSymbolTypeException } from '@/statement/exceptions/unique
 import { VariableSymbolNotTypedException } from '@/statement/exceptions/variable-symbol-not-typed.exception';
 import { PaginatedHypothesesPayload } from '@/statement/payloads/paginated-hypotheses.payload';
 import { SearchHypothesesPayload } from '@/statement/payloads/search-hypotheses.payload';
+import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -109,7 +110,7 @@ export class HypothesisReadService {
 
   public async verifyAllSymbolsTyped(entityManager: EntityManager, systemId: string, statementId: string, variableSymbolIds: string[]): Promise<void> {
     try {
-      const hypothesisRepository = entityManager.getRepository(HypothesisEntity);
+      const symbolRepository = entityManager.getRepository(SymbolEntity);
 
       const uniqueVariableSymbolIds = variableSymbolIds.reduce((uniqueVariableSymbolIds: string[], variableSymbolId: string): string[] => {
         if (!uniqueVariableSymbolIds.includes(variableSymbolId)) {
@@ -119,14 +120,16 @@ export class HypothesisReadService {
         return uniqueVariableSymbolIds;
       }, []);
 
-      const count = await hypothesisRepository.countBy({
+      const count = await symbolRepository.countBy({
+        id: In(uniqueVariableSymbolIds),
         systemId,
-        statementId,
-        type: HypothesisType.type,
-        expression: {
-          expressionTokens: {
-            symbolId: In(uniqueVariableSymbolIds),
-            position: 1
+        expressionTokens: {
+          position: 1,
+          expression: {
+            hypotheses: {
+              statementId,
+              type: HypothesisType.type
+            }
           }
         }
       });
@@ -139,7 +142,7 @@ export class HypothesisReadService {
         throw error;
       }
 
-      throw new InternalServerErrorException('Verifying symbols are typed failed');
+      throw new InternalServerErrorException('Verifying all symbols are typed failed');
     }
   }
 

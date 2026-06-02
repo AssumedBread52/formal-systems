@@ -9,7 +9,6 @@ import { managerMock } from '@/common/tests/mocks/manager.mock';
 import { saveMock } from '@/common/tests/mocks/save.mock';
 import { transactionMock } from '@/common/tests/mocks/transaction.mock';
 import { DistinctVariablePairEntity } from '@/statement/entities/distinct-variable-pair.entity';
-import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
 import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
 import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
@@ -93,16 +92,18 @@ describe('Create Distinct Variable Pair', (): void => {
       type: SymbolType.variable
     });
     expect(countBy).toHaveBeenNthCalledWith(3, {
+      id: In([
+        variableSymbol1Id,
+        variableSymbol2Id
+      ]),
       systemId,
-      statementId,
-      type: HypothesisType.type,
-      expression: {
-        expressionTokens: {
-          symbolId: In([
-            variableSymbol1Id,
-            variableSymbol2Id
-          ]),
-          position: 1
+      expressionTokens: {
+        position: 1,
+        expression: {
+          hypotheses: {
+            statementId,
+            type: HypothesisType.type
+          }
         }
       }
     });
@@ -128,7 +129,7 @@ describe('Create Distinct Variable Pair', (): void => {
     expect(getRepository).toHaveBeenCalledTimes(3);
     expect(getRepository).toHaveBeenNthCalledWith(1, DistinctVariablePairEntity);
     expect(getRepository).toHaveBeenNthCalledWith(2, SymbolEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(3, HypothesisEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(3, SymbolEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
@@ -205,16 +206,18 @@ describe('Create Distinct Variable Pair', (): void => {
       type: SymbolType.variable
     });
     expect(countBy).toHaveBeenNthCalledWith(3, {
+      id: In([
+        variableSymbol1Id,
+        variableSymbol2Id
+      ]),
       systemId,
-      statementId,
-      type: HypothesisType.type,
-      expression: {
-        expressionTokens: {
-          symbolId: In([
-            variableSymbol1Id,
-            variableSymbol2Id
-          ]),
-          position: 1
+      expressionTokens: {
+        position: 1,
+        expression: {
+          hypotheses: {
+            statementId,
+            type: HypothesisType.type
+          }
         }
       }
     });
@@ -240,7 +243,7 @@ describe('Create Distinct Variable Pair', (): void => {
     expect(getRepository).toHaveBeenCalledTimes(3);
     expect(getRepository).toHaveBeenNthCalledWith(1, DistinctVariablePairEntity);
     expect(getRepository).toHaveBeenNthCalledWith(2, SymbolEntity);
-    expect(getRepository).toHaveBeenNthCalledWith(3, HypothesisEntity);
+    expect(getRepository).toHaveBeenNthCalledWith(3, SymbolEntity);
     expect(manager).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenNthCalledWith(1, {
