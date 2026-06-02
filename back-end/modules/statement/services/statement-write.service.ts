@@ -140,10 +140,35 @@ export class StatementWriteService {
 
       await this.systemReadService.verifyOwnership(userId, systemId);
 
-      // everything in the try block below this line still needs work
-      console.log(validatedEditStatementPayload);
+      if (validatedEditStatementPayload.name !== undefined && validatedEditStatementPayload.name !== statement.name) {
+        await this.statementReadService.verifyUniqueName(systemId, validatedEditStatementPayload.name);
 
-      return new StatementEntity();
+        statement.name = validatedEditStatementPayload.name;
+      }
+
+      if (validatedEditStatementPayload.description !== undefined && validatedEditStatementPayload.description !== statement.description) {
+        statement.description = validatedEditStatementPayload.description;
+      }
+
+      if (validatedEditStatementPayload.assertionExpressionId !== undefined && validatedEditStatementPayload.assertionExpressionId !== statement.assertionExpressionId) {
+        const newAssertionExpressionId = validatedEditStatementPayload.assertionExpressionId;
+
+        await this.expressionReadService.verifyExists(systemId, newAssertionExpressionId);
+
+        return await this.repository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager): Promise<StatementEntity> => {
+          const statementRepository = entityManager.getRepository(StatementEntity);
+
+          await this.expressionReadService.verifyExpressionType(entityManager, newAssertionExpressionId, 'constant_prefixed');
+
+          await this.hypothesisReadService.verifyAllSymbolsInExpressionTyped(entityManager, statementId, newAssertionExpressionId);
+
+          statement.assertionExpressionId = newAssertionExpressionId;
+
+          return await statementRepository.save(statement);
+        });
+      }
+
+      return await this.repository.save(statement);
     } catch (error: unknown) {
       if (error instanceof HttpException) {
         throw error;
