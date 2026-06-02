@@ -1,6 +1,7 @@
 import { validatePayload } from '@/common/helpers/validate-payload';
 import { StatementEntity } from '@/statement/entities/statement.entity';
 import { StatementNotFoundException } from '@/statement/exceptions/statement-not-found.exception';
+import { UniqueNameException } from '@/statement/exceptions/unique-name.exception';
 import { PaginatedStatementsPayload } from '@/statement/payloads/paginated-statements.payload';
 import { SearchStatementsPayload } from '@/statement/payloads/search-statements.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -85,6 +86,25 @@ export class StatementReadService {
       }
 
       throw new InternalServerErrorException('Verifying statement existence failed');
+    }
+  }
+
+  public async verifyUniqueName(systemId: string, name: string): Promise<void> {
+    try {
+      const conflict = await this.repository.existsBy({
+        systemId,
+        name
+      });
+
+      if (conflict) {
+        throw new UniqueNameException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying statement unique name failed');
     }
   }
 };

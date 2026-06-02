@@ -108,6 +108,40 @@ export class HypothesisReadService {
     }
   }
 
+  public async verifyAllSymbolsInExpressionTypedByProposed(entityManager: EntityManager, typeHypothesesExpressionIds: string[], expressionId: string): Promise<void> {
+    try {
+      const expressionTokenRepository = entityManager.getRepository(ExpressionTokenEntity);
+
+      const variableSymbolCount = await expressionTokenRepository.countBy({
+        expressionId,
+        symbol: {
+          type: SymbolType.variable
+        }
+      });
+
+      const relevantHypothesesCount = await expressionTokenRepository.countBy({
+        expressionId,
+        symbol: {
+          type: SymbolType.variable,
+          expressionTokens: {
+            expressionId: In(typeHypothesesExpressionIds),
+            position: 1
+          }
+        }
+      });
+
+      if (variableSymbolCount !== relevantHypothesesCount) {
+        throw new VariableSymbolNotTypedException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying all symbols in expression are typed failed');
+    }
+  }
+
   public async verifyAllSymbolsTyped(entityManager: EntityManager, systemId: string, statementId: string, variableSymbolIds: string[]): Promise<void> {
     try {
       const symbolRepository = entityManager.getRepository(SymbolEntity);
@@ -241,6 +275,29 @@ export class HypothesisReadService {
       });
 
       if (conflict) {
+        throw new UniqueVariableSymbolTypeException();
+      }
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Verifying unique variable symbol type failed');
+    }
+  }
+
+  public async verifyUniqueVariableSymbolTypeByProposed(entityManager: EntityManager, typeHypothesesExpressionIds: string[]): Promise<void> {
+    try {
+      const symbolRepository = entityManager.getRepository(SymbolEntity);
+
+      const typedVariableCount = await symbolRepository.countBy({
+        expressionTokens: {
+          expressionId: In(typeHypothesesExpressionIds),
+          position: 1
+        }
+      });
+
+      if (typedVariableCount !== typeHypothesesExpressionIds.length) {
         throw new UniqueVariableSymbolTypeException();
       }
     } catch (error: unknown) {
