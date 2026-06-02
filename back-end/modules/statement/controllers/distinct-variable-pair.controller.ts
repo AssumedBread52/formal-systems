@@ -6,9 +6,14 @@ import { PaginatedDistinctVariablePairsPayload } from '@/statement/payloads/pagi
 import { SearchDistinctVariablePairsPayload } from '@/statement/payloads/search-distinct-variable-pairs.payload';
 import { DistinctVariablePairReadService } from '@/statement/services/distinct-variable-pair-read.service';
 import { DistinctVariablePairWriteService } from '@/statement/services/distinct-variable-pair-write.service';
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, SerializeOptions, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system/:systemId/statement/:statementId/distinct-variable-pair')
+@SerializeOptions({
+  excludePrefixes: [
+    '__'
+  ]
+})
 export class DistinctVariablePairController {
   public constructor(private readonly distinctVariablePairReadService: DistinctVariablePairReadService, private readonly distinctVariablePairWriteService: DistinctVariablePairWriteService) {
   }

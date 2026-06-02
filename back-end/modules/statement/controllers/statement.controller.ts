@@ -7,9 +7,14 @@ import { PaginatedStatementsPayload } from '@/statement/payloads/paginated-state
 import { SearchStatementsPayload } from '@/statement/payloads/search-statements.payload';
 import { StatementReadService } from '@/statement/services/statement-read.service';
 import { StatementWriteService } from '@/statement/services/statement-write.service';
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, SerializeOptions, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system/:systemId/statement')
+@SerializeOptions({
+  excludePrefixes: [
+    '__'
+  ]
+})
 export class StatementController {
   public constructor(private readonly statementReadService: StatementReadService, private readonly statementWriteService: StatementWriteService) {
   }

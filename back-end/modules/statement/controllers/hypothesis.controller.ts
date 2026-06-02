@@ -6,9 +6,14 @@ import { PaginatedHypothesesPayload } from '@/statement/payloads/paginated-hypot
 import { SearchHypothesesPayload } from '@/statement/payloads/search-hypotheses.payload';
 import { HypothesisReadService } from '@/statement/services/hypothesis-read.service';
 import { HypothesisWriteService } from '@/statement/services/hypothesis-write.service';
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, SerializeOptions, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 
 @Controller('system/:systemId/statement/:statementId/hypothesis')
+@SerializeOptions({
+  excludePrefixes: [
+    '__'
+  ]
+})
 export class HypothesisController {
   public constructor(private readonly hypothesisReadService: HypothesisReadService, private readonly hypothesisWriteService: HypothesisWriteService) {
   }
