@@ -60,12 +60,20 @@ describe('Delete System', (): void => {
       id: systemId,
       ownerUserId: userId
     });
-    expect(existsBy).toHaveBeenNthCalledWith(2, {
-      id: systemId,
-      symbols: {
-        id: Not(IsNull())
+    expect(existsBy).toHaveBeenNthCalledWith(2, [
+      {
+        id: systemId,
+        symbols: {
+          id: Not(IsNull())
+        }
+      },
+      {
+        id: systemId,
+        expressions: {
+          id: Not(IsNull())
+        }
       }
-    });
+    ]);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId
@@ -120,12 +128,20 @@ describe('Delete System', (): void => {
       id: systemId,
       ownerUserId: userId
     });
-    expect(existsBy).toHaveBeenNthCalledWith(2, {
-      id: systemId,
-      symbols: {
-        id: Not(IsNull())
+    expect(existsBy).toHaveBeenNthCalledWith(2, [
+      {
+        id: systemId,
+        symbols: {
+          id: Not(IsNull())
+        }
+      },
+      {
+        id: systemId,
+        expressions: {
+          id: Not(IsNull())
+        }
       }
-    });
+    ]);
     expect(findOneBy).toHaveBeenCalledTimes(2);
     expect(findOneBy).toHaveBeenNthCalledWith(1, {
       id: userId

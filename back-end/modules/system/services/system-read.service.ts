@@ -100,12 +100,20 @@ export class SystemReadService {
 
   public async verifySystemNotInUse(systemId: string): Promise<void> {
     try {
-      const inUse = await this.repository.existsBy({
-        id: systemId,
-        symbols: {
-          id: Not(IsNull())
+      const inUse = await this.repository.existsBy([
+        {
+          id: systemId,
+          symbols: {
+            id: Not(IsNull())
+          }
+        },
+        {
+          id: systemId,
+          expressions: {
+            id: Not(IsNull())
+          }
         }
-      });
+      ]);
 
       if (inUse) {
         throw new SystemInUseException();
