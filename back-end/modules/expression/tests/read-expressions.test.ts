@@ -39,7 +39,7 @@ describe('Read Expressions', (): void => {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('page', page.toString());
     urlSearchParams.set('pageSize', pageSize.toString());
-    urlSearchParams.append('symbolIds[]', symbolId);
+    urlSearchParams.append('includeSymbolIds[]', symbolId);
 
     const response = await request(app.getHttpServer()).get(`/system/${systemId}/expression?${urlSearchParams}`);
 
@@ -89,7 +89,7 @@ describe('Read Expressions', (): void => {
         filters: {
           page,
           pageSize,
-          symbolIds: [
+          includeSymbolIds: [
             symbolId
           ]
         }
