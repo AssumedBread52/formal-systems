@@ -10,7 +10,7 @@ import { SearchExpressionsPayload } from '@/expression/payloads/search-expressio
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArrayContains, EntityManager, FindOptionsWhere, IsNull, MoreThan, Not, Repository } from 'typeorm';
+import { And, ArrayContains, EntityManager, FindOptionsWhere, IsNull, MoreThan, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class ExpressionReadService {
@@ -27,9 +27,14 @@ export class ExpressionReadService {
       const where = {
         systemId
       } as FindOptionsWhere<ExpressionEntity>;
-
-      if (0 < validatedSearchExpressionsPayload.symbolIds.length) {
-        where.canonical = ArrayContains(validatedSearchExpressionsPayload.symbolIds);
+      const includeFilter = ArrayContains(validatedSearchExpressionsPayload.includeSymbolIds);
+      const excludeFilter = Not(ArrayContains(validatedSearchExpressionsPayload.excludeSymbolIds));
+      if (0 < validatedSearchExpressionsPayload.includeSymbolIds.length && 0 < validatedSearchExpressionsPayload.excludeSymbolIds.length) {
+        where.canonical = And(includeFilter, excludeFilter);
+      } else if (0 < validatedSearchExpressionsPayload.includeSymbolIds.length) {
+        where.canonical = includeFilter;
+      } else if (0 < validatedSearchExpressionsPayload.excludeSymbolIds.length) {
+        where.canonical = excludeFilter;
       }
 
       const [expressions, total] = await this.repository.findAndCount({

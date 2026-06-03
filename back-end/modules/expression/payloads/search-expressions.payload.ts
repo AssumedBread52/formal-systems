@@ -30,5 +30,14 @@ export class SearchExpressionsPayload {
   @IsUUID('all', {
     each: true
   })
-  public readonly symbolIds: string[] = [];
+  public readonly includeSymbolIds: string[] = [];
+  @ArrayUnique()
+  @Field((): [typeof String] => {
+    return [String];
+  })
+  @IsArray()
+  @IsUUID('all', {
+    each: true
+  })
+  public readonly excludeSymbolIds: string[] = [];
 };
