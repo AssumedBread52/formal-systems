@@ -1,4 +1,5 @@
 import { AuthModule } from '@/auth/auth.module';
+import { CommonModule } from '@/common/common.module';
 import { DependencyModule } from '@/dependency/dependency.module';
 import { ExpressionTokenEntity } from '@/expression/entities/expression-token.entity';
 import { ExpressionEntity } from '@/expression/entities/expression.entity';
@@ -27,6 +28,7 @@ export const createTestApp = async (): Promise<NestExpressApplication> => {
   const testingModule = await Test.createTestingModule({
     imports: [
       AuthModule,
+      CommonModule,
       DependencyModule,
       ExpressionModule,
       GraphQLModule.forRootAsync({

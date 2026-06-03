@@ -6,6 +6,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
 import { DatabaseType } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
+import { CommonModule } from './common/common.module';
 import { DependencyModule } from './dependency/dependency.module';
 import { ExpressionModule } from './expression/expression.module';
 import { HealthModule } from './health/health.module';
@@ -19,6 +20,7 @@ import { UserModule } from './user/user.module';
 @Module({
   imports: [
     AuthModule,
+    CommonModule,
     ConfigModule.forRoot({
       cache: true,
       envFilePath: [

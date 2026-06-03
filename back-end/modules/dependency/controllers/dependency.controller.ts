@@ -1,6 +1,6 @@
 import { DependencyPayload } from '@/dependency/payloads/dependency.payload';
 import { DependencyService } from '@/dependency/services/dependency.service';
-import { ClassSerializerInterceptor, Controller, Get, UseInterceptors } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 
 @Controller('dependency')
 export class DependencyController {
@@ -8,7 +8,6 @@ export class DependencyController {
   }
 
   @Get()
-  @UseInterceptors(ClassSerializerInterceptor)
   public getDependencies(): Promise<DependencyPayload[]> {
     return this.dependencyService.getApplicationDependencies();
   }
