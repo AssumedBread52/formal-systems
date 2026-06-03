@@ -1,5 +1,5 @@
-import { ClassSerializerInterceptor, Module } from '@nestjs/common';
-import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
+import { ClassSerializerInterceptor, Module, ValidationPipe } from '@nestjs/common';
+import { APP_INTERCEPTOR, APP_PIPE, Reflector } from '@nestjs/core';
 
 @Module({
   providers: [
@@ -15,6 +15,14 @@ import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
           ]
         });
       }
+    },
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        forbidNonWhitelisted: true,
+        transform: true,
+        whitelist: true
+      })
     }
   ]
 })

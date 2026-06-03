@@ -7,7 +7,7 @@ import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.pay
 import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
 import { SystemReadService } from '@/system/services/system-read.service';
 import { SystemWriteService } from '@/system/services/system-write.service';
-import { ParseUUIDPipe, UseGuards, ValidationPipe } from '@nestjs/common';
+import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 @Resolver()
@@ -19,7 +19,7 @@ export class SystemResolver {
     return SystemEntity;
   })
   @UseGuards(JwtGuard)
-  public createSystem(@SessionUser('id') sessionUserId: string, @Args('systemPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
+  public createSystem(@SessionUser('id') sessionUserId: string, @Args('systemPayload') newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
     return this.systemWriteService.create(sessionUserId, newSystemPayload);
   }
 
@@ -41,7 +41,7 @@ export class SystemResolver {
   @Query((): typeof PaginatedSystemsPayload => {
     return PaginatedSystemsPayload;
   })
-  public systems(@Args('filters', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
+  public systems(@Args('filters') searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
     return this.systemReadService.searchSystems(searchSystemsPayload);
   }
 
@@ -49,7 +49,7 @@ export class SystemResolver {
     return SystemEntity;
   })
   @UseGuards(JwtGuard)
-  public updateSystem(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('systemPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
+  public updateSystem(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('systemPayload') editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
     return this.systemWriteService.update(sessionUserId, systemId, editSystemPayload);
   }
 };

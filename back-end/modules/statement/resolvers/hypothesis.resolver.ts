@@ -6,7 +6,7 @@ import { PaginatedHypothesesPayload } from '@/statement/payloads/paginated-hypot
 import { SearchHypothesesPayload } from '@/statement/payloads/search-hypotheses.payload';
 import { HypothesisReadService } from '@/statement/services/hypothesis-read.service';
 import { HypothesisWriteService } from '@/statement/services/hypothesis-write.service';
-import { ParseUUIDPipe, UseGuards, ValidationPipe } from '@nestjs/common';
+import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 @Resolver()
@@ -18,7 +18,7 @@ export class HypothesisResolver {
     return HypothesisEntity;
   })
   @UseGuards(JwtGuard)
-  public createHypothesis(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementId', new ParseUUIDPipe()) statementId: string, @Args('hypothesisPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newHypothesisPayload: NewHypothesisPayload): Promise<HypothesisEntity> {
+  public createHypothesis(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementId', new ParseUUIDPipe()) statementId: string, @Args('hypothesisPayload') newHypothesisPayload: NewHypothesisPayload): Promise<HypothesisEntity> {
     return this.hypothesisWriteService.create(sessionUserId, systemId, statementId, newHypothesisPayload);
   }
 
@@ -40,7 +40,7 @@ export class HypothesisResolver {
   @Query((): typeof PaginatedHypothesesPayload => {
     return PaginatedHypothesesPayload;
   })
-  public hypotheses(@Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementId', new ParseUUIDPipe()) statementId: string, @Args('filters', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchHypothesesPayload: SearchHypothesesPayload): Promise<PaginatedHypothesesPayload> {
+  public hypotheses(@Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementId', new ParseUUIDPipe()) statementId: string, @Args('filters') searchHypothesesPayload: SearchHypothesesPayload): Promise<PaginatedHypothesesPayload> {
     return this.hypothesisReadService.searchHypotheses(systemId, statementId, searchHypothesesPayload);
   }
 };

@@ -6,7 +6,7 @@ import { PaginatedExpressionsPayload } from '@/expression/payloads/paginated-exp
 import { SearchExpressionsPayload } from '@/expression/payloads/search-expressions.payload';
 import { ExpressionReadService } from '@/expression/services/expression-read.service';
 import { ExpressionWriteService } from '@/expression/services/expression-write.service';
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
 
 @Controller('system/:systemId/expression')
 export class ExpressionController {
@@ -20,7 +20,7 @@ export class ExpressionController {
   }
 
   @Get()
-  public getExpressions(@Param('systemId', new ParseUUIDPipe()) systemId: string, @Query(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchExpressionsPayload: SearchExpressionsPayload): Promise<PaginatedExpressionsPayload> {
+  public getExpressions(@Param('systemId', new ParseUUIDPipe()) systemId: string, @Query() searchExpressionsPayload: SearchExpressionsPayload): Promise<PaginatedExpressionsPayload> {
     return this.expressionReadService.searchExpressions(systemId, searchExpressionsPayload);
   }
 
@@ -31,7 +31,7 @@ export class ExpressionController {
 
   @Post()
   @UseGuards(JwtGuard)
-  public postExpression(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newExpressionPayload: NewExpressionPayload): Promise<ExpressionEntity> {
+  public postExpression(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Body() newExpressionPayload: NewExpressionPayload): Promise<ExpressionEntity> {
     return this.expressionWriteService.create(sessionUserId, systemId, newExpressionPayload);
   }
 };

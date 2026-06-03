@@ -6,7 +6,7 @@ import { PaginatedDistinctVariablePairsPayload } from '@/statement/payloads/pagi
 import { SearchDistinctVariablePairsPayload } from '@/statement/payloads/search-distinct-variable-pairs.payload';
 import { DistinctVariablePairReadService } from '@/statement/services/distinct-variable-pair-read.service';
 import { DistinctVariablePairWriteService } from '@/statement/services/distinct-variable-pair-write.service';
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
 
 @Controller('system/:systemId/statement/:statementId/distinct-variable-pair')
 export class DistinctVariablePairController {
@@ -20,7 +20,7 @@ export class DistinctVariablePairController {
   }
 
   @Get()
-  public getDistinctVariablePairs(@Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('statementId', new ParseUUIDPipe()) statementId: string, @Query(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchDistinctVariablePairsPayload: SearchDistinctVariablePairsPayload): Promise<PaginatedDistinctVariablePairsPayload> {
+  public getDistinctVariablePairs(@Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('statementId', new ParseUUIDPipe()) statementId: string, @Query() searchDistinctVariablePairsPayload: SearchDistinctVariablePairsPayload): Promise<PaginatedDistinctVariablePairsPayload> {
     return this.distinctVariablePairReadService.searchDistinctVariablePairs(systemId, statementId, searchDistinctVariablePairsPayload);
   }
 
@@ -31,7 +31,7 @@ export class DistinctVariablePairController {
 
   @Post()
   @UseGuards(JwtGuard)
-  public postDistinctVariablePair(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('statementId', new ParseUUIDPipe()) statementId: string, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newDistinctVariablePairPayload: NewDistinctVariablePairPayload): Promise<DistinctVariablePairEntity> {
+  public postDistinctVariablePair(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('statementId', new ParseUUIDPipe()) statementId: string, @Body() newDistinctVariablePairPayload: NewDistinctVariablePairPayload): Promise<DistinctVariablePairEntity> {
     return this.distinctVariablePairWriteService.create(sessionUserId, systemId, statementId, newDistinctVariablePairPayload);
   }
 };

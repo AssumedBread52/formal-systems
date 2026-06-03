@@ -7,7 +7,7 @@ import { PaginatedStatementsPayload } from '@/statement/payloads/paginated-state
 import { SearchStatementsPayload } from '@/statement/payloads/search-statements.payload';
 import { StatementReadService } from '@/statement/services/statement-read.service';
 import { StatementWriteService } from '@/statement/services/statement-write.service';
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 
 @Controller('system/:systemId/statement')
 export class StatementController {
@@ -21,7 +21,7 @@ export class StatementController {
   }
 
   @Get()
-  public getStatements(@Param('systemId', new ParseUUIDPipe()) systemId: string, @Query(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchStatementsPayload: SearchStatementsPayload): Promise<PaginatedStatementsPayload> {
+  public getStatements(@Param('systemId', new ParseUUIDPipe()) systemId: string, @Query() searchStatementsPayload: SearchStatementsPayload): Promise<PaginatedStatementsPayload> {
     return this.statementReadService.searchStatements(systemId, searchStatementsPayload);
   }
 
@@ -32,13 +32,13 @@ export class StatementController {
 
   @Patch(':statementId')
   @UseGuards(JwtGuard)
-  public patchStatement(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('statementId', new ParseUUIDPipe()) statementId: string, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) editStatementPayload: EditStatementPayload): Promise<StatementEntity> {
+  public patchStatement(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('statementId', new ParseUUIDPipe()) statementId: string, @Body() editStatementPayload: EditStatementPayload): Promise<StatementEntity> {
     return this.statementWriteService.update(sessionUserId, systemId, statementId, editStatementPayload);
   }
 
   @Post()
   @UseGuards(JwtGuard)
-  public postStatement(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newStatementPayload: NewStatementPayload): Promise<StatementEntity> {
+  public postStatement(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Body() newStatementPayload: NewStatementPayload): Promise<StatementEntity> {
     return this.statementWriteService.create(sessionUserId, systemId, newStatementPayload);
   }
 };

@@ -7,7 +7,7 @@ import { PaginatedStatementsPayload } from '@/statement/payloads/paginated-state
 import { SearchStatementsPayload } from '@/statement/payloads/search-statements.payload';
 import { StatementReadService } from '@/statement/services/statement-read.service';
 import { StatementWriteService } from '@/statement/services/statement-write.service';
-import { ParseUUIDPipe, UseGuards, ValidationPipe } from '@nestjs/common';
+import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 @Resolver()
@@ -19,7 +19,7 @@ export class StatementResolver {
     return StatementEntity;
   })
   @UseGuards(JwtGuard)
-  public createStatement(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newStatementPayload: NewStatementPayload): Promise<StatementEntity> {
+  public createStatement(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementPayload') newStatementPayload: NewStatementPayload): Promise<StatementEntity> {
     return this.statementWriteService.create(sessionUserId, systemId, newStatementPayload);
   }
 
@@ -41,7 +41,7 @@ export class StatementResolver {
   @Query((): typeof PaginatedStatementsPayload => {
     return PaginatedStatementsPayload;
   })
-  public statements(@Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('filters', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchStatementsPayload: SearchStatementsPayload): Promise<PaginatedStatementsPayload> {
+  public statements(@Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('filters') searchStatementsPayload: SearchStatementsPayload): Promise<PaginatedStatementsPayload> {
     return this.statementReadService.searchStatements(systemId, searchStatementsPayload);
   }
 
@@ -49,7 +49,7 @@ export class StatementResolver {
     return StatementEntity;
   })
   @UseGuards(JwtGuard)
-  public updateStatement(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementId', new ParseUUIDPipe()) statementId: string, @Args('statementPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) editStatementPayload: EditStatementPayload): Promise<StatementEntity> {
+  public updateStatement(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('statementId', new ParseUUIDPipe()) statementId: string, @Args('statementPayload') editStatementPayload: EditStatementPayload): Promise<StatementEntity> {
     return this.statementWriteService.update(sessionUserId, systemId, statementId, editStatementPayload);
   }
 };

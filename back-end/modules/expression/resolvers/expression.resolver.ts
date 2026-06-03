@@ -6,7 +6,7 @@ import { PaginatedExpressionsPayload } from '@/expression/payloads/paginated-exp
 import { SearchExpressionsPayload } from '@/expression/payloads/search-expressions.payload';
 import { ExpressionReadService } from '@/expression/services/expression-read.service';
 import { ExpressionWriteService } from '@/expression/services/expression-write.service';
-import { ParseUUIDPipe, UseGuards, ValidationPipe } from '@nestjs/common';
+import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 @Resolver()
@@ -18,7 +18,7 @@ export class ExpressionResolver {
     return ExpressionEntity;
   })
   @UseGuards(JwtGuard)
-  public createExpression(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('expressionPayload', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newExpressionPayload: NewExpressionPayload): Promise<ExpressionEntity> {
+  public createExpression(@SessionUser('id') sessionUserId: string, @Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('expressionPayload') newExpressionPayload: NewExpressionPayload): Promise<ExpressionEntity> {
     return this.expressionWriteService.create(sessionUserId, systemId, newExpressionPayload);
   }
 
@@ -40,7 +40,7 @@ export class ExpressionResolver {
   @Query((): typeof PaginatedExpressionsPayload => {
     return PaginatedExpressionsPayload;
   })
-  public expressions(@Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('filters', new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchExpressionsPayload: SearchExpressionsPayload): Promise<PaginatedExpressionsPayload> {
+  public expressions(@Args('systemId', new ParseUUIDPipe()) systemId: string, @Args('filters') searchExpressionsPayload: SearchExpressionsPayload): Promise<PaginatedExpressionsPayload> {
     return this.expressionReadService.searchExpressions(systemId, searchExpressionsPayload);
   }
 };

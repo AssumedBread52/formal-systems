@@ -7,7 +7,7 @@ import { PaginatedSymbolsPayload } from '@/symbol/payloads/paginated-symbols.pay
 import { SearchSymbolsPayload } from '@/symbol/payloads/search-symbols.payload';
 import { SymbolReadService } from '@/symbol/services/symbol-read.service';
 import { SymbolWriteService } from '@/symbol/services/symbol-write.service';
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 
 @Controller('system/:systemId/symbol')
 export class SymbolController {
@@ -21,7 +21,7 @@ export class SymbolController {
   }
 
   @Get()
-  public getSymbols(@Param('systemId', new ParseUUIDPipe()) systemId: string, @Query(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedSymbolsPayload> {
+  public getSymbols(@Param('systemId', new ParseUUIDPipe()) systemId: string, @Query() searchSymbolsPayload: SearchSymbolsPayload): Promise<PaginatedSymbolsPayload> {
     return this.symbolReadService.searchSymbols(systemId, searchSymbolsPayload);
   }
 
@@ -32,13 +32,13 @@ export class SymbolController {
 
   @Patch(':symbolId')
   @UseGuards(JwtGuard)
-  public patchSymbol(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('symbolId', new ParseUUIDPipe()) symbolId: string, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
+  public patchSymbol(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Param('symbolId', new ParseUUIDPipe()) symbolId: string, @Body() editSymbolPayload: EditSymbolPayload): Promise<SymbolEntity> {
     return this.symbolWriteService.update(sessionUserId, systemId, symbolId, editSymbolPayload);
   }
 
   @Post()
   @UseGuards(JwtGuard)
-  public postSymbol(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
+  public postSymbol(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Body() newSymbolPayload: NewSymbolPayload): Promise<SymbolEntity> {
     return this.symbolWriteService.create(sessionUserId, systemId, newSymbolPayload);
   }
 };

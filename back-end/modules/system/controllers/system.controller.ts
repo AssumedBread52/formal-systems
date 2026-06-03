@@ -7,7 +7,7 @@ import { PaginatedSystemsPayload } from '@/system/payloads/paginated-systems.pay
 import { SearchSystemsPayload } from '@/system/payloads/search-systems.payload';
 import { SystemReadService } from '@/system/services/system-read.service';
 import { SystemWriteService } from '@/system/services/system-write.service';
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 
 @Controller('system')
 export class SystemController {
@@ -21,7 +21,7 @@ export class SystemController {
   }
 
   @Get()
-  public getSystems(@Query(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
+  public getSystems(@Query() searchSystemsPayload: SearchSystemsPayload): Promise<PaginatedSystemsPayload> {
     return this.systemReadService.searchSystems(searchSystemsPayload);
   }
 
@@ -32,13 +32,13 @@ export class SystemController {
 
   @Patch(':systemId')
   @UseGuards(JwtGuard)
-  public patchSystem(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
+  public patchSystem(@SessionUser('id') sessionUserId: string, @Param('systemId', new ParseUUIDPipe()) systemId: string, @Body() editSystemPayload: EditSystemPayload): Promise<SystemEntity> {
     return this.systemWriteService.update(sessionUserId, systemId, editSystemPayload);
   }
 
   @Post()
   @UseGuards(JwtGuard)
-  public postSystem(@SessionUser('id') sessionUserId: string, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
+  public postSystem(@SessionUser('id') sessionUserId: string, @Body() newSystemPayload: NewSystemPayload): Promise<SystemEntity> {
     return this.systemWriteService.create(sessionUserId, newSystemPayload);
   }
 };

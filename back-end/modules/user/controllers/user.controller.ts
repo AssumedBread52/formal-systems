@@ -7,7 +7,7 @@ import { PaginatedUsersPayload } from '@/user/payloads/paginated-users.payload';
 import { SearchUsersPayload } from '@/user/payloads/search-users.payload';
 import { UserReadService } from '@/user/services/user-read.service';
 import { UserWriteService } from '@/user/services/user-write.service';
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Query, Res, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Query, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
 
 @Controller('user')
@@ -16,7 +16,7 @@ export class UserController {
   }
 
   @Get()
-  public getUsers(@Query(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) searchUsersPayload: SearchUsersPayload): Promise<PaginatedUsersPayload> {
+  public getUsers(@Query() searchUsersPayload: SearchUsersPayload): Promise<PaginatedUsersPayload> {
     return this.userReadService.searchUsers(searchUsersPayload);
   }
 
@@ -33,12 +33,12 @@ export class UserController {
 
   @Patch('session-user')
   @UseGuards(JwtGuard)
-  public patchSessionUser(@SessionUser() sessionUser: UserEntity, @Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) editUserPayload: EditUserPayload): Promise<UserEntity> {
+  public patchSessionUser(@SessionUser() sessionUser: UserEntity, @Body() editUserPayload: EditUserPayload): Promise<UserEntity> {
     return this.userWriteService.editProfile(sessionUser, editUserPayload);
   }
 
   @Post()
-  public postUser(@Body(new ValidationPipe({ forbidNonWhitelisted: true, transform: true, whitelist: true })) newUserPayload: NewUserPayload, @Res({ passthrough: true }) response: Response): Promise<UserEntity> {
+  public postUser(@Body() newUserPayload: NewUserPayload, @Res({ passthrough: true }) response: Response): Promise<UserEntity> {
     return this.userWriteService.signUp(newUserPayload, response);
   }
 };
