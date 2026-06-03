@@ -202,7 +202,8 @@ input SearchSystemsPayload {
 input SearchExpressionsPayload {
   page: Int! = 1
   pageSize: Int! = 10
-  symbolIds: [String!]! = []
+  includeSymbolIds: [String!]! = []
+  excludeSymbolIds: [String!]! = []
 }
 
 input SearchDistinctVariablePairsPayload {
@@ -215,12 +216,16 @@ input SearchDistinctVariablePairsPayload {
 input SearchHypothesesPayload {
   page: Int! = 1
   pageSize: Int! = 10
+  includeExpressionIds: [String!]! = []
+  excludeExpressionIds: [String!]! = []
   types: [HypothesisType!]! = []
 }
 
 input SearchStatementsPayload {
   page: Int! = 1
   pageSize: Int! = 10
+  includeExpressionIds: [String!]! = []
+  excludeExpressionIds: [String!]! = []
   searchText: String! = ""
 }
 
