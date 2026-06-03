@@ -13,7 +13,7 @@ import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, FindOptionsWhere, In, Repository } from 'typeorm';
+import { And, EntityManager, FindOptionsWhere, In, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class HypothesisReadService {
@@ -29,8 +29,17 @@ export class HypothesisReadService {
 
       const where = {
         systemId,
-        statementId,
+        statementId
       } as FindOptionsWhere<HypothesisEntity>;
+      const includeFilter = In(validatedSearchHypothesesPayload.includeExpressionIds);
+      const excludeFilter = Not(In(validatedSearchHypothesesPayload.excludeExpressionIds));
+      if (0 < validatedSearchHypothesesPayload.includeExpressionIds.length && 0 < validatedSearchHypothesesPayload.excludeExpressionIds.length) {
+        where.expressionId = And(includeFilter, excludeFilter);
+      } else if (0 < validatedSearchHypothesesPayload.includeExpressionIds.length) {
+        where.expressionId = includeFilter;
+      } else if (0 < validatedSearchHypothesesPayload.excludeExpressionIds.length) {
+        where.expressionId = excludeFilter;
+      }
       if (0 < validatedSearchHypothesesPayload.types.length) {
         where.type = In(validatedSearchHypothesesPayload.types);
       }
