@@ -6,7 +6,7 @@ import { PaginatedStatementsPayload } from '@/statement/payloads/paginated-state
 import { SearchStatementsPayload } from '@/statement/payloads/search-statements.payload';
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, ILike, Repository } from 'typeorm';
+import { And, FindOptionsWhere, ILike, In, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class StatementReadService {
@@ -22,6 +22,8 @@ export class StatementReadService {
 
       const where = [] as FindOptionsWhere<StatementEntity>[];
       const textFilter = ILike(`%${validatedSearchStatementsPayload.searchText}%`);
+      const includeFilter = In(validatedSearchStatementsPayload.includeExpressionIds);
+      const excludeFilter = Not(In(validatedSearchStatementsPayload.excludeExpressionIds));
       if (0 < validatedSearchStatementsPayload.searchText.length) {
         where.push({
           systemId,
@@ -34,6 +36,19 @@ export class StatementReadService {
       } else {
         where.push({
           systemId
+        });
+      }
+      if (0 < validatedSearchStatementsPayload.includeExpressionIds.length && 0 < validatedSearchStatementsPayload.excludeExpressionIds.length) {
+        where.forEach((condition: FindOptionsWhere<StatementEntity>): void => {
+          condition.assertionExpressionId = And(includeFilter, excludeFilter);
+        });
+      } else if (0 < validatedSearchStatementsPayload.includeExpressionIds.length) {
+        where.forEach((condition: FindOptionsWhere<StatementEntity>): void => {
+          condition.assertionExpressionId = includeFilter;
+        });
+      } else if (0 < validatedSearchStatementsPayload.excludeExpressionIds.length) {
+        where.forEach((condition: FindOptionsWhere<StatementEntity>): void => {
+          condition.assertionExpressionId = excludeFilter;
         });
       }
 

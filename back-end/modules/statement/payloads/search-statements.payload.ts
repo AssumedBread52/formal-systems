@@ -1,6 +1,6 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
-import { IsInt, IsString, Min } from 'class-validator';
+import { ArrayUnique, IsArray, IsInt, IsString, IsUUID, Min } from 'class-validator';
 
 @InputType()
 export class SearchStatementsPayload {
@@ -22,6 +22,24 @@ export class SearchStatementsPayload {
     return Number;
   })
   public readonly pageSize: number = 10;
+  @ArrayUnique()
+  @Field((): [typeof String] => {
+    return [String];
+  })
+  @IsArray()
+  @IsUUID('all', {
+    each: true
+  })
+  public readonly includeExpressionIds: string[] = [];
+  @ArrayUnique()
+  @Field((): [typeof String] => {
+    return [String];
+  })
+  @IsArray()
+  @IsUUID('all', {
+    each: true
+  })
+  public readonly excludeExpressionIds: string[] = [];
   @Field((): typeof String => {
     return String;
   })
