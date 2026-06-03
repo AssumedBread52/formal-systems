@@ -21,36 +21,38 @@ export class DistinctVariablePairReadService {
       const skip = (validatedSearchDistinctVariablePairsPayload.page - 1) * validatedSearchDistinctVariablePairsPayload.pageSize;
 
       const where = [] as FindOptionsWhere<DistinctVariablePairEntity>[];
+      const includeFilter = In(validatedSearchDistinctVariablePairsPayload.includeSymbolIds);
+      const excludeFilter = Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds));
       if (0 < validatedSearchDistinctVariablePairsPayload.includeSymbolIds.length && 0 < validatedSearchDistinctVariablePairsPayload.excludeSymbolIds.length) {
         where.push({
           systemId,
           statementId,
-          variableSymbol1Id: And(Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds)), In(validatedSearchDistinctVariablePairsPayload.includeSymbolIds)),
-          variableSymbol2Id: Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds))
+          variableSymbol1Id: And(excludeFilter, includeFilter),
+          variableSymbol2Id: excludeFilter
         });
         where.push({
           systemId,
           statementId,
-          variableSymbol1Id: Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds)),
-          variableSymbol2Id: And(Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds)), In(validatedSearchDistinctVariablePairsPayload.includeSymbolIds))
-        });
-      } else if (0 < validatedSearchDistinctVariablePairsPayload.excludeSymbolIds.length) {
-        where.push({
-          systemId,
-          statementId,
-          variableSymbol1Id: Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds)),
-          variableSymbol2Id: Not(In(validatedSearchDistinctVariablePairsPayload.excludeSymbolIds))
+          variableSymbol1Id: excludeFilter,
+          variableSymbol2Id: And(excludeFilter, includeFilter)
         });
       } else if (0 < validatedSearchDistinctVariablePairsPayload.includeSymbolIds.length) {
         where.push({
           systemId,
           statementId,
-          variableSymbol1Id: In(validatedSearchDistinctVariablePairsPayload.includeSymbolIds)
+          variableSymbol1Id: includeFilter
         });
         where.push({
           systemId,
           statementId,
-          variableSymbol2Id: In(validatedSearchDistinctVariablePairsPayload.includeSymbolIds)
+          variableSymbol2Id: includeFilter
+        });
+      } else if (0 < validatedSearchDistinctVariablePairsPayload.excludeSymbolIds.length) {
+        where.push({
+          systemId,
+          statementId,
+          variableSymbol1Id: excludeFilter,
+          variableSymbol2Id: excludeFilter
         });
       } else {
         where.push({
