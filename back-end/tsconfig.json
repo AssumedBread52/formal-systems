@@ -7,12 +7,7 @@
     "exactOptionalPropertyTypes": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "lib": [
-      "ESNext"
-    ],
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "commonjs",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -27,12 +22,11 @@
         "./modules/*"
       ]
     },
-    "rootDir": "./modules",
     "removeComments": true,
+    "rootDir": "./modules",
     "skipLibCheck": true,
-    "sourceMap": false,
     "strict": true,
-    "target": "esnext",
+    "target": "es2022",
     "types": [
       "jest"
     ]
