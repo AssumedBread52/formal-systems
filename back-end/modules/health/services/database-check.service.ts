@@ -13,9 +13,9 @@ export class DatabaseCheckService {
 
   public async check(): Promise<ComponentStatusPayload> {
     try {
-      const { database } = await this.typeOrmHealthIndicator.pingCheck(DatabaseCheckService.KEY);
+      const { [DatabaseCheckService.KEY]: result } = await this.typeOrmHealthIndicator.pingCheck(DatabaseCheckService.KEY);
 
-      const { status } = database;
+      const { status } = result;
 
       switch (status) {
         case 'up':
