@@ -14,30 +14,22 @@ export class DistinctVariablePairRelationsResolver {
   public constructor(private readonly statementLoadingService: StatementLoadingService, private readonly symbolLoadingService: SymbolLoadingService, private readonly systemLoadingService: SystemLoadingService) {
   }
 
-  @ResolveField((): typeof StatementEntity => {
-    return StatementEntity;
-  })
+  @ResolveField()
   public statement(@Parent() distinctVariablePair: DistinctVariablePairEntity): Promise<StatementEntity> {
     return this.statementLoadingService.loadById(distinctVariablePair.statementId);
   }
 
-  @ResolveField((): typeof SystemEntity => {
-    return SystemEntity;
-  })
+  @ResolveField()
   public system(@Parent() distinctVariablePair: DistinctVariablePairEntity): Promise<SystemEntity> {
     return this.systemLoadingService.loadById(distinctVariablePair.systemId);
   }
 
-  @ResolveField((): typeof SymbolEntity => {
-    return SymbolEntity;
-  })
+  @ResolveField()
   public variableSymbol1(@Parent() distinctVariablePair: DistinctVariablePairEntity): Promise<SymbolEntity> {
     return this.symbolLoadingService.loadById(distinctVariablePair.variableSymbol1Id);
   }
 
-  @ResolveField((): typeof SymbolEntity => {
-    return SymbolEntity;
-  })
+  @ResolveField()
   public variableSymbol2(@Parent() distinctVariablePair: DistinctVariablePairEntity): Promise<SymbolEntity> {
     return this.symbolLoadingService.loadById(distinctVariablePair.variableSymbol2Id);
   }

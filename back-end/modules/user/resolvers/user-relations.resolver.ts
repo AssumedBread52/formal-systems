@@ -10,9 +10,7 @@ export class UserRelationsResolver {
   public constructor(private readonly systemLoadingService: SystemLoadingService) {
   }
 
-  @ResolveField((): [typeof SystemEntity] => {
-    return [SystemEntity];
-  })
+  @ResolveField()
   public systems(@Parent() user: UserEntity): Promise<SystemEntity[]> {
     return this.systemLoadingService.looadByOwnerUserId(user.id);
   }

@@ -16,30 +16,22 @@ export class StatementRelationsResolver {
   public constructor(private readonly distinctVariablePairLoadingService: DistinctVariablePairLoadingService, private readonly expressionLoadingService: ExpressionLoadingService, private readonly hypothesisLoadingService: HypothesisLoadingService, private readonly systemLoadingService: SystemLoadingService) {
   }
 
-  @ResolveField((): typeof ExpressionEntity => {
-    return ExpressionEntity;
-  })
+  @ResolveField()
   public assertion(@Parent() statement: StatementEntity): Promise<ExpressionEntity> {
     return this.expressionLoadingService.loadById(statement.assertionExpressionId);
   }
 
-  @ResolveField((): [typeof DistinctVariablePairEntity] => {
-    return [DistinctVariablePairEntity];
-  })
+  @ResolveField()
   public distinctVariablePairs(@Parent() statement: StatementEntity): Promise<DistinctVariablePairEntity[]> {
     return this.distinctVariablePairLoadingService.loadByStatementId(statement.id);
   }
 
-  @ResolveField((): [typeof HypothesisEntity] => {
-    return [HypothesisEntity];
-  })
+  @ResolveField()
   public hypotheses(@Parent() statement: StatementEntity): Promise<HypothesisEntity[]> {
     return this.hypothesisLoadingService.loadByStatementId(statement.id);
   }
 
-  @ResolveField((): typeof SystemEntity => {
-    return SystemEntity;
-  })
+  @ResolveField()
   public system(@Parent() statement: StatementEntity): Promise<SystemEntity> {
     return this.systemLoadingService.loadById(statement.systemId);
   }

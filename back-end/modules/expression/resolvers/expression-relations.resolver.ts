@@ -16,30 +16,22 @@ export class ExpressionRelationsResolver {
   public constructor(private readonly expressionTokenLoadingService: ExpressionTokenLoadingService, private readonly hypothesisLoadingService: HypothesisLoadingService, private readonly statementLoadingService: StatementLoadingService, private readonly systemLoadingService: SystemLoadingService) {
   }
 
-  @ResolveField((): [typeof ExpressionTokenEntity] => {
-    return [ExpressionTokenEntity];
-  })
+  @ResolveField()
   public expressionTokens(@Parent() expression: ExpressionEntity): Promise<ExpressionTokenEntity[]> {
     return this.expressionTokenLoadingService.loadByExpressionId(expression.id);
   }
 
-  @ResolveField((): [typeof HypothesisEntity] => {
-    return [HypothesisEntity];
-  })
+  @ResolveField()
   public hypotheses(@Parent() expression: ExpressionEntity): Promise<HypothesisEntity[]> {
     return this.hypothesisLoadingService.loadByExpressionId(expression.id);
   }
 
-  @ResolveField((): [typeof StatementEntity] => {
-    return [StatementEntity];
-  })
+  @ResolveField()
   public statements(@Parent() expression: ExpressionEntity): Promise<StatementEntity[]> {
     return this.statementLoadingService.loadByAssertionExpressionId(expression.id);
   }
 
-  @ResolveField((): typeof SystemEntity => {
-    return SystemEntity;
-  })
+  @ResolveField()
   public system(@Parent() expression: ExpressionEntity): Promise<SystemEntity> {
     return this.systemLoadingService.loadById(expression.systemId);
   }

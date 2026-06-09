@@ -14,23 +14,17 @@ export class HypothesisRelationsResolver {
   public constructor(private readonly expressionLoadingService: ExpressionLoadingService, private readonly statementLoadingService: StatementLoadingService, private readonly systemLoadingService: SystemLoadingService) {
   }
 
-  @ResolveField((): typeof ExpressionEntity => {
-    return ExpressionEntity;
-  })
+  @ResolveField()
   public expression(@Parent() hypothesis: HypothesisEntity): Promise<ExpressionEntity> {
     return this.expressionLoadingService.loadById(hypothesis.expressionId);
   }
 
-  @ResolveField((): typeof StatementEntity => {
-    return StatementEntity;
-  })
+  @ResolveField()
   public statement(@Parent() hypothesis: HypothesisEntity): Promise<StatementEntity> {
     return this.statementLoadingService.loadById(hypothesis.statementId);
   }
 
-  @ResolveField((): typeof SystemEntity => {
-    return SystemEntity;
-  })
+  @ResolveField()
   public system(@Parent() hypothesis: HypothesisEntity): Promise<SystemEntity> {
     return this.systemLoadingService.loadById(hypothesis.systemId);
   }

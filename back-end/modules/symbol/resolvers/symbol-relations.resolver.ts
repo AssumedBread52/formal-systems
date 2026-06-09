@@ -14,30 +14,22 @@ export class SymbolRelationsResolver {
   public constructor(private readonly distinctVariablePairLoadingService: DistinctVariablePairLoadingService, private readonly expressionTokenLoadingService: ExpressionTokenLoadingService, private readonly systemLoadingService: SystemLoadingService) {
   }
 
-  @ResolveField((): [typeof DistinctVariablePairEntity] => {
-    return [DistinctVariablePairEntity];
-  })
+  @ResolveField()
   public distinctVariable1Pairs(@Parent() symbol: SymbolEntity): Promise<DistinctVariablePairEntity[]> {
     return this.distinctVariablePairLoadingService.loadByVariableSymbol1Id(symbol.id);
   }
 
-  @ResolveField((): [typeof DistinctVariablePairEntity] => {
-    return [DistinctVariablePairEntity];
-  })
+  @ResolveField()
   public distinctVariable2Pairs(@Parent() symbol: SymbolEntity): Promise<DistinctVariablePairEntity[]> {
     return this.distinctVariablePairLoadingService.loadByVariableSymbol2Id(symbol.id);
   }
 
-  @ResolveField((): [typeof ExpressionTokenEntity] => {
-    return [ExpressionTokenEntity];
-  })
+  @ResolveField()
   public expressionTokens(@Parent() symbol: SymbolEntity): Promise<ExpressionTokenEntity[]> {
     return this.expressionTokenLoadingService.loadBySymbolId(symbol.id);
   }
 
-  @ResolveField((): typeof SystemEntity => {
-    return SystemEntity;
-  })
+  @ResolveField()
   public system(@Parent() symbol: SymbolEntity): Promise<SystemEntity> {
     return this.systemLoadingService.loadById(symbol.systemId);
   }

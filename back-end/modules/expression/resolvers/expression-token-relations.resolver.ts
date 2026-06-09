@@ -14,23 +14,17 @@ export class ExpressionTokenRelationsResolver {
   public constructor(private readonly expressionLoadingService: ExpressionLoadingService, private readonly symbolLoadingService: SymbolLoadingService, private readonly systemLoadingService: SystemLoadingService) {
   }
 
-  @ResolveField((): typeof ExpressionEntity => {
-    return ExpressionEntity;
-  })
+  @ResolveField()
   public expression(@Parent() expressionToken: ExpressionTokenEntity): Promise<ExpressionEntity> {
     return this.expressionLoadingService.loadById(expressionToken.expressionId);
   }
 
-  @ResolveField((): typeof SymbolEntity => {
-    return SymbolEntity;
-  })
+  @ResolveField()
   public symbol(@Parent() expressionToken: ExpressionTokenEntity): Promise<SymbolEntity> {
     return this.symbolLoadingService.loadById(expressionToken.symbolId);
   }
 
-  @ResolveField((): typeof SystemEntity => {
-    return SystemEntity;
-  })
+  @ResolveField()
   public system(@Parent() expressionToken: ExpressionTokenEntity): Promise<SystemEntity> {
     return this.systemLoadingService.loadById(expressionToken.systemId);
   }

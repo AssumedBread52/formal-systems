@@ -22,51 +22,37 @@ export class SystemRelationsResolver {
   public constructor(private readonly distinctVariablePairLoadingService: DistinctVariablePairLoadingService, private readonly expressionLoadingService: ExpressionLoadingService, private readonly expressionTokenLoadingService: ExpressionTokenLoadingService, private readonly hypothesisLoadingService: HypothesisLoadingService, private readonly statementLoadingService: StatementLoadingService, private readonly symbolLoadingService: SymbolLoadingService, private readonly userLoadingService: UserLoadingService) {
   }
 
-  @ResolveField((): [typeof DistinctVariablePairEntity] => {
-    return [DistinctVariablePairEntity];
-  })
+  @ResolveField()
   public distinctVariablePairs(@Parent() system: SystemEntity): Promise<DistinctVariablePairEntity[]> {
     return this.distinctVariablePairLoadingService.loadBySystemId(system.id);
   }
 
-  @ResolveField((): [typeof ExpressionEntity] => {
-    return [ExpressionEntity];
-  })
+  @ResolveField()
   public expressions(@Parent() system: SystemEntity): Promise<ExpressionEntity[]> {
     return this.expressionLoadingService.loadBySystemId(system.id);
   }
 
-  @ResolveField((): [typeof ExpressionTokenEntity] => {
-    return [ExpressionTokenEntity];
-  })
+  @ResolveField()
   public expressionTokens(@Parent() system: SystemEntity): Promise<ExpressionTokenEntity[]> {
     return this.expressionTokenLoadingService.loadBySystemId(system.id);
   }
 
-  @ResolveField((): [typeof HypothesisEntity] => {
-    return [HypothesisEntity];
-  })
+  @ResolveField()
   public hypotheses(@Parent() system: SystemEntity): Promise<HypothesisEntity[]> {
     return this.hypothesisLoadingService.loadBySystemId(system.id);
   }
 
-  @ResolveField((): typeof UserEntity => {
-    return UserEntity;
-  })
+  @ResolveField()
   public owner(@Parent() system: SystemEntity): Promise<UserEntity> {
     return this.userLoadingService.loadById(system.ownerUserId);
   }
 
-  @ResolveField((): [typeof StatementEntity] => {
-    return [StatementEntity];
-  })
+  @ResolveField()
   public statements(@Parent() system: SystemEntity): Promise<StatementEntity[]> {
     return this.statementLoadingService.loadBySystemId(system.id);
   }
 
-  @ResolveField((): [typeof SymbolEntity] => {
-    return [SymbolEntity];
-  })
+  @ResolveField()
   public symbols(@Parent() system: SystemEntity): Promise<SymbolEntity[]> {
     return this.symbolLoadingService.loadBySystemId(system.id);
   }
