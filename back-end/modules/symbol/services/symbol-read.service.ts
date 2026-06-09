@@ -102,13 +102,7 @@ export class SymbolReadService {
 
   public async verifyAllExist(systemId: string, symbolIds: string[]): Promise<void> {
     try {
-      const uniqueSymbolIds = symbolIds.reduce((uniqueSymbolIds: string[], symbolId: string): string[] => {
-        if (!uniqueSymbolIds.includes(symbolId)) {
-          uniqueSymbolIds.push(symbolId);
-        }
-
-        return uniqueSymbolIds;
-      }, []);
+      const uniqueSymbolIds = Array.from(new Set(symbolIds));
 
       const count = await this.repository.countBy({
         id: In(uniqueSymbolIds),
@@ -131,13 +125,7 @@ export class SymbolReadService {
     try {
       const symbolRepository = entityManager.getRepository(SymbolEntity);
 
-      const uniqueSymbolIds = symbolIds.reduce((uniqueSymbolIds: string[], symbolId: string): string[] => {
-        if (!uniqueSymbolIds.includes(symbolId)) {
-          uniqueSymbolIds.push(symbolId);
-        }
-
-        return uniqueSymbolIds;
-      }, []);
+      const uniqueSymbolIds = Array.from(new Set(symbolIds));
 
       const count = await symbolRepository.countBy({
         id: In(uniqueSymbolIds),

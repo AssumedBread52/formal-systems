@@ -155,13 +155,7 @@ export class HypothesisReadService {
     try {
       const symbolRepository = entityManager.getRepository(SymbolEntity);
 
-      const uniqueVariableSymbolIds = variableSymbolIds.reduce((uniqueVariableSymbolIds: string[], variableSymbolId: string): string[] => {
-        if (!uniqueVariableSymbolIds.includes(variableSymbolId)) {
-          uniqueVariableSymbolIds.push(variableSymbolId);
-        }
-
-        return uniqueVariableSymbolIds;
-      }, []);
+      const uniqueVariableSymbolIds = Array.from(new Set(variableSymbolIds));
 
       const count = await symbolRepository.countBy({
         id: In(uniqueVariableSymbolIds),
