@@ -5,16 +5,19 @@ export const getOrThrowMock = (): jest.SpyInstance<unknown, [propertyPath: never
 
   beforeAll((): void => {
     getOrThrow.mockReturnValueOnce('test secret');
-    getOrThrow.mockReturnValueOnce(5);
+    getOrThrow.mockReturnValueOnce('5');
+    getOrThrow.mockReturnValueOnce('postgres');
+    getOrThrow.mockReturnValueOnce('database_scheme');
+    getOrThrow.mockReturnValueOnce('database_username');
+    getOrThrow.mockReturnValueOnce('database_password');
+    getOrThrow.mockReturnValueOnce('database_host');
+    getOrThrow.mockReturnValueOnce(5432);
+    getOrThrow.mockReturnValueOnce('database_name');
     getOrThrow.mockReturnValueOnce('test secret');
   });
 
   beforeEach((): void => {
     getOrThrow.mockReset();
-  });
-
-  afterAll((): void => {
-    getOrThrow.mockRestore();
   });
 
   return getOrThrow;
