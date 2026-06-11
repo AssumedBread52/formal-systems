@@ -1,129 +1,1432 @@
-import { validatePayload } from '@/common/helpers/validate-payload';
+import { buildQueryResult } from '@/common/tests/helpers/build-query-result';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
-import { existsByMock } from '@/common/tests/mocks/exists-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
-import { saveMock } from '@/common/tests/mocks/save.mock';
-import { UserEntity } from '@/user/entities/user.entity';
+import { queryMock } from '@/common/tests/mocks/query.mock';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { hashSync } from 'bcryptjs';
-import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
 
 describe('Create User', (): void => {
-  const existsBy = existsByMock();
+  const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
+  const handle = 'Test1 User1';
+  const email = 'test1.user1@example.com';
+  const password = 'Test1User1!';
+  const handleCollisionSql = 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1';
+  const emailCollisionSql = 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1';
+  const startTransactionSql = 'START TRANSACTION';
+  const insertUserSql = 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"';
+  const commitSql = 'COMMIT';
+  const rollbackSql = 'ROLLBACK';
+  const tokenCookiePattern = /^token=[\w-]+\.[\w-]+\.[\w-]+; Max-Age=1; Path=\/; Expires=.+; HttpOnly; Secure$/;
+  const authStatusCookiePattern = /^authStatus=true; Max-Age=1; Path=\/; Expires=.+; Secure$/;
   const getOrThrow = getOrThrowMock();
-  const save = saveMock();
+  const query = queryMock();
   let app: NestExpressApplication;
 
   beforeAll(async (): Promise<void> => {
     app = await createTestApp();
   });
 
-  it('POST /user', async (): Promise<void> => {
-    const handle = 'Test1 User1';
-    const email = 'test1.user1@example.com';
-    const password = 'Test1User1!';
-    const user = validatePayload({
-      id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
-      handle,
-      email,
-      passwordHash: hashSync(password)
-    }, UserEntity);
+  describe('GraphQL POST /graphql mutation createUser', (): void => {
+    const operation = 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }';
 
-    existsBy.mockResolvedValueOnce(false);
-    existsBy.mockResolvedValueOnce(false);
-    getOrThrow.mockReturnValueOnce(1000);
-    save.mockResolvedValueOnce(user);
+    it('creates the user and sets auth cookies', async (): Promise<void> => {
+      getOrThrow.mockReturnValueOnce(1000);
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          id: userId
+        }
+      ]));
+      query.mockResolvedValueOnce([]);
 
-    const response = await request(app.getHttpServer()).post('/user').send({
-      handle,
-      email,
-      password
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(1);
+      expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
+      expect(query).toHaveBeenCalledTimes(5);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(response.body).toStrictEqual({
+        data: {
+          createUser: {
+            id: userId,
+            handle,
+            email
+          }
+        }
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeDefined();
+      expect(cookies).toHaveLength(2);
+      expect(cookies![0]).toMatch(tokenCookiePattern);
+      expect(cookies![1]).toMatch(authStatusCookiePattern);
     });
 
-    const cookies = response.get('Set-Cookie');
+    it('reports an error when getting cookie configuration fails', async (): Promise<void> => {
+      getOrThrow.mockImplementationOnce((): never => {
+        throw new Error();
+      });
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          id: userId
+        }
+      ]));
+      query.mockResolvedValueOnce([]);
 
-    expect(existsBy).toHaveBeenCalledTimes(2);
-    expect(existsBy).toHaveBeenNthCalledWith(1, {
-      handle
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(1);
+      expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
+      expect(query).toHaveBeenCalledTimes(5);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalError: {
+                error: 'Internal Server Error',
+                message: 'Sign up failed',
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+              },
+              status: HttpStatus.INTERNAL_SERVER_ERROR
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Sign up failed',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
     });
-    expect(existsBy).toHaveBeenNthCalledWith(2, {
-      email
+
+    it('reports an error when commit fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          id: userId
+        }
+      ]));
+      query.mockRejectedValueOnce(new Error());
+      query.mockResolvedValueOnce([]);
+
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(6);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(query).toHaveBeenNthCalledWith(6, rollbackSql);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalError: {
+                error: 'Internal Server Error',
+                message: 'Sign up failed',
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+              },
+              status: HttpStatus.INTERNAL_SERVER_ERROR
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Sign up failed',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
     });
-    expect(getOrThrow).toHaveBeenCalledTimes(1);
-    expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
-    expect(save).toHaveBeenCalledTimes(1);
-    expect(save).toHaveBeenNthCalledWith(1, {
-      handle,
-      email,
-      passwordHash: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+
+    it('reports an error when commit and rollback fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          id: userId
+        }
+      ]));
+      query.mockRejectedValueOnce(new Error());
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(6);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(query).toHaveBeenNthCalledWith(6, rollbackSql);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalError: {
+                error: 'Internal Server Error',
+                message: 'Sign up failed',
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+              },
+              status: HttpStatus.INTERNAL_SERVER_ERROR
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Sign up failed',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
     });
-    expect(response.body).toStrictEqual(instanceToPlain(user));
-    expect(response.statusCode).toBe(HttpStatus.CREATED);
-    expect(cookies).toBeDefined();
-    expect(cookies).toHaveLength(2);
-    expect(cookies![0]).toMatch(/^token=.+; Max-Age=1; Path=\/; Expires=(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (0[1-9]|[12]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} ([01]\d|2[0-3]):([0-5]\d):([0-5]\d) GMT; HttpOnly; Secure$/);
-    expect(cookies![1]).toMatch(/^authStatus=true; Max-Age=1; Path=\/; Expires=(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (0[1-9]|[12]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} ([01]\d|2[0-3]):([0-5]\d):([0-5]\d) GMT; Secure$/);
+
+    it('reports an error when insert fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockRejectedValueOnce(new Error());
+      query.mockResolvedValueOnce([]);
+
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(5);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, rollbackSql);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalError: {
+                error: 'Internal Server Error',
+                message: 'Sign up failed',
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+              },
+              status: HttpStatus.INTERNAL_SERVER_ERROR
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Sign up failed',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('reports an error when insert and rollback fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockRejectedValueOnce(new Error());
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(5);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, rollbackSql);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalError: {
+                error: 'Internal Server Error',
+                message: 'Sign up failed',
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+              },
+              status: HttpStatus.INTERNAL_SERVER_ERROR
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Sign up failed',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('reports an error when start transaction fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockRejectedValueOnce(new Error());
+      query.mockResolvedValueOnce([]);
+
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(4);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, rollbackSql);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalError: {
+                error: 'Internal Server Error',
+                message: 'Sign up failed',
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+              },
+              status: HttpStatus.INTERNAL_SERVER_ERROR
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Sign up failed',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('reports an error when start transaction and rollback fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockRejectedValueOnce(new Error());
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(4);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, rollbackSql);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalError: {
+                error: 'Internal Server Error',
+                message: 'Sign up failed',
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+              },
+              status: HttpStatus.INTERNAL_SERVER_ERROR
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Sign up failed',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('reports an error when e-mail address is taken', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          row_exists: 1
+        }
+      ]));
+
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(2);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalError: {
+                error: 'Conflict',
+                message: 'Users must have a unique e-mail address',
+                statusCode: HttpStatus.CONFLICT
+              },
+              status: HttpStatus.CONFLICT
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Users must have a unique e-mail address',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('reports an error when e-mail uniqueness check fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(2);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalError: {
+                error: 'Internal Server Error',
+                message: 'Verifying unique e-mail address failed',
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+              },
+              status: HttpStatus.INTERNAL_SERVER_ERROR
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Verifying unique e-mail address failed',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('reports an error when handle is taken', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          row_exists: 1
+        }
+      ]));
+
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalError: {
+                error: 'Conflict',
+                message: 'Users must have a unique handle',
+                statusCode: HttpStatus.CONFLICT
+              },
+              status: HttpStatus.CONFLICT
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Users must have a unique handle',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('reports an error when handle uniqueness check fails', async (): Promise<void> => {
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalError: {
+                error: 'Internal Server Error',
+                message: 'Verifying unique handle failed',
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+              },
+              status: HttpStatus.INTERNAL_SERVER_ERROR
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Verifying unique handle failed',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('reports an error when the payload is invalid', async (): Promise<void> => {
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle: '',
+            email: '',
+            password: ''
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'BAD_REQUEST',
+              originalError: {
+                error: 'Bad Request',
+                message: [
+                  'handle should not be empty',
+                  'email must be an email',
+                  'password is not strong enough'
+                ],
+                statusCode: HttpStatus.BAD_REQUEST
+              }
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Bad Request Exception',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('reports an error when the payload is invalid', async (): Promise<void> => {
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle: 'a'.repeat(51),
+            email: 'a'.repeat(255),
+            password
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
+      expect(response.body).toStrictEqual({
+        data: null,
+        errors: [
+          {
+            extensions: {
+              code: 'BAD_REQUEST',
+              originalError: {
+                error: 'Bad Request',
+                message: [
+                  'handle must be shorter than or equal to 50 characters',
+                  'email must be shorter than or equal to 254 characters',
+                  'email must be an email'
+                ],
+                statusCode: HttpStatus.BAD_REQUEST
+              }
+            },
+            locations: [
+              {
+                column: 44,
+                line: 1
+              }
+            ],
+            message: 'Bad Request Exception',
+            path: [
+              'createUser'
+            ]
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.OK);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('reports an error when the payload is invalid', async (): Promise<void> => {
+      const response = await request(app.getHttpServer()).post('/graphql').send({
+        query: operation,
+        variables: {
+          userPayload: {
+            handle,
+            email,
+            password,
+            extra: true
+          }
+        }
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
+      expect(response.body).toStrictEqual({
+        errors: [
+          {
+            extensions: {
+              code: 'BAD_USER_INPUT'
+            },
+            locations: [
+              {
+                column: 11,
+                line: 1
+              }
+            ],
+            message: `Variable "$userPayload" got invalid value { handle: "${handle}", email: "${email}", password: "${password}", extra: true }; Field "extra" is not defined by type "NewUserPayload".`
+          }
+        ]
+      });
+      expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      expect(cookies).toBeUndefined();
+    });
   });
 
-  it('POST /graphql mutation createUser', async (): Promise<void> => {
-    const handle = 'Test1 User1';
-    const email = 'test1.user1@example.com';
-    const password = 'Test1User1!';
-    const user = validatePayload({
-      id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
-      handle,
-      email,
-      passwordHash: hashSync(password)
-    }, UserEntity);
-
-    existsBy.mockResolvedValueOnce(false);
-    existsBy.mockResolvedValueOnce(false);
-    getOrThrow.mockReturnValueOnce(1000);
-    save.mockResolvedValueOnce(user);
-
-    const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
-      variables: {
-        userPayload: {
-          handle,
-          email,
-          password
+  describe('REST POST /user', (): void => {
+    it('creates the user and sets auth cookies', async (): Promise<void> => {
+      getOrThrow.mockReturnValueOnce(1000);
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          id: userId
         }
-      }
+      ]));
+      query.mockResolvedValueOnce([]);
+
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(1);
+      expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
+      expect(query).toHaveBeenCalledTimes(5);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(response.body).toStrictEqual({
+        id: userId,
+        handle,
+        email
+      });
+      expect(response.statusCode).toBe(HttpStatus.CREATED);
+      expect(cookies).toBeDefined();
+      expect(cookies).toHaveLength(2);
+      expect(cookies![0]).toMatch(tokenCookiePattern);
+      expect(cookies![1]).toMatch(authStatusCookiePattern);
     });
 
-    const cookies = response.get('Set-Cookie');
+    it('responds with 500 when getting cookie configuration fails', async (): Promise<void> => {
+      getOrThrow.mockImplementationOnce((): never => {
+        throw new Error();
+      });
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          id: userId
+        }
+      ]));
+      query.mockResolvedValueOnce([]);
 
-    expect(existsBy).toHaveBeenCalledTimes(2);
-    expect(existsBy).toHaveBeenNthCalledWith(1, {
-      handle
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(1);
+      expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
+      expect(query).toHaveBeenCalledTimes(5);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(response.body).toStrictEqual({
+        error: 'Internal Server Error',
+        message: 'Sign up failed',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+      });
+      expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(cookies).toBeUndefined();
     });
-    expect(existsBy).toHaveBeenNthCalledWith(2, {
-      email
+
+    it('responds with 500 when commit fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          id: userId
+        }
+      ]));
+      query.mockRejectedValueOnce(new Error());
+      query.mockResolvedValueOnce([]);
+
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(6);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(query).toHaveBeenNthCalledWith(6, rollbackSql);
+      expect(response.body).toStrictEqual({
+        error: 'Internal Server Error',
+        message: 'Sign up failed',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+      });
+      expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(cookies).toBeUndefined();
     });
-    expect(getOrThrow).toHaveBeenCalledTimes(1);
-    expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
-    expect(save).toHaveBeenCalledTimes(1);
-    expect(save).toHaveBeenNthCalledWith(1, {
-      handle,
-      email,
-      passwordHash: expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+
+    it('responds with 500 when commit and rollback fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          id: userId
+        }
+      ]));
+      query.mockRejectedValueOnce(new Error());
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(6);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(query).toHaveBeenNthCalledWith(6, rollbackSql);
+      expect(response.body).toStrictEqual({
+        error: 'Internal Server Error',
+        message: 'Sign up failed',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+      });
+      expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(cookies).toBeUndefined();
     });
-    expect(response.body).toStrictEqual({
-      data: {
-        createUser: instanceToPlain(user)
-      }
+
+    it('responds with 500 when insert fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockRejectedValueOnce(new Error());
+      query.mockResolvedValueOnce([]);
+
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(5);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, rollbackSql);
+      expect(response.body).toStrictEqual({
+        error: 'Internal Server Error',
+        message: 'Sign up failed',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+      });
+      expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(cookies).toBeUndefined();
     });
-    expect(response.statusCode).toBe(HttpStatus.OK);
-    expect(cookies).toBeDefined();
-    expect(cookies).toHaveLength(2);
-    expect(cookies![0]).toMatch(/^token=.+; Max-Age=1; Path=\/; Expires=(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (0[1-9]|[12]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} ([01]\d|2[0-3]):([0-5]\d):([0-5]\d) GMT; HttpOnly; Secure$/);
-    expect(cookies![1]).toMatch(/^authStatus=true; Max-Age=1; Path=\/; Expires=(Mon|Tue|Wed|Thu|Fri|Sat|Sun), (0[1-9]|[12]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} ([01]\d|2[0-3]):([0-5]\d):([0-5]\d) GMT; Secure$/);
+
+    it('responds with 500 when insert and rollback fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce([]);
+      query.mockRejectedValueOnce(new Error());
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(5);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
+        handle,
+        email,
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(5, rollbackSql);
+      expect(response.body).toStrictEqual({
+        error: 'Internal Server Error',
+        message: 'Sign up failed',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+      });
+      expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('responds with 500 when start transaction fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockRejectedValueOnce(new Error());
+      query.mockResolvedValueOnce([]);
+
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(4);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, rollbackSql);
+      expect(response.body).toStrictEqual({
+        error: 'Internal Server Error',
+        message: 'Sign up failed',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+      });
+      expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('responds with 500 when start transaction and rollback fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockRejectedValueOnce(new Error());
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(4);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
+      expect(query).toHaveBeenNthCalledWith(4, rollbackSql);
+      expect(response.body).toStrictEqual({
+        error: 'Internal Server Error',
+        message: 'Sign up failed',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+      });
+      expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('responds with 409 when e-mail address is taken', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          row_exists: 1
+        }
+      ]));
+
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(2);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(response.body).toStrictEqual({
+        error: 'Conflict',
+        message: 'Users must have a unique e-mail address',
+        statusCode: HttpStatus.CONFLICT
+      });
+      expect(response.statusCode).toBe(HttpStatus.CONFLICT);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('responds with 500 when e-mail uniqueness check fails', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(2);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
+        email
+      ], true);
+      expect(response.body).toStrictEqual({
+        error: 'Internal Server Error',
+        message: 'Verifying unique e-mail address failed',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+      });
+      expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('responds with 409 when handle is taken', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([
+        {
+          row_exists: 1
+        }
+      ]));
+
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(response.body).toStrictEqual({
+        error: 'Conflict',
+        message: 'Users must have a unique handle',
+        statusCode: HttpStatus.CONFLICT
+      });
+      expect(response.statusCode).toBe(HttpStatus.CONFLICT);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('responds with 500 when handle uniqueness check fails', async (): Promise<void> => {
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
+        handle
+      ], true);
+      expect(response.body).toStrictEqual({
+        error: 'Internal Server Error',
+        message: 'Verifying unique handle failed',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+      });
+      expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('responds with 400 when the payload is invalid', async (): Promise<void> => {
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle: '',
+        email: '',
+        password: ''
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
+      expect(response.body).toStrictEqual({
+        error: 'Bad Request',
+        message: [
+          'handle should not be empty',
+          'email must be an email',
+          'password is not strong enough'
+        ],
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+      expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('responds with 400 when the payload is invalid', async (): Promise<void> => {
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle: 'a'.repeat(51),
+        email: 'a'.repeat(255),
+        password
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
+      expect(response.body).toStrictEqual({
+        error: 'Bad Request',
+        message: [
+          'handle must be shorter than or equal to 50 characters',
+          'email must be shorter than or equal to 254 characters',
+          'email must be an email'
+        ],
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+      expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      expect(cookies).toBeUndefined();
+    });
+
+    it('responds with 400 when the payload is invalid', async (): Promise<void> => {
+      const response = await request(app.getHttpServer()).post('/user').send({
+        handle,
+        email,
+        password,
+        extra: true
+      });
+
+      const cookies = response.get('Set-Cookie');
+
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
+      expect(response.body).toStrictEqual({
+        error: 'Bad Request',
+        message: [
+          'property extra should not exist'
+        ],
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+      expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      expect(cookies).toBeUndefined();
+    });
   });
 
   afterAll(async (): Promise<void> => {
     await app.close();
+
+    jest.clearAllMocks();
   });
 });
