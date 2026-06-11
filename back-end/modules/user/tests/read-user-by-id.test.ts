@@ -12,6 +12,7 @@ describe('Read User by ID', (): void => {
   const handle = 'Test1 User1';
   const email = 'test1.user1@example.com';
   const passwordHash = hashSync('Test1User1!');
+  const selectUserByIdSql = 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1';
   const getOrThrow = getOrThrowMock();
   const query = queryMock();
   let app: NestExpressApplication;
@@ -42,7 +43,7 @@ describe('Read User by ID', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
         userId
       ], true);
       expect(response.body).toStrictEqual({
@@ -69,7 +70,7 @@ describe('Read User by ID', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
         userId
       ], true);
       expect(response.body).toStrictEqual({
@@ -102,7 +103,7 @@ describe('Read User by ID', (): void => {
     });
 
     it('reports an error when the database read fails', async (): Promise<void> => {
-      query.mockRejectedValueOnce(new Error());
+      query.mockRejectedValueOnce(new Error('connection terminated unexpectedly'));
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
         query: operation,
@@ -113,7 +114,7 @@ describe('Read User by ID', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
         userId
       ], true);
       expect(response.body).toStrictEqual({
@@ -199,7 +200,7 @@ describe('Read User by ID', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
         userId
       ], true);
       expect(response.body).toStrictEqual({
@@ -217,7 +218,7 @@ describe('Read User by ID', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
         userId
       ], true);
       expect(response.body).toStrictEqual({
@@ -229,13 +230,13 @@ describe('Read User by ID', (): void => {
     });
 
     it('responds with 500 when the database read fails', async (): Promise<void> => {
-      query.mockRejectedValueOnce(new Error());
+      query.mockRejectedValueOnce(new Error('connection terminated unexpectedly'));
 
       const response = await request(app.getHttpServer()).get(`/user/${userId}`);
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
         userId
       ], true);
       expect(response.body).toStrictEqual({
