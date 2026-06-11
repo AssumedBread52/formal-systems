@@ -1,6 +1,6 @@
 import { QueryResult } from 'typeorm';
 
-export const buildQueryResult = (payload: any[]): QueryResult => {
+export const buildQueryResult = (payload: Record<string, unknown>[]): QueryResult => {
   const queryResult = new QueryResult();
 
   queryResult.raw = payload;
