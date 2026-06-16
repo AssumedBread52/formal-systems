@@ -9,12 +9,6 @@ import { hashSync } from 'bcryptjs';
 import request from 'supertest';
 
 describe('Read Session User', (): void => {
-  const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
-  const handle = 'Test1 User1';
-  const email = 'test1.user1@example.com';
-  const password = 'Test1User1!';
-  const operation = 'query { sessionUser { id handle email } }';
-  const readSessionUserSql = 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1';
   const getOrThrow = getOrThrowMock();
   const query = queryMock();
   let app: NestExpressApplication;
@@ -27,34 +21,32 @@ describe('Read Session User', (): void => {
     it('returns the session user', async (): Promise<void> => {
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          UserEntity_id: userId,
-          UserEntity_handle: handle,
-          UserEntity_email: email,
-          UserEntity_password_hash: hashSync(password)
+          UserEntity_id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+          UserEntity_handle: 'Test1 User1',
+          UserEntity_email: 'test1.user1@example.com',
+          UserEntity_password_hash: hashSync('Test1User1!')
         }
       ]));
 
       const token = app.get(JwtService).sign({
-        userId
+        userId: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
       });
 
       const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
         `token=${token}`
       ]).send({
-        query: operation
+        query: 'query { sessionUser { id handle email } }'
       });
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, readSessionUserSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
         data: {
           sessionUser: {
-            id: userId,
-            handle,
-            email
+            id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com'
           }
         }
       });
@@ -65,20 +57,18 @@ describe('Read Session User', (): void => {
       query.mockResolvedValueOnce(buildQueryResult([]));
 
       const token = app.get(JwtService).sign({
-        userId
+        userId: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
       });
 
       const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
         `token=${token}`
       ]).send({
-        query: operation
+        query: 'query { sessionUser { id handle email } }'
       });
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, readSessionUserSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -111,20 +101,18 @@ describe('Read Session User', (): void => {
       query.mockRejectedValueOnce(new Error());
 
       const token = app.get(JwtService).sign({
-        userId
+        userId: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
       });
 
       const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
         `token=${token}`
       ]).send({
-        query: operation
+        query: 'query { sessionUser { id handle email } }'
       });
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, readSessionUserSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -155,14 +143,14 @@ describe('Read Session User', (): void => {
 
     it('reports an error when the token payload has extra fields', async (): Promise<void> => {
       const token = app.get(JwtService).sign({
-        userId,
+        userId: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
         extra: true
       });
 
       const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
         `token=${token}`
       ]).send({
-        query: operation
+        query: 'query { sessionUser { id handle email } }'
       });
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
@@ -203,7 +191,7 @@ describe('Read Session User', (): void => {
       const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
         `token=${token}`
       ]).send({
-        query: operation
+        query: 'query { sessionUser { id handle email } }'
       });
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
@@ -240,7 +228,7 @@ describe('Read Session User', (): void => {
       const response = await request(app.getHttpServer()).post('/graphql').set('Cookie', [
         'token=not-a-jwt'
       ]).send({
-        query: operation
+        query: 'query { sessionUser { id handle email } }'
       });
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
@@ -274,7 +262,7 @@ describe('Read Session User', (): void => {
 
     it('reports an error when no token is provided', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation
+        query: 'query { sessionUser { id handle email } }'
       });
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
@@ -311,15 +299,15 @@ describe('Read Session User', (): void => {
     it('returns the session user', async (): Promise<void> => {
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          UserEntity_id: userId,
-          UserEntity_handle: handle,
-          UserEntity_email: email,
-          UserEntity_password_hash: hashSync(password)
+          UserEntity_id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+          UserEntity_handle: 'Test1 User1',
+          UserEntity_email: 'test1.user1@example.com',
+          UserEntity_password_hash: hashSync('Test1User1!')
         }
       ]));
 
       const token = app.get(JwtService).sign({
-        userId
+        userId: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
       });
 
       const response = await request(app.getHttpServer()).get('/user/session-user').set('Cookie', [
@@ -328,13 +316,11 @@ describe('Read Session User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, readSessionUserSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
-        id: userId,
-        handle,
-        email
+        id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com'
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
     });
@@ -343,7 +329,7 @@ describe('Read Session User', (): void => {
       query.mockResolvedValueOnce(buildQueryResult([]));
 
       const token = app.get(JwtService).sign({
-        userId
+        userId: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
       });
 
       const response = await request(app.getHttpServer()).get('/user/session-user').set('Cookie', [
@@ -352,9 +338,7 @@ describe('Read Session User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, readSessionUserSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Unauthorized',
         message: 'Invalid token',
@@ -367,7 +351,7 @@ describe('Read Session User', (): void => {
       query.mockRejectedValueOnce(new Error());
 
       const token = app.get(JwtService).sign({
-        userId
+        userId: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
       });
 
       const response = await request(app.getHttpServer()).get('/user/session-user').set('Cookie', [
@@ -376,9 +360,7 @@ describe('Read Session User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, readSessionUserSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Unauthorized',
         message: 'Invalid token',
@@ -389,7 +371,7 @@ describe('Read Session User', (): void => {
 
     it('responds with 401 when the token payload has extra fields', async (): Promise<void> => {
       const token = app.get(JwtService).sign({
-        userId,
+        userId: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
         extra: true
       });
 

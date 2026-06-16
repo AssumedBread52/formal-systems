@@ -8,11 +8,6 @@ import { hashSync } from 'bcryptjs';
 import request from 'supertest';
 
 describe('Read User by ID', (): void => {
-  const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
-  const handle = 'Test1 User1';
-  const email = 'test1.user1@example.com';
-  const passwordHash = hashSync('Test1User1!');
-  const selectUserByIdSql = 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1';
   const getOrThrow = getOrThrowMock();
   const query = queryMock();
   let app: NestExpressApplication;
@@ -22,36 +17,32 @@ describe('Read User by ID', (): void => {
   });
 
   describe('GraphQL POST /graphql query user', (): void => {
-    const operation = 'query ($userId: String!) { user(userId: $userId) { id handle email } }';
-
     it('returns the requested user', async (): Promise<void> => {
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          UserEntity_id: userId,
-          UserEntity_handle: handle,
-          UserEntity_email: email,
-          UserEntity_password_hash: passwordHash
+          UserEntity_id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+          UserEntity_handle: 'Test1 User1',
+          UserEntity_email: 'test1.user1@example.com',
+          UserEntity_password_hash: hashSync('Test1User1!')
         }
       ]));
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'query ($userId: String!) { user(userId: $userId) { id handle email } }',
         variables: {
-          userId
+          userId: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
         }
       });
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
         data: {
           user: {
-            id: userId,
-            handle,
-            email
+            id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com'
           }
         }
       });
@@ -62,17 +53,15 @@ describe('Read User by ID', (): void => {
       query.mockResolvedValueOnce(buildQueryResult([]));
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'query ($userId: String!) { user(userId: $userId) { id handle email } }',
         variables: {
-          userId
+          userId: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
         }
       });
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -106,17 +95,15 @@ describe('Read User by ID', (): void => {
       query.mockRejectedValueOnce(new Error('connection terminated unexpectedly'));
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'query ($userId: String!) { user(userId: $userId) { id handle email } }',
         variables: {
-          userId
+          userId: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
         }
       });
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -148,7 +135,7 @@ describe('Read User by ID', (): void => {
 
     it('reports an error when the id is not a UUID', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'query ($userId: String!) { user(userId: $userId) { id handle email } }',
         variables: {
           userId: 'not-a-uuid'
         }
@@ -189,24 +176,22 @@ describe('Read User by ID', (): void => {
     it('returns the requested user', async (): Promise<void> => {
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          UserEntity_id: userId,
-          UserEntity_handle: handle,
-          UserEntity_email: email,
-          UserEntity_password_hash: passwordHash
+          UserEntity_id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+          UserEntity_handle: 'Test1 User1',
+          UserEntity_email: 'test1.user1@example.com',
+          UserEntity_password_hash: hashSync('Test1User1!')
         }
       ]));
 
-      const response = await request(app.getHttpServer()).get(`/user/${userId}`);
+      const response = await request(app.getHttpServer()).get('/user/f9c7d036-e7e1-4775-b33c-43138e506e82');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
-        id: userId,
-        handle,
-        email
+        id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com'
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
     });
@@ -214,13 +199,11 @@ describe('Read User by ID', (): void => {
     it('responds with 404 when no user matches', async (): Promise<void> => {
       query.mockResolvedValueOnce(buildQueryResult([]));
 
-      const response = await request(app.getHttpServer()).get(`/user/${userId}`);
+      const response = await request(app.getHttpServer()).get('/user/f9c7d036-e7e1-4775-b33c-43138e506e82');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Not Found',
         message: 'User not found',
@@ -232,13 +215,11 @@ describe('Read User by ID', (): void => {
     it('responds with 500 when the database read fails', async (): Promise<void> => {
       query.mockRejectedValueOnce(new Error('connection terminated unexpectedly'));
 
-      const response = await request(app.getHttpServer()).get(`/user/${userId}`);
+      const response = await request(app.getHttpServer()).get('/user/f9c7d036-e7e1-4775-b33c-43138e506e82');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, selectUserByIdSql, [
-        userId
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Reading user failed',

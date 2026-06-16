@@ -7,18 +7,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
 
 describe('Create User', (): void => {
-  const userId = 'f9c7d036-e7e1-4775-b33c-43138e506e82';
-  const handle = 'Test1 User1';
-  const email = 'test1.user1@example.com';
-  const password = 'Test1User1!';
-  const handleCollisionSql = 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1';
-  const emailCollisionSql = 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1';
-  const startTransactionSql = 'START TRANSACTION';
-  const insertUserSql = 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"';
-  const commitSql = 'COMMIT';
-  const rollbackSql = 'ROLLBACK';
-  const tokenCookiePattern = /^token=[\w-]+\.[\w-]+\.[\w-]+; Max-Age=1; Path=\/; Expires=.+; HttpOnly; Secure$/;
-  const authStatusCookiePattern = /^authStatus=true; Max-Age=1; Path=\/; Expires=.+; Secure$/;
   const getOrThrow = getOrThrowMock();
   const query = queryMock();
   let app: NestExpressApplication;
@@ -28,8 +16,6 @@ describe('Create User', (): void => {
   });
 
   describe('GraphQL POST /graphql mutation createUser', (): void => {
-    const operation = 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }';
-
     it('creates the user and sets auth cookies', async (): Promise<void> => {
       getOrThrow.mockReturnValueOnce(1000);
       query.mockResolvedValueOnce(buildQueryResult([]));
@@ -37,18 +23,18 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          id: userId
+          id: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
         }
       ]));
       query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -58,33 +44,26 @@ describe('Create User', (): void => {
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
         data: {
           createUser: {
-            id: userId,
-            handle,
-            email
+            id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com'
           }
         }
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
       expect(cookies).toBeDefined();
       expect(cookies).toHaveLength(2);
-      expect(cookies![0]).toMatch(tokenCookiePattern);
-      expect(cookies![1]).toMatch(authStatusCookiePattern);
+      expect(cookies![0]).toMatch(/^token=[\w-]+\.[\w-]+\.[\w-]+; Max-Age=1; Path=\/; Expires=.+; HttpOnly; Secure$/);
+      expect(cookies![1]).toMatch(/^authStatus=true; Max-Age=1; Path=\/; Expires=.+; Secure$/);
     });
 
     it('reports an error when getting cookie configuration fails', async (): Promise<void> => {
@@ -96,18 +75,18 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          id: userId
+          id: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
         }
       ]));
       query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -117,19 +96,12 @@ describe('Create User', (): void => {
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -166,19 +138,19 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          id: userId
+          id: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
         }
       ]));
       query.mockRejectedValueOnce(new Error());
       query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -187,20 +159,13 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, commitSql);
-      expect(query).toHaveBeenNthCalledWith(6, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
+      expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -237,19 +202,19 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          id: userId
+          id: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
         }
       ]));
       query.mockRejectedValueOnce(new Error());
       query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -258,20 +223,13 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, commitSql);
-      expect(query).toHaveBeenNthCalledWith(6, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
+      expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -310,12 +268,12 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -324,19 +282,12 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -375,12 +326,12 @@ describe('Create User', (): void => {
       query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -389,19 +340,12 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -439,12 +383,12 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -453,14 +397,10 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -498,12 +438,12 @@ describe('Create User', (): void => {
       query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -512,14 +452,10 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -559,12 +495,12 @@ describe('Create User', (): void => {
       ]));
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -573,12 +509,8 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -614,12 +546,12 @@ describe('Create User', (): void => {
       query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -628,12 +560,8 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -672,12 +600,12 @@ describe('Create User', (): void => {
       ]));
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -686,9 +614,7 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -723,12 +649,12 @@ describe('Create User', (): void => {
       query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!'
           }
         }
       });
@@ -737,9 +663,7 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -772,7 +696,7 @@ describe('Create User', (): void => {
 
     it('reports an error when the payload is invalid', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
             handle: '',
@@ -821,12 +745,12 @@ describe('Create User', (): void => {
 
     it('reports an error when the payload is invalid', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
             handle: 'a'.repeat(51),
             email: 'a'.repeat(255),
-            password
+            password: 'Test1User1!'
           }
         }
       });
@@ -870,12 +794,12 @@ describe('Create User', (): void => {
 
     it('reports an error when the payload is invalid', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/graphql').send({
-        query: operation,
+        query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
           userPayload: {
-            handle,
-            email,
-            password,
+            handle: 'Test1 User1',
+            email: 'test1.user1@example.com',
+            password: 'Test1User1!',
             extra: true
           }
         }
@@ -897,7 +821,7 @@ describe('Create User', (): void => {
                 line: 1
               }
             ],
-            message: `Variable "$userPayload" got invalid value { handle: "${handle}", email: "${email}", password: "${password}", extra: true }; Field "extra" is not defined by type "NewUserPayload".`
+            message: `Variable "$userPayload" got invalid value { handle: "Test1 User1", email: "test1.user1@example.com", password: "Test1User1!", extra: true }; Field "extra" is not defined by type "NewUserPayload".`
           }
         ]
       });
@@ -914,15 +838,15 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          id: userId
+          id: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
         }
       ]));
       query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
@@ -930,29 +854,22 @@ describe('Create User', (): void => {
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
-        id: userId,
-        handle,
-        email
+        id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com'
       });
       expect(response.statusCode).toBe(HttpStatus.CREATED);
       expect(cookies).toBeDefined();
       expect(cookies).toHaveLength(2);
-      expect(cookies![0]).toMatch(tokenCookiePattern);
-      expect(cookies![1]).toMatch(authStatusCookiePattern);
+      expect(cookies![0]).toMatch(/^token=[\w-]+\.[\w-]+\.[\w-]+; Max-Age=1; Path=\/; Expires=.+; HttpOnly; Secure$/);
+      expect(cookies![1]).toMatch(/^authStatus=true; Max-Age=1; Path=\/; Expires=.+; Secure$/);
     });
 
     it('responds with 500 when getting cookie configuration fails', async (): Promise<void> => {
@@ -964,15 +881,15 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          id: userId
+          id: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
         }
       ]));
       query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
@@ -980,19 +897,12 @@ describe('Create User', (): void => {
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, commitSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Sign up failed',
@@ -1008,36 +918,29 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          id: userId
+          id: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
         }
       ]));
       query.mockRejectedValueOnce(new Error());
       query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, commitSql);
-      expect(query).toHaveBeenNthCalledWith(6, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
+      expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Sign up failed',
@@ -1053,36 +956,29 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
       query.mockResolvedValueOnce(buildQueryResult([
         {
-          id: userId
+          id: 'f9c7d036-e7e1-4775-b33c-43138e506e82'
         }
       ]));
       query.mockRejectedValueOnce(new Error());
       query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, commitSql);
-      expect(query).toHaveBeenNthCalledWith(6, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
+      expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Sign up failed',
@@ -1100,28 +996,21 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Sign up failed',
@@ -1139,28 +1028,21 @@ describe('Create User', (): void => {
       query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, insertUserSql, [
-        handle,
-        email,
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(5, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Sign up failed',
@@ -1177,23 +1059,19 @@ describe('Create User', (): void => {
       query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Sign up failed',
@@ -1210,23 +1088,19 @@ describe('Create User', (): void => {
       query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(3, startTransactionSql);
-      expect(query).toHaveBeenNthCalledWith(4, rollbackSql);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
+      expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Sign up failed',
@@ -1245,21 +1119,17 @@ describe('Create User', (): void => {
       ]));
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Conflict',
         message: 'Users must have a unique e-mail address',
@@ -1274,21 +1144,17 @@ describe('Create User', (): void => {
       query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, emailCollisionSql, [
-        email
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Verifying unique e-mail address failed',
@@ -1306,18 +1172,16 @@ describe('Create User', (): void => {
       ]));
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Conflict',
         message: 'Users must have a unique handle',
@@ -1331,18 +1195,16 @@ describe('Create User', (): void => {
       query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, handleCollisionSql, [
-        handle
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Verifying unique handle failed',
@@ -1380,7 +1242,7 @@ describe('Create User', (): void => {
       const response = await request(app.getHttpServer()).post('/user').send({
         handle: 'a'.repeat(51),
         email: 'a'.repeat(255),
-        password
+        password: 'Test1User1!'
       });
 
       const cookies = response.get('Set-Cookie');
@@ -1402,9 +1264,9 @@ describe('Create User', (): void => {
 
     it('responds with 400 when the payload is invalid', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/user').send({
-        handle,
-        email,
-        password,
+        handle: 'Test1 User1',
+        email: 'test1.user1@example.com',
+        password: 'Test1User1!',
         extra: true
       });
 
