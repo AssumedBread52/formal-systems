@@ -40,7 +40,9 @@ describe('Read Session User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         data: {
           sessionUser: {
@@ -68,7 +70,9 @@ describe('Read Session User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -112,7 +116,9 @@ describe('Read Session User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -316,7 +322,9 @@ describe('Read Session User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
         handle: 'Test1 User1',
@@ -338,7 +346,9 @@ describe('Read Session User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         error: 'Unauthorized',
         message: 'Invalid token',
@@ -360,7 +370,9 @@ describe('Read Session User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         error: 'Unauthorized',
         message: 'Invalid token',
