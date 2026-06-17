@@ -694,7 +694,7 @@ describe('Create User', (): void => {
       expect(cookies).toBeUndefined();
     });
 
-    it('reports an error when the payload is invalid', async (): Promise<void> => {
+    it('reports an error when required fields are blank', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/graphql').send({
         query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
@@ -743,7 +743,7 @@ describe('Create User', (): void => {
       expect(cookies).toBeUndefined();
     });
 
-    it('reports an error when the payload is invalid', async (): Promise<void> => {
+    it('reports an error when fields exceed their maximum length', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/graphql').send({
         query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
@@ -792,7 +792,7 @@ describe('Create User', (): void => {
       expect(cookies).toBeUndefined();
     });
 
-    it('reports an error when the payload is invalid', async (): Promise<void> => {
+    it('reports an error when the payload has extra fields', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/graphql').send({
         query: 'mutation ($userPayload: NewUserPayload!) { createUser(userPayload: $userPayload) { id handle email } }',
         variables: {
@@ -1214,7 +1214,7 @@ describe('Create User', (): void => {
       expect(cookies).toBeUndefined();
     });
 
-    it('responds with 400 when the payload is invalid', async (): Promise<void> => {
+    it('responds with 400 when required fields are blank', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/user').send({
         handle: '',
         email: '',
@@ -1238,7 +1238,7 @@ describe('Create User', (): void => {
       expect(cookies).toBeUndefined();
     });
 
-    it('responds with 400 when the payload is invalid', async (): Promise<void> => {
+    it('responds with 400 when fields exceed their maximum length', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/user').send({
         handle: 'a'.repeat(51),
         email: 'a'.repeat(255),
@@ -1262,7 +1262,7 @@ describe('Create User', (): void => {
       expect(cookies).toBeUndefined();
     });
 
-    it('responds with 400 when the payload is invalid', async (): Promise<void> => {
+    it('responds with 400 when the payload has extra fields', async (): Promise<void> => {
       const response = await request(app.getHttpServer()).post('/user').send({
         handle: 'Test1 User1',
         email: 'test1.user1@example.com',
