@@ -3,7 +3,7 @@ import { StatementEntity } from '@/statement/entities/statement.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
-import { Allow, IsUUID } from 'class-validator';
+import { IsUUID } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { ExpressionTokenEntity } from './expression-token.entity';
 
@@ -45,7 +45,6 @@ export class ExpressionEntity {
   })
   public canonical: string[] = [];
 
-  @Allow()
   @Exclude()
   @Field((): typeof SystemEntity => {
     return SystemEntity;
@@ -59,7 +58,6 @@ export class ExpressionEntity {
     return system.expressions;
   })
   public readonly system!: Promise<SystemEntity>;
-  @Allow()
   @Exclude()
   @Field((): [typeof ExpressionTokenEntity] => {
     return [ExpressionTokenEntity];
@@ -70,7 +68,6 @@ export class ExpressionEntity {
     return expressionToken.expression;
   })
   public readonly expressionTokens!: Promise<ExpressionTokenEntity[]>;
-  @Allow()
   @Exclude()
   @Field((): [typeof StatementEntity] => {
     return [StatementEntity];
@@ -81,7 +78,6 @@ export class ExpressionEntity {
     return statement.assertion;
   })
   public readonly statements!: Promise<StatementEntity[]>;
-  @Allow()
   @Exclude()
   @Field((): [typeof HypothesisEntity] => {
     return [HypothesisEntity];

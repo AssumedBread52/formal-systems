@@ -3,7 +3,7 @@ import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
-import { Allow, IsEnum, IsUUID } from 'class-validator';
+import { IsEnum, IsUUID } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { StatementEntity } from './statement.entity';
 
@@ -67,7 +67,6 @@ export class HypothesisEntity {
   @IsEnum(HypothesisType)
   public type: HypothesisType = HypothesisType.logic;
 
-  @Allow()
   @Exclude()
   @Field((): typeof SystemEntity => {
     return SystemEntity;
@@ -81,7 +80,6 @@ export class HypothesisEntity {
     return system.hypotheses;
   })
   public readonly system!: Promise<SystemEntity>;
-  @Allow()
   @Exclude()
   @Field((): typeof StatementEntity => {
     return StatementEntity;
@@ -102,7 +100,6 @@ export class HypothesisEntity {
     return statement.hypotheses;
   })
   public readonly statement!: Promise<StatementEntity>;
-  @Allow()
   @Exclude()
   @Field((): typeof ExpressionEntity => {
     return ExpressionEntity;

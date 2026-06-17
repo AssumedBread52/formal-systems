@@ -7,7 +7,7 @@ import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
-import { Allow, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity('systems')
@@ -53,7 +53,6 @@ export class SystemEntity {
   @MaxLength(5000)
   public description: string = '';
 
-  @Allow()
   @Exclude()
   @Field((): typeof UserEntity => {
     return UserEntity;
@@ -67,7 +66,6 @@ export class SystemEntity {
     return user.systems;
   })
   public readonly owner!: Promise<UserEntity>;
-  @Allow()
   @Exclude()
   @Field((): [typeof SymbolEntity] => {
     return [SymbolEntity];
@@ -78,7 +76,6 @@ export class SystemEntity {
     return symbol.system;
   })
   public readonly symbols!: Promise<SymbolEntity[]>;
-  @Allow()
   @Exclude()
   @Field((): [typeof ExpressionEntity] => {
     return [ExpressionEntity];
@@ -89,7 +86,6 @@ export class SystemEntity {
     return expression.system;
   })
   public readonly expressions!: Promise<ExpressionEntity[]>;
-  @Allow()
   @Exclude()
   @Field((): [typeof ExpressionTokenEntity] => {
     return [ExpressionTokenEntity];
@@ -100,7 +96,6 @@ export class SystemEntity {
     return expressionToken.system;
   })
   public readonly expressionTokens!: Promise<ExpressionTokenEntity[]>;
-  @Allow()
   @Exclude()
   @Field((): [typeof StatementEntity] => {
     return [StatementEntity];
@@ -111,7 +106,6 @@ export class SystemEntity {
     return statement.system;
   })
   public readonly statements!: Promise<StatementEntity[]>;
-  @Allow()
   @Exclude()
   @Field((): [typeof HypothesisEntity] => {
     return [HypothesisEntity];
@@ -122,7 +116,6 @@ export class SystemEntity {
     return hypothesis.system;
   })
   public readonly hypotheses!: Promise<HypothesisEntity[]>;
-  @Allow()
   @Exclude()
   @Field((): [typeof DistinctVariablePairEntity] => {
     return [DistinctVariablePairEntity];

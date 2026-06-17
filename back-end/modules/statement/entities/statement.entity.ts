@@ -2,7 +2,7 @@ import { ExpressionEntity } from '@/expression/entities/expression.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
-import { Allow, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { DistinctVariablePairEntity } from './distinct-variable-pair.entity';
 import { HypothesisEntity } from './hypothesis.entity';
@@ -63,7 +63,6 @@ export class StatementEntity {
   @MaxLength(5000)
   public description: string = '';
 
-  @Allow()
   @Exclude()
   @Field((): typeof SystemEntity => {
     return SystemEntity;
@@ -77,7 +76,6 @@ export class StatementEntity {
     return system.statements;
   })
   public readonly system!: Promise<SystemEntity>;
-  @Allow()
   @Exclude()
   @Field((): typeof ExpressionEntity => {
     return ExpressionEntity;
@@ -98,7 +96,6 @@ export class StatementEntity {
     return expression.statements;
   })
   public readonly assertion!: Promise<ExpressionEntity>;
-  @Allow()
   @Exclude()
   @Field((): [typeof HypothesisEntity] => {
     return [HypothesisEntity];
@@ -109,7 +106,6 @@ export class StatementEntity {
     return hypothesis.statement;
   })
   public readonly hypotheses!: Promise<HypothesisEntity[]>;
-  @Allow()
   @Exclude()
   @Field((): [typeof DistinctVariablePairEntity] => {
     return [DistinctVariablePairEntity];

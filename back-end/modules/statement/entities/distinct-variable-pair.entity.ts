@@ -2,7 +2,7 @@ import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
-import { Allow, IsUUID } from 'class-validator';
+import { IsUUID } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { StatementEntity } from './statement.entity';
 
@@ -46,7 +46,6 @@ export class DistinctVariablePairEntity {
   })
   public variableSymbol2Id: string = '';
 
-  @Allow()
   @Exclude()
   @Field((): typeof SystemEntity => {
     return SystemEntity;
@@ -60,7 +59,6 @@ export class DistinctVariablePairEntity {
     return system.distinctVariablePairs;
   })
   public readonly system!: Promise<SystemEntity>;
-  @Allow()
   @Exclude()
   @Field((): typeof StatementEntity => {
     return StatementEntity;
@@ -81,7 +79,6 @@ export class DistinctVariablePairEntity {
     return statement.distinctVariablePairs;
   })
   public readonly statement!: Promise<StatementEntity>;
-  @Allow()
   @Exclude()
   @Field((): typeof SymbolEntity => {
     return SymbolEntity;
@@ -102,7 +99,6 @@ export class DistinctVariablePairEntity {
     return symbol.distinctVariable1Pairs;
   })
   public readonly variableSymbol1!: Promise<SymbolEntity>;
-  @Allow()
   @Exclude()
   @Field((): typeof SymbolEntity => {
     return SymbolEntity;

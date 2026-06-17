@@ -4,7 +4,7 @@ import { SymbolType } from '@/symbol/enums/symbol-type.enum';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
-import { Allow, IsEnum, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsUUID, MaxLength } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity('symbols')
@@ -74,7 +74,6 @@ export class SymbolEntity {
   @MaxLength(250)
   public content: string = '';
 
-  @Allow()
   @Exclude()
   @Field((): typeof SystemEntity => {
     return SystemEntity;
@@ -88,7 +87,6 @@ export class SymbolEntity {
     return system.symbols;
   })
   public readonly system!: Promise<SystemEntity>;
-  @Allow()
   @Exclude()
   @Field((): [typeof ExpressionTokenEntity] => {
     return [ExpressionTokenEntity];
@@ -99,7 +97,6 @@ export class SymbolEntity {
     return expressionToken.symbol;
   })
   public readonly expressionTokens!: Promise<ExpressionTokenEntity[]>;
-  @Allow()
   @Exclude()
   @Field((): [typeof DistinctVariablePairEntity] => {
     return [DistinctVariablePairEntity];
@@ -110,7 +107,6 @@ export class SymbolEntity {
     return distinctVariablePair.variableSymbol1;
   })
   public readonly distinctVariable1Pairs!: Promise<DistinctVariablePairEntity[]>;
-  @Allow()
   @Exclude()
   @Field((): [typeof DistinctVariablePairEntity] => {
     return [DistinctVariablePairEntity];

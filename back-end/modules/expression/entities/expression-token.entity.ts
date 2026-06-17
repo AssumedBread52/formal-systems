@@ -2,7 +2,7 @@ import { SymbolEntity } from '@/symbol/entities/symbol.entity';
 import { SystemEntity } from '@/system/entities/system.entity';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
-import { Allow, IsInt, IsUUID, Min } from 'class-validator';
+import { IsInt, IsUUID, Min } from 'class-validator';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ExpressionEntity } from './expression.entity';
 
@@ -46,7 +46,6 @@ export class ExpressionTokenEntity {
   })
   public position: number = 0;
 
-  @Allow()
   @Exclude()
   @Field((): typeof SystemEntity => {
     return SystemEntity;
@@ -60,7 +59,6 @@ export class ExpressionTokenEntity {
     return system.expressionTokens;
   })
   public readonly system!: Promise<SystemEntity>;
-  @Allow()
   @Exclude()
   @Field((): typeof SymbolEntity => {
     return SymbolEntity;
@@ -81,7 +79,6 @@ export class ExpressionTokenEntity {
     return symbol.expressionTokens;
   })
   public readonly symbol!: Promise<SymbolEntity>;
-  @Allow()
   @Exclude()
   @Field((): typeof ExpressionEntity => {
     return ExpressionEntity;
