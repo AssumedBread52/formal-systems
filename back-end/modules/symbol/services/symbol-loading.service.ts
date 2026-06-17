@@ -26,13 +26,9 @@ export class SymbolLoadingService {
         id: In(symbolIds)
       });
 
-      const symbolsMap = symbols.reduce((map: Map<string, SymbolEntity>, symbol: SymbolEntity): Map<string, SymbolEntity> => {
-        if (!map.has(symbol.id)) {
-          map.set(symbol.id, symbol);
-        }
-
-        return map;
-      }, new Map<string, SymbolEntity>());
+      const symbolsMap = new Map(symbols.map((symbol: SymbolEntity): [string, SymbolEntity] => {
+        return [symbol.id, symbol];
+      }));
 
       return symbolIds.map((symbolId: string): SymbolEntity => {
         const symbol = symbolsMap.get(symbolId);

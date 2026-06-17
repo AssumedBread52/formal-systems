@@ -22,13 +22,9 @@ export class UserLoadingService {
         id: In(userIds)
       });
 
-      const usersMap = users.reduce((map: Map<string, UserEntity>, user: UserEntity): Map<string, UserEntity> => {
-        if (!map.has(user.id)) {
-          map.set(user.id, user);
-        }
-
-        return map;
-      }, new Map<string, UserEntity>());
+      const usersMap = new Map(users.map((user: UserEntity): [string, UserEntity] => {
+        return [user.id, user];
+      }));
 
       return userIds.map((userId: string): UserEntity => {
         const user = usersMap.get(userId);

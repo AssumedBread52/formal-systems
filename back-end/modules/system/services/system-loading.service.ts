@@ -26,13 +26,9 @@ export class SystemLoadingService {
         id: In(systemIds)
       });
 
-      const systemsMap = systems.reduce((map: Map<string, SystemEntity>, system: SystemEntity): Map<string, SystemEntity> => {
-        if (!map.has(system.id)) {
-          map.set(system.id, system);
-        }
-
-        return map;
-      }, new Map<string, SystemEntity>());
+      const systemsMap = new Map(systems.map((system: SystemEntity): [string, SystemEntity] => {
+        return [system.id, system];
+      }));
 
       return systemIds.map((systemId: string): SystemEntity => {
         const system = systemsMap.get(systemId);

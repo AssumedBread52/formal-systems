@@ -26,13 +26,9 @@ export class ExpressionLoadingService {
         id: In(expressionIds)
       });
 
-      const expressionsMap = expressions.reduce((map: Map<string, ExpressionEntity>, expression: ExpressionEntity): Map<string, ExpressionEntity> => {
-        if (!map.has(expression.id)) {
-          map.set(expression.id, expression);
-        }
-
-        return map;
-      }, new Map<string, ExpressionEntity>());
+      const expressionsMap = new Map(expressions.map((expression: ExpressionEntity): [string, ExpressionEntity] => {
+        return [expression.id, expression];
+      }));
 
       return expressionIds.map((expressionId: string): ExpressionEntity => {
         const expression = expressionsMap.get(expressionId);

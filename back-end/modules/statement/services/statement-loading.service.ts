@@ -64,13 +64,9 @@ export class StatementLoadingService {
         id: In(statementIds)
       });
 
-      const statementsMap = statements.reduce((map: Map<string, StatementEntity>, statement: StatementEntity): Map<string, StatementEntity> => {
-        if (!map.has(statement.id)) {
-          map.set(statement.id, statement);
-        }
-
-        return map;
-      }, new Map<string, StatementEntity>());
+      const statementsMap = new Map(statements.map((statement: StatementEntity): [string, StatementEntity] => {
+        return [statement.id, statement];
+      }));
 
       return statementIds.map((statementId: string): StatementEntity => {
         const statement = statementsMap.get(statementId);
