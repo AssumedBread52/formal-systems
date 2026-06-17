@@ -44,10 +44,17 @@ describe('Create User', (): void => {
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
@@ -96,10 +103,17 @@ describe('Create User', (): void => {
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
@@ -159,10 +173,17 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
@@ -223,10 +244,17 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
@@ -282,10 +310,17 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -340,10 +375,17 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -397,8 +439,12 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
       expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -452,8 +498,12 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
       expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -509,8 +559,12 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -560,8 +614,12 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -614,7 +672,9 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -663,7 +723,9 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -854,10 +916,17 @@ describe('Create User', (): void => {
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
@@ -897,10 +966,17 @@ describe('Create User', (): void => {
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
@@ -934,10 +1010,17 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
@@ -972,10 +1055,17 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
@@ -1005,10 +1095,17 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -1037,10 +1134,17 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
+        'Test1 User1',
+        'test1.user1@example.com',
+        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -1068,8 +1172,12 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
       expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -1097,8 +1205,12 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
       expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -1128,8 +1240,12 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(response.body).toStrictEqual({
         error: 'Conflict',
         message: 'Users must have a unique e-mail address',
@@ -1153,8 +1269,12 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
+        'test1.user1@example.com'
+      ], true);
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Verifying unique e-mail address failed',
@@ -1181,7 +1301,9 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
       expect(response.body).toStrictEqual({
         error: 'Conflict',
         message: 'Users must have a unique handle',
@@ -1204,7 +1326,9 @@ describe('Create User', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
+        'Test1 User1'
+      ], true);
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Verifying unique handle failed',
