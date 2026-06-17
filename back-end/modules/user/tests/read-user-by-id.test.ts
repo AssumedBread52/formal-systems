@@ -36,7 +36,9 @@ describe('Read User by ID', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         data: {
           user: {
@@ -61,7 +63,9 @@ describe('Read User by ID', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -92,7 +96,7 @@ describe('Read User by ID', (): void => {
     });
 
     it('reports an error when the database read fails', async (): Promise<void> => {
-      query.mockRejectedValueOnce(new Error('connection terminated unexpectedly'));
+      query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
         query: 'query ($userId: String!) { user(userId: $userId) { id handle email } }',
@@ -103,7 +107,9 @@ describe('Read User by ID', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -187,7 +193,9 @@ describe('Read User by ID', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         id: 'f9c7d036-e7e1-4775-b33c-43138e506e82',
         handle: 'Test1 User1',
@@ -203,7 +211,9 @@ describe('Read User by ID', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         error: 'Not Found',
         message: 'User not found',
@@ -213,13 +223,15 @@ describe('Read User by ID', (): void => {
     });
 
     it('responds with 500 when the database read fails', async (): Promise<void> => {
-      query.mockRejectedValueOnce(new Error('connection terminated unexpectedly'));
+      query.mockRejectedValueOnce(new Error());
 
       const response = await request(app.getHttpServer()).get('/user/f9c7d036-e7e1-4775-b33c-43138e506e82');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [        'f9c7d036-e7e1-4775-b33c-43138e506e82'      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (("UserEntity"."id" = $1)) LIMIT 1', [
+        'f9c7d036-e7e1-4775-b33c-43138e506e82'
+      ], true);
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Reading user failed',
