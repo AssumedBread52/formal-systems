@@ -1,7 +1,7 @@
 import migrations from '@/migration/migrations';
 import { Type } from '@nestjs/common';
 import { QueryResult } from 'typeorm';
-import { PostgresDriver } from 'typeorm/driver/postgres/PostgresDriver.js';
+import { PostgresDriver } from 'typeorm/driver/postgres/PostgresDriver';
 import { PostgresQueryRunner } from 'typeorm/driver/postgres/PostgresQueryRunner';
 
 export const queryMock = (): jest.SpyInstance<Promise<any>, [query: string, parameters?: any[] | undefined, useStructuredResult?: boolean | undefined], any> => {
