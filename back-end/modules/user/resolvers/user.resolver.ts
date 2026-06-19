@@ -23,20 +23,20 @@ export class UserResolver {
     return this.userWriteService.signUp(newUserPayload, response);
   }
 
-  @Mutation((): typeof UserEntity => {
-    return UserEntity;
-  })
-  @UseGuards(JwtGuard)
-  public updateUser(@SessionUser() sessionUser: UserEntity, @Args('userPayload') editUserPayload: EditUserPayload): Promise<UserEntity> {
-    return this.userWriteService.editProfile(sessionUser, editUserPayload);
-  }
-
   @Query((): typeof UserEntity => {
     return UserEntity;
   })
   @UseGuards(JwtGuard)
   public sessionUser(@SessionUser() sessionUser: UserEntity): UserEntity {
     return sessionUser;
+  }
+
+  @Mutation((): typeof UserEntity => {
+    return UserEntity;
+  })
+  @UseGuards(JwtGuard)
+  public updateSessionUser(@SessionUser() sessionUser: UserEntity, @Args('userPayload') editUserPayload: EditUserPayload): Promise<UserEntity> {
+    return this.userWriteService.editProfile(sessionUser, editUserPayload);
   }
 
   @Query((): typeof UserEntity => {
