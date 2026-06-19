@@ -1,89 +1,135 @@
-import { validatePayload } from '@/common/helpers/validate-payload';
+import { buildQueryResult } from '@/common/tests/helpers/build-query-result';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
-import { findOneByMock } from '@/common/tests/mocks/find-one-by.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
-import { HypothesisEntity } from '@/statement/entities/hypothesis.entity';
-import { HypothesisType } from '@/statement/enums/hypothesis-type.enum';
+import { queryMock } from '@/common/tests/mocks/query.mock';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { instanceToPlain } from 'class-transformer';
 import request from 'supertest';
 
+const SYSTEM = 'ebe1615e-8c75-461a-b6f4-29db73a14ee7';
+const STATEMENT = 'a1b2c3d4-e5f6-4778-9abc-def012345678';
+const HYPOTHESIS = 'b2c3d4e5-f6a7-4889-9abc-def012345678';
+const EXPRESSION = 'c3d4e5f6-a7b8-499a-9abc-def012345678';
+const SELECT_BY_ID = 'SELECT "HypothesisEntity"."id" AS "HypothesisEntity_id", "HypothesisEntity"."system_id" AS "HypothesisEntity_system_id", "HypothesisEntity"."statement_id" AS "HypothesisEntity_statement_id", "HypothesisEntity"."expression_id" AS "HypothesisEntity_expression_id", "HypothesisEntity"."type" AS "HypothesisEntity_type" FROM "statement_hypotheses" "HypothesisEntity" WHERE (("HypothesisEntity"."id" = $1) AND ("HypothesisEntity"."system_id" = $2) AND ("HypothesisEntity"."statement_id" = $3)) LIMIT 1';
+
 describe('Read Hypothesis by ID', (): void => {
-  const findOneBy = findOneByMock();
   const getOrThrow = getOrThrowMock();
+  const query = queryMock();
   let app: NestExpressApplication;
+
+  const hypothesisRow = (): Record<string, unknown> => {
+    return {
+      HypothesisEntity_id: HYPOTHESIS,
+      HypothesisEntity_system_id: SYSTEM,
+      HypothesisEntity_statement_id: STATEMENT,
+      HypothesisEntity_expression_id: EXPRESSION,
+      HypothesisEntity_type: 'logic'
+    };
+  };
+
+  const result = (): Record<string, unknown> => {
+    return { id: HYPOTHESIS, systemId: SYSTEM, statementId: STATEMENT, expressionId: EXPRESSION, type: 'logic' };
+  };
 
   beforeAll(async (): Promise<void> => {
     app = await createTestApp();
   });
 
-  it('GET /system/:systemId/statement/:statementId/hypothesis/:hypothesisId', async (): Promise<void> => {
-    const systemId = '1222051d-2638-424f-a193-68b26615345a';
-    const statementId = '9df17e91-7e96-40b6-a455-c57148d7c92b';
-    const hypothesisId = '72b9158b-bba0-46c7-b898-5e80a64d1ed4';
-    const hypothesis = validatePayload({
-      id: hypothesisId,
-      systemId,
-      statementId,
-      expressionId: 'cfe59823-eb13-4faf-a90b-c5e82022821f',
-      type: HypothesisType.type
-    }, HypothesisEntity);
+  describe('GraphQL POST /graphql query hypothesis', (): void => {
+    const send = (variables: Record<string, unknown>): request.Test => {
+      return request(app.getHttpServer()).post('/graphql').send({
+        query: 'query ($systemId: String!, $statementId: String!, $hypothesisId: String!) { hypothesis(systemId: $systemId, statementId: $statementId, hypothesisId: $hypothesisId) { id systemId statementId expressionId type } }',
+        variables
+      });
+    };
 
-    findOneBy.mockResolvedValueOnce(hypothesis);
+    it('returns the requested hypothesis', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([hypothesisRow()]));
 
-    const response = await request(app.getHttpServer()).get(`/system/${systemId}/statement/${statementId}/hypothesis/${hypothesisId}`);
+      const response = await send({ systemId: SYSTEM, statementId: STATEMENT, hypothesisId: HYPOTHESIS });
 
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      id: hypothesisId,
-      systemId,
-      statementId
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(query).toHaveBeenNthCalledWith(1, SELECT_BY_ID, [HYPOTHESIS, SYSTEM, STATEMENT], true);
+      expect(response.body).toStrictEqual({ data: { hypothesis: result() } });
+      expect(response.statusCode).toBe(HttpStatus.OK);
     });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(response.body).toStrictEqual(instanceToPlain(hypothesis));
-    expect(response.statusCode).toBe(HttpStatus.OK);
+
+    it('reports an error when no hypothesis matches', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+
+      const response = await send({ systemId: SYSTEM, statementId: STATEMENT, hypothesisId: HYPOTHESIS });
+
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(response.body.errors[0].extensions.originalError.message).toBe('Hypothesis not found');
+      expect(response.body.errors[0].extensions.originalError.statusCode).toBe(HttpStatus.NOT_FOUND);
+      expect(response.statusCode).toBe(HttpStatus.OK);
+    });
+
+    it('reports an error when the database read fails', async (): Promise<void> => {
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await send({ systemId: SYSTEM, statementId: STATEMENT, hypothesisId: HYPOTHESIS });
+
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(response.body.errors[0].extensions.originalError.message).toBe('Reading hypothesis failed');
+      expect(response.statusCode).toBe(HttpStatus.OK);
+    });
+
+    it('reports an error when the hypothesis id is not a UUID', async (): Promise<void> => {
+      const response = await send({ systemId: SYSTEM, statementId: STATEMENT, hypothesisId: 'not-a-uuid' });
+
+      expect(query).toHaveBeenCalledTimes(0);
+      expect(response.body.errors[0].extensions.originalError.message).toBe('Validation failed (uuid is expected)');
+      expect(response.statusCode).toBe(HttpStatus.OK);
+    });
   });
 
-  it('POST /graphql query hypothesis', async (): Promise<void> => {
-    const systemId = '1222051d-2638-424f-a193-68b26615345a';
-    const statementId = '9df17e91-7e96-40b6-a455-c57148d7c92b';
-    const hypothesisId = '72b9158b-bba0-46c7-b898-5e80a64d1ed4';
-    const hypothesis = validatePayload({
-      id: hypothesisId,
-      systemId,
-      statementId,
-      expressionId: 'cfe59823-eb13-4faf-a90b-c5e82022821f',
-      type: HypothesisType.type
-    }, HypothesisEntity);
+  describe('REST GET /system/:systemId/statement/:statementId/hypothesis/:hypothesisId', (): void => {
+    it('returns the requested hypothesis', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([hypothesisRow()]));
 
-    findOneBy.mockResolvedValueOnce(hypothesis);
+      const response = await request(app.getHttpServer()).get(`/system/${SYSTEM}/statement/${STATEMENT}/hypothesis/${HYPOTHESIS}`);
 
-    const response = await request(app.getHttpServer()).post('/graphql').send({
-      query: 'query ($systemId: String!, $statementId: String!, $hypothesisId: String!) { hypothesis(systemId: $systemId, statementId: $statementId, hypothesisId: $hypothesisId) { id systemId statementId expressionId type } }',
-      variables: {
-        systemId,
-        statementId,
-        hypothesisId
-      }
+      expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(query).toHaveBeenNthCalledWith(1, SELECT_BY_ID, [HYPOTHESIS, SYSTEM, STATEMENT], true);
+      expect(response.body).toStrictEqual(result());
+      expect(response.statusCode).toBe(HttpStatus.OK);
     });
 
-    expect(findOneBy).toHaveBeenCalledTimes(1);
-    expect(findOneBy).toHaveBeenNthCalledWith(1, {
-      id: hypothesisId,
-      systemId,
-      statementId
+    it('responds with 404 when no hypothesis matches', async (): Promise<void> => {
+      query.mockResolvedValueOnce(buildQueryResult([]));
+
+      const response = await request(app.getHttpServer()).get(`/system/${SYSTEM}/statement/${STATEMENT}/hypothesis/${HYPOTHESIS}`);
+
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(response.body).toStrictEqual({ error: 'Not Found', message: 'Hypothesis not found', statusCode: HttpStatus.NOT_FOUND });
+      expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
     });
-    expect(getOrThrow).toHaveBeenCalledTimes(0);
-    expect(response.body).toStrictEqual({
-      data: {
-        hypothesis: instanceToPlain(hypothesis)
-      }
+
+    it('responds with 500 when the database read fails', async (): Promise<void> => {
+      query.mockRejectedValueOnce(new Error());
+
+      const response = await request(app.getHttpServer()).get(`/system/${SYSTEM}/statement/${STATEMENT}/hypothesis/${HYPOTHESIS}`);
+
+      expect(query).toHaveBeenCalledTimes(1);
+      expect(response.body).toStrictEqual({ error: 'Internal Server Error', message: 'Reading hypothesis failed', statusCode: HttpStatus.INTERNAL_SERVER_ERROR });
+      expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
     });
-    expect(response.statusCode).toBe(HttpStatus.OK);
+
+    it('responds with 400 when the statement id is not a UUID', async (): Promise<void> => {
+      const response = await request(app.getHttpServer()).get(`/system/${SYSTEM}/statement/not-a-uuid/hypothesis/${HYPOTHESIS}`);
+
+      expect(query).toHaveBeenCalledTimes(0);
+      expect(response.body).toStrictEqual({ error: 'Bad Request', message: 'Validation failed (uuid is expected)', statusCode: HttpStatus.BAD_REQUEST });
+      expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+    });
   });
 
   afterAll(async (): Promise<void> => {
     await app.close();
+
+    jest.restoreAllMocks();
   });
 });
