@@ -30,18 +30,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   private static extractJwt(request: Request): string | null {
-    try {
-      const { cookies } = request;
+    const { cookies } = request;
 
-      const { token } = cookies;
+    const { token } = cookies;
 
-      if (!token) {
-        return null;
-      }
-
-      return token;
-    } catch {
+    if (!token) {
       return null;
     }
+
+    return token;
   }
 };
