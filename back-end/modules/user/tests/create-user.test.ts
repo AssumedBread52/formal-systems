@@ -1,5 +1,6 @@
 import { buildQueryResult } from '@/common/tests/helpers/build-query-result';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
+import { cookieMock } from '@/common/tests/mocks/cookie.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { queryMock } from '@/common/tests/mocks/query.mock';
 import { HttpStatus } from '@nestjs/common';
@@ -9,6 +10,7 @@ import request from 'supertest';
 describe('Create User', (): void => {
   const getOrThrow = getOrThrowMock();
   const query = queryMock();
+  const cookie = cookieMock();
   let app: NestExpressApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -39,22 +41,13 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
@@ -67,6 +60,11 @@ describe('Create User', (): void => {
         }
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
+      const cookies = response.get('Set-Cookie');
+
+      expect(cookie).toHaveBeenCalledTimes(2);
+      expect(cookie).toHaveBeenNthCalledWith(1, 'token', expect.stringMatching(/^[\w-]+\.[\w-]+\.[\w-]+$/), { httpOnly: true, maxAge: 1000, secure: true });
+      expect(cookie).toHaveBeenNthCalledWith(2, 'authStatus', 'true', { maxAge: 1000, secure: true });
       expect(cookies).toBeDefined();
       expect(cookies).toHaveLength(2);
       expect(cookies![0]).toMatch(/^token=[\w-]+\.[\w-]+\.[\w-]+; Max-Age=1; Path=\/; Expires=.+; HttpOnly; Secure$/);
@@ -98,22 +96,13 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
@@ -143,7 +132,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when commit fails', async (): Promise<void> => {
@@ -169,21 +158,12 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
@@ -214,7 +194,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when commit and rollback fails', async (): Promise<void> => {
@@ -240,21 +220,12 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
@@ -285,7 +256,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when insert fails', async (): Promise<void> => {
@@ -306,21 +277,12 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -350,7 +312,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when insert and rollback fails', async (): Promise<void> => {
@@ -371,21 +333,12 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -415,7 +368,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when start transaction fails', async (): Promise<void> => {
@@ -435,16 +388,10 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
       expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -474,7 +421,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when start transaction and rollback fails', async (): Promise<void> => {
@@ -494,16 +441,10 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
       expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -533,7 +474,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when e-mail address is taken', async (): Promise<void> => {
@@ -555,16 +496,10 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -592,7 +527,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when e-mail uniqueness check fails', async (): Promise<void> => {
@@ -610,16 +545,10 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -647,7 +576,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when handle is taken', async (): Promise<void> => {
@@ -668,13 +597,9 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -702,7 +627,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when handle uniqueness check fails', async (): Promise<void> => {
@@ -719,13 +644,9 @@ describe('Create User', (): void => {
         }
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -753,7 +674,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when required fields are blank', async (): Promise<void> => {
@@ -767,8 +688,6 @@ describe('Create User', (): void => {
           }
         }
       });
-
-      const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(0);
@@ -802,7 +721,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when fields exceed their maximum length', async (): Promise<void> => {
@@ -816,8 +735,6 @@ describe('Create User', (): void => {
           }
         }
       });
-
-      const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(0);
@@ -851,7 +768,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.OK);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('reports an error when the payload has extra fields', async (): Promise<void> => {
@@ -866,8 +783,6 @@ describe('Create User', (): void => {
           }
         }
       });
-
-      const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(0);
@@ -888,7 +803,7 @@ describe('Create User', (): void => {
         ]
       });
       expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -911,22 +826,13 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
@@ -935,6 +841,11 @@ describe('Create User', (): void => {
         email: 'test1.user1@example.com'
       });
       expect(response.statusCode).toBe(HttpStatus.CREATED);
+      const cookies = response.get('Set-Cookie');
+
+      expect(cookie).toHaveBeenCalledTimes(2);
+      expect(cookie).toHaveBeenNthCalledWith(1, 'token', expect.stringMatching(/^[\w-]+\.[\w-]+\.[\w-]+$/), { httpOnly: true, maxAge: 1000, secure: true });
+      expect(cookie).toHaveBeenNthCalledWith(2, 'authStatus', 'true', { maxAge: 1000, secure: true });
       expect(cookies).toBeDefined();
       expect(cookies).toHaveLength(2);
       expect(cookies![0]).toMatch(/^token=[\w-]+\.[\w-]+\.[\w-]+; Max-Age=1; Path=\/; Expires=.+; HttpOnly; Secure$/);
@@ -961,22 +872,13 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(1);
       expect(getOrThrow).toHaveBeenNthCalledWith(1, 'AUTH_COOKIE_MAX_AGE_MILLISECONDS');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(response.body).toStrictEqual({
@@ -985,7 +887,7 @@ describe('Create User', (): void => {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR
       });
       expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 500 when commit fails', async (): Promise<void> => {
@@ -1006,21 +908,12 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
@@ -1030,7 +923,7 @@ describe('Create User', (): void => {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR
       });
       expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 500 when commit and rollback fails', async (): Promise<void> => {
@@ -1051,21 +944,12 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'COMMIT');
       expect(query).toHaveBeenNthCalledWith(6, 'ROLLBACK');
@@ -1075,7 +959,7 @@ describe('Create User', (): void => {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR
       });
       expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 500 when insert fails', async (): Promise<void> => {
@@ -1091,21 +975,12 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -1114,7 +989,7 @@ describe('Create User', (): void => {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR
       });
       expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 500 when insert and rollback fails', async (): Promise<void> => {
@@ -1130,21 +1005,12 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
-      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [
-        'Test1 User1',
-        'test1.user1@example.com',
-        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
+      expect(query).toHaveBeenNthCalledWith(4, 'INSERT INTO "users"("id", "handle", "email", "password_hash") VALUES (DEFAULT, $1, $2, $3) RETURNING "id"', [        'Test1 User1',        'test1.user1@example.com',        expect.stringMatching(/^\$2[aby]\$[0-9]{2}\$[.\/A-Za-z0-9]{53}$/)
       ], true);
       expect(query).toHaveBeenNthCalledWith(5, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -1153,7 +1019,7 @@ describe('Create User', (): void => {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR
       });
       expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 500 when start transaction fails', async (): Promise<void> => {
@@ -1168,16 +1034,10 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
       expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -1186,7 +1046,7 @@ describe('Create User', (): void => {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR
       });
       expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 500 when start transaction and rollback fails', async (): Promise<void> => {
@@ -1201,16 +1061,10 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(query).toHaveBeenNthCalledWith(3, 'START TRANSACTION');
       expect(query).toHaveBeenNthCalledWith(4, 'ROLLBACK');
       expect(response.body).toStrictEqual({
@@ -1219,7 +1073,7 @@ describe('Create User', (): void => {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR
       });
       expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 409 when e-mail address is taken', async (): Promise<void> => {
@@ -1236,23 +1090,17 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Conflict',
         message: 'Users must have a unique e-mail address',
         statusCode: HttpStatus.CONFLICT
       });
       expect(response.statusCode).toBe(HttpStatus.CONFLICT);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 500 when e-mail uniqueness check fails', async (): Promise<void> => {
@@ -1265,23 +1113,17 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [
-        'test1.user1@example.com'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."email" = $1))) LIMIT 1', [        'test1.user1@example.com'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Verifying unique e-mail address failed',
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR
       });
       expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 409 when handle is taken', async (): Promise<void> => {
@@ -1297,20 +1139,16 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Conflict',
         message: 'Users must have a unique handle',
         statusCode: HttpStatus.CONFLICT
       });
       expect(response.statusCode).toBe(HttpStatus.CONFLICT);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 500 when handle uniqueness check fails', async (): Promise<void> => {
@@ -1322,20 +1160,16 @@ describe('Create User', (): void => {
         password: 'Test1User1!'
       });
 
-      const cookies = response.get('Set-Cookie');
-
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [
-        'Test1 User1'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT 1 AS "row_exists" FROM (SELECT 1 AS dummy_column) "dummy_table" WHERE EXISTS (SELECT 1 FROM "users" "UserEntity" WHERE (("UserEntity"."handle" = $1))) LIMIT 1', [        'Test1 User1'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Verifying unique handle failed',
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR
       });
       expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 400 when required fields are blank', async (): Promise<void> => {
@@ -1344,8 +1178,6 @@ describe('Create User', (): void => {
         email: '',
         password: ''
       });
-
-      const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(0);
@@ -1359,7 +1191,7 @@ describe('Create User', (): void => {
         statusCode: HttpStatus.BAD_REQUEST
       });
       expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 400 when fields exceed their maximum length', async (): Promise<void> => {
@@ -1368,8 +1200,6 @@ describe('Create User', (): void => {
         email: 'a'.repeat(255),
         password: 'Test1User1!'
       });
-
-      const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(0);
@@ -1383,7 +1213,7 @@ describe('Create User', (): void => {
         statusCode: HttpStatus.BAD_REQUEST
       });
       expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
 
     it('responds with 400 when the payload has extra fields', async (): Promise<void> => {
@@ -1393,8 +1223,6 @@ describe('Create User', (): void => {
         password: 'Test1User1!',
         extra: true
       });
-
-      const cookies = response.get('Set-Cookie');
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(0);
@@ -1406,7 +1234,7 @@ describe('Create User', (): void => {
         statusCode: HttpStatus.BAD_REQUEST
       });
       expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
-      expect(cookies).toBeUndefined();
+      expect(cookie).toHaveBeenCalledTimes(0);
     });
   });
 

@@ -40,10 +40,7 @@ describe('Read Users', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [
-        '%est%',
-        '%est%'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [        '%est%',        '%est%'      ], true);
       expect(response.body).toStrictEqual({
         data: {
           users: {
@@ -82,14 +79,8 @@ describe('Read Users', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [
-        '%est%',
-        '%est%'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT COUNT(1) AS "cnt" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2))))', [
-        '%est%',
-        '%est%'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [        '%est%',        '%est%'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT COUNT(1) AS "cnt" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2))))', [        '%est%',        '%est%'      ], true);
       expect(response.body).toStrictEqual({
         data: {
           users: {
@@ -203,14 +194,8 @@ describe('Read Users', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [
-        '%est%',
-        '%est%'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT COUNT(1) AS "cnt" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2))))', [
-        '%est%',
-        '%est%'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [        '%est%',        '%est%'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT COUNT(1) AS "cnt" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2))))', [        '%est%',        '%est%'      ], true);
       expect(response.body).toStrictEqual({
         data: null,
         errors: [
@@ -377,10 +362,7 @@ describe('Read Users', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(1);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [
-        '%est%',
-        '%est%'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [        '%est%',        '%est%'      ], true);
       expect(response.body).toStrictEqual({
         results: [
           {
@@ -412,14 +394,8 @@ describe('Read Users', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [
-        '%est%',
-        '%est%'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT COUNT(1) AS "cnt" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2))))', [
-        '%est%',
-        '%est%'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [        '%est%',        '%est%'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT COUNT(1) AS "cnt" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2))))', [        '%est%',        '%est%'      ], true);
       expect(response.body).toStrictEqual({
         results: [],
         total: 20
@@ -495,14 +471,8 @@ describe('Read Users', (): void => {
 
       expect(getOrThrow).toHaveBeenCalledTimes(0);
       expect(query).toHaveBeenCalledTimes(2);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [
-        '%est%',
-        '%est%'
-      ], true);
-      expect(query).toHaveBeenNthCalledWith(2, 'SELECT COUNT(1) AS "cnt" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2))))', [
-        '%est%',
-        '%est%'
-      ], true);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT "UserEntity"."id" AS "UserEntity_id", "UserEntity"."handle" AS "UserEntity_handle", "UserEntity"."email" AS "UserEntity_email", "UserEntity"."password_hash" AS "UserEntity_password_hash" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2)))) LIMIT 20 OFFSET 20', [        '%est%',        '%est%'      ], true);
+      expect(query).toHaveBeenNthCalledWith(2, 'SELECT COUNT(1) AS "cnt" FROM "users" "UserEntity" WHERE (((("UserEntity"."handle" ILIKE $1))) OR ((("UserEntity"."email" ILIKE $2))))', [        '%est%',        '%est%'      ], true);
       expect(response.body).toStrictEqual({
         error: 'Internal Server Error',
         message: 'Reading users failed',
