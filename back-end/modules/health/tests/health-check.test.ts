@@ -2,6 +2,7 @@ import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import { accessMock } from '@/common/tests/mocks/access.mock';
 import { getOrThrowMock } from '@/common/tests/mocks/get-or-throw.mock';
 import { pingCheckMock } from '@/common/tests/mocks/ping-check.mock';
+import { queryMock } from '@/common/tests/mocks/query.mock';
 import { ComponentType } from '@/health/enums/component-type.enum';
 import { HealthStatus } from '@/health/enums/health-status.enum';
 import { HttpStatus } from '@nestjs/common';
@@ -15,6 +16,7 @@ describe('Health Check', (): void => {
   const access = accessMock();
   const getOrThrow = getOrThrowMock();
   const pingCheck = pingCheckMock();
+  const query = queryMock();
   let app: NestExpressApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -35,6 +37,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
@@ -62,6 +65,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
@@ -93,6 +97,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
@@ -124,6 +129,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
@@ -151,6 +157,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
@@ -182,6 +189,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
@@ -217,6 +225,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
@@ -250,6 +259,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
@@ -287,6 +297,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
@@ -324,6 +335,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
@@ -357,6 +369,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
@@ -394,6 +407,7 @@ describe('Health Check', (): void => {
       expect(access).toHaveBeenCalledTimes(1);
       expect(access).toHaveBeenNthCalledWith(1, join(cwd(), 'package-lock.json'), constants.R_OK);
       expect(getOrThrow).toHaveBeenCalledTimes(0);
+      expect(query).toHaveBeenCalledTimes(0);
       expect(pingCheck).toHaveBeenCalledTimes(1);
       expect(pingCheck).toHaveBeenNthCalledWith(1, 'database');
       expect(response.body).toStrictEqual({
