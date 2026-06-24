@@ -8,9 +8,5 @@ export const accessMock = (): jest.SpyInstance<Promise<void>, [path: PathLike, m
     access.mockReset();
   });
 
-  afterAll((): void => {
-    access.mockRestore();
-  });
-
   return access;
 };

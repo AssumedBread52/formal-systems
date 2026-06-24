@@ -7,9 +7,5 @@ export const cookieMock = (): jest.SpyInstance<Response<any, Record<string, any>
     cookie.mockClear();
   });
 
-  afterAll((): void => {
-    cookie.mockRestore();
-  });
-
   return cookie;
 };

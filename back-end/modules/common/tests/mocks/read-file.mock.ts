@@ -9,9 +9,5 @@ export const readFileMock = (): jest.SpyInstance<Promise<string | Buffer<ArrayBu
     readFile.mockReset();
   });
 
-  afterAll((): void => {
-    readFile.mockRestore();
-  });
-
   return readFile;
 };
