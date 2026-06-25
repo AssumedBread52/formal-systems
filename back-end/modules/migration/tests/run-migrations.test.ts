@@ -12,6 +12,13 @@ const RELEASE_LOCK = 'SELECT pg_advisory_unlock(hashtext($1))';
 const MIGRATION_NAMES = Object.values(migrations).map((migration): string => migration.name);
 
 describe('Run Migrations', (): void => {
+  const afterConnect = jest.spyOn(PostgresDriver.prototype, 'afterConnect');
+  const disconnect = jest.spyOn(PostgresDriver.prototype, 'disconnect');
+  const driverConnect = jest.spyOn(PostgresDriver.prototype, 'connect');
+  const getOrThrow = jest.spyOn(ConfigService.prototype, 'getOrThrow');
+  const query = jest.spyOn(PostgresQueryRunner.prototype, 'query');
+  const queryRunnerConnect = jest.spyOn(PostgresQueryRunner.prototype, 'connect');
+
   const config: Record<string, unknown> = {
     JSON_WEB_TOKEN_SECRET: 'test secret',
     JSON_WEB_TOKEN_EXPIRES_IN: '5',
@@ -23,13 +30,6 @@ describe('Run Migrations', (): void => {
     DATABASE_PORT: 5432,
     DATABASE_NAME: 'database_name'
   };
-
-  const afterConnect = jest.spyOn(PostgresDriver.prototype, 'afterConnect');
-  const disconnect = jest.spyOn(PostgresDriver.prototype, 'disconnect');
-  const driverConnect = jest.spyOn(PostgresDriver.prototype, 'connect');
-  const getOrThrow = jest.spyOn(ConfigService.prototype, 'getOrThrow');
-  const query = jest.spyOn(PostgresQueryRunner.prototype, 'query');
-  const queryRunnerConnect = jest.spyOn(PostgresQueryRunner.prototype, 'connect');
 
   // The migration runner boots per test and issues a variable number of queries (one CREATE + one
   // INSERT per pending migration), so the executed-migrations response is steered with a
