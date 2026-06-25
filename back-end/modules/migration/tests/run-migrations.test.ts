@@ -145,6 +145,8 @@ describe('Run Migrations', (): void => {
 
       await new MigrationClass().down(queryRunner);
 
+      await app.close();
+
       expect(query).toHaveBeenCalledTimes(1);
       expect(query.mock.calls[0]?.[0]).toMatch(/^DROP /);
     });
