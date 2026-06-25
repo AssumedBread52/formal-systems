@@ -2,7 +2,6 @@ import { buildQueryResult } from '@/common/tests/helpers/build-query-result';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import migrations from '@/migration/migrations';
 import { ConfigService } from '@nestjs/config';
-import { NestExpressApplication } from '@nestjs/platform-express';
 import { DataSource, MigrationInterface } from 'typeorm';
 import { PostgresDriver } from 'typeorm/driver/postgres/PostgresDriver';
 import { PostgresQueryRunner } from 'typeorm/driver/postgres/PostgresQueryRunner';
@@ -18,6 +17,10 @@ describe('Run Migrations', (): void => {
   const getOrThrow = jest.spyOn(ConfigService.prototype, 'getOrThrow');
   const query = jest.spyOn(PostgresQueryRunner.prototype, 'query');
   const queryRunnerConnect = jest.spyOn(PostgresQueryRunner.prototype, 'connect');
+
+  beforeEach((): void => {
+    query.mockClear();
+  });
 
   const config: Record<string, unknown> = {
     JSON_WEB_TOKEN_SECRET: 'test secret',
@@ -86,10 +89,6 @@ describe('Run Migrations', (): void => {
     disconnect.mockResolvedValue();
     driverConnect.mockResolvedValue();
     queryRunnerConnect.mockResolvedValue(undefined);
-  });
-
-  beforeEach((): void => {
-    query.mockClear();
   });
 
   it('runs every pending migration inside an advisory lock when none have run', async (): Promise<void> => {
