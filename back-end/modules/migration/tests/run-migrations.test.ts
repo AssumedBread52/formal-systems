@@ -24,12 +24,12 @@ describe('Run Migrations', (): void => {
     DATABASE_NAME: 'database_name'
   };
 
-  const getOrThrow = jest.spyOn(ConfigService.prototype, 'getOrThrow');
   const afterConnect = jest.spyOn(PostgresDriver.prototype, 'afterConnect');
   const disconnect = jest.spyOn(PostgresDriver.prototype, 'disconnect');
   const driverConnect = jest.spyOn(PostgresDriver.prototype, 'connect');
-  const queryRunnerConnect = jest.spyOn(PostgresQueryRunner.prototype, 'connect');
+  const getOrThrow = jest.spyOn(ConfigService.prototype, 'getOrThrow');
   const query = jest.spyOn(PostgresQueryRunner.prototype, 'query');
+  const queryRunnerConnect = jest.spyOn(PostgresQueryRunner.prototype, 'connect');
   let app: NestExpressApplication | undefined;
 
   // The migration runner boots per test and issues a variable number of queries (one CREATE + one
