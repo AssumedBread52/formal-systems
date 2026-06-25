@@ -6,7 +6,7 @@ export const readFileMock = (): jest.SpyInstance<Promise<string | Buffer<ArrayBu
   const readFile = jest.spyOn(fsPromises, 'readFile');
 
   beforeEach((): void => {
-    readFile.mockReset();
+    readFile.mockClear();
   });
 
   return readFile;

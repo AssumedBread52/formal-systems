@@ -5,7 +5,7 @@ export const accessMock = (): jest.SpyInstance<Promise<void>, [path: PathLike, m
   const access = jest.spyOn(fsPromises, 'access');
 
   beforeEach((): void => {
-    access.mockReset();
+    access.mockClear();
   });
 
   return access;

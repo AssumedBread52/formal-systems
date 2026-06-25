@@ -17,7 +17,7 @@ export const getOrThrowMock = (): jest.SpyInstance<unknown, [propertyPath: never
   });
 
   beforeEach((): void => {
-    getOrThrow.mockReset();
+    getOrThrow.mockClear();
   });
 
   return getOrThrow;
