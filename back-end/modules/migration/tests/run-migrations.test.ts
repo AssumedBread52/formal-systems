@@ -30,7 +30,6 @@ describe('Run Migrations', (): void => {
   const getOrThrow = jest.spyOn(ConfigService.prototype, 'getOrThrow');
   const query = jest.spyOn(PostgresQueryRunner.prototype, 'query');
   const queryRunnerConnect = jest.spyOn(PostgresQueryRunner.prototype, 'connect');
-  let app: NestExpressApplication | undefined;
 
   // The migration runner boots per test and issues a variable number of queries (one CREATE + one
   // INSERT per pending migration), so the executed-migrations response is steered with a
@@ -96,7 +95,7 @@ describe('Run Migrations', (): void => {
   it('runs every pending migration inside an advisory lock when none have run', async (): Promise<void> => {
     installQuery([]);
 
-    app = await createTestApp();
+    const app = await createTestApp();
 
     await app.close();
 
@@ -110,7 +109,7 @@ describe('Run Migrations', (): void => {
   it('runs no migrations when all have already run', async (): Promise<void> => {
     installQuery(executedRecords());
 
-    app = await createTestApp();
+    const app = await createTestApp();
 
     await app.close();
 
@@ -137,7 +136,7 @@ describe('Run Migrations', (): void => {
     it.each(migrationEntries)('drops the schema changes made by %s', async (_name: string, MigrationClass: new () => MigrationInterface): Promise<void> => {
       installQuery(executedRecords());
 
-      app = await createTestApp();
+      const app = await createTestApp();
 
       const queryRunner = app.get(DataSource).createQueryRunner();
 
