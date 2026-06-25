@@ -90,21 +90,15 @@ describe('Run Migrations', (): void => {
   });
 
   beforeEach((): void => {
-    query.mockReset();
-  });
-
-  afterEach(async (): Promise<void> => {
-    if (app) {
-      await app.close();
-
-      app = undefined;
-    }
+    query.mockClear();
   });
 
   it('runs every pending migration inside an advisory lock when none have run', async (): Promise<void> => {
     installQuery([]);
 
     app = await createTestApp();
+
+    await app.close();
 
     expect(query.mock.calls.at(0)).toStrictEqual([ENGAGE_LOCK, ['migration_lock']]);
     expect(query.mock.calls.at(-1)).toStrictEqual([RELEASE_LOCK, ['migration_lock']]);
@@ -117,6 +111,8 @@ describe('Run Migrations', (): void => {
     installQuery(executedRecords());
 
     app = await createTestApp();
+
+    await app.close();
 
     expect(query.mock.calls.at(0)).toStrictEqual([ENGAGE_LOCK, ['migration_lock']]);
     expect(query.mock.calls.at(-1)).toStrictEqual([RELEASE_LOCK, ['migration_lock']]);
