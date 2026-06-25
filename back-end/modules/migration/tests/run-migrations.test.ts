@@ -101,10 +101,6 @@ describe('Run Migrations', (): void => {
     }
   });
 
-  afterAll((): void => {
-    jest.restoreAllMocks();
-  });
-
   it('runs every pending migration inside an advisory lock when none have run', async (): Promise<void> => {
     installQuery([]);
 
@@ -156,5 +152,9 @@ describe('Run Migrations', (): void => {
       expect(query).toHaveBeenCalledTimes(1);
       expect(query.mock.calls[0]?.[0]).toMatch(/^DROP /);
     });
+  });
+
+  afterAll((): void => {
+    jest.restoreAllMocks();
   });
 });
