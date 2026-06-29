@@ -130,9 +130,7 @@ describe('Run Migrations', (): void => {
   });
 
   describe('reverting the migrations', (): void => {
-    const migrationEntries: ReadonlyArray<[string, new () => MigrationInterface]> = Object.entries(migrations);
-
-    it.each(migrationEntries)('drops the schema changes made by %s', async (_name: string, MigrationClass: new () => MigrationInterface): Promise<void> => {
+    it.each(Object.entries(migrations))('drops the schema changes made by %s', async (_name: string, MigrationClass: new () => MigrationInterface): Promise<void> => {
       installQuery(executedRecords());
 
       const app = await createTestApp();
