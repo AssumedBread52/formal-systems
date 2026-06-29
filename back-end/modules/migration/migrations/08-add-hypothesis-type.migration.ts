@@ -1,13 +1,9 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { BaseMigration } from './base.migration';
 
-export class AddHypothesisType0000000000008 implements MigrationInterface {
-  public up(queryRunner: QueryRunner): Promise<any> {
-    return queryRunner.query(`
-      CREATE TYPE hypothesis_type AS ENUM ('type', 'logic');
-    `);
-  }
+export class AddHypothesisType0000000000008 extends BaseMigration {
+  public readonly UP_SCRIPT = `
+    CREATE TYPE hypothesis_type AS ENUM ('type', 'logic');
+  `;
 
-  public down(queryRunner: QueryRunner): Promise<any> {
-    return queryRunner.query('DROP TYPE hypothesis_type;');
-  }
+  public readonly DOWN_SCRIPT = 'DROP TYPE hypothesis_type;';
 };
