@@ -132,7 +132,7 @@ describe('Run Migrations', (): void => {
   });
 
   describe('reverting the migrations', (): void => {
-    it.each(Object.entries(migrations))('drops the schema changes made by %s', async (_name: string, MigrationClass: Type<BaseMigration>): Promise<void> => {
+    it.each(Object.entries(migrations))('reverts the %s migration', async (name: string, MigrationClass: Type<BaseMigration>): Promise<void> => {
       installQuery(executedRecords());
 
       const app = await createTestApp();
@@ -145,6 +145,7 @@ describe('Run Migrations', (): void => {
 
       await app.close();
 
+      expect(name).toBe(MigrationClass.name);
       expect(query).toHaveBeenCalledTimes(1);
       expect(query.mock.calls[0]?.[0]).toMatch(/^DROP /);
     });
