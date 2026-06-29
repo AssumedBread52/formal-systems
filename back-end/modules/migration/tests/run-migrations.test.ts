@@ -1,8 +1,10 @@
 import { buildQueryResult } from '@/common/tests/helpers/build-query-result';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import migrations from '@/migration/migrations';
+import { BaseMigration } from '@/migration/migrations/base.migration';
+import { Type } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DataSource, MigrationInterface } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { PostgresDriver } from 'typeorm/driver/postgres/PostgresDriver';
 import { PostgresQueryRunner } from 'typeorm/driver/postgres/PostgresQueryRunner';
 
@@ -130,7 +132,7 @@ describe('Run Migrations', (): void => {
   });
 
   describe('reverting the migrations', (): void => {
-    it.each(Object.entries(migrations))('drops the schema changes made by %s', async (_name: string, MigrationClass: new () => MigrationInterface): Promise<void> => {
+    it.each(Object.entries(migrations))('drops the schema changes made by %s', async (_name: string, MigrationClass: Type<BaseMigration>): Promise<void> => {
       installQuery(executedRecords());
 
       const app = await createTestApp();
