@@ -8,10 +8,6 @@ import { DataSource } from 'typeorm';
 import { PostgresDriver } from 'typeorm/driver/postgres/PostgresDriver';
 import { PostgresQueryRunner } from 'typeorm/driver/postgres/PostgresQueryRunner';
 
-const ENGAGE_LOCK = 'SELECT pg_advisory_lock(hashtext($1))';
-const RELEASE_LOCK = 'SELECT pg_advisory_unlock(hashtext($1))';
-const MIGRATION_NAMES = Object.values(migrations).map((migration): string => migration.name);
-
 describe('Run Migrations', (): void => {
   const afterConnect = jest.spyOn(PostgresDriver.prototype, 'afterConnect');
   const disconnect = jest.spyOn(PostgresDriver.prototype, 'disconnect');
@@ -66,7 +62,7 @@ describe('Run Migrations', (): void => {
   };
 
   const executedRecords = (): Record<string, unknown>[] => {
-    return MIGRATION_NAMES.map((name: string, index: number): Record<string, unknown> => {
+    return Object.values(migrations).map((migration): string => migration.name).map((name: string, index: number): Record<string, unknown> => {
       return {
         id: index + 1,
         timestamp: index + 1,
@@ -100,11 +96,15 @@ describe('Run Migrations', (): void => {
 
     await app.close();
 
-    expect(query.mock.calls.at(0)).toStrictEqual([ENGAGE_LOCK, ['migration_lock']]);
-    expect(query.mock.calls.at(-1)).toStrictEqual([RELEASE_LOCK, ['migration_lock']]);
+    expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
+      'migration_lock'
+    ]]);
+    expect(query.mock.calls.at(-1)).toStrictEqual(['SELECT pg_advisory_unlock(hashtext($1))', [
+      'migration_lock'
+    ]]);
     expect(statements()).toContain('START TRANSACTION');
     expect(statements()).toContain('COMMIT');
-    expect(insertedMigrationNames()).toStrictEqual(MIGRATION_NAMES);
+    expect(insertedMigrationNames()).toStrictEqual(Object.values(migrations).map((migration): string => migration.name));
   });
 
   it('runs no migrations when all have already run', async (): Promise<void> => {
@@ -114,8 +114,12 @@ describe('Run Migrations', (): void => {
 
     await app.close();
 
-    expect(query.mock.calls.at(0)).toStrictEqual([ENGAGE_LOCK, ['migration_lock']]);
-    expect(query.mock.calls.at(-1)).toStrictEqual([RELEASE_LOCK, ['migration_lock']]);
+    expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
+      'migration_lock'
+    ]]);
+    expect(query.mock.calls.at(-1)).toStrictEqual(['SELECT pg_advisory_unlock(hashtext($1))', [
+      'migration_lock'
+    ]]);
     expect(statements()).not.toContain('START TRANSACTION');
     expect(statements()).not.toContain('COMMIT');
     expect(insertedMigrationNames()).toStrictEqual([]);
@@ -126,8 +130,12 @@ describe('Run Migrations', (): void => {
 
     await expect(createTestApp()).rejects.toThrow('Running migrations failed');
 
-    expect(query.mock.calls.at(0)).toStrictEqual([ENGAGE_LOCK, ['migration_lock']]);
-    expect(query.mock.calls.at(-1)).toStrictEqual([RELEASE_LOCK, ['migration_lock']]);
+    expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
+      'migration_lock'
+    ]]);
+    expect(query.mock.calls.at(-1)).toStrictEqual(['SELECT pg_advisory_unlock(hashtext($1))', [
+      'migration_lock'
+    ]]);
     expect(insertedMigrationNames()).toStrictEqual([]);
   });
 
