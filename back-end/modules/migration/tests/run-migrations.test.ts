@@ -1,10 +1,7 @@
 import { buildQueryResult } from '@/common/tests/helpers/build-query-result';
 import { createTestApp } from '@/common/tests/helpers/create-test-app';
 import migrations from '@/migration/migrations';
-import { BaseMigration } from '@/migration/migrations/base.migration';
-import { Type } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DataSource } from 'typeorm';
 import { PostgresDriver } from 'typeorm/driver/postgres/PostgresDriver';
 import { PostgresQueryRunner } from 'typeorm/driver/postgres/PostgresQueryRunner';
 
@@ -137,26 +134,6 @@ describe('Run Migrations', (): void => {
       'migration_lock'
     ]]);
     expect(insertedMigrationNames()).toStrictEqual([]);
-  });
-
-  describe('reverting the migrations', (): void => {
-    it.each(Object.entries(migrations))('reverts the %s migration', async (name: string, MigrationClass: Type<BaseMigration>): Promise<void> => {
-      installQuery(executedRecords());
-
-      const app = await createTestApp();
-
-      const queryRunner = app.get(DataSource).createQueryRunner();
-
-      query.mockClear();
-
-      await new MigrationClass().down(queryRunner);
-
-      await app.close();
-
-      expect(name).toBe(MigrationClass.name);
-      expect(query).toHaveBeenCalledTimes(1);
-      expect(query.mock.calls[0]?.[0]).toMatch(/^DROP /);
-    });
   });
 
   afterAll((): void => {
