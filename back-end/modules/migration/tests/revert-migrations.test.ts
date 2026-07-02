@@ -25,7 +25,7 @@ describe('Revert migrations', (): void => {
     queryRunnerConnect.mockClear();
   });
 
-  describe('when migrations succeed', (): void => {
+  describe('when reverting a migration', (): void => {
     it.each(Object.entries(migrations))('reverts the %s migration', async (name: string, MigrationClass: Type<BaseMigration>): Promise<void> => {
       afterConnect.mockResolvedValueOnce();
       disconnect.mockResolvedValueOnce();
@@ -182,7 +182,7 @@ describe('Revert migrations', (): void => {
     });
   });
 
-  describe('when migrations fail', (): void => {
+  describe('when reverting a migration fails', (): void => {
     it.each(Object.entries(migrations))('reports failure when reverting the %s migration fails', async (name: string, MigrationClass: Type<BaseMigration>): Promise<void> => {
       afterConnect.mockResolvedValueOnce();
       disconnect.mockResolvedValueOnce();
