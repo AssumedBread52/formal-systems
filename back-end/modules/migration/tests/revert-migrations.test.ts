@@ -167,11 +167,15 @@ describe('Revert migrations', (): void => {
       expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
       expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT pg_advisory_lock(hashtext($1))', [        'migration_lock'      ]);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT pg_advisory_lock(hashtext($1))', [
+        'migration_lock'
+      ]);
       expect(query).toHaveBeenNthCalledWith(2, 'SELECT * FROM current_schema()');
       expect(query).toHaveBeenNthCalledWith(3, 'SELECT * FROM "information_schema"."tables" WHERE "table_schema" = \'public\' AND "table_name" = \'migrations\'');
       expect(query).toHaveBeenNthCalledWith(4, 'SELECT * FROM "migrations" "migrations" ORDER BY "id" DESC', [], true);
-      expect(query).toHaveBeenNthCalledWith(5, 'SELECT pg_advisory_unlock(hashtext($1))', [        'migration_lock'      ]);
+      expect(query).toHaveBeenNthCalledWith(5, 'SELECT pg_advisory_unlock(hashtext($1))', [
+        'migration_lock'
+      ]);
       expect(query).toHaveBeenNthCalledWith(6, migration.DOWN_SCRIPT);
       expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
       expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
@@ -320,11 +324,15 @@ describe('Revert migrations', (): void => {
       expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
       expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
       expect(query).toHaveBeenCalledTimes(6);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT pg_advisory_lock(hashtext($1))', [        'migration_lock'      ]);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT pg_advisory_lock(hashtext($1))', [
+        'migration_lock'
+      ]);
       expect(query).toHaveBeenNthCalledWith(2, 'SELECT * FROM current_schema()');
       expect(query).toHaveBeenNthCalledWith(3, 'SELECT * FROM "information_schema"."tables" WHERE "table_schema" = \'public\' AND "table_name" = \'migrations\'');
       expect(query).toHaveBeenNthCalledWith(4, 'SELECT * FROM "migrations" "migrations" ORDER BY "id" DESC', [], true);
-      expect(query).toHaveBeenNthCalledWith(5, 'SELECT pg_advisory_unlock(hashtext($1))', [        'migration_lock'      ]);
+      expect(query).toHaveBeenNthCalledWith(5, 'SELECT pg_advisory_unlock(hashtext($1))', [
+        'migration_lock'
+      ]);
       expect(query).toHaveBeenNthCalledWith(6, migration.DOWN_SCRIPT);
       expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
       expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
