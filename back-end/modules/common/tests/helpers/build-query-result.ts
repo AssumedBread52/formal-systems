@@ -6,5 +6,5 @@ export const buildQueryResult = (payload: Record<string, unknown>[]): QueryResul
   queryResult.raw = payload;
   queryResult.records = payload;
 
-  return queryResult
+  return queryResult;
 };
