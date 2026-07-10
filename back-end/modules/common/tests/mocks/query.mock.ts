@@ -2,7 +2,6 @@ import { buildQueryResult } from '@/common/tests/helpers/build-query-result';
 import migrations from '@/migration/migrations';
 import { BaseMigration } from '@/migration/migrations/base.migration';
 import { Type } from '@nestjs/common';
-import { Migration } from 'typeorm';
 import { PostgresDriver } from 'typeorm/driver/postgres/PostgresDriver';
 import { PostgresQueryRunner } from 'typeorm/driver/postgres/PostgresQueryRunner';
 
@@ -39,11 +38,13 @@ export const queryMock = (): jest.SpyInstance<Promise<any>, [query: string, para
         commit_action: ''
       }
     ]);
-    query.mockResolvedValueOnce(buildQueryResult(Object.values(migrations).map((MigrationClass: Type<BaseMigration>, index: number): Migration => {
+    query.mockResolvedValueOnce(buildQueryResult(Object.entries(migrations).map((migrationEntry: [string, Type<BaseMigration>], index: number): Record<string, unknown> => {
+      const [migrationName] = migrationEntry;
+
       return {
         id: index + 1,
         timestamp: index + 1,
-        name: MigrationClass.name
+        name: migrationName
       };
     })));
     query.mockResolvedValueOnce([]);
