@@ -10,6 +10,7 @@ import { DataSource } from 'typeorm';
 describe('Revert migrations', (): void => {
   const getOrThrow = getOrThrowMock();
   const query = queryMock();
+  const migrationEntries = Object.entries(migrations);
   let app: NestExpressApplication;
 
   beforeAll(async (): Promise<void> => {
@@ -17,7 +18,7 @@ describe('Revert migrations', (): void => {
   });
 
   describe('when reverting a migration', (): void => {
-    it.each(Object.entries(migrations))('reverts the %s migration', async (name: string, MigrationClass: Type<BaseMigration>): Promise<void> => {
+    it.each(migrationEntries)('reverts the %s migration', async (name: string, MigrationClass: Type<BaseMigration>): Promise<void> => {
       query.mockResolvedValueOnce([]);
 
       const queryRunner = app.get(DataSource).createQueryRunner();
@@ -34,7 +35,7 @@ describe('Revert migrations', (): void => {
   });
 
   describe('when reverting a migration fails', (): void => {
-    it.each(Object.entries(migrations))('reports failure when reverting the %s migration fails', async (name: string, MigrationClass: Type<BaseMigration>): Promise<void> => {
+    it.each(migrationEntries)('reports failure when reverting the %s migration fails', async (name: string, MigrationClass: Type<BaseMigration>): Promise<void> => {
       query.mockRejectedValueOnce(new Error());
 
       const queryRunner = app.get(DataSource).createQueryRunner();
