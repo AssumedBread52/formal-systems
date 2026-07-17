@@ -71,154 +71,160 @@ describe('Run Migrations', (): void => {
       .map((call): unknown => call[1]?.[1]);
   };
 
-  it('runs every pending migration inside an advisory lock when none have run', async (): Promise<void> => {
-    afterConnect.mockResolvedValueOnce();
-    disconnect.mockResolvedValueOnce();
-    driverConnect.mockResolvedValue();
-    getOrThrow.mockReturnValueOnce('test secret');
-    getOrThrow.mockReturnValueOnce('5');
-    getOrThrow.mockReturnValueOnce('postgres');
-    getOrThrow.mockReturnValueOnce('database_scheme');
-    getOrThrow.mockReturnValueOnce('database_username');
-    getOrThrow.mockReturnValueOnce('database_password');
-    getOrThrow.mockReturnValueOnce('database_host');
-    getOrThrow.mockReturnValueOnce(5432);
-    getOrThrow.mockReturnValueOnce('database_name');
-    getOrThrow.mockReturnValueOnce('test secret');
-    installQuery([]);
-    queryRunnerConnect.mockResolvedValue(undefined);
+  describe('when running pending migrations', (): void => {
+    it('runs every pending migration inside an advisory lock when none have run', async (): Promise<void> => {
+      afterConnect.mockResolvedValueOnce();
+      disconnect.mockResolvedValueOnce();
+      driverConnect.mockResolvedValue();
+      getOrThrow.mockReturnValueOnce('test secret');
+      getOrThrow.mockReturnValueOnce('5');
+      getOrThrow.mockReturnValueOnce('postgres');
+      getOrThrow.mockReturnValueOnce('database_scheme');
+      getOrThrow.mockReturnValueOnce('database_username');
+      getOrThrow.mockReturnValueOnce('database_password');
+      getOrThrow.mockReturnValueOnce('database_host');
+      getOrThrow.mockReturnValueOnce(5432);
+      getOrThrow.mockReturnValueOnce('database_name');
+      getOrThrow.mockReturnValueOnce('test secret');
+      installQuery([]);
+      queryRunnerConnect.mockResolvedValue(undefined);
 
-    const app = await createTestApp();
+      const app = await createTestApp();
 
-    await app.close();
+      await app.close();
 
-    expect(afterConnect).toHaveBeenCalledTimes(1);
-    expect(afterConnect).toHaveBeenNthCalledWith(1);
-    expect(disconnect).toHaveBeenCalledTimes(1);
-    expect(disconnect).toHaveBeenNthCalledWith(1);
-    expect(driverConnect).toHaveBeenCalledTimes(1);
-    expect(driverConnect).toHaveBeenNthCalledWith(1);
-    expect(getOrThrow).toHaveBeenCalledTimes(10);
-    expect(getOrThrow).toHaveBeenNthCalledWith(1, 'JSON_WEB_TOKEN_SECRET');
-    expect(getOrThrow).toHaveBeenNthCalledWith(2, 'JSON_WEB_TOKEN_EXPIRES_IN');
-    expect(getOrThrow).toHaveBeenNthCalledWith(3, 'DATABASE_TYPE');
-    expect(getOrThrow).toHaveBeenNthCalledWith(4, 'DATABASE_SCHEME');
-    expect(getOrThrow).toHaveBeenNthCalledWith(5, 'DATABASE_USERNAME');
-    expect(getOrThrow).toHaveBeenNthCalledWith(6, 'DATABASE_PASSWORD');
-    expect(getOrThrow).toHaveBeenNthCalledWith(7, 'DATABASE_HOST');
-    expect(getOrThrow).toHaveBeenNthCalledWith(8, 'DATABASE_PORT');
-    expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
-    expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
-    expect(query).toHaveBeenCalledTimes(36);
-    expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
-      'migration_lock'
-    ]]);
-    expect(query.mock.calls.at(-1)).toStrictEqual(['SELECT pg_advisory_unlock(hashtext($1))', [
-      'migration_lock'
-    ]]);
-    expect(statements()).toContain('START TRANSACTION');
-    expect(statements()).toContain('COMMIT');
-    expect(insertedMigrationNames()).toStrictEqual(Object.values(migrations).map((migration): string => migration.name));
-    expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
-    expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
+      expect(afterConnect).toHaveBeenCalledTimes(1);
+      expect(afterConnect).toHaveBeenNthCalledWith(1);
+      expect(disconnect).toHaveBeenCalledTimes(1);
+      expect(disconnect).toHaveBeenNthCalledWith(1);
+      expect(driverConnect).toHaveBeenCalledTimes(1);
+      expect(driverConnect).toHaveBeenNthCalledWith(1);
+      expect(getOrThrow).toHaveBeenCalledTimes(10);
+      expect(getOrThrow).toHaveBeenNthCalledWith(1, 'JSON_WEB_TOKEN_SECRET');
+      expect(getOrThrow).toHaveBeenNthCalledWith(2, 'JSON_WEB_TOKEN_EXPIRES_IN');
+      expect(getOrThrow).toHaveBeenNthCalledWith(3, 'DATABASE_TYPE');
+      expect(getOrThrow).toHaveBeenNthCalledWith(4, 'DATABASE_SCHEME');
+      expect(getOrThrow).toHaveBeenNthCalledWith(5, 'DATABASE_USERNAME');
+      expect(getOrThrow).toHaveBeenNthCalledWith(6, 'DATABASE_PASSWORD');
+      expect(getOrThrow).toHaveBeenNthCalledWith(7, 'DATABASE_HOST');
+      expect(getOrThrow).toHaveBeenNthCalledWith(8, 'DATABASE_PORT');
+      expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
+      expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
+      expect(query).toHaveBeenCalledTimes(36);
+      expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
+        'migration_lock'
+      ]]);
+      expect(query.mock.calls.at(-1)).toStrictEqual(['SELECT pg_advisory_unlock(hashtext($1))', [
+        'migration_lock'
+      ]]);
+      expect(statements()).toContain('START TRANSACTION');
+      expect(statements()).toContain('COMMIT');
+      expect(insertedMigrationNames()).toStrictEqual(Object.values(migrations).map((migration): string => migration.name));
+      expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
+      expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
+    });
   });
 
-  it('runs no migrations when all have already run', async (): Promise<void> => {
-    afterConnect.mockResolvedValueOnce();
-    disconnect.mockResolvedValueOnce();
-    driverConnect.mockResolvedValue();
-    getOrThrow.mockReturnValueOnce('test secret');
-    getOrThrow.mockReturnValueOnce('5');
-    getOrThrow.mockReturnValueOnce('postgres');
-    getOrThrow.mockReturnValueOnce('database_scheme');
-    getOrThrow.mockReturnValueOnce('database_username');
-    getOrThrow.mockReturnValueOnce('database_password');
-    getOrThrow.mockReturnValueOnce('database_host');
-    getOrThrow.mockReturnValueOnce(5432);
-    getOrThrow.mockReturnValueOnce('database_name');
-    getOrThrow.mockReturnValueOnce('test secret');
-    installQuery(executedRecords());
-    queryRunnerConnect.mockResolvedValue(undefined);
+  describe('when no migrations are run', (): void => {
+    it('runs no migrations when all have already run', async (): Promise<void> => {
+      afterConnect.mockResolvedValueOnce();
+      disconnect.mockResolvedValueOnce();
+      driverConnect.mockResolvedValue();
+      getOrThrow.mockReturnValueOnce('test secret');
+      getOrThrow.mockReturnValueOnce('5');
+      getOrThrow.mockReturnValueOnce('postgres');
+      getOrThrow.mockReturnValueOnce('database_scheme');
+      getOrThrow.mockReturnValueOnce('database_username');
+      getOrThrow.mockReturnValueOnce('database_password');
+      getOrThrow.mockReturnValueOnce('database_host');
+      getOrThrow.mockReturnValueOnce(5432);
+      getOrThrow.mockReturnValueOnce('database_name');
+      getOrThrow.mockReturnValueOnce('test secret');
+      installQuery(executedRecords());
+      queryRunnerConnect.mockResolvedValue(undefined);
 
-    const app = await createTestApp();
+      const app = await createTestApp();
 
-    await app.close();
+      await app.close();
 
-    expect(afterConnect).toHaveBeenCalledTimes(1);
-    expect(afterConnect).toHaveBeenNthCalledWith(1);
-    expect(disconnect).toHaveBeenCalledTimes(1);
-    expect(disconnect).toHaveBeenNthCalledWith(1);
-    expect(driverConnect).toHaveBeenCalledTimes(1);
-    expect(driverConnect).toHaveBeenNthCalledWith(1);
-    expect(getOrThrow).toHaveBeenCalledTimes(10);
-    expect(getOrThrow).toHaveBeenNthCalledWith(1, 'JSON_WEB_TOKEN_SECRET');
-    expect(getOrThrow).toHaveBeenNthCalledWith(2, 'JSON_WEB_TOKEN_EXPIRES_IN');
-    expect(getOrThrow).toHaveBeenNthCalledWith(3, 'DATABASE_TYPE');
-    expect(getOrThrow).toHaveBeenNthCalledWith(4, 'DATABASE_SCHEME');
-    expect(getOrThrow).toHaveBeenNthCalledWith(5, 'DATABASE_USERNAME');
-    expect(getOrThrow).toHaveBeenNthCalledWith(6, 'DATABASE_PASSWORD');
-    expect(getOrThrow).toHaveBeenNthCalledWith(7, 'DATABASE_HOST');
-    expect(getOrThrow).toHaveBeenNthCalledWith(8, 'DATABASE_PORT');
-    expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
-    expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
-    expect(query).toHaveBeenCalledTimes(6);
-    expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
-      'migration_lock'
-    ]]);
-    expect(query.mock.calls.at(-1)).toStrictEqual(['SELECT pg_advisory_unlock(hashtext($1))', [
-      'migration_lock'
-    ]]);
-    expect(statements()).not.toContain('START TRANSACTION');
-    expect(statements()).not.toContain('COMMIT');
-    expect(insertedMigrationNames()).toStrictEqual([]);
-    expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
-    expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
+      expect(afterConnect).toHaveBeenCalledTimes(1);
+      expect(afterConnect).toHaveBeenNthCalledWith(1);
+      expect(disconnect).toHaveBeenCalledTimes(1);
+      expect(disconnect).toHaveBeenNthCalledWith(1);
+      expect(driverConnect).toHaveBeenCalledTimes(1);
+      expect(driverConnect).toHaveBeenNthCalledWith(1);
+      expect(getOrThrow).toHaveBeenCalledTimes(10);
+      expect(getOrThrow).toHaveBeenNthCalledWith(1, 'JSON_WEB_TOKEN_SECRET');
+      expect(getOrThrow).toHaveBeenNthCalledWith(2, 'JSON_WEB_TOKEN_EXPIRES_IN');
+      expect(getOrThrow).toHaveBeenNthCalledWith(3, 'DATABASE_TYPE');
+      expect(getOrThrow).toHaveBeenNthCalledWith(4, 'DATABASE_SCHEME');
+      expect(getOrThrow).toHaveBeenNthCalledWith(5, 'DATABASE_USERNAME');
+      expect(getOrThrow).toHaveBeenNthCalledWith(6, 'DATABASE_PASSWORD');
+      expect(getOrThrow).toHaveBeenNthCalledWith(7, 'DATABASE_HOST');
+      expect(getOrThrow).toHaveBeenNthCalledWith(8, 'DATABASE_PORT');
+      expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
+      expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
+      expect(query).toHaveBeenCalledTimes(6);
+      expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
+        'migration_lock'
+      ]]);
+      expect(query.mock.calls.at(-1)).toStrictEqual(['SELECT pg_advisory_unlock(hashtext($1))', [
+        'migration_lock'
+      ]]);
+      expect(statements()).not.toContain('START TRANSACTION');
+      expect(statements()).not.toContain('COMMIT');
+      expect(insertedMigrationNames()).toStrictEqual([]);
+      expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
+      expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
+    });
   });
 
-  it('releases the advisory lock and fails to boot when running the migrations fails', async (): Promise<void> => {
-    afterConnect.mockResolvedValueOnce();
-    driverConnect.mockResolvedValue();
-    getOrThrow.mockReturnValueOnce('test secret');
-    getOrThrow.mockReturnValueOnce('5');
-    getOrThrow.mockReturnValueOnce('postgres');
-    getOrThrow.mockReturnValueOnce('database_scheme');
-    getOrThrow.mockReturnValueOnce('database_username');
-    getOrThrow.mockReturnValueOnce('database_password');
-    getOrThrow.mockReturnValueOnce('database_host');
-    getOrThrow.mockReturnValueOnce(5432);
-    getOrThrow.mockReturnValueOnce('database_name');
-    getOrThrow.mockReturnValueOnce('test secret');
-    installQuery([], true);
-    queryRunnerConnect.mockResolvedValue(undefined);
+  describe('when preparing to run migrations', (): void => {
+    it('releases the advisory lock and fails to boot when running the migrations fails', async (): Promise<void> => {
+      afterConnect.mockResolvedValueOnce();
+      driverConnect.mockResolvedValue();
+      getOrThrow.mockReturnValueOnce('test secret');
+      getOrThrow.mockReturnValueOnce('5');
+      getOrThrow.mockReturnValueOnce('postgres');
+      getOrThrow.mockReturnValueOnce('database_scheme');
+      getOrThrow.mockReturnValueOnce('database_username');
+      getOrThrow.mockReturnValueOnce('database_password');
+      getOrThrow.mockReturnValueOnce('database_host');
+      getOrThrow.mockReturnValueOnce(5432);
+      getOrThrow.mockReturnValueOnce('database_name');
+      getOrThrow.mockReturnValueOnce('test secret');
+      installQuery([], true);
+      queryRunnerConnect.mockResolvedValue(undefined);
 
-    await expect(createTestApp()).rejects.toThrow('Running migrations failed');
+      await expect(createTestApp()).rejects.toThrow('Running migrations failed');
 
-    expect(afterConnect).toHaveBeenCalledTimes(1);
-    expect(afterConnect).toHaveBeenNthCalledWith(1);
-    expect(disconnect).toHaveBeenCalledTimes(0);
-    expect(driverConnect).toHaveBeenCalledTimes(1);
-    expect(driverConnect).toHaveBeenNthCalledWith(1);
-    expect(getOrThrow).toHaveBeenCalledTimes(10);
-    expect(getOrThrow).toHaveBeenNthCalledWith(1, 'JSON_WEB_TOKEN_SECRET');
-    expect(getOrThrow).toHaveBeenNthCalledWith(2, 'JSON_WEB_TOKEN_EXPIRES_IN');
-    expect(getOrThrow).toHaveBeenNthCalledWith(3, 'DATABASE_TYPE');
-    expect(getOrThrow).toHaveBeenNthCalledWith(4, 'DATABASE_SCHEME');
-    expect(getOrThrow).toHaveBeenNthCalledWith(5, 'DATABASE_USERNAME');
-    expect(getOrThrow).toHaveBeenNthCalledWith(6, 'DATABASE_PASSWORD');
-    expect(getOrThrow).toHaveBeenNthCalledWith(7, 'DATABASE_HOST');
-    expect(getOrThrow).toHaveBeenNthCalledWith(8, 'DATABASE_PORT');
-    expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
-    expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
-    expect(query).toHaveBeenCalledTimes(6);
-    expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
-      'migration_lock'
-    ]]);
-    expect(query.mock.calls.at(-1)).toStrictEqual(['SELECT pg_advisory_unlock(hashtext($1))', [
-      'migration_lock'
-    ]]);
-    expect(insertedMigrationNames()).toStrictEqual([]);
-    expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
-    expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
+      expect(afterConnect).toHaveBeenCalledTimes(1);
+      expect(afterConnect).toHaveBeenNthCalledWith(1);
+      expect(disconnect).toHaveBeenCalledTimes(0);
+      expect(driverConnect).toHaveBeenCalledTimes(1);
+      expect(driverConnect).toHaveBeenNthCalledWith(1);
+      expect(getOrThrow).toHaveBeenCalledTimes(10);
+      expect(getOrThrow).toHaveBeenNthCalledWith(1, 'JSON_WEB_TOKEN_SECRET');
+      expect(getOrThrow).toHaveBeenNthCalledWith(2, 'JSON_WEB_TOKEN_EXPIRES_IN');
+      expect(getOrThrow).toHaveBeenNthCalledWith(3, 'DATABASE_TYPE');
+      expect(getOrThrow).toHaveBeenNthCalledWith(4, 'DATABASE_SCHEME');
+      expect(getOrThrow).toHaveBeenNthCalledWith(5, 'DATABASE_USERNAME');
+      expect(getOrThrow).toHaveBeenNthCalledWith(6, 'DATABASE_PASSWORD');
+      expect(getOrThrow).toHaveBeenNthCalledWith(7, 'DATABASE_HOST');
+      expect(getOrThrow).toHaveBeenNthCalledWith(8, 'DATABASE_PORT');
+      expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
+      expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
+      expect(query).toHaveBeenCalledTimes(6);
+      expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
+        'migration_lock'
+      ]]);
+      expect(query.mock.calls.at(-1)).toStrictEqual(['SELECT pg_advisory_unlock(hashtext($1))', [
+        'migration_lock'
+      ]]);
+      expect(insertedMigrationNames()).toStrictEqual([]);
+      expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
+      expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
+    });
   });
 
   afterAll((): void => {
