@@ -14,7 +14,12 @@ describe('Run Migrations', (): void => {
   const queryRunnerConnect = jest.spyOn(PostgresQueryRunner.prototype, 'connect');
 
   beforeEach((): void => {
+    afterConnect.mockClear();
+    disconnect.mockClear();
+    driverConnect.mockClear();
+    getOrThrow.mockClear();
     query.mockClear();
+    queryRunnerConnect.mockClear();
   });
 
   const config: Record<string, unknown> = {
