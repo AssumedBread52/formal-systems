@@ -98,6 +98,24 @@ describe('Run Migrations', (): void => {
 
     await app.close();
 
+    expect(afterConnect).toHaveBeenCalledTimes(1);
+    expect(afterConnect).toHaveBeenNthCalledWith(1);
+    expect(disconnect).toHaveBeenCalledTimes(1);
+    expect(disconnect).toHaveBeenNthCalledWith(1);
+    expect(driverConnect).toHaveBeenCalledTimes(1);
+    expect(driverConnect).toHaveBeenNthCalledWith(1);
+    expect(getOrThrow).toHaveBeenCalledTimes(10);
+    expect(getOrThrow).toHaveBeenNthCalledWith(1, 'JSON_WEB_TOKEN_SECRET');
+    expect(getOrThrow).toHaveBeenNthCalledWith(2, 'JSON_WEB_TOKEN_EXPIRES_IN');
+    expect(getOrThrow).toHaveBeenNthCalledWith(3, 'DATABASE_TYPE');
+    expect(getOrThrow).toHaveBeenNthCalledWith(4, 'DATABASE_SCHEME');
+    expect(getOrThrow).toHaveBeenNthCalledWith(5, 'DATABASE_USERNAME');
+    expect(getOrThrow).toHaveBeenNthCalledWith(6, 'DATABASE_PASSWORD');
+    expect(getOrThrow).toHaveBeenNthCalledWith(7, 'DATABASE_HOST');
+    expect(getOrThrow).toHaveBeenNthCalledWith(8, 'DATABASE_PORT');
+    expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
+    expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
+    expect(query).toHaveBeenCalledTimes(36);
     expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
       'migration_lock'
     ]]);
@@ -107,6 +125,8 @@ describe('Run Migrations', (): void => {
     expect(statements()).toContain('START TRANSACTION');
     expect(statements()).toContain('COMMIT');
     expect(insertedMigrationNames()).toStrictEqual(Object.values(migrations).map((migration): string => migration.name));
+    expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
+    expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
   });
 
   it('runs no migrations when all have already run', async (): Promise<void> => {
@@ -116,6 +136,24 @@ describe('Run Migrations', (): void => {
 
     await app.close();
 
+    expect(afterConnect).toHaveBeenCalledTimes(1);
+    expect(afterConnect).toHaveBeenNthCalledWith(1);
+    expect(disconnect).toHaveBeenCalledTimes(1);
+    expect(disconnect).toHaveBeenNthCalledWith(1);
+    expect(driverConnect).toHaveBeenCalledTimes(1);
+    expect(driverConnect).toHaveBeenNthCalledWith(1);
+    expect(getOrThrow).toHaveBeenCalledTimes(10);
+    expect(getOrThrow).toHaveBeenNthCalledWith(1, 'JSON_WEB_TOKEN_SECRET');
+    expect(getOrThrow).toHaveBeenNthCalledWith(2, 'JSON_WEB_TOKEN_EXPIRES_IN');
+    expect(getOrThrow).toHaveBeenNthCalledWith(3, 'DATABASE_TYPE');
+    expect(getOrThrow).toHaveBeenNthCalledWith(4, 'DATABASE_SCHEME');
+    expect(getOrThrow).toHaveBeenNthCalledWith(5, 'DATABASE_USERNAME');
+    expect(getOrThrow).toHaveBeenNthCalledWith(6, 'DATABASE_PASSWORD');
+    expect(getOrThrow).toHaveBeenNthCalledWith(7, 'DATABASE_HOST');
+    expect(getOrThrow).toHaveBeenNthCalledWith(8, 'DATABASE_PORT');
+    expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
+    expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
+    expect(query).toHaveBeenCalledTimes(6);
     expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
       'migration_lock'
     ]]);
@@ -125,6 +163,8 @@ describe('Run Migrations', (): void => {
     expect(statements()).not.toContain('START TRANSACTION');
     expect(statements()).not.toContain('COMMIT');
     expect(insertedMigrationNames()).toStrictEqual([]);
+    expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
+    expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
   });
 
   it('releases the advisory lock and fails to boot when running the migrations fails', async (): Promise<void> => {
@@ -132,6 +172,23 @@ describe('Run Migrations', (): void => {
 
     await expect(createTestApp()).rejects.toThrow('Running migrations failed');
 
+    expect(afterConnect).toHaveBeenCalledTimes(1);
+    expect(afterConnect).toHaveBeenNthCalledWith(1);
+    expect(disconnect).toHaveBeenCalledTimes(0);
+    expect(driverConnect).toHaveBeenCalledTimes(1);
+    expect(driverConnect).toHaveBeenNthCalledWith(1);
+    expect(getOrThrow).toHaveBeenCalledTimes(10);
+    expect(getOrThrow).toHaveBeenNthCalledWith(1, 'JSON_WEB_TOKEN_SECRET');
+    expect(getOrThrow).toHaveBeenNthCalledWith(2, 'JSON_WEB_TOKEN_EXPIRES_IN');
+    expect(getOrThrow).toHaveBeenNthCalledWith(3, 'DATABASE_TYPE');
+    expect(getOrThrow).toHaveBeenNthCalledWith(4, 'DATABASE_SCHEME');
+    expect(getOrThrow).toHaveBeenNthCalledWith(5, 'DATABASE_USERNAME');
+    expect(getOrThrow).toHaveBeenNthCalledWith(6, 'DATABASE_PASSWORD');
+    expect(getOrThrow).toHaveBeenNthCalledWith(7, 'DATABASE_HOST');
+    expect(getOrThrow).toHaveBeenNthCalledWith(8, 'DATABASE_PORT');
+    expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
+    expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
+    expect(query).toHaveBeenCalledTimes(6);
     expect(query.mock.calls.at(0)).toStrictEqual(['SELECT pg_advisory_lock(hashtext($1))', [
       'migration_lock'
     ]]);
@@ -139,6 +196,8 @@ describe('Run Migrations', (): void => {
       'migration_lock'
     ]]);
     expect(insertedMigrationNames()).toStrictEqual([]);
+    expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
+    expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
   });
 
   afterAll((): void => {
