@@ -22,18 +22,6 @@ describe('Run Migrations', (): void => {
     queryRunnerConnect.mockClear();
   });
 
-  const config: Record<string, unknown> = {
-    JSON_WEB_TOKEN_SECRET: 'test secret',
-    JSON_WEB_TOKEN_EXPIRES_IN: '5',
-    DATABASE_TYPE: 'postgres',
-    DATABASE_SCHEME: 'database_scheme',
-    DATABASE_USERNAME: 'database_username',
-    DATABASE_PASSWORD: 'database_password',
-    DATABASE_HOST: 'database_host',
-    DATABASE_PORT: 5432,
-    DATABASE_NAME: 'database_name'
-  };
-
   // The migration runner boots per test and issues a variable number of queries (one CREATE + one
   // INSERT per pending migration), so the executed-migrations response is steered with a
   // SQL-keyed implementation rather than the usual ordered queue.
@@ -83,16 +71,22 @@ describe('Run Migrations', (): void => {
       .map((call): unknown => call[1]?.[1]);
   };
 
-  beforeAll((): void => {
-    getOrThrow.mockImplementation((key: never): unknown => config[key]);
-    afterConnect.mockResolvedValue();
-    disconnect.mockResolvedValue();
-    driverConnect.mockResolvedValue();
-    queryRunnerConnect.mockResolvedValue(undefined);
-  });
-
   it('runs every pending migration inside an advisory lock when none have run', async (): Promise<void> => {
+    afterConnect.mockResolvedValueOnce();
+    disconnect.mockResolvedValueOnce();
+    driverConnect.mockResolvedValue();
+    getOrThrow.mockReturnValueOnce('test secret');
+    getOrThrow.mockReturnValueOnce('5');
+    getOrThrow.mockReturnValueOnce('postgres');
+    getOrThrow.mockReturnValueOnce('database_scheme');
+    getOrThrow.mockReturnValueOnce('database_username');
+    getOrThrow.mockReturnValueOnce('database_password');
+    getOrThrow.mockReturnValueOnce('database_host');
+    getOrThrow.mockReturnValueOnce(5432);
+    getOrThrow.mockReturnValueOnce('database_name');
+    getOrThrow.mockReturnValueOnce('test secret');
     installQuery([]);
+    queryRunnerConnect.mockResolvedValue(undefined);
 
     const app = await createTestApp();
 
@@ -130,7 +124,21 @@ describe('Run Migrations', (): void => {
   });
 
   it('runs no migrations when all have already run', async (): Promise<void> => {
+    afterConnect.mockResolvedValueOnce();
+    disconnect.mockResolvedValueOnce();
+    driverConnect.mockResolvedValue();
+    getOrThrow.mockReturnValueOnce('test secret');
+    getOrThrow.mockReturnValueOnce('5');
+    getOrThrow.mockReturnValueOnce('postgres');
+    getOrThrow.mockReturnValueOnce('database_scheme');
+    getOrThrow.mockReturnValueOnce('database_username');
+    getOrThrow.mockReturnValueOnce('database_password');
+    getOrThrow.mockReturnValueOnce('database_host');
+    getOrThrow.mockReturnValueOnce(5432);
+    getOrThrow.mockReturnValueOnce('database_name');
+    getOrThrow.mockReturnValueOnce('test secret');
     installQuery(executedRecords());
+    queryRunnerConnect.mockResolvedValue(undefined);
 
     const app = await createTestApp();
 
@@ -168,7 +176,20 @@ describe('Run Migrations', (): void => {
   });
 
   it('releases the advisory lock and fails to boot when running the migrations fails', async (): Promise<void> => {
+    afterConnect.mockResolvedValueOnce();
+    driverConnect.mockResolvedValue();
+    getOrThrow.mockReturnValueOnce('test secret');
+    getOrThrow.mockReturnValueOnce('5');
+    getOrThrow.mockReturnValueOnce('postgres');
+    getOrThrow.mockReturnValueOnce('database_scheme');
+    getOrThrow.mockReturnValueOnce('database_username');
+    getOrThrow.mockReturnValueOnce('database_password');
+    getOrThrow.mockReturnValueOnce('database_host');
+    getOrThrow.mockReturnValueOnce(5432);
+    getOrThrow.mockReturnValueOnce('database_name');
+    getOrThrow.mockReturnValueOnce('test secret');
     installQuery([], true);
+    queryRunnerConnect.mockResolvedValue(undefined);
 
     await expect(createTestApp()).rejects.toThrow('Running migrations failed');
 
