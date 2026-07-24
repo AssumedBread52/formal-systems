@@ -94,10 +94,15 @@ describe('Run Migrations', (): void => {
         const migration = new MigrationClass();
 
         expect(query).toHaveBeenNthCalledWith(7 + (index * 2), migration.UP_SCRIPT);
-        expect(query).toHaveBeenNthCalledWith(8 + (index * 2), 'INSERT INTO "migrations"("timestamp", "name") VALUES ($1, $2)', [          index + 1,          migrationName        ], true);
+        expect(query).toHaveBeenNthCalledWith(8 + (index * 2), 'INSERT INTO "migrations"("timestamp", "name") VALUES ($1, $2)', [
+          index + 1,
+          migrationName
+        ], true);
       });
       expect(query).toHaveBeenNthCalledWith(7 + (migrationEntries.length * 2), 'COMMIT');
-      expect(query).toHaveBeenNthCalledWith(8 + (migrationEntries.length * 2), 'SELECT pg_advisory_unlock(hashtext($1))', [        'migration_lock'      ]);
+      expect(query).toHaveBeenNthCalledWith(8 + (migrationEntries.length * 2), 'SELECT pg_advisory_unlock(hashtext($1))', [
+        'migration_lock'
+      ]);
       expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
       expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
     });
@@ -174,11 +179,15 @@ describe('Run Migrations', (): void => {
       expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
       expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
       expect(query).toHaveBeenCalledTimes(5);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT pg_advisory_lock(hashtext($1))', [        'migration_lock'      ]);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT pg_advisory_lock(hashtext($1))', [
+        'migration_lock'
+      ]);
       expect(query).toHaveBeenNthCalledWith(2, 'SELECT * FROM current_schema()');
       expect(query).toHaveBeenNthCalledWith(3, 'SELECT * FROM "information_schema"."tables" WHERE "table_schema" = \'public\' AND "table_name" = \'migrations\'');
       expect(query).toHaveBeenNthCalledWith(4, 'SELECT * FROM "migrations" "migrations" ORDER BY "id" DESC', [], true);
-      expect(query).toHaveBeenNthCalledWith(5, 'SELECT pg_advisory_unlock(hashtext($1))', [        'migration_lock'      ]);
+      expect(query).toHaveBeenNthCalledWith(5, 'SELECT pg_advisory_unlock(hashtext($1))', [
+        'migration_lock'
+      ]);
       expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
       expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
     });
@@ -227,10 +236,14 @@ describe('Run Migrations', (): void => {
       expect(getOrThrow).toHaveBeenNthCalledWith(9, 'DATABASE_NAME');
       expect(getOrThrow).toHaveBeenNthCalledWith(10, 'JSON_WEB_TOKEN_SECRET');
       expect(query).toHaveBeenCalledTimes(4);
-      expect(query).toHaveBeenNthCalledWith(1, 'SELECT pg_advisory_lock(hashtext($1))', [        'migration_lock'      ]);
+      expect(query).toHaveBeenNthCalledWith(1, 'SELECT pg_advisory_lock(hashtext($1))', [
+        'migration_lock'
+      ]);
       expect(query).toHaveBeenNthCalledWith(2, 'SELECT * FROM current_schema()');
       expect(query).toHaveBeenNthCalledWith(3, 'SELECT * FROM "information_schema"."tables" WHERE "table_schema" = \'public\' AND "table_name" = \'migrations\'');
-      expect(query).toHaveBeenNthCalledWith(4, 'SELECT pg_advisory_unlock(hashtext($1))', [        'migration_lock'      ]);
+      expect(query).toHaveBeenNthCalledWith(4, 'SELECT pg_advisory_unlock(hashtext($1))', [
+        'migration_lock'
+      ]);
       expect(queryRunnerConnect).toHaveBeenCalledTimes(1);
       expect(queryRunnerConnect).toHaveBeenNthCalledWith(1);
     });
