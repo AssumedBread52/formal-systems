@@ -383,7 +383,7 @@ describe('Sign In', (): void => {
     });
 
     it('reports an error when the session user is not found', async (): Promise<void> => {
-      query.mockRejectedValueOnce([]);
+      query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/graphql').send({
         query: 'mutation ($email: String!, $password: String!) { signIn(email: $email, password: $password) { id handle email } }',
@@ -757,7 +757,7 @@ describe('Sign In', (): void => {
     });
 
     it('responds with 401 when the session user is not found', async (): Promise<void> => {
-      query.mockRejectedValueOnce([]);
+      query.mockResolvedValueOnce([]);
 
       const response = await request(app.getHttpServer()).post('/auth/sign-in').send({
         email: 'test1.user1@example.com',
